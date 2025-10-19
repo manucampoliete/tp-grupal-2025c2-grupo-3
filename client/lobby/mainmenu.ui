@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainMenu</class>
+ <widget class="QWidget" name="MainMenu">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>300</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <widget class="QPushButton" name="buttonNewGame">
+   <property name="geometry">
+    <rect>
+     <x>100</x>
+     <y>110</y>
+     <width>94</width>
+     <height>26</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>New Game</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="buttonJoinGame">
+   <property name="geometry">
+    <rect>
+     <x>100</x>
+     <y>160</y>
+     <width>94</width>
+     <height>26</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Join Game</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="buttonExit">
+   <property name="geometry">
+    <rect>
+     <x>100</x>
+     <y>250</y>
+     <width>94</width>
+     <height>26</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Exit</string>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

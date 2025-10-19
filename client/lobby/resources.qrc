@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file>media/menu_background.jpg</file>
+        <file>media/menu_background_blurred.jpg</file>
+    </qresource>
+</RCC>
