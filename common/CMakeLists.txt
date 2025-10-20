@@ -5,10 +5,13 @@ target_sources(taller_common
     resolver.cpp
     resolvererror.cpp
     socket.cpp
+    thread.cpp
     PUBLIC
     # .h files
     liberror.h
     resolver.h
     resolvererror.h
+    runnable.h
     socket.h
+    thread.h
     )
