@@ -4,9 +4,11 @@ target_sources(taller_common
     liberror.cpp
     resolver.cpp
     resolvererror.cpp
+    socket.cpp
     PUBLIC
     # .h files
     liberror.h
     resolver.h
     resolvererror.h
+    socket.h
     )
