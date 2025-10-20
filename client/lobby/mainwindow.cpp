@@ -11,6 +11,7 @@
 #include <QPixmap>
 #include <QPalette>
 #include <QBrush>
+#include <QFontDatabase>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -19,7 +20,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
 
     this->setWindowTitle("Need For Speed");
-    this->setFixedSize(1152, 648);
+    this->setFixedSize(960, 540);
 
     //Código para centrar la ventana
     QScreen *screen = QGuiApplication::primaryScreen();
