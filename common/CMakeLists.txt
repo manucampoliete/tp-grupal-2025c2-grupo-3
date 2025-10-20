@@ -9,6 +9,7 @@ target_sources(taller_common
     PUBLIC
     # .h files
     liberror.h
+    queue.h
     resolver.h
     resolvererror.h
     runnable.h
