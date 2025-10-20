@@ -15,6 +15,13 @@ public:
     explicit NewGame(QWidget *parent = nullptr);
     ~NewGame();
 
+signals:
+    void returnToMenuClicked();
+
+
+private slots:
+    void on_buttonReturn_clicked();
+
 private:
     Ui::NewGame *ui;
 };

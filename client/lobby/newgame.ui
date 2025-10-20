@@ -6,13 +6,127 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>960</width>
+    <height>540</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">NewGame {
+    background-color: transparent; 
+}
+
+QWidget#newgameContainer {
+    background-color: rgba(0, 34, 51, 0.85); 
+    border: 2px solid rgba(100, 150, 200, 0.5); 
+    border-radius: 5px; 
+}
+
+QPushButton {
+    background: transparent; 
+    color: #FFFFFF;
+    font-family: &quot;orbitron&quot;; 
+    font-size: 20pt; 
+    font-weight: bold; 
+    border: none;
+    padding: 10px 15px; 
+    text-align: left; 
+}
+
+QPushButton:hover {
+    background-color: rgba(0, 150, 255, 0.3); 
+    color: #FFD700; 
+    border-left: 5px solid #00BFFF; 
+    font-size: 20pt;
+}
+
+QPushButton:pressed {
+    background-color: rgba(0, 100, 200, 0.5); 
+    color: #FFA500; 
+}
+
+QLabel{
+	font-family: &quot;orbitron&quot;; 
+    font-size: 20pt; 
+    font-weight: bold; 
+}
+
+QLineEdit {
+    background-color: #1a1a2e; 
+    color: #FFFFFF;
+    font-size: 11pt;
+    padding: 5px; 
+    border: 1px solid #4f4f60; 
+    border-radius: 3px; 
+}
+QLineEdit:focus {
+    border: 2px solid #00BFFF; 
+}
+
+QLineEdit::placeholder {
+    color: #99aab5; 
+}</string>
+  </property>
+  <widget class="QWidget" name="newgameContainer" native="true">
+   <property name="geometry">
+    <rect>
+     <x>120</x>
+     <y>50</y>
+     <width>740</width>
+     <height>430</height>
+    </rect>
+   </property>
+   <widget class="QWidget" name="formLayoutWidget">
+    <property name="geometry">
+     <rect>
+      <x>120</x>
+      <y>50</y>
+      <width>541</width>
+      <height>80</height>
+     </rect>
+    </property>
+    <layout class="QFormLayout" name="formLayout">
+     <item row="0" column="0">
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>Player Name</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QLineEdit" name="lineEdit"/>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QWidget" name="horizontalLayoutWidget">
+    <property name="geometry">
+     <rect>
+      <x>50</x>
+      <y>320</y>
+      <width>381</width>
+      <height>80</height>
+     </rect>
+    </property>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QPushButton" name="buttonReturn">
+       <property name="text">
+        <string>Return</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButton">
+       <property name="text">
+        <string>Create Game</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
  </widget>
  <resources/>
  <connections/>

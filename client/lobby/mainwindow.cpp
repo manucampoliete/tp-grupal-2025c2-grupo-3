@@ -68,6 +68,14 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(main_menu, &MainMenu::exitClicked, qApp, &QApplication::quit);
 
+    connect(join_game, &JoinGame::returnToMenuClicked, stackedWidget, [this, stackedWidget, main_menu](){
+        stackedWidget->setCurrentIndex(0);
+    });
+
+    connect(new_game, &NewGame::returnToMenuClicked, stackedWidget, [this, stackedWidget, main_menu](){
+        stackedWidget->setCurrentIndex(0);
+    });
+
     stackedWidget->setCurrentWidget(main_menu);
 }
 
