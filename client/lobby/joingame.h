@@ -1,6 +1,8 @@
 #ifndef JOINGAME_H
 #define JOINGAME_H
 
+#include "carselector.h"
+
 #include <QWidget>
 
 namespace Ui {
@@ -17,14 +19,17 @@ public:
 
 signals:
     void returnToMenuClicked();
+    //void startLobby(const QString &carId, const QString &ip, const QString &port);
 
 
 private slots:
     void on_buttonReturn_clicked();
+    //void on_joinButton_clicked();
 
 
 private:
     Ui::JoinGame *ui;
+    CarSelector *carSelector;
 };
 
 #endif // JOINGAME_H

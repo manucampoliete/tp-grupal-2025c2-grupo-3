@@ -28,6 +28,8 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         joingame.h joingame.cpp joingame.ui
         newgame.h newgame.cpp newgame.ui
         resources.qrc
+        carselector.h carselector.cpp carselector.ui
+        carcard.h carcard.cpp carcard.ui
 
 
 

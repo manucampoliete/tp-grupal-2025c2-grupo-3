@@ -3,5 +3,6 @@
         <file>media/menu_background.jpg</file>
         <file>media/menu_background_blurred.jpg</file>
         <file>media/orbitron.ttf</file>
+        <file>media/car.jpg</file>
     </qresource>
 </RCC>
