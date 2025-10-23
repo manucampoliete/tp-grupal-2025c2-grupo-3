@@ -5,10 +5,6 @@
 #include <QString>
 #include <QLabel>
 
-namespace Ui {
-class CarCard;
-}
-
 class CarCard : public QWidget
 {
     Q_OBJECT
@@ -20,8 +16,11 @@ public:
     QString getCarId() const { return m_carId; }
 
 private:
-    Ui::CarCard *ui;
     QString m_carId;
+    QLabel *imageLabel;
+    QLabel *nameLabel;
+    QLabel *healthLabel;
+    QLabel *speedLabel;
 };
 
 #endif // CARCARD_H

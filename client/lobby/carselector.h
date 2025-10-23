@@ -7,10 +7,6 @@
 
 class CarCard;
 
-namespace Ui {
-class CarSelector;
-}
-
 class CarSelector : public QWidget
 {
     Q_OBJECT
@@ -26,7 +22,6 @@ private slots:
     void on_nextButton_clicked();
 
 private:
-    Ui::CarSelector *ui;
     QStackedWidget *carStack;
     QPushButton *prevButton;
     QPushButton *nextButton;

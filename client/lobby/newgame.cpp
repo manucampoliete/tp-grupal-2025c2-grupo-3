@@ -13,6 +13,9 @@ NewGame::NewGame(QWidget *parent)
     this->setAutoFillBackground(true);
 
     QFontDatabase::addApplicationFont(":/media/orbitron.ttf");
+
+    carSelector = new CarSelector(this);
+    ui->mainLayout->addWidget(carSelector);
 }
 
 void NewGame::on_buttonReturn_clicked()

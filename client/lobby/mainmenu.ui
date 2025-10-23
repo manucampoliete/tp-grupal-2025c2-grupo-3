@@ -51,15 +51,26 @@ QPushButton:hover {
 QPushButton:pressed {
     background-color: rgba(0, 100, 200, 0.5); 
     color: #FFA500; 
+}
+
+CarSelector QPushButton {
+    background-color: #ffffff; 
+    color: #a3be8c; 
+    font-size: 14pt; 
+    border-radius: 5px; 
+}
+
+CarSelector QPushButton:hover {
+    background-color: #5e81ac; 
 }</string>
   </property>
   <widget class="QWidget" name="menuContainer" native="true">
    <property name="geometry">
     <rect>
-     <x>-10</x>
-     <y>80</y>
-     <width>591</width>
-     <height>371</height>
+     <x>180</x>
+     <y>60</y>
+     <width>631</width>
+     <height>401</height>
     </rect>
    </property>
    <property name="styleSheet">
@@ -69,8 +80,8 @@ QPushButton:pressed {
     <property name="geometry">
      <rect>
       <x>60</x>
-      <y>30</y>
-      <width>471</width>
+      <y>40</y>
+      <width>521</width>
       <height>321</height>
      </rect>
     </property>

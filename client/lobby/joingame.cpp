@@ -16,7 +16,6 @@ JoinGame::JoinGame(QWidget *parent)
 
     carSelector = new CarSelector(this);
     ui->mainLayout->addWidget(carSelector);
-
 }
 
 void JoinGame::on_buttonReturn_clicked()

@@ -1,6 +1,8 @@
 #ifndef NEWGAME_H
 #define NEWGAME_H
 
+#include "carselector.h"
+
 #include <QWidget>
 
 namespace Ui {
@@ -24,6 +26,7 @@ private slots:
 
 private:
     Ui::NewGame *ui;
+    CarSelector *carSelector;
 };
 
 #endif // NEWGAME_H
