@@ -7,6 +7,8 @@ CarCard::CarCard(const QString &carId, QWidget *parent)
     : QWidget(parent)
     , m_carId(carId)
 {
+    this->setMaximumSize(600, 200);
+
     imageLabel = new QLabel(this);
     nameLabel = new QLabel(this);
 

@@ -67,6 +67,29 @@ QLineEdit:focus {
 
 QLineEdit::placeholder {
     color: #99aab5; 
+}
+
+#CarSelector QPushButton {
+	 border: 2px solid #000000;
+    padding: 13px 7px 13px 7px;
+    background-color: rgba(26,26,46, 1.0);
+    font-size: 15pt; 
+    font-weight: bold;  
+    border-radius: 7px; 
+}
+
+#CarSelector QPushButton:hover {
+	 border: 2px solid #000000;
+    padding: 13px 7px 13px 7px;
+    background-color: rgba(26,26,46, 1.0);
+    font-size: 15pt; 
+    font-weight: bold; 
+    border-radius: 7px; 
+	color: #ffffff;
+}
+
+#CarSelector QPushButton:pressed {
+    background-color: rgba(11,1,15, 1.0); 
 }</string>
   </property>
   <widget class="QWidget" name="newgameContainer" native="true">
@@ -125,6 +148,19 @@ QLineEdit::placeholder {
        </item>
        <item row="0" column="1">
         <widget class="QLineEdit" name="lineEdit"/>
+       </item>
+       <item row="1" column="0">
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Orientation::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
        </item>
       </layout>
      </item>
