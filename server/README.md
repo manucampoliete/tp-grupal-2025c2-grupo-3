@@ -19,3 +19,10 @@ Let's spice things up. Let's accept multiple clients, BUT one at at time. In ord
 
 --- 
 
+Third commit:
+
+Next step is to accept multiple clients, but also to be able to communicate with them at the same time, not sequentially. The communication with each client will remain the same, synchronous. But now we will need more threads in the server. We will have n + 2 threads, being n the amount of clients connected at a given moment. We will have the main thread, the acceptor thread, and then one thread per client. The main thread will launch the acceptor thread and then will block waiting for a 'q' via stdin to shutdown the server. The acceptor thread will accept new connections and launch a new thread for each of them, that will be in charge of the communication with that client that has just arrived. And for now, the communications will be synchronous.
+
+Note: an incremental id will be asigned to each new client, in order to distinguish them.
+
+--- 

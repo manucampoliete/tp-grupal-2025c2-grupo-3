@@ -1,11 +1,13 @@
 #ifndef SERVER_H
 #define SERVER_H
 
+#include "acceptor.h"
+
 #include <string>
 
 class Server {
 private:
-    const std::string servname;
+    Acceptor acceptor;
 
     /**
      * Disable copy semantics (not needed and error-prone)
@@ -17,7 +19,7 @@ public:
     /**
      * Constructor: takes the server name (to bind the socket to)
      */
-    explicit Server(std::string&& servname);
+    explicit Server(const std::string& servname);
 
     /**
      * Enable move semantics (default implementations are fine)
