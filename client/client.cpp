@@ -10,15 +10,25 @@ Client::Client(std::string&& server_hostname, std::string&& server_servname):
         server_hostname(std::move(server_hostname)), server_servname(std::move(server_servname)) {}
 
 int Client::run() {
-    Socket peer(server_hostname.c_str(), server_servname.c_str());
-    DummyProtocol protocol(peer);
+    Socket socket(server_hostname.c_str(), server_servname.c_str());
+    DummyProtocol protocol(socket);
 
-    std::string recv_msg = protocol.recv_message();
-    std::cout << "Received from server: " << recv_msg << "\n";
+    while (true) {
+        std::string msg;
+        std::cout << "[Client] Enter a message to send to the server (or 'exit' to quit): ";
+        std::getline(std::cin, msg);
 
-    std::string send_msg = "Hello, server! Client here.";
-    std::cout << "Sending to server: " << send_msg << "\n";
-    protocol.send_message(send_msg);
+        if (msg == "exit") {
+            std::cout << "[Client] Exiting." << std::endl;
+            break;
+        }
+
+        protocol.send_message(msg);
+        std::cout << "[Client] Message sent to server: " << msg << "\n";
+
+        std::string response = protocol.recv_message();
+        std::cout << "[Client] Response from server: " << response << "\n";
+    }
 
     return EXIT_SUCCESS;
 }

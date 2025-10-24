@@ -11,7 +11,8 @@ DummyProtocol::DummyProtocol(Socket& socket): skt(socket) {}
 std::string DummyProtocol::recv_message() {
     uint8_t hdr;
     uint16_t len;
-    skt.recvall(&hdr, sizeof(hdr));
+    if (skt.recvall(&hdr, sizeof(hdr)) == 0)
+        return std::string();  // Connection closed
     skt.recvall(&len, sizeof(len));
     len = ntohs(len);
     std::string s(len, '\0');
