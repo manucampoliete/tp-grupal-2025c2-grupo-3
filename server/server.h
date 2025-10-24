@@ -1,9 +1,9 @@
 #ifndef SERVER_H
 #define SERVER_H
 
-#include "acceptor.h"
-
 #include <string>
+
+#include "acceptor.h"
 
 class Server {
 private:

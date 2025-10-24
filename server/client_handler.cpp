@@ -1,9 +1,11 @@
 #include "client_handler.h"
 
-#include <utility>
-#include <sys/socket.h>  // For SHUT_RDWR
 #include <iostream>
 #include <sstream>
+#include <string>
+#include <utility>
+
+#include <sys/socket.h>  // For SHUT_RDWR
 
 void ClientHandler::polite_kill() {
     Thread::stop();  // should_keep_running() = false
@@ -16,16 +18,15 @@ void ClientHandler::hard_kill() {
 }
 
 ClientHandler::ClientHandler(Socket&& peer, ClientID client_id):
-        peer(std::move(peer)),
-        protocol(this->peer),
-        client_id(client_id) {}
+        peer(std::move(peer)), protocol(this->peer), client_id(client_id) {}
 
 void ClientHandler::run() {
     while (should_keep_running()) {
         try {
             std::string message = protocol.recv_message();
             std::ostringstream oss;
-            oss << "[Server] Message received from client " << client_id << ": " << message << std::endl;
+            oss << "[Server] Message received from client " << client_id << ": " << message
+                << std::endl;
             std::cout << oss.str();  // Atomic
 
             if (message.empty()) {

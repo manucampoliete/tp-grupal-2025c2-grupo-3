@@ -1,13 +1,14 @@
 #include "acceptor.h"
 
-#include "../common/socket/liberror.h"
-
 #include <algorithm>
+#include <iostream>
+#include <sstream>
 #include <utility>
+
 #include <sys/socket.h>  // SHUT_RDWR
 #include <syslog.h>
-#include <sstream>
-#include <iostream>
+
+#include "../common/socket/liberror.h"
 
 #define FIRST_CLIENT_ID 0
 
@@ -33,9 +34,7 @@ void Acceptor::clear() {
 }
 
 Acceptor::Acceptor(Socket&& acceptor):
-        acceptor(std::move(acceptor)),
-        clients(),
-        next_client_id(FIRST_CLIENT_ID) {}
+        acceptor(std::move(acceptor)), clients(), next_client_id(FIRST_CLIENT_ID) {}
 
 void Acceptor::run() {
     while (should_keep_running()) {

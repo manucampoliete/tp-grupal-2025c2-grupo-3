@@ -1,13 +1,13 @@
 #ifndef ACCEPTOR_H
 #define ACCEPTOR_H
 
-#include "client_handler.h"
-#include "types.h"
+#include <vector>
 
 #include "../common/socket/socket.h"
 #include "../common/thread/thread.h"
 
-#include <vector>
+#include "client_handler.h"
+#include "types.h"
 
 class Acceptor: public Thread {
 private:
@@ -29,7 +29,7 @@ public:
     /**
      * Constructor: takes the ownership of the acceptor Socket.
      */
-    Acceptor(Socket&& acceptor);
+    explicit Acceptor(Socket&& acceptor);
 
     /**
      * Main acceptor logic: accepts new clients and spawns a ClientHandler for each one.

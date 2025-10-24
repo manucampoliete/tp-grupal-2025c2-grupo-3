@@ -8,7 +8,7 @@
 
 #include "types.h"
 
-class ClientHandler : public Thread {
+class ClientHandler: public Thread {
 private:
     Socket peer;
     DummyProtocol protocol;
