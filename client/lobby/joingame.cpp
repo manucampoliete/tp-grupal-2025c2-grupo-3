@@ -23,8 +23,8 @@ void JoinGame::on_buttonReturn_clicked()
     emit returnToMenuClicked();
 }
 
-/*void JoinGame::on_joinButton_clicked()
-{
+void JoinGame::on_buttonJoin_clicked()
+{ /*
     // Asegúrate de que ui->carSelectorWidget apunte a la instancia del CarSelector
     CarSelector *selector = ui->carSelectorWidget; // O tu puntero miembro si lo creaste en C++
 
@@ -44,8 +44,10 @@ void JoinGame::on_buttonReturn_clicked()
         // Opcional: Volver al MainMenu o cerrar JoinGame
     } else {
         QMessageBox::warning(this, "Error", "Faltan datos o no se seleccionó el auto.");
-    }
-} */
+    } */
+
+    emit joinGameRequested();
+}
 
 JoinGame::~JoinGame()
 {

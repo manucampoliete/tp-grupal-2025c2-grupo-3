@@ -2,6 +2,8 @@
 #include "mainmenu.h"
 #include "newgame.h"
 #include "joingame.h"
+#include "guestwaiting.h"
+#include "hostwaiting.h"
 #include "./ui_mainwindow.h"
 
 #include <QStackedWidget>
@@ -12,6 +14,7 @@
 #include <QPalette>
 #include <QBrush>
 #include <QFontDatabase>
+#include <ui_guestwaiting.h>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -40,7 +43,8 @@ MainWindow::MainWindow(QWidget *parent)
     MainMenu *main_menu = new MainMenu(this);
     NewGame *new_game = new NewGame(this);
     JoinGame *join_game = new JoinGame(this);
-
+    guestWaiting *guest_waiting = new guestWaiting(this);
+    HostWaiting *host_waiting = new HostWaiting(this);
 
     QStackedWidget *stackedWidget = new QStackedWidget(this);
 
@@ -51,10 +55,11 @@ MainWindow::MainWindow(QWidget *parent)
     this->setPalette(palette);
     this->setAutoFillBackground(true);
 
-
     stackedWidget->addWidget(main_menu);  // índice 0
     stackedWidget->addWidget(new_game);     // índice 1
     stackedWidget->addWidget(join_game);    // indice 2
+    stackedWidget->addWidget(guest_waiting);    // indice 3
+    stackedWidget->addWidget(host_waiting);     // indice 4
 
     setCentralWidget(stackedWidget);
 
@@ -76,7 +81,29 @@ MainWindow::MainWindow(QWidget *parent)
         stackedWidget->setCurrentIndex(0);
     });
 
+    connect(join_game, &JoinGame::joinGameRequested, stackedWidget, [this, stackedWidget, main_menu](){
+        stackedWidget->setCurrentIndex(3);
+    });
+
+    connect(new_game, &NewGame::newGameRequested, stackedWidget, [this, stackedWidget, main_menu](){
+        stackedWidget->setCurrentIndex(4);
+    });
+
     stackedWidget->setCurrentWidget(main_menu);
+}
+
+void MainWindow::handleJoinGameRequest()
+{
+    stackedWidget->setCurrentWidget(guest_waiting);
+
+    // Aquí podrías agregar lógica para iniciar la conexión de red
+}
+
+void MainWindow::handleNewGameRequest()
+{
+    stackedWidget->setCurrentWidget(host_waiting);
+
+    // Aquí podrías agregar lógica para iniciar la conexión de red
 }
 
 MainWindow::~MainWindow()

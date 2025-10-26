@@ -27,6 +27,8 @@ private slots:
 
 private:
     Ui::MainMenu *ui;
+
+    void handleJoinGameRequest();
 };
 
 #endif // MAINMENU_H

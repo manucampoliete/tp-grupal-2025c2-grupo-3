@@ -19,12 +19,13 @@ public:
 
 signals:
     void returnToMenuClicked();
+    void joinGameRequested();
     //void startLobby(const QString &carId, const QString &ip, const QString &port);
 
 
 private slots:
     void on_buttonReturn_clicked();
-    //void on_joinButton_clicked();
+    void on_buttonJoin_clicked();
 
 
 private:

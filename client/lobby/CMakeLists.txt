@@ -31,6 +31,10 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         carselector.h carselector.cpp
         carcard.h carcard.cpp
 
+        hostwaiting.h hostwaiting.cpp hostwaiting.ui
+        guestwaiting.h guestwaiting.cpp guestwaiting.ui
+
+
 
 
 

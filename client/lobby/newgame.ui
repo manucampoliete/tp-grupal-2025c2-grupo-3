@@ -119,7 +119,7 @@ QLineEdit::placeholder {
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButton">
+      <widget class="QPushButton" name="buttonCreate">
        <property name="text">
         <string>Create Game</string>
        </property>

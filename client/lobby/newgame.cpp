@@ -23,6 +23,11 @@ void NewGame::on_buttonReturn_clicked()
     emit returnToMenuClicked();
 }
 
+void NewGame::on_buttonCreate_clicked()
+{
+    emit newGameRequested();
+}
+
 NewGame::~NewGame()
 {
     delete ui;

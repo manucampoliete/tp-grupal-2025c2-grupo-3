@@ -19,10 +19,12 @@ public:
 
 signals:
     void returnToMenuClicked();
+    void newGameRequested();
 
 
 private slots:
     void on_buttonReturn_clicked();
+    void on_buttonCreate_clicked();
 
 private:
     Ui::NewGame *ui;
