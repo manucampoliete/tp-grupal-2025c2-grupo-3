@@ -25,25 +25,28 @@ void Acceptor::reap_dead() {
 }
 
 void Acceptor::clear() {
-    for (ClientHandler* client: clients) {
-        client->kill();
-        client->join();
-        delete client;
+    for (ClientHandler* c: clients) {
+        c->kill();
+        c->join();
+        delete c;
     }
     clients.clear();
 }
 
-Acceptor::Acceptor(Socket&& acceptor):
-        acceptor(std::move(acceptor)), clients(), next_client_id(FIRST_CLIENT_ID) {}
+Acceptor::Acceptor(Socket&& acceptor, Queue<MoveRequestWithID>& client_commands_q,
+                   ResponseQueuesMonitor& response_queues):
+        acceptor(std::move(acceptor)),
+        client_commands_q(client_commands_q),
+        response_queues(response_queues),
+        clients(),
+        next_client_id(FIRST_CLIENT_ID) {}
 
 void Acceptor::run() {
     while (should_keep_running()) {
         try {
             Socket peer = acceptor.accept();
-            std::ostringstream oss;
-            oss << "[Server] Accepted new client with ID: " << next_client_id << std::endl;
-            std::cout << oss.str();  // Atomic
-            ClientHandler* c = new ClientHandler(std::move(peer), next_client_id++);
+            ClientHandler* c = new ClientHandler(std::move(peer), client_commands_q,
+                                                 response_queues, next_client_id++);
             reap_dead();
             clients.push_back(c);
             c->start();

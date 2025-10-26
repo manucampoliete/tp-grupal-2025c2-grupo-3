@@ -21,7 +21,6 @@ option(TALLER_CLIENT "Enable / disable client program." ON)
 option(TALLER_SERVER "Enable / disable server program." ON)
 option(TALLER_EDITOR "Enable / disable editor program." OFF)
 option(TALLER_MAKE_WARNINGS_AS_ERRORS "Enable / disable warnings as errors." ON)
-option(TALLER_SDL_FOR_CLIENT "Use SDL/SDL2pp for client (fetch and link)." OFF)
 
 message(CMAKE_CXX_COMPILER_ID="${CMAKE_CXX_COMPILER_ID}")
 
@@ -53,7 +52,7 @@ target_include_directories(taller_common PUBLIC .)
 
 # Install libSDL2 and libSDL2pp (for client or editor)
 # HEY!! TODO XXX: add more dependendies (either for client, server or editor)
-if(TALLER_EDITOR OR (TALLER_CLIENT AND TALLER_SDL_FOR_CLIENT))
+if(TALLER_CLIENT OR TALLER_EDITOR)
     include(FetchContent)
     FetchContent_Declare(
         SDL2
@@ -107,7 +106,7 @@ if(TALLER_CLIENT)
     add_executable(taller_client)
 
     # Make them depend on taller_common lib
-    add_dependencies(taller_client taller_common)
+    add_dependencies(taller_client taller_common SDL2pp::SDL2pp)
 
     # Add source files and enable warnings
     # HEY!! TODO XXX: add more subfolders here
@@ -115,15 +114,11 @@ if(TALLER_CLIENT)
 
     set_project_warnings(taller_client ${TALLER_MAKE_WARNINGS_AS_ERRORS} FALSE)
 
-    # add libSDL2pp's headers only if client uses SDL
-    if(TALLER_SDL_FOR_CLIENT)
-        target_include_directories(taller_client PRIVATE ${libSDL2pp_SOURCE_DIR})
-        # Link the taller_common lib target + SDL wrapper
-        target_link_libraries(taller_client taller_common SDL2pp::SDL2pp)
-    else()
-        # Plain client, no SDL
-        target_link_libraries(taller_client taller_common)
-    endif()
+     # add libSDL2pp's headers
+    target_include_directories(taller_client PRIVATE ${libSDL2pp_SOURCE_DIR})
+
+    # Link the taller_common lib target
+    target_link_libraries(taller_client taller_common SDL2pp::SDL2pp)
 endif()
 
 if(TALLER_SERVER)

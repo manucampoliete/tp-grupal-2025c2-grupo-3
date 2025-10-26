@@ -2,13 +2,13 @@
 
 #include <iostream>
 #include <sstream>
-#include <string>
 #include <utility>
 
 #include <sys/socket.h>  // For SHUT_RDWR
 
 void ClientHandler::polite_kill() {
-    Thread::stop();  // should_keep_running() = false
+    receiver.stop();  // should_keep_running() = false
+    sender.stop();    // should_keep_running() = false
 }
 
 void ClientHandler::hard_kill() {
@@ -17,39 +17,25 @@ void ClientHandler::hard_kill() {
     peer.close();
 }
 
-ClientHandler::ClientHandler(Socket&& peer, ClientID client_id):
-        peer(std::move(peer)), protocol(this->peer), client_id(client_id) {}
+ClientHandler::ClientHandler(Socket&& peer, Queue<MoveRequestWithID>& client_commands_q,
+                             ResponseQueuesMonitor& response_queues, ClientID client_id):
+        peer(std::move(peer)),
+        protocol(this->peer),
+        receiver(protocol, client_commands_q,
+                 client_id),  // Inject a ref to the client commands queue to the Receiver!
+        sender(protocol, response_queues.add_queue(
+                                 client_id)),  // Inject a ref to a response queue to the Sender!
+        response_queues(response_queues),
+        client_id(client_id) {}
 
-void ClientHandler::run() {
-    while (should_keep_running()) {
-        try {
-            std::string message = protocol.recv_message();
-            std::ostringstream oss;
-            oss << "[Server] Message received from client " << client_id << ": " << message
-                << std::endl;
-            std::cout << oss.str();  // Atomic
+void ClientHandler::start() {
+    receiver.start();
+    sender.start();
+}
 
-            if (message.empty()) {
-                // Connection closed by client
-                break;
-            }
-
-            protocol.send_message(message);  // Echo
-            oss = std::ostringstream();
-            oss << "[Server] Response sent to client " << client_id << ": " << message << std::endl;
-            std::cout << oss.str();  // Atomic
-
-        } catch (const std::exception& e) {
-            std::ostringstream oss;
-            oss << "[Server] Error with client " << client_id << ": " << e.what() << std::endl;
-            std::cerr << oss.str();  // Atomic
-            break;
-        }
-    }
-
-    std::ostringstream oss;
-    oss << "[Server] Client " << client_id << " has disconnected." << std::endl;
-    std::cout << oss.str();  // Atomic
+void ClientHandler::join() {
+    receiver.join();
+    sender.join();
 }
 
 void ClientHandler::kill() {
@@ -57,6 +43,6 @@ void ClientHandler::kill() {
                   // other parts of the code
 }
 
-bool ClientHandler::is_dead() const { return !Thread::is_alive(); }
+bool ClientHandler::is_dead() const { return !receiver.is_alive() and !sender.is_alive(); }
 
-ClientHandler::~ClientHandler() {}
+ClientHandler::~ClientHandler() { response_queues.remove_queue(client_id); }

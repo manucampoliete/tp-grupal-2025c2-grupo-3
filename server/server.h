@@ -4,9 +4,11 @@
 #include <string>
 
 #include "acceptor.h"
+#include "game.h"
 
 class Server {
 private:
+    Game game;
     Acceptor acceptor;
 
     /**
@@ -17,7 +19,7 @@ private:
 
 public:
     /**
-     * Constructor: takes the server name (to bind the socket to)
+     * Constructor: takes the service name (to bind the socket to)
      */
     explicit Server(const std::string& servname);
 
@@ -28,14 +30,14 @@ public:
     Server& operator=(Server&&) = default;
 
     /**
-     * Runs the server: accepts only one client and talks with it a little bit.
-     * Returns EXIT_SUCCESS if everything went fine, or EXIT_FAILURE otherwise.
+     * Runs the server: starts the game and acceptor threads, waits for the
+     * termination key, and then stops them.
+     * Returns EXIT_SUCCESS if everything went fine.
      */
     int run();
 
     /**
-     * Destructor
-     * Nothing special to do
+     * Destructor: joins the game and acceptor threads.
      */
     ~Server();
 };

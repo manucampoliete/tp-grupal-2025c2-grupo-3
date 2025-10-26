@@ -1,0 +1,7 @@
+#ifndef PROTOCOL_CONSTANTS_H
+#define PROTOCOL_CONSTANTS_H
+
+#define COD_MOVE        0x00
+#define COD_POSITIONS   0x01
+
+#endif  // PROTOCOL_CONSTANTS_H
