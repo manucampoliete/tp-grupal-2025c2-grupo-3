@@ -12,11 +12,14 @@ CarCard::CarCard(const QString &carId, QWidget *parent)
     imageLabel = new QLabel(this);
     nameLabel = new QLabel(this);
 
-    QLabel *healthTitleLabel = new QLabel("Salud   ", this);
+    QLabel *healthTitleLabel = new QLabel("Health", this);
     QProgressBar *healthBar = new QProgressBar(this);
 
-    QLabel *speedTitleLabel = new QLabel("Velocidad   ", this);
+    QLabel *speedTitleLabel = new QLabel("Speed", this);
     QProgressBar *speedBar = new QProgressBar(this);
+
+    healthTitleLabel->setFixedWidth(140);
+    speedTitleLabel->setFixedWidth(140);
 
     QGridLayout *gridLayout = new QGridLayout();
     gridLayout->setHorizontalSpacing(20);
@@ -54,25 +57,20 @@ CarCard::CarCard(const QString &carId, QWidget *parent)
 
     this->setLayout(gridLayout);
 
-    // Código dentro del constructor de CarCard o CarSelector
     this->setStyleSheet(
         "QProgressBar {"
-        /* Estilo del Contenedor (parte vacía de la barra) */
         "background-color: #2e2e42;"
         "border: 1px solid #555577;"
-        "border-radius: 4px;"
+        //"border-radius: 4px;"
         "min-height: 12px;"
         "}"
 
         "QProgressBar::chunk {"
-        /* Estilo de la Porción Llena (el progreso) */
-        /* Color Verde Futuro/Brillante */
         "background: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0, "
-        "stop: 0 #00BFFF, stop: 1 #00FFFF); "
-        "border-radius: 4px;"
+        "stop: 0 #0099FF, stop: 1 #00CCFF);"
+        //"border-radius: 4px;"
         "}"
 
-        // --- Estilo de Botón (General) ---
         "QPushButton {"
         "background-color: #00BFFF;"
         "color: #a3be8c;"
@@ -81,14 +79,10 @@ CarCard::CarCard(const QString &carId, QWidget *parent)
         "border: none;"
         "border-radius: 3px;"
         "padding: 15px 10px 15px 10px;"
-
-        /* Asegura que el estilo general del botón no sea transparente si lo es por defecto */
         "opacity: 1.0;"
         "}"
 
-        // --- Estilo de Botón (Hover: Anulación para eliminar el efecto nativo) ---
         "QPushButton:hover {"
-        /* Mantener el mismo color de fondo y color de texto para anular el hover nativo */
         "background-color: #00BFFF;"
         "color: #a3be8c;"
         "border: none;"

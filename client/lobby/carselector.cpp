@@ -38,9 +38,9 @@ CarSelector::CarSelector(QWidget *parent)
 
 void CarSelector::setupCars()
 {
-    carStack->addWidget(new CarCard("MAZDA_RX7", this));
-    carStack->addWidget(new CarCard("HONDA_S2000", this));
-    carStack->addWidget(new CarCard("NISSAN_GTR", this));
+    carStack->addWidget(new CarCard("MAZDA", this));
+    carStack->addWidget(new CarCard("HONDA", this));
+    carStack->addWidget(new CarCard("NISSAN", this));
 }
 
 void CarSelector::on_prevButton_clicked()
