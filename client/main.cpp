@@ -1,10 +1,10 @@
 #include <exception>
 #include <iostream>
 #include <string>
-
 #include <syslog.h>
 
 #include "client.h"
+#include "game.h"
 
 #define ARGS_COUNT 3
 #define BINARY argv[0]
@@ -20,12 +20,22 @@
 int main(int argc, char* argv[]) {
     try {
 
-        if (argc != ARGS_COUNT) {
+        if (argc != /*ARGS_COUNT*/ 4) {
             std::cerr << "Bad program call. Expected " << BINARY << " <hostname> <servname>\n";
             return EXIT_FAILURE;
         }
 
-        return Client(std::string(HOSTNAME), std::string(SERVNAME)).run();
+        Client client(HOSTNAME, SERVNAME); // creo el client, lo conecto con el server
+
+    //    uint8_t my_id = client.get_my_id(); 
+        const uint8_t my_id = static_cast<uint8_t>(std::stoi(argv[3]));
+        Game game(client.get_world(), client, my_id); // creo la ventana (game) y lo conecto con el client y con el world que esta adentor de client
+        client.set_game(&game); // conecto a client con el game
+
+        client.run(); // inicio los hilos del cliente
+        game.run();
+
+        client.stop(); // cuando la partida termina detengo al cliente
 
     } catch (const std::exception& err) {
 
@@ -37,4 +47,6 @@ int main(int argc, char* argv[]) {
         syslog(LOG_CRIT, "[Crit] Unknown error!");
         return EXIT_FAILURE;
     }
+
+    return EXIT_SUCCESS;
 }
