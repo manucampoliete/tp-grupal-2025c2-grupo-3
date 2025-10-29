@@ -61,6 +61,7 @@ Game::Game(World& world, Client& client, uint8_t player_id) :
 
 void Game::run() {
     // en cada tick del juego hay tres acciones: procesar entradas, actualizar el estado y renderizar
+    /*
     unsigned int prev_ticks = SDL_GetTicks();
 
     while (is_running) {
@@ -79,6 +80,41 @@ void Game::run() {
         render();
 
         SDL_Delay(1);
+    }
+    */
+    const int FRAME_RATE = 30;
+    const float FRAME_TIME_MS = 1000.0f / FRAME_RATE;
+
+    float t1 = SDL_GetTicks();
+    int it = 0;
+
+    while (is_running) {
+        // 1. procesar input y actualizar estado
+        if (current_state == game_state::RACING) {
+            if (!event_handler.handle_events()) {
+                is_running = false;
+            }
+        } else {
+            process_input();
+        }
+        update(FRAME_TIME_MS);
+        render();
+
+        // 2. sincronizar con el rate constante
+        float t2 = SDL_GetTicks();
+        float rest = FRAME_TIME_MS - (t2 - t1);
+
+        if (rest < 0) {
+            float behind = -rest;
+            rest = FRAME_TIME_MS - fmod(behind, FRAME_TIME_MS);
+            float lost = behind + rest;
+            t1 += lost;
+            it += static_cast<int>(lost / FRAME_TIME_MS);
+        }
+
+        SDL_Delay(static_cast<Uint32>(rest));
+        t1 += FRAME_TIME_MS;
+        it++;
     }
 }
 
