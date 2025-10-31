@@ -102,6 +102,10 @@ endif()
 # Program section
 # ---------------
 if(TALLER_CLIENT)
+
+    set(CMAKE_AUTOMOC ON)
+    set(CMAKE_AUTOUIC ON)
+    set(CMAKE_AUTORCC ON)
     # HEY!! TODO XXX: Change the name of the executable to the one you like!
     add_executable(taller_client)
 
@@ -112,13 +116,26 @@ if(TALLER_CLIENT)
     # HEY!! TODO XXX: add more subfolders here
     add_subdirectory(client)
 
+    find_package(Qt6 COMPONENTS Widgets Multimedia Core Gui REQUIRED)
+    add_subdirectory(client/lobby)
+
     set_project_warnings(taller_client ${TALLER_MAKE_WARNINGS_AS_ERRORS} FALSE)
 
     # add libSDL2pp's headers
-    target_include_directories(taller_client PRIVATE ${libSDL2pp_SOURCE_DIR})
+    target_include_directories(taller_client PRIVATE
+        ${libSDL2pp_SOURCE_DIR}
+        ${CMAKE_CURRENT_SOURCE_DIR}/client/lobby
+    )
 
     # Link the taller_common lib target
-    target_link_libraries(taller_client taller_common SDL2pp::SDL2pp)
+    target_link_libraries(taller_client
+    PRIVATE
+        Qt${QT_VERSION_MAJOR}::Widgets
+        Qt${QT_VERSION_MAJOR}::Multimedia
+        taller_common
+        SDL2pp::SDL2pp
+    )
+
 endif()
 
 if(TALLER_SERVER)
