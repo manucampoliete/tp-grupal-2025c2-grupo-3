@@ -1,6 +1,7 @@
 #include "sender.h"
 
 #include <syslog.h>
+#include <iostream>
 
 Sender::Sender(DummyClientProtocol& protocol, Queue<MoveRequest>& client_requests_q):
         protocol(protocol), client_requests_q(client_requests_q) {}

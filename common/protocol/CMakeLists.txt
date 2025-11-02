@@ -8,4 +8,5 @@ target_sources(taller_common
     dummy_client_protocol.h
     dummy_server_protocol.h
     protocol_constants.h
+    game_data.h
     )
