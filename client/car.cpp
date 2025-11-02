@@ -14,14 +14,14 @@ Car::Car(Renderer& renderer, Texture& sprite_sheet, uint8_t car_type)
       sprite_sheet(sprite_sheet),
       // elijo un auto hardcodeado para probar (por ejemplo el 3)
       src_rect(CARS[car_type]),
+      x(0),
+      y(0),
       rotation_angle(0.0)
 {
     int window_w = renderer.GetOutputWidth();
     int window_h = renderer.GetOutputHeight();
-
-    dest_rect = Rect((window_w - src_rect.GetW()) / 2,
-                     (window_h - src_rect.GetH()) / 2,
-                     src_rect.GetW(), src_rect.GetH());
+    x = window_w / 2;
+    y = window_h / 2;
 }
 
 // procesa eventos de teclado para activar/desactivar movimiento
@@ -47,6 +47,7 @@ void Car::handle_event(const SDL_Event& event) {
 // actualiza posición y ángulo según el movimiento
 // ya no seria necesaria porque el update lo hace game
 // no se si seria util para los npc, seria como que estan hardcodeados?
+/*
 void Car::update(float dt) {
     float dx = 0.0f;
     float dy = 0.0f;
@@ -71,25 +72,33 @@ void Car::update(float dt) {
     dest_rect.x += dx;
     dest_rect.y += dy;
 }
+*/
 
-// dibuja el auto rotando el sprite
-// por ahora no lo uso
-void Car::render() {
-    // centro de rotación (pivote)
+void Car::render(const SDL2pp::Rect& camera, float scale_factor) {
+    // calculo el tamaño escalado del auto
+    int scaled_w = static_cast<int>(src_rect.GetW() * scale_factor);
+    int scaled_h = static_cast<int>(src_rect.GetH() * scale_factor);
+
+    // calculo la posicion en pantalla (relativa a la camara) y la escalo
+    int screen_x = static_cast<int>((x - camera.x) * scale_factor);
+    int screen_y = static_cast<int>((y - camera.y) * scale_factor);
+
+    // creo el Rect de dest final
+    Rect dest_rect(screen_x, screen_y, scaled_w, scaled_h);
+
     SDL_Point center = { dest_rect.GetW() / 2, dest_rect.GetH() / 2 };
-
     renderer.Copy(
-        sprite_sheet,   // textura
-        src_rect,       // región fuente
-        dest_rect,      // destino en pantalla
-        rotation_angle, // rotación en grados
-        center,         // punto de pivote
-        SDL_FLIP_NONE   // sin reflejo
+        sprite_sheet,
+        src_rect,
+        dest_rect,
+        rotation_angle,
+        center,
+        SDL_FLIP_NONE
     );
 }
 
 void Car::set_state(float x, float y, double angle) {
-    this->dest_rect.x = static_cast<int>(x);
-    this->dest_rect.y = static_cast<int>(y);
+    this->x = x;
+    this->y = y;
     this->rotation_angle = angle;
 }

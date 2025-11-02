@@ -35,7 +35,6 @@ private:
     Texture& sprite_sheet;
 
     Rect src_rect;
-    Rect dest_rect;
 
     float x;
     float y;
@@ -51,12 +50,9 @@ public:
     Car(Renderer& renderer, Texture& sprite_sheet, uint8_t car_type);
     void handle_event(const SDL_Event& event);
     void update(float dt);
-    void render();
+    void render(const SDL2pp::Rect& camera, float scale_factor);
     void set_state(float x, float y, double angle);
 
-    // para actualizar el ángulo localmente
-    // despues esto no va a ser asi, recibo el angulo del server
-    void update_angle(bool up, bool down, bool left, bool right);
 };
 
 #endif // CAR_H
