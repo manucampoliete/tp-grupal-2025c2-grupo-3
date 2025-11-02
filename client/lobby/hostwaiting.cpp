@@ -8,6 +8,11 @@ HostWaiting::HostWaiting(QWidget *parent)
     ui->setupUi(this);
 }
 
+void HostWaiting::on_buttonStart_clicked()
+{
+    emit startClicked();
+}
+
 HostWaiting::~HostWaiting()
 {
     delete ui;

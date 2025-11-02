@@ -14,13 +14,12 @@ class JoinGame : public QWidget
     Q_OBJECT
 
 public:
-    explicit JoinGame(QWidget *parent = nullptr);
+    explicit JoinGame(QWidget *parent = nullptr, const std::vector<CarInfo>& cars = {});
     ~JoinGame();
 
 signals:
     void returnToMenuClicked();
-    void joinGameRequested();
-    //void startLobby(const QString &carId, const QString &ip, const QString &port);
+    void joinGameRequested(const QString &username, const QString &gameId, const CarInfo &car);
 
 
 private slots:
@@ -31,6 +30,7 @@ private slots:
 private:
     Ui::JoinGame *ui;
     CarSelector *carSelector;
+    std::vector<CarInfo> available_cars; 
 };
 
 #endif // JOINGAME_H

@@ -15,8 +15,15 @@ public:
     explicit HostWaiting(QWidget *parent = nullptr);
     ~HostWaiting();
 
+signals:
+    void startClicked();
+
+private slots: 
+    void on_buttonStart_clicked();
+
 private:
     Ui::HostWaiting *ui;
+
 };
 
 #endif // HOSTWAITING_H

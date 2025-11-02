@@ -79,7 +79,7 @@ QLineEdit::placeholder {
      <height>370</height>
     </rect>
    </property>
-   <widget class="QPushButton" name="pushButton">
+   <widget class="QPushButton" name="buttonStart">
     <property name="geometry">
      <rect>
       <x>210</x>

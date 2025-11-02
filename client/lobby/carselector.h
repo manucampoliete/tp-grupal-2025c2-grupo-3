@@ -1,6 +1,7 @@
 #ifndef CARSELECTOR_H
 #define CARSELECTOR_H
 
+#include "carinfo.h"
 #include <QWidget>
 #include <QStackedWidget>
 #include <QPushButton>
@@ -15,7 +16,8 @@ public:
     explicit CarSelector(QWidget *parent = nullptr);
     ~CarSelector();
 
-    QString getSelectedCarId() const;
+    CarInfo getSelectedCar() const;
+    void setupCars(const std::vector<CarInfo>& cars);
 
 private slots:
     void on_prevButton_clicked();
@@ -24,8 +26,8 @@ private slots:
 private:
     QStackedWidget *carStack;
     QPushButton *prevButton;
-    QPushButton *nextButton;
-    void setupCars();
+    QPushButton *nextButton; 
+    std::vector<CarInfo> car_list;
 };
 
 #endif // CARSELECTOR_H

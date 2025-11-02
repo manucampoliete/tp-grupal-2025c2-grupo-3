@@ -3,9 +3,10 @@
 
 #include <QFontDatabase>
 
-JoinGame::JoinGame(QWidget *parent)
+JoinGame::JoinGame(QWidget *parent, const std::vector<CarInfo>& cars)
     : QWidget(parent)
     , ui(new Ui::JoinGame)
+    , available_cars(cars)
 {
     ui->setupUi(this);
 
@@ -15,6 +16,7 @@ JoinGame::JoinGame(QWidget *parent)
     QFontDatabase::addApplicationFont(":/media/orbitron.ttf");
 
     carSelector = new CarSelector(this);
+    carSelector->setupCars(available_cars);
     ui->mainLayout->addWidget(carSelector);
 }
 
@@ -24,29 +26,12 @@ void JoinGame::on_buttonReturn_clicked()
 }
 
 void JoinGame::on_buttonJoin_clicked()
-{ /*
-    // Asegúrate de que ui->carSelectorWidget apunte a la instancia del CarSelector
-    CarSelector *selector = ui->carSelectorWidget; // O tu puntero miembro si lo creaste en C++
+{ 
+    QString player_name = ui->lineEdit->text();
+    QString game_id = ui->lineEdit_2->text();
+    CarInfo selected = carSelector->getSelectedCar();
 
-    // Obtener los datos del formulario (asume que tienes QLineEdit para ip y port)
-    QString ip = ui->ipLineEdit->text();
-    QString port = ui->portLineEdit->text();
-
-    // Obtener el ID del auto actualmente visible
-    QString selectedCarId = selector->getSelectedCarId();
-
-    if (!selectedCarId.isEmpty() && !ip.isEmpty() && !port.isEmpty()) {
-        qDebug() << "Lobby Listo. Auto ID:" << selectedCarId;
-
-        // Emitir la señal de inicio de lobby a la MainWindow
-        emit startLobby(selectedCarId, ip, port);
-
-        // Opcional: Volver al MainMenu o cerrar JoinGame
-    } else {
-        QMessageBox::warning(this, "Error", "Faltan datos o no se seleccionó el auto.");
-    } */
-
-    emit joinGameRequested();
+    emit joinGameRequested(player_name, game_id, selected);
 }
 
 JoinGame::~JoinGame()

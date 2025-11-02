@@ -1,6 +1,6 @@
-#include "common/foo.h"
+#include "client.h"
 #include <QApplication>
-#include "lobby/mainwindow.h"
+#include "lobby/lobby.h"
 
 #include <iostream>
 #include <exception>
@@ -10,13 +10,13 @@
 
 using namespace SDL2pp;
 
-int main(int argc, char *argv[]) try {
-    QApplication a(argc, argv);
-    MainWindow w;
-    w.show();
-    return a.exec();
-} catch (std::exception& e) {
-	// If case of error, print it and exit with error
-	std::cerr << e.what() << std::endl;
-	return 1;
+int main(int argc, char* argv[]) {
+    try {
+        Client client(argv[1], argv[2]);
+        client.run(argc, argv);
+        return 0;
+    } catch (const std::exception& e) {
+        std::cerr << e.what() << std::endl;
+        return 1;
+    }
 }

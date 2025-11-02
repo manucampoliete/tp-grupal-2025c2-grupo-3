@@ -1,11 +1,14 @@
 #include "newgame.h"
+#include "carinfo.h"
 #include "ui_newgame.h"
 
 #include <QFontDatabase>
+#include <iostream>
 
-NewGame::NewGame(QWidget *parent)
+NewGame::NewGame(QWidget *parent, const std::vector<CarInfo>& cars)
     : QWidget(parent)
     , ui(new Ui::NewGame)
+    , available_cars(cars)
 {
     ui->setupUi(this);
 
@@ -15,6 +18,7 @@ NewGame::NewGame(QWidget *parent)
     QFontDatabase::addApplicationFont(":/media/orbitron.ttf");
 
     carSelector = new CarSelector(this);
+    carSelector->setupCars(available_cars);
     ui->mainLayout->addWidget(carSelector);
 }
 
@@ -25,7 +29,10 @@ void NewGame::on_buttonReturn_clicked()
 
 void NewGame::on_buttonCreate_clicked()
 {
-    emit newGameRequested();
+    QString player_name = ui->lineEdit->text();
+    CarInfo selected = carSelector->getSelectedCar();
+
+    emit newGameRequested(player_name, selected.name);
 }
 
 NewGame::~NewGame()

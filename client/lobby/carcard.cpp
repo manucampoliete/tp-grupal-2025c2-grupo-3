@@ -2,10 +2,10 @@
 
 #include <QProgressBar>
 #include <QVBoxLayout>
+#include <iostream>
 
-CarCard::CarCard(const QString &carId, QWidget *parent)
+CarCard::CarCard(const CarInfo &car, QWidget *parent)
     : QWidget(parent)
-    , m_carId(carId)
 {
     this->setMaximumSize(600, 200);
 
@@ -25,11 +25,11 @@ CarCard::CarCard(const QString &carId, QWidget *parent)
     gridLayout->setHorizontalSpacing(20);
 
     healthBar->setRange(0, 100);
-    healthBar->setValue(60); // Ejemplo: 60% de salud
+    healthBar->setValue(car.health);
     healthBar->setTextVisible(false);
 
     speedBar->setRange(0, 10);
-    speedBar->setValue(8); // Ejemplo: 8 de 10 de velocidad
+    speedBar->setValue(car.speed);
     speedBar->setTextVisible(false);
 
     QHBoxLayout *healthLayout = new QHBoxLayout();
@@ -44,7 +44,7 @@ CarCard::CarCard(const QString &carId, QWidget *parent)
 
     gridLayout->addWidget(imageLabel, 0, 0, 3, 1);
 
-    nameLabel->setText(m_carId);
+    nameLabel->setText(QString::fromStdString(car.name));
     nameLabel->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     QHBoxLayout *nameLayout = new QHBoxLayout();
     nameLayout->addWidget(nameLabel);
@@ -61,14 +61,12 @@ CarCard::CarCard(const QString &carId, QWidget *parent)
         "QProgressBar {"
         "background-color: #2e2e42;"
         "border: 1px solid #555577;"
-        //"border-radius: 4px;"
         "min-height: 12px;"
         "}"
 
         "QProgressBar::chunk {"
         "background: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0, "
         "stop: 0 #0099FF, stop: 1 #00CCFF);"
-        //"border-radius: 4px;"
         "}"
 
         "QPushButton {"
@@ -95,7 +93,7 @@ CarCard::CarCard(const QString &carId, QWidget *parent)
     gridLayout->setRowStretch(1, 1);
     gridLayout->setRowStretch(2, 1);
 
-    QString imagePath = ":/media/car.jpg";
+    QString imagePath = QString(":/media/cars/%1.png").arg(car.id);
     QPixmap carImage(imagePath);
 
     if (!carImage.isNull()) {
@@ -108,9 +106,9 @@ CarCard::CarCard(const QString &carId, QWidget *parent)
                 Qt::SmoothTransformation
                 )
             );
-        //imageLabel->setMinimumSize(desiredSize);
     } else {
         imageLabel->setText("Image Not Found: " + imagePath);
+        std::cout << "Image not found at path: " << imagePath.toStdString() << std::endl;
     }
 }
 

@@ -14,12 +14,12 @@ class NewGame : public QWidget
     Q_OBJECT
 
 public:
-    explicit NewGame(QWidget *parent = nullptr);
+    explicit NewGame(QWidget *parent = nullptr, const std::vector<CarInfo>& cars = {});
     ~NewGame();
 
 signals:
     void returnToMenuClicked();
-    void newGameRequested();
+    void newGameRequested(const QString &username, const std::string& car);
 
 
 private slots:
@@ -28,7 +28,8 @@ private slots:
 
 private:
     Ui::NewGame *ui;
-    CarSelector *carSelector;
+    CarSelector *carSelector; 
+    std::vector<CarInfo> available_cars; 
 };
 
 #endif // NEWGAME_H
