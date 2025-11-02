@@ -5,7 +5,7 @@
 #include <arpa/inet.h>
 #include <stdexcept>
 
-DummyClientProtocol::DummyClientProtocol(Socket& socket): skt(socket), serializer(socket) {}
+DummyClientProtocol::DummyClientProtocol(Socket& socket): skt(socket) {}
 
 void DummyClientProtocol::send_move_request(const MoveRequest& request) {
     uint8_t hdr = COD_MOVE;
@@ -55,15 +55,6 @@ std::vector<std::pair<ClientID, Vector2D>> DummyClientProtocol::recv_positions_r
     }
 
     return positions;
-}
-
-void DummyClientProtocol::send_modifications(bool mod_speed, bool mod_accel) {
-    // primera implementacion
-    // 1 byte header, 1 byte flag speed, 1 byte flag accel
-    // habria que definir propiedades a cambiar y modificar en base a eso
-    serializer.send_byte(0x0D); // 0x0D
-    serializer.send_byte(mod_speed ? 0x01 : 0x00);
-    serializer.send_byte(mod_accel ? 0x01 : 0x00);
 }
 
 DummyClientProtocol::~DummyClientProtocol() {}

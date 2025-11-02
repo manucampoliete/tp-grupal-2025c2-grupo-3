@@ -8,12 +8,10 @@
 #include "../commands/move_request.h"
 #include "../utils/vector_2d.h"
 #include "../../server/types.h"
-#include "serializer.h"
 
 class DummyClientProtocol {
 private:
     Socket& skt;
-    Serializer serializer;
 
 public:
     /**
@@ -27,8 +25,6 @@ public:
     void send_move_request(const MoveRequest& request);
 
     std::vector<std::pair<ClientID, Vector2D>> recv_positions_response();
-
-    void send_modifications(bool mod_speed, bool mod_accel);
 
     /**
      * Destructor

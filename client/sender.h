@@ -4,8 +4,8 @@
 #include "../common/queue/queue.h"
 #include "../common/thread/thread.h"
 #include "../common/commands/move_request.h"
-#include "../common/protocol/dummy_client_protocol.h"
 
+#include "../common/protocol/dummy_client_protocol.h"
 
 class Sender: public Thread {
 private:
