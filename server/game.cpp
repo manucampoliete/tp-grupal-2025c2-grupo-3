@@ -7,6 +7,10 @@
 #define FRAME_DURATION_MS (1000 / TARGET_FPS)
 #define PLAYER_SPEED 200.0f // píxeles por segundo
 
+const float MAP_WIDTH = 4640.0f;
+const float MAP_HEIGHT = 4672.0f;
+const float PLAYER_SIZE = 20.0f;
+
 void Game::process_request(const MoveRequestWithID& req, float delta_time) {
     Vector2D& pos = positions[req.client_id];
 
@@ -18,8 +22,8 @@ void Game::process_request(const MoveRequestWithID& req, float delta_time) {
     if (req.move_request.right) pos.x += distance;
 
     // Mantener dentro de límites (por ejemplo, 0..800x600)
-    pos.x = std::clamp(static_cast<float>(pos.x), 0.0f, 780.0f);
-    pos.y = std::clamp(static_cast<float>(pos.y), 0.0f, 580.0f);
+    pos.x = std::clamp(static_cast<float>(pos.x), 0.0f, MAP_WIDTH - PLAYER_SIZE);
+    pos.y = std::clamp(static_cast<float>(pos.y), 0.0f, MAP_HEIGHT - PLAYER_SIZE);
 }
 
 Game::Game():
