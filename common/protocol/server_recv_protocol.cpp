@@ -82,7 +82,13 @@ void ServerRecvProtocol::consumeOne(ProtocolConsumer& consumer) {
         }
         case SEND_MOVE_STATE: {
             uint8_t directions = recv_u8();
-            consumer.on_move(directions);
+            ActiveDirections active_directions(
+                directions & 0b1000,
+                directions & 0b0100,
+                directions & 0b0010,
+                directions & 0b0001
+            );
+            consumer.on_move(active_directions);
             break;
         }
         default: {

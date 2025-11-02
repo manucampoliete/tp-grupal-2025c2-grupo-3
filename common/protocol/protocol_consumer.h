@@ -1,6 +1,9 @@
 #ifndef PROTOCOL_CONSUMER_H
 #define PROTOCOL_CONSUMER_H
 
+#include "../common/utils/active_directions.h"
+#include "../../server/types.h"
+
 #include <cstdint>
 
 /**
@@ -10,8 +13,16 @@
  * starting matches, and moving in the game.
  */
 class ProtocolConsumer {
+private:
+    ClientID client_id;
+
+protected:
+    ClientID get_client_id() const {
+        return client_id;
+    }
+
 public:
-    virtual ~ProtocolConsumer() = default;
+    ProtocolConsumer(ClientID client_id) : client_id(client_id) {}
 
     // Lobby events
     virtual void on_create_match(uint8_t car_id) = 0;
@@ -19,9 +30,11 @@ public:
     virtual void on_start_match() = 0;
 
     // Game events
-    virtual void on_move(uint8_t directions) = 0;
+    virtual void on_move(ActiveDirections directions) = 0;
 
     // Future: add more as needed
+
+    virtual ~ProtocolConsumer() = default;
 };
 
 #endif // PROTOCOL_CONSUMER_H
