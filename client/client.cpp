@@ -53,6 +53,15 @@ void Client::send_movement(bool up, bool down, bool left, bool right) {
     client_requests_q.try_push(req); // try_push para no bloquear el hilo de juego
 }
 
+void Client::send_modifications(bool speed, bool accel) {
+    try {
+        // Esta es la línea que faltaba:
+        protocol.send_modifications(speed, accel);
+    } catch (const std::exception& e) {
+        std::cerr << "Error al enviar modificaciones: " << e.what() << std::endl;
+    }
+}
+
 void Client::update_world(const std::vector<std::pair<ClientID, Vector2D>>& positions) {
     // cambio la informacion a la estructura del broadcast
     // despues vemos si lo pasamos directamente asi o si dejamos esta transformacion
@@ -78,7 +87,17 @@ void Client::update_world(const std::vector<std::pair<ClientID, Vector2D>>& posi
     world.update(data);
 }
 
+void Client::show_stats_screen(const RaceResults& results) {
+    if (game_ptr) {
+        game_ptr->show_stats(results);
+    }
+}
 
+void Client::show_mod_screen(const CarProperties& props) {
+    if (game_ptr) {
+        game_ptr->show_modifications(props);
+    }
+}
 
 
 

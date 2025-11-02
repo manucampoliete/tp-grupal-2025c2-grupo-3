@@ -9,6 +9,7 @@
 
 #include "../common/commands/move_request.h"
 #include "../common/protocol/dummy_client_protocol.h"
+#include "../common/protocol/game_data.h"
 #include "../common/queue/queue.h"
 #include "../common/socket/socket.h"
 #include "../common/utils/vector_2d.h"
@@ -62,12 +63,16 @@ public:
 
     // el eventHandler llama a este metodo para enviar movimientos
     void send_movement(bool up, bool down, bool left, bool right);
-    
-    // el receiver llama a este metodo para actualizar el mundo con datos del servidor
-    void update_world(const std::vector<std::pair<ClientID, Vector2D>>& positions);
+
+    void send_modifications(bool speed, bool accel);
 
     // actualiza el estado del world con un nuevo broadcast
     // void update_world(const BroadcastData& data);
+    
+    // el receiver llama a este metodo para actualizar el mundo con datos del servidor
+    void update_world(const std::vector<std::pair<ClientID, Vector2D>>& positions);
+    void show_stats_screen(const RaceResults& results);
+    void show_mod_screen(const CarProperties& props);
 
     // el servidor asigna y envia un ID único a cada cliente
     // por ahora simulado
