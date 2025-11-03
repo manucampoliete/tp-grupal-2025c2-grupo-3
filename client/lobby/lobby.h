@@ -7,10 +7,10 @@
 #include "guestwaiting.h"
 #include "hostwaiting.h"
 #include "carinfo.h"
+//#include "../client_protocol.h"
 
 #include <QMainWindow>
 #include <QStackedWidget>
-//include "client_protocol.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -42,6 +42,6 @@ private:
     std::vector<CarInfo> available_cars;
 
     void handleJoinGameRequest(const QString &username, const QString &gameId, const CarInfo &car);
-    void handleNewGameRequest(const QString &username, const std::string& car);
+    void handleNewGameRequest(const QString &username, const CarInfo &car);
 };
 #endif // LOBBY_H

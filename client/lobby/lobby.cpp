@@ -95,7 +95,7 @@ void Lobby::initiate_connection(const std::string& ip, const std::string& port){
         //Socket socket(ip.c_str(), port.c_str());
         //protocol.emplace(std::move(socket));
 
-        //available_cars = protocol->receive_car_info();
+        //available_cars = protocol.receive_car_info();
     } catch (const std::exception& e) {
         std::cerr << "Error al conectar con el servidor: " << e.what() << std::endl;
         throw;
@@ -104,34 +104,38 @@ void Lobby::initiate_connection(const std::string& ip, const std::string& port){
 
 void Lobby::handleJoinGameRequest(const QString &username, const QString &gameId, const CarInfo &car)
 {
-    // protocol->sendJoinGameRequest(username.toStdString(), gameId.toStdString(), car.id);
+    //bool joined = protocol->sendJoinGameRequest(username.toStdString(), gameId.toStdString(), car.id);
     std::cout << "El jugador " << username.toStdString()
               << " quiere unirse al juego " << gameId.toStdString()
               << " con el auto " << car.name << std::endl << std::flush;
+
     stackedWidget->setCurrentWidget(guest_waiting);
+    //recv_start_signal();
 }
 
-void Lobby::handleNewGameRequest(const QString &username, const std::string& car)
-{
-    // protocol->sendNewGameRequest(username.toStdString(), car.toStdString());
+void Lobby::handleNewGameRequest(const QString &username, const CarInfo &car) //car pasarlo a id y a uint
+{   
+    //uint16_t match_id = protocol->send_create(username.toStdString(), car.id);
     std::cout << "Nuevo juego solicitado por " << username.toStdString()
-              << " con el auto " << car << std::endl << std::flush;
+              << " con el auto " << car.name << std::endl << std::flush;
 
     stackedWidget->setCurrentWidget(host_waiting);
+}
+
+void Lobby::startGame()
+{
+    //bool started = protocol->send_start();
+    
+    std::cout << "El host ha comenzado la partida!" << std::endl;
+    
+    this->close();
+    
+    //runSDLGame(get_protocol()); 
 }
 
 /* ClientProtocol&& Lobby::get_protocol() {
     return std::move(protocol.value());
 } */
-
-void Lobby::startGame()
-{
-    std::cout << "El host ha comenzado la partida!" << std::endl;
-
-    this->close();
-
-    //runSDLGame(get_protocol()); 
-}
 
 Lobby::~Lobby()
 {

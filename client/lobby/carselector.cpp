@@ -57,22 +57,6 @@ void CarSelector::setupCars(const std::vector<CarInfo>& cars)
 
     for (const auto& car : cars) 
         std::cout << "Auto recibido: " << car.name << std::endl;
-    
-    /* CarInfo jeep = {0, "Jeep Wrangler", 80, 6};
-    CarInfo ferrari = {1, "Ferrari F40", 90, 9};
-    CarInfo bmw = {2, "BMW Z4", 85, 8};
-    CarInfo vw = {3, "VW Beetle", 75, 7};
-    CarInfo bronco = {4, "Ford Bronco", 88, 7};
-    CarInfo f100 = {5, "Ford F100", 95, 10};
-    CarInfo merc = {6, "MB S-Class", 92, 8};
-
-    carStack->addWidget(new CarCard(jeep, this));
-    carStack->addWidget(new CarCard(ferrari, this));
-    carStack->addWidget(new CarCard(bmw, this));
-    carStack->addWidget(new CarCard(vw, this));
-    carStack->addWidget(new CarCard(bronco, this));
-    carStack->addWidget(new CarCard(f100, this));
-    carStack->addWidget(new CarCard(merc, this));  */
 }
 
 void CarSelector::on_prevButton_clicked()

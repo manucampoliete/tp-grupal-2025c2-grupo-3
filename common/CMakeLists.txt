@@ -6,3 +6,7 @@ target_sources(taller_common
     # .h files
     foo.h
     )
+
+add_subdirectory(protocol)
+add_subdirectory(socket)
+add_subdirectory(utils)
