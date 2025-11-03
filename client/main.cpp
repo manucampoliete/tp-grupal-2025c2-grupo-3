@@ -12,7 +12,7 @@ using namespace SDL2pp;
 
 int main(int argc, char* argv[]) {
     try {
-        Client client(argv[1], argv[2]);
+        Client client;
         client.run(argc, argv);
         return 0;
     } catch (const std::exception& e) {

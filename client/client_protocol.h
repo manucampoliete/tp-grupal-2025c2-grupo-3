@@ -1,7 +1,7 @@
 #ifndef CLIENT_PROTOCOL_H
 #define CLIENT_PROTOCOL_H
 
-#include "../socket/socket.h"
+#include "../common/socket/socket.h"
 
 #include <cstdint>
 #include <string>

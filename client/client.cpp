@@ -4,9 +4,7 @@
 /* Client::Client(const char* hostname, const char* servname):
         clprotocol(hostname, servname) {} */
 
-Client::Client(const char* hostname, const char* servname){
-    std::cout << hostname << std::endl;
-    std::cout << servname << std::endl;
+Client::Client(/*const char* hostname, const char* servname*/){
 }
 
 int Client::run(int argc, char* argv[]) {

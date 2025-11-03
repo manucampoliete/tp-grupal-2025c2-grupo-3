@@ -19,7 +19,7 @@ public:
 
 signals:
     void returnToMenuClicked();
-    void newGameRequested(const QString &username, const std::string& car);
+    void newGameRequested(const QString &username, const CarInfo &car);
 
 
 private slots:

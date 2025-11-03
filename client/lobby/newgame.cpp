@@ -32,7 +32,7 @@ void NewGame::on_buttonCreate_clicked()
     QString player_name = ui->lineEdit->text();
     CarInfo selected = carSelector->getSelectedCar();
 
-    emit newGameRequested(player_name, selected.name);
+    emit newGameRequested(player_name, selected);
 }
 
 NewGame::~NewGame()

@@ -16,13 +16,15 @@ guestWaiting::guestWaiting(QWidget *parent)
 
     hLayout->addStretch(3);
 
-    loadingLabel->setFixedSize(200, 200);
+    loadingLabel->setFixedSize(120, 120);
 
     loadingLabel->setMovie(loadingMovie);
     hLayout->addWidget(loadingLabel);
     loadingMovie->start();
 
     hLayout->addStretch(1);
+
+    hLayout->setContentsMargins(10, 0, 70, 0);
 
     ui->mainLayout->addLayout(hLayout);
 }

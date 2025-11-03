@@ -18,6 +18,8 @@ JoinGame::JoinGame(QWidget *parent, const std::vector<CarInfo>& cars)
     carSelector = new CarSelector(this);
     carSelector->setupCars(available_cars);
     ui->mainLayout->addWidget(carSelector);
+
+    ui->buttonJoin->setFixedWidth(200);
 }
 
 void JoinGame::on_buttonReturn_clicked()

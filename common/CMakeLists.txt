@@ -9,4 +9,3 @@ target_sources(taller_common
 
 add_subdirectory(protocol)
 add_subdirectory(socket)
-add_subdirectory(utils)

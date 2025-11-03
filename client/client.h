@@ -10,7 +10,7 @@ private:
     //int id;
 
 public:
-    explicit Client(const char* hostname, const char* servname);
+    explicit Client();
 
     int run(int argc, char* argv[]);
 };
