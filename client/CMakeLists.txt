@@ -6,6 +6,8 @@ target_sources(taller_client
     receiver.cpp
     sender.cpp
     game.cpp
+    world_renderer.cpp
+    ui_renderer.cpp
     car.cpp
     world.cpp
     event_handler.cpp
@@ -15,6 +17,8 @@ target_sources(taller_client
     receiver.h
     sender.h
     game.h
+    world_renderer.h
+    ui_renderer.h
     car.h
     world.h
     event_handler.h
