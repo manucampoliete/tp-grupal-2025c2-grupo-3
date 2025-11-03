@@ -80,12 +80,24 @@ bool ClientProtocol::send_join(uint16_t match_id, const std::string& username, u
     return recv_u8() == 0x00;  // 0x00 for success, 0x01 for failure
 }
 
-bool ClientProtocol::send_start() {
+bool ClientProtocol::send_start(uint16_t match_id) {
     uint8_t action_code = SEND_START;
     send_u8(action_code);
+    send_u16(match_id);
 
     action_code = recv_u8();
     return recv_u8() == 0x00;  // 0x00 for success, 0x01 for failure
+}
+
+void ClientProtocol::send_move(ActiveDirections active_directions) {
+    uint8_t action_code = SEND_MOVE_STATE;
+    uint8_t directions = 0;
+    if(active_directions.up) directions |= 0b1000;
+    if(active_directions.down) directions |= 0b0100;
+    if(active_directions.left) directions |= 0b0010;
+    if(active_directions.right) directions |= 0b0001;
+    send_u8(action_code);
+    send_u8(directions);
 }
 
 void ClientProtocol::recv_start_signal() {

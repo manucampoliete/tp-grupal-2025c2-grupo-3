@@ -7,14 +7,28 @@
 #include "../common/thread/thread.h"
 #include "../common/utils/vector_2d.h"
 
+#include "commands/command.h"
 #include "response_queues_monitor.h"
 #include "types.h"
-#include "commands/command.h"
+#include "car.h"
+#include "player.h"
+
+#include <box2d/box2d.h>
 
 class Game: public Thread {
 private:
+    b2World* world;
+    int32 velocity_it;
+    int32 position_it;
     Queue<std::unique_ptr<Command>> client_commands_q;
     ResponseQueuesMonitor response_queues;
+    std::map<ClientID, Player> players;
+
+    b2Body* create_new_car_body();
+
+    void update_player_cars();
+    
+    void broadcast();
 
 public:
     /**
@@ -58,6 +72,8 @@ public:
      * Adds a new player to the game with the given parameters.
      */
     void add_player(ClientID client_id, const std::string& username, uint8_t car_id);
+
+    void move_player(ClientID client_id, ActiveDirections active_directions);
 
     /**
      * Destructor

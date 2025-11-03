@@ -2,6 +2,7 @@
 #define CLIENT_PROTOCOL_H
 
 #include "../socket/socket.h"
+#include "../utils/active_directions.h"
 
 #include <cstdint>
 #include <string>
@@ -32,7 +33,9 @@ public:
 
     bool send_join(uint16_t match_id, const std::string& username, uint8_t car_id);
 
-    bool send_start();
+    bool send_start(uint16_t match_id);
+
+    void send_move(ActiveDirections active_directions);
 
     void recv_start_signal();
 };

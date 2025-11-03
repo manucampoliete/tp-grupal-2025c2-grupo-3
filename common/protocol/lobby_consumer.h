@@ -31,8 +31,8 @@ public:
         protocol.send_joined(true);
     }
 
-    void on_start_match() override {
-        matches_map_monitor.start_match(get_client_id());
+    void on_start_match(uint16_t match_id) override {
+        matches_map_monitor.start_match(match_id);
         protocol.send_started(true);
     }
 

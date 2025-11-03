@@ -9,6 +9,8 @@ target_sources(taller_server
     response_queues_monitor.cpp
     sender.cpp
     server.cpp
+    car.cpp
+    player.cpp
     PUBLIC
     # .h files
     acceptor.h
@@ -19,4 +21,9 @@ target_sources(taller_server
     sender.h
     server.h
     types.h
+    car.h
+    player.h
+    matches_map_monitor.h
     )
+
+add_subdirectory(commands)

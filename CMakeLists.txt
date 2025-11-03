@@ -9,6 +9,8 @@ if (NOT DEFINED CMAKE_CXX_STANDARD)
 endif()
 
 set(CMAKE_CXX_EXTENSIONS ON)
+SET(SDL2PP_WITH_IMAGE YES)
+SET(SDL2PP_WITH_TTF YES)
 
 project(taller_tp
     VERSION 1.0
@@ -49,6 +51,8 @@ target_include_directories(taller_common PUBLIC .)
 #
 # sudo apt-get install libopus-dev libopusfile-dev libxmp-dev libfluidsynth-dev fluidsynth libwavpack1 libwavpack-dev libfreetype-dev wavpack
 #
+# también para Box2D:
+# sudo apt-get install libbox2d-dev
 
 # Install libSDL2 and libSDL2pp (for client or editor)
 # HEY!! TODO XXX: add more dependendies (either for client, server or editor)
@@ -134,8 +138,18 @@ if(TALLER_SERVER)
 
     set_project_warnings(taller_server ${TALLER_MAKE_WARNINGS_AS_ERRORS} FALSE)
 
-    # Link the taller_common lib target
-    target_link_libraries(taller_server taller_common)
+    # Add Box2D
+    find_path(BOX2D_INCLUDE_DIR box2d/box2d.h)
+    find_library(BOX2D_LIBRARY box2d)
+
+    if(BOX2D_INCLUDE_DIR AND BOX2D_LIBRARY)
+        target_include_directories(taller_server PRIVATE ${BOX2D_INCLUDE_DIR})
+        # Link the taller_common lib target + box2d
+        target_link_libraries(taller_server taller_common ${BOX2D_LIBRARY})
+    else()
+        # Si llegas aca probablemente te falte hacer sudo apt-get install libbox2d-dev
+        message(FATAL_ERROR "Box2D not found")
+    endif()
 endif()
 
 if(TALLER_EDITOR)

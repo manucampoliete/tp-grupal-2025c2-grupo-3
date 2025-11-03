@@ -105,7 +105,8 @@ bool ServerProtocol::consume_one(ProtocolConsumer& consumer) {
             break;
         }
         case SEND_START: {
-            consumer.on_start_match();
+            uint16_t match_id = recv_u16();
+            consumer.on_start_match(match_id);
             return true;
             break;
         }

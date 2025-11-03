@@ -18,7 +18,7 @@ public:
         : client_id(client_id), active_directions(directions) {}
 
     void execute(Game* game) override {
-        // game->process_request();
+        game->move_player(client_id, active_directions);
     }
 };
 

@@ -25,7 +25,7 @@ public:
         // no-op
     }
 
-    void on_start_match() override {
+    void on_start_match(uint16_t match_id) override {
         // no-op
     }
 

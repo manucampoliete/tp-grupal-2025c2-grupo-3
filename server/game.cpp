@@ -12,6 +12,48 @@ Game::Game():
         response_queues()
         {}
 
+b2Body* Game::create_new_car_body() {
+    b2BodyDef body_def;
+    body_def.type = b2_dynamicBody;
+    body_def.position.Set(0, 0);
+    body_def.angle = 0;
+    b2Body* car = world->CreateBody(&body_def);
+
+    b2PolygonShape boxShape;
+    boxShape.SetAsBox(3,1);
+
+    b2FixtureDef boxFixtureDef;
+    boxFixtureDef.shape = &boxShape;
+    boxFixtureDef.density = 1;
+    car->CreateFixture(&boxFixtureDef);
+
+    car->SetLinearDamping(0.5f); // para que se frene con el tiempo
+
+    return car;
+}
+
+void Game::move_player(ClientID client_id, ActiveDirections active_directions) {
+    players.at(client_id).move(active_directions);
+}
+
+void Game::update_player_cars() {
+    for(auto& [id, player] : players) {
+        player.update_car_physics();
+    }
+}
+
+void Game::broadcast() {
+    // std::vector<std::pair<ClientID, Vector2D>> positions;
+    std::vector<Snapshot::CarSnapshot> snapshots;
+    for (auto& [client_id, player] : players) {
+        // b2Vec2 pos = car.get_position();
+        Snapshot::CarSnapshot snp = player.build_car_snapshot();
+        snapshots.emplace_back(snp);
+    }
+    Snapshot snapshot(0, snapshots);
+    response_queues.broadcast(snapshot);
+}
+
 void Game::run() {
     using clock = std::chrono::high_resolution_clock;
     auto last_time = clock::now();
@@ -27,9 +69,11 @@ void Game::run() {
             cmd->execute(this);
         }
 
-        // step()
+        update_player_cars();
+        
+        world->Step(delta_time, velocity_it, position_it);
 
-        // broadcast()
+        broadcast();
 
         // Mantener FPS constante
         auto frame_time = std::chrono::duration_cast<std::chrono::milliseconds>(clock::now() - now).count();
@@ -56,8 +100,10 @@ std::pair<Queue<std::unique_ptr<Command>>&, Queue<Snapshot>&> Game::get_queues(C
 }
 
 void Game::add_player(ClientID client_id, const std::string& username, uint8_t car_id) {
-    // Inicializar la posición del jugador, por ejemplo en (0,0)
-    // positions[client_id] = Vector2D(0.0f, 0.0f);
+    if (players.find(client_id) == players.end()) {
+        b2Body* new_car_body = create_new_car_body();
+        players.emplace(client_id, Player(client_id, username, new_car_body));
+    }
 }
 
 Game::~Game() {}

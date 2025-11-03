@@ -44,9 +44,9 @@ public:
         return game.get_queues(client_id);
     }
 
-    void start_match(ClientID client_id) {
+    void start_match(uint16_t match_id) {
         std::lock_guard<std::mutex> lock(mtx);
-        match_map[client_id]->start();
+        match_map[match_id]->start();
         // broadcast?
     }
 };
