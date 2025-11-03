@@ -1,13 +1,15 @@
 #ifndef COMMAND_H
 #define COMMAND_H
 
+#include "../game.h"
+
 /**
  * Interface for commands that can be executed by the GameController.
  */
 class Command {
 public:
     virtual ~Command() = default;
-    virtual void execute(/*GameController& controller*/) = 0;
+    virtual void execute(Game* game) = 0;
 };
 
 #endif // COMMAND_H

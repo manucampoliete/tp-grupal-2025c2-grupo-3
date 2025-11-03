@@ -1,15 +1,12 @@
 #ifndef CLIENT_HANDLER_H
 #define CLIENT_HANDLER_H
 
-#include "../common/commands/move_request_with_id.h"
-#include "../common/protocol/dummy_server_protocol.h"
 #include "../common/queue/queue.h"
 #include "../common/socket/socket.h"
 #include "../common/thread/thread.h"
 
 #include "receiver.h"
-#include "response_queues_monitor.h"
-#include "sender.h"
+#include "matches_map_monitor.h"
 #include "types.h"
 
 /**
@@ -21,10 +18,9 @@
 class ClientHandler {
 private:
     Socket peer;
-    DummyServerProtocol protocol;
-    Receiver receiver;
+    ServerProtocol protocol;
     Sender sender;
-    ResponseQueuesMonitor& response_queues;
+    Receiver receiver;
     const ClientID client_id;
 
     /**
@@ -43,8 +39,7 @@ public:
      * Constructor: initializes the ClientHandler with the given parameters.
      * The ClientHandler takes ownership of the peer socket.
      */
-    ClientHandler(Socket&& peer, Queue<MoveRequestWithID>& client_commands_q,
-                  ResponseQueuesMonitor& response_queues, ClientID client_id);
+    ClientHandler(Socket&& peer, MatchesMapMonitor& matches_map_monitor, ClientID client_id);
 
     /**
      * Starts the Receiver and Sender threads.

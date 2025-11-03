@@ -3,19 +3,17 @@
 
 #include <vector>
 
-#include "../common/commands/move_request_with_id.h"
 #include "../common/socket/socket.h"
 #include "../common/thread/thread.h"
 
 #include "client_handler.h"
-#include "response_queues_monitor.h"
+#include "matches_map_monitor.h"
 #include "types.h"
 
 class Acceptor: public Thread {
 private:
     Socket acceptor;
-    Queue<MoveRequestWithID>& client_commands_q;
-    ResponseQueuesMonitor& response_queues;
+    MatchesMapMonitor& matches_map_monitor;
     std::vector<ClientHandler*> clients;
     ClientID next_client_id;
 
@@ -34,8 +32,7 @@ public:
      * Constructor: initializes the acceptor with the given parameters.
      * Takes the ownership of the acceptor Socket.
      */
-    Acceptor(Socket&& acceptor, Queue<MoveRequestWithID>& client_commands_q,
-             ResponseQueuesMonitor& response_queues);
+    Acceptor(const std::string& servname, MatchesMapMonitor& matches_map_monitor);
 
     /**
      * Main acceptor logic: accepts new clients and spawns a ClientHandler for each one.

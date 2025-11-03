@@ -25,8 +25,8 @@ public:
     ProtocolConsumer(ClientID client_id) : client_id(client_id) {}
 
     // Lobby events
-    virtual void on_create_match(uint8_t car_id) = 0;
-    virtual void on_join_match(uint16_t match_id, uint8_t car_id) = 0;
+    virtual void on_create_match(const std::string& username, uint8_t car_id) = 0;
+    virtual void on_join_match(uint16_t match_id, const std::string& username, uint8_t car_id) = 0;
     virtual void on_start_match() = 0;
 
     // Game events

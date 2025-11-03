@@ -17,8 +17,8 @@ public:
     MoveCommand(uint16_t client_id, ActiveDirections directions) 
         : client_id(client_id), active_directions(directions) {}
 
-    void execute(/*GameController& controller*/) override {
-        // controller.move_player(client_id, active_directions);
+    void execute(Game* game) override {
+        // game->process_request();
     }
 };
 

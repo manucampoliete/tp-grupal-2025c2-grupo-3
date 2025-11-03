@@ -7,12 +7,13 @@
 
 #include "../common/queue/queue.h"
 #include "../common/utils/vector_2d.h"
+#include "../common/messages/snapshot.h"
 
 #include "types.h"
 
 class ResponseQueuesMonitor {
 private:
-    std::map<ClientID, Queue<std::vector<std::pair<ClientID, Vector2D>>>> response_queues;
+    std::map<ClientID, Queue<Snapshot>> response_queues;
     std::mutex mtx;
 
 public:
@@ -26,7 +27,7 @@ public:
      * If a queue for the given client_id already exists, returns a reference to it.
      * Otherwise, creates a new queue, adds it to the map, and returns a reference to it.
      */
-    Queue<std::vector<std::pair<ClientID, Vector2D>>>& add_queue(ClientID client_id);
+    Queue<Snapshot>& add_queue(ClientID client_id);
 
     /**
      * Removes the response queue for the given client_id.
@@ -42,7 +43,7 @@ public:
      * Returns true if all try_push operations succeeded, false otherwise.
      * Note: because try_push is used, this method does not block the gameloop.
      */
-    bool broadcast(const std::vector<std::pair<ClientID, Vector2D>>& resp);
+    bool broadcast(const Snapshot& resp);
 
     /**
      * Closes all response queues.

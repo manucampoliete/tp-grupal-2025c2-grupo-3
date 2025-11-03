@@ -4,11 +4,11 @@
 #include <string>
 
 #include "acceptor.h"
-#include "game.h"
+#include "matches_map_monitor.h"
 
 class Server {
 private:
-    Game game;
+    MatchesMapMonitor matches_map_monitor;
     Acceptor acceptor;
 
     /**
@@ -30,8 +30,8 @@ public:
     Server& operator=(Server&&) = default;
 
     /**
-     * Runs the server: starts the game and acceptor threads, waits for the
-     * termination key, and then stops them.
+     * Runs the server: starts acceptor thread, waits for the
+     * termination key, and then stops it.
      * Returns EXIT_SUCCESS if everything went fine.
      */
     int run();

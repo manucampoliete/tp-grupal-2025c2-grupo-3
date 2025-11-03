@@ -33,11 +33,9 @@ void Acceptor::clear() {
     clients.clear();
 }
 
-Acceptor::Acceptor(Socket&& acceptor, Queue<MoveRequestWithID>& client_commands_q,
-                   ResponseQueuesMonitor& response_queues):
-        acceptor(std::move(acceptor)),
-        client_commands_q(client_commands_q),
-        response_queues(response_queues),
+Acceptor::Acceptor(const std::string& servname, MatchesMapMonitor& matches_map_monitor):
+        acceptor(servname.c_str()),
+        matches_map_monitor(matches_map_monitor),
         clients(),
         next_client_id(FIRST_CLIENT_ID) {}
 
@@ -45,8 +43,7 @@ void Acceptor::run() {
     while (should_keep_running()) {
         try {
             Socket peer = acceptor.accept();
-            ClientHandler* c = new ClientHandler(std::move(peer), client_commands_q,
-                                                 response_queues, next_client_id++);
+            ClientHandler* c = new ClientHandler(std::move(peer), matches_map_monitor, next_client_id++);
             reap_dead();
             clients.push_back(c);
             c->start();

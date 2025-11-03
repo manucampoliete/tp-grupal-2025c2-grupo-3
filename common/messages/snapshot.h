@@ -7,13 +7,13 @@
 struct Snapshot {
     struct CarSnapshot {
         uint16_t id;        // client/player ID
-        uint16_t x;         // x coordinate * 1000
-        uint16_t y;         // y coordinate * 1000
-        uint16_t angle;     // angle in degrees (or radians? multiplied by a constant factor?)
+        uint32_t x;         // x coordinate * 1000
+        uint32_t y;         // y coordinate * 1000
+        uint16_t angle;     // angle in degrees
         uint16_t speed;     // speed (units?)
         uint8_t type;       // car type (needed?)
 
-        CarSnapshot(uint16_t id, uint16_t x, uint16_t y, uint16_t angle, uint16_t speed, uint8_t type)
+        CarSnapshot(uint16_t id, uint32_t x, uint32_t y, uint16_t angle, uint16_t speed, uint8_t type)
             : id(id), x(x), y(y), angle(angle), speed(speed), type(type) {}
 
         CarSnapshot(const CarSnapshot& other)

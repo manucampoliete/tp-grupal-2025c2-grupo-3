@@ -2,19 +2,26 @@
 #define GAME_CONSUMER_H
 
 #include "protocol_consumer.h"
+#include "../server/commands/move_command.h"
+#include "../common/utils/active_directions.h"
+#include "../common/queue/queue.h"
+
+#include <memory>
 
 class GameConsumer : public ProtocolConsumer {
 private:
-    // GameController& game_controller;
+    Queue<std::unique_ptr<Command>>& client_commands_q;
 
 public:
-    GameConsumer(ClientID client_id/*, GameController& game_controller*/) : ProtocolConsumer(client_id)/*, game_controller(game_controller)*/ {}
+    GameConsumer(ClientID client_id, Queue<std::unique_ptr<Command>>& client_commands_q) : 
+        ProtocolConsumer(client_id), 
+        client_commands_q(client_commands_q) {}
 
-    void on_create_match(uint8_t) override {
+    void on_create_match(const std::string&, uint8_t) override {
         // no-op
     }
 
-    void on_join_match(uint16_t, uint8_t) override {
+    void on_join_match(uint16_t, const std::string&, uint8_t) override {
         // no-op
     }
 
@@ -23,10 +30,8 @@ public:
     }
 
     void on_move(ActiveDirections directions) override {
-        /* game_controller.move_player(get_client_id(), directions); */
+        client_commands_q.push(std::make_unique<MoveCommand>(get_client_id(), directions));
     }
-
 };
-
 
 #endif // GAME_CONSUMER_H

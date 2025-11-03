@@ -4,19 +4,24 @@
 #include "../common/queue/queue.h"
 #include "../common/thread/thread.h"
 
-#include "../common/protocol/server_send_protocol.h"
+#include "../common/protocol/server_protocol.h"
 
 
 class Sender: public Thread {
 private:
-    ServerSendProtocol& protocol;
-    Queue<Snapshot>& responses_q;
+    ServerProtocol& protocol;
+    Queue<Snapshot>* responses_q;
 
 public:
     /**
      * Constructor: initializes the Sender with the given parameters.
      */
-    Sender(ServerSendProtocol& protocol, Queue<Snapshot>& responses_q);
+    Sender(ServerProtocol& protocol);
+
+    /**
+     * Sets the responses queue for the sender.
+     */
+    void set_responses_queue(Queue<Snapshot>* responses_q);
 
     /**
      * Main sender logic: pops Snapshot responses from its responses_q and sends them to the client.
@@ -25,7 +30,7 @@ public:
      * logged, and causes the sender to stop. In all these cases, the sender thread ends.
      */
     void run() override;
-
+    
     /**
      * Destructor
      * Nothing special to do

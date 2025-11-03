@@ -8,7 +8,7 @@
 
 void ClientHandler::polite_kill() {
     receiver.stop();  // should_keep_running() = false
-    sender.stop();    // should_keep_running() = false
+    // sender.stop();    // should_keep_running() = false
 }
 
 void ClientHandler::hard_kill() {
@@ -17,20 +17,17 @@ void ClientHandler::hard_kill() {
     peer.close();
 }
 
-ClientHandler::ClientHandler(Socket&& peer, Queue<MoveRequestWithID>& client_commands_q,
-                             ResponseQueuesMonitor& response_queues, ClientID client_id):
+ClientHandler::ClientHandler(Socket&& peer, MatchesMapMonitor& matches_map_monitor, ClientID client_id):
         peer(std::move(peer)),
         protocol(this->peer),
-        receiver(protocol, client_commands_q,
-                 client_id),  // Inject a ref to the client commands queue to the Receiver!
-        sender(protocol, response_queues.add_queue(
-                                 client_id)),  // Inject a ref to a response queue to the Sender!
-        response_queues(response_queues),
-        client_id(client_id) {}
+        sender(protocol),
+        receiver(protocol, matches_map_monitor, client_id, sender),
+        client_id(client_id) // Necessary?
+        {}
 
 void ClientHandler::start() {
     receiver.start();
-    sender.start();
+    // Sender is started by the Receiver when the response queue is set
 }
 
 void ClientHandler::join() {
@@ -45,4 +42,4 @@ void ClientHandler::kill() {
 
 bool ClientHandler::is_dead() const { return !receiver.is_alive() and !sender.is_alive(); }
 
-ClientHandler::~ClientHandler() { response_queues.remove_queue(client_id); }
+ClientHandler::~ClientHandler() {}

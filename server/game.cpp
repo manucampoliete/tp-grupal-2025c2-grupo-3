@@ -7,25 +7,10 @@
 #define FRAME_DURATION_MS (1000 / TARGET_FPS)
 #define PLAYER_SPEED 200.0f // píxeles por segundo
 
-void Game::process_request(const MoveRequestWithID& req, float delta_time) {
-    Vector2D& pos = positions[req.client_id];
-
-    float distance = PLAYER_SPEED * delta_time;
-
-    if (req.move_request.up)    pos.y -= distance;
-    if (req.move_request.down)  pos.y += distance;
-    if (req.move_request.left)  pos.x -= distance;
-    if (req.move_request.right) pos.x += distance;
-
-    // Mantener dentro de límites (por ejemplo, 0..800x600)
-    pos.x = std::clamp(static_cast<float>(pos.x), 0.0f, 780.0f);
-    pos.y = std::clamp(static_cast<float>(pos.y), 0.0f, 580.0f);
-}
-
 Game::Game():
         client_commands_q(),
-        response_queues(),
-        positions() {}
+        response_queues()
+        {}
 
 void Game::run() {
     using clock = std::chrono::high_resolution_clock;
@@ -37,21 +22,14 @@ void Game::run() {
         float delta_time = elapsed.count(); // segundos
         last_time = now;
 
-        MoveRequestWithID req(MoveRequest(false, false, false, false), 0);
-        while (client_commands_q.try_pop(req)) {
-            process_request(req, delta_time);
-            // When command pattern is implemented we'll have commands rather than requests.
-            // The client_commands_q will be a Queue<std::unique_ptr<Command>> or similar,
-            // and once a command is popped from it we'll do something like:
-            // command->execute();
-            // Internally, the command will have all the data needed to perform the action,
-            // and also a reference to this, or to an object that contains a facade to the game state.
+        std::unique_ptr<Command> cmd;
+        while (client_commands_q.try_pop(cmd)) {
+            cmd->execute(this);
         }
 
-        // Broadcast positions to all clients
-        response_queues.broadcast(
-            std::vector<std::pair<ClientID, Vector2D>>(positions.begin(), positions.end())
-        );
+        // step()
+
+        // broadcast()
 
         // Mantener FPS constante
         auto frame_time = std::chrono::duration_cast<std::chrono::milliseconds>(clock::now() - now).count();
@@ -67,8 +45,19 @@ void Game::stop() {
     response_queues.close_all();    // Senders cannot pop, game cannot try_push when broadcasting
 }
 
-Queue<MoveRequestWithID>& Game::get_client_commands_queue() { return client_commands_q; }
+Queue<std::unique_ptr<Command>>& Game::get_client_commands_queue() { return client_commands_q; }
 
-ResponseQueuesMonitor& Game::get_response_queues_monitor() { return response_queues; }
+Queue<Snapshot>& Game::get_responses_queue(ClientID client_id) { 
+    return response_queues.add_queue(client_id);
+}
+
+std::pair<Queue<std::unique_ptr<Command>>&, Queue<Snapshot>&> Game::get_queues(ClientID client_id) {
+    return {get_client_commands_queue(), get_responses_queue(client_id)};
+}
+
+void Game::add_player(ClientID client_id, const std::string& username, uint8_t car_id) {
+    // Inicializar la posición del jugador, por ejemplo en (0,0)
+    // positions[client_id] = Vector2D(0.0f, 0.0f);
+}
 
 Game::~Game() {}
