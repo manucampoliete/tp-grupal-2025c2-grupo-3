@@ -9,14 +9,14 @@
 // por ahora harcodeado como constante
 const float CAR_SPEED = 0.2f;
 
-Car::Car(Renderer& renderer, Texture& sprite_sheet, uint8_t car_type)
-    : renderer(renderer),
-      sprite_sheet(sprite_sheet),
-      // elijo un auto hardcodeado para probar (por ejemplo el 3)
-      src_rect(CARS[car_type]),
-      x(0),
-      y(0),
-      rotation_angle(0.0)
+Car::Car(Renderer& renderer, Texture& sprite_sheet, uint8_t car_type) :
+    renderer(renderer),
+    sprite_sheet(sprite_sheet),
+    // elijo un auto hardcodeado para probar (por ejemplo el 3)
+    src_rect(CARS[car_type]),
+    x(0),
+    y(0),
+    rotation_angle(0.0)
 {
     int window_w = renderer.GetOutputWidth();
     int window_h = renderer.GetOutputHeight();

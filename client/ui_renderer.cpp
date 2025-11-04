@@ -270,9 +270,9 @@ void UIRenderer::render_modification_popup(bool speed_modified, bool health_modi
     int margin_x = (popup_w - btn_w) / 2; // centrar horizontalmente
     int margin_y = static_cast<int>(popup_h * 0.15f);
     
-    Rect speed_button_rect(popup_x + margin_x, popup_y + margin_y * 1.5, btn_w, btn_h);
-    Rect health_button_rect(popup_x + margin_x, popup_y + margin_y * 2.5, btn_w, btn_h);
-    Rect save_button_rect(popup_x + margin_x, popup_y + popup_h - margin_y - btn_h - 60, btn_w, btn_h);
+    Rect speed_btn(popup_x + margin_x, popup_y + margin_y * 1.5, btn_w, btn_h);
+    Rect health_btn(popup_x + margin_x, popup_y + margin_y * 2.6, btn_w, btn_h);
+    Rect save_btn(popup_x + margin_x, popup_y + popup_h - margin_y - btn_h - 50, btn_w, btn_h);
     
     // overlay oscuro de fondo
     renderer.SetDrawBlendMode(SDL_BLENDMODE_BLEND);
@@ -302,24 +302,24 @@ void UIRenderer::render_modification_popup(bool speed_modified, bool health_modi
     // BOTON DE VELOCIDAD
     renderer.SetDrawBlendMode(SDL_BLENDMODE_BLEND);
     renderer.SetDrawColor(speed_modified ? 50 : 80, speed_modified ? 200 : 80, speed_modified ? 50 : 100, 255);
-    renderer.FillRect(speed_button_rect);
+    renderer.FillRect(speed_btn);
     
     // borde del botón
     renderer.SetDrawBlendMode(SDL_BLENDMODE_NONE);
     renderer.SetDrawColor(speed_modified ? 100 : 60, speed_modified ? 255 : 100, speed_modified ? 100 : 120, 255);
-    renderer.DrawRect(speed_button_rect);
+    renderer.DrawRect(speed_btn);
     
     // texto del botón (centrado verticalmente)
     Surface speed_surface = active_font.RenderText_Solid("Velocity +5%", {255, 255, 255, 255});
     Texture speed_texture(renderer, speed_surface);
-    int speed_text_x = speed_button_rect.x + (speed_button_rect.w - speed_texture.GetWidth()) / 2; // centrado
-    int speed_text_y = speed_button_rect.y + 15;
+    int speed_text_x = speed_btn.x + (speed_btn.w - speed_texture.GetWidth()) / 2; // centrado
+    int speed_text_y = speed_btn.y + 15;
     renderer.Copy(speed_texture, NullOpt, Rect(speed_text_x, speed_text_y, speed_texture.GetWidth(), speed_texture.GetHeight()));
     
     // penalización (derecha del botón)
     Surface speed_pen = active_font.RenderText_Solid("Cost: +10s", {255, 200, 100, 255});
     Texture speed_pen_t(renderer, speed_pen);
-    int speed_pen_x = speed_button_rect.x + (speed_button_rect.w - speed_pen_t.GetWidth()) / 2; // centrado
+    int speed_pen_x = speed_btn.x + (speed_btn.w - speed_pen_t.GetWidth()) / 2; // centrado
     int speed_pen_y = speed_text_y + speed_texture.GetHeight() + 10;
     renderer.Copy(speed_pen_t, NullOpt, Rect(speed_pen_x, speed_pen_y, speed_pen_t.GetWidth(), speed_pen_t.GetHeight()));
 
@@ -327,21 +327,21 @@ void UIRenderer::render_modification_popup(bool speed_modified, bool health_modi
     // BOTON DE HEALTH
     renderer.SetDrawBlendMode(SDL_BLENDMODE_BLEND);
     renderer.SetDrawColor(health_modified ? 50 : 80, health_modified ? 200 : 80, health_modified ? 50 : 100, 255);
-    renderer.FillRect(health_button_rect);
+    renderer.FillRect(health_btn);
     
     renderer.SetDrawBlendMode(SDL_BLENDMODE_NONE);
     renderer.SetDrawColor(health_modified ? 100 : 60, health_modified ? 255 : 100, health_modified ? 100 : 120, 255);
-    renderer.DrawRect(health_button_rect);
+    renderer.DrawRect(health_btn);
     
     Surface health_surface = active_font.RenderText_Solid("Health +5%", {255, 255, 255, 255});
     Texture health_texture(renderer, health_surface);
-    int health_text_x = health_button_rect.x + (health_button_rect.w - health_texture.GetWidth()) / 2; // centrado
-    int health_text_y = health_button_rect.y + 15;
+    int health_text_x = health_btn.x + (health_btn.w - health_texture.GetWidth()) / 2; // centrado
+    int health_text_y = health_btn.y + 15;
     renderer.Copy(health_texture, NullOpt, Rect(health_text_x, health_text_y, health_texture.GetWidth(), health_texture.GetHeight()));
     
     Surface health_pen = active_font.RenderText_Solid("Cost: +8s", {255, 200, 100, 255});
     Texture health_pen_t(renderer, health_pen);
-    int health_pen_x = health_button_rect.x + (health_button_rect.w - health_pen_t.GetWidth()) / 2; // centrado
+    int health_pen_x = health_btn.x + (health_btn.w - health_pen_t.GetWidth()) / 2; // centrado
     int health_pen_y = health_text_y + health_texture.GetHeight() + 10;
     renderer.Copy(health_pen_t, NullOpt, Rect(health_pen_x, health_pen_y, health_pen_t.GetWidth(), health_pen_t.GetHeight()));
 
@@ -349,16 +349,16 @@ void UIRenderer::render_modification_popup(bool speed_modified, bool health_modi
     // BOTON GUARDAR
     renderer.SetDrawBlendMode(SDL_BLENDMODE_BLEND);
     renderer.SetDrawColor(50, 150, 255, 255); // azul
-    renderer.FillRect(save_button_rect);
+    renderer.FillRect(save_btn);
     
     renderer.SetDrawBlendMode(SDL_BLENDMODE_NONE);
     renderer.SetDrawColor(100, 200, 255, 255);
-    renderer.DrawRect(save_button_rect);
+    renderer.DrawRect(save_btn);
     
     Surface save_surface = active_font.RenderText_Solid("SAVE AND CONTINUE", {255, 255, 255, 255});
     Texture save_texture(renderer, save_surface);
-    int save_text_x = save_button_rect.x + (save_button_rect.w - save_texture.GetWidth()) / 2;
-    int save_text_y = save_button_rect.y + (save_button_rect.h - save_texture.GetHeight()) / 2;
+    int save_text_x = save_btn.x + (save_btn.w - save_texture.GetWidth()) / 2;
+    int save_text_y = save_btn.y + (save_btn.h - save_texture.GetHeight()) / 2;
     renderer.Copy(save_texture, NullOpt, Rect(save_text_x, save_text_y, save_texture.GetWidth(), save_texture.GetHeight()));
 
 
@@ -371,6 +371,9 @@ void UIRenderer::render_modification_popup(bool speed_modified, bool health_modi
     int timer_y = mod_popup_rect.y + mod_popup_rect.h - 40;
     renderer.Copy(countdown_texture, NullOpt, Rect(timer_x, timer_y, countdown_texture.GetWidth(), countdown_texture.GetHeight()));
     
+    speed_button_rect = speed_btn;
+    health_button_rect = health_btn;
+    save_button_rect = save_btn;
 }
 
 

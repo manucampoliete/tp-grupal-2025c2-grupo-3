@@ -74,6 +74,7 @@ private:
     // flags para simular modificaciones
     bool speed_modified = false;
     bool health_modified = false;
+    bool saved = false;
 
     void process_input();
     void update(float dt);

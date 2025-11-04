@@ -23,3 +23,58 @@ void Receiver::run() {
         }
     }
 }
+
+
+/*
+
+while (should_keep_running()) {
+      uint8_t msg_type = protocol.recv_message_type();
+      
+      switch (msg_type) {
+          case MSG_BROADCAST_STATE:
+              auto data = protocol.recv_broadcast();
+              client.update_world(data);
+              break;
+          
+          case MSG_COUNTDOWN:
+              uint8_t number = protocol.recv_countdown();
+              client.on_countdown(number);
+              break;
+          
+          case MSG_RACE_START:
+              client.on_race_start();
+              break;
+          
+          case MSG_CHECKPOINT_CROSSED:
+              uint8_t checkpoint_id = protocol.recv_checkpoint();
+              client.on_checkpoint_crossed(checkpoint_id);
+              break;
+          
+          case MSG_COLLISION:
+              auto collision = protocol.recv_collision();
+              client.on_collision(collision);
+              break;
+          
+          case MSG_PLAYER_DIED:
+              uint8_t dead_id = protocol.recv_player_died();
+              client.on_player_died(dead_id);
+              break;
+          
+          case MSG_RACE_END:
+              auto results = protocol.recv_race_results();
+              client.on_race_end(results);
+              break;
+          
+          case MSG_MODIFICATION_PHASE:
+              auto props = protocol.recv_car_properties();
+              client.on_modification_phase(props);
+              break;
+          
+          case MSG_GAME_END:
+              auto final_results = protocol.recv_final_results();
+              client.on_game_end(final_results);
+              break;
+      }
+  }
+
+*/

@@ -1,19 +1,14 @@
 #include "world_renderer.h"
 
-WorldRenderer::WorldRenderer(Renderer& renderer, 
-                             Texture& map_texture, 
-                             Texture& car_sprites,
-                             World& world,
-                             Car& player_car,
-                             uint8_t player_id)
-    : renderer(renderer),
-      map_texture(map_texture),
-      car_sprites(car_sprites),
-      world(world),
-      player_car(player_car),
-      player_id(player_id),
-      camera(0, 0, 800, 600),
-      scale_factor(1.0f) {
+WorldRenderer::WorldRenderer(Renderer& renderer, Texture& map_texture, Texture& car_sprites, World& world, Car& player_car, uint8_t player_id) :
+    renderer(renderer),
+    map_texture(map_texture),
+    car_sprites(car_sprites),
+    world(world),
+    player_car(player_car),
+    player_id(player_id),
+    camera(0, 0, 800, 600),
+    scale_factor(1.0f) {
 }
 
 

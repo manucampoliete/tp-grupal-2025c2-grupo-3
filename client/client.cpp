@@ -117,98 +117,40 @@ Client::~Client() {
 
 /*
 
-
-int Client::run() {
-    // Inicializar SDL
-    if (SDL_Init(SDL_INIT_VIDEO) != 0) {
-        printf("Error al inicializar SDL: %s\n", SDL_GetError());
-        return 1;
-    }
-
-    // Crear ventana
-    SDL_Window* window = SDL_CreateWindow("Cliente - Visualización SDL", SDL_WINDOWPOS_CENTERED,
-                                          SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_SHOWN);
-
-    if (!window) {
-        printf("Error al crear la ventana: %s\n", SDL_GetError());
-        SDL_Quit();
-        return 1;
-    }
-
-    // Crear renderer
-    SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-    if (!renderer) {
-        printf("Error al crear el renderer: %s\n", SDL_GetError());
-        SDL_DestroyWindow(window);
-        SDL_Quit();
-        return 1;
-    }
-
-    sender.start();
-    receiver.start();
-
-    std::vector<std::pair<ClientID, Vector2D>> positions;
-
-    bool running = true;
-    while (running) {
-        try {
-            SDL_PumpEvents();  // Actualiza el estado del teclado
-
-            const Uint8* state = SDL_GetKeyboardState(NULL);
-
-            if (state[SDL_SCANCODE_ESCAPE])
-                running = false;
-
-            // Enviar movimiento
-            MoveRequest req(state[SDL_SCANCODE_W], state[SDL_SCANCODE_S], state[SDL_SCANCODE_A],
-                            state[SDL_SCANCODE_D]);
-            client_requests_q.try_push(req);
-
-            // Recibir posiciones del servidor
-            std::vector<std::pair<ClientID, Vector2D>> resp;
-            if (server_responses_q.try_pop(resp)) {
-                positions = resp;
-            }
-
-            // --- DIBUJADO ---
-            SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);  // negro de fondo
-            SDL_RenderClear(renderer);
-
-            SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);  // verde para jugadores
-
-            for (const auto& p: positions) {
-                int x = static_cast<int>(p.second.x);
-                int y = static_cast<int>(p.second.y);
-
-                SDL_Rect rect;
-                rect.x = x;
-                rect.y = y;
-                rect.w = 20;
-                rect.h = 20;
-                SDL_RenderFillRect(renderer, &rect);
-            }
-
-            SDL_RenderPresent(renderer);
-
-            SDL_Delay(17);  // ~60 FPS
-        } catch (const std::exception& e) {
-            std::cerr << "[Client] Error: " << e.what() << std::endl;
-            running = false;
-        }
-    }
-
-    // Liberar recursos
-    sender.stop();
-    receiver.stop();
-    sender.join();
-    receiver.join();
-
-    SDL_DestroyRenderer(renderer);
-    SDL_DestroyWindow(window);
-    SDL_Quit();
-
-    return EXIT_SUCCESS;
-}
-
+void Client::on_countdown(uint8_t number) {
+      if (game_ptr) game_ptr->show_countdown(number);
+  }
+  
+  void Client::on_race_start() {
+      if (game_ptr) game_ptr->start_race();
+  }
+  
+  void Client::on_checkpoint_crossed(uint8_t id) {
+      // Opcional: mostrar feedback visual/sonido
+  }
+  
+  void Client::on_collision(CollisionData collision) {
+      if (game_ptr) game_ptr->show_collision_effect(collision);
+  }
+  
+  void Client::on_player_died(uint8_t id) {
+      if (id == get_my_id() && game_ptr) {
+          game_ptr->show_eliminated_screen();
+      }
+      // Activar animación de explosión para ese auto
+      if (game_ptr) game_ptr->trigger_explosion(id);
+  }
+  
+  void Client::on_race_end(RaceResults results) {
+      if (game_ptr) game_ptr->show_stats(results);
+  }
+  
+  void Client::on_modification_phase(CarProperties props) {
+      if (game_ptr) game_ptr->show_modifications(props);
+  }
+  
+  void Client::on_game_end(FinalResults results) {
+      if (game_ptr) game_ptr->show_game_end(results);
+  }
 
 */

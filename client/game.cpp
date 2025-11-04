@@ -116,11 +116,7 @@ void Game::process_input() {
                 health_modified = !health_modified;
 
             if (ui_renderer.get_save_button_rect().Contains(x, y)) {
-                // volver a countdown
-                countdown_number = 3;
-                countdown_timer = 0.0f;
-                current_state = game_state::COUNTDOWN;
-                current_race++;
+                saved = !saved;
             }
         }
     }
@@ -139,6 +135,7 @@ void Game::handle_modification_click(int x, int y) {
         health_modified = !health_modified;
 
     if (ui_renderer.get_save_button_rect().Contains(x, y)) {
+        saved = !saved;
         client.send_modifications(speed_modified, health_modified);
     }
 }
@@ -259,6 +256,7 @@ void Game::show_modifications(const CarProperties& props) {
     mod_timer_ms = props.countdown_ms;
     speed_modified = false;
     health_modified = false;
+    saved = false;
 }
 
 
