@@ -62,13 +62,10 @@ bool EventHandler::handle_events() {
         if (event.type == SDL_WINDOWEVENT) {
             switch (event.window.event) {
                 case SDL_WINDOWEVENT_RESIZED:
-                case SDL_WINDOWEVENT_SIZE_CHANGED: // Captura otros cambios
-                case SDL_WINDOWEVENT_MAXIMIZED:    // ¡Captura el maximizar!
-                case SDL_WINDOWEVENT_RESTORED:     // ¡Captura el restaurar!
-                // (Opcional pero recomendado)
-                // case SDL_WINDOWEVENT_ENTER_FULLSCREEN: 
-                // case SDL_WINDOWEVENT_LEAVE_FULLSCREEN:
-                    game.update_ui_layout(); // ¡Avisamos al juego que recalcule la UI!
+                case SDL_WINDOWEVENT_SIZE_CHANGED:
+                case SDL_WINDOWEVENT_MAXIMIZED:
+                case SDL_WINDOWEVENT_RESTORED:
+                    game.update_ui_layout();
                     break;
             }
         }

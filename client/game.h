@@ -34,6 +34,7 @@ private:
     SDL2pp::Window window;
     SDL2pp::Renderer renderer;
     SDL2pp::Font font;
+    SDL2pp::Font font_small;
     
     SDL2pp::Texture map_texture;
     SDL2pp::Texture car_sprites;
@@ -72,7 +73,7 @@ private:
     // hay que ver despues como armamos lo de la modificacions de propiedades
     // flags para simular modificaciones
     bool speed_modified = false;
-    bool accel_modified = false;
+    bool health_modified = false;
 
     void process_input();
     void update(float dt);

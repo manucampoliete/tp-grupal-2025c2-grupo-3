@@ -19,6 +19,7 @@ Game::Game(World& world, Client& client, uint8_t player_id) :
     // renderer acelerado por hardware
     renderer(window, -1, SDL_RENDERER_ACCELERATED),
     font("assets/fonts/VCR_OSD_MONO.ttf", 24), // font
+    font_small("assets/fonts/VCR_OSD_MONO.ttf", 18),
 
     // cargo la textura del mapa desde un archivo
     // por ahora hardcodeo una cualquiera
@@ -37,9 +38,10 @@ Game::Game(World& world, Client& client, uint8_t player_id) :
 
     // Inicializo los renderers
     world_renderer(renderer, map_texture, car_sprites, world, player_car, player_id),
-    ui_renderer(renderer, font, map_texture, world, player_id) { 
+    ui_renderer(renderer, font, font_small, map_texture, world, player_id) { 
 
     SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "0");
+    SDL_SetWindowMinimumSize(window.Get(), 800, 600);
     update_ui_layout(); 
 }
 
@@ -100,7 +102,6 @@ void Game::process_input() {
             return;
         }
 
-        // durante countdown no procesamos inputs
         if (current_state == game_state::COUNTDOWN)
             continue;
 
@@ -111,8 +112,8 @@ void Game::process_input() {
             if (ui_renderer.get_speed_button_rect().Contains(x, y))
                 speed_modified = !speed_modified;
 
-            if (ui_renderer.get_accel_button_rect().Contains(x, y))
-                accel_modified = !accel_modified;
+            if (ui_renderer.get_health_button_rect().Contains(x, y))
+                health_modified = !health_modified;
 
             if (ui_renderer.get_save_button_rect().Contains(x, y)) {
                 // volver a countdown
@@ -134,13 +135,11 @@ void Game::handle_modification_click(int x, int y) {
     if (ui_renderer.get_speed_button_rect().Contains(x, y))
         speed_modified = !speed_modified;
 
-    if (ui_renderer.get_accel_button_rect().Contains(x, y))
-        accel_modified = !accel_modified;
+    if (ui_renderer.get_health_button_rect().Contains(x, y))
+        health_modified = !health_modified;
 
     if (ui_renderer.get_save_button_rect().Contains(x, y)) {
-        client.send_modifications(speed_modified, accel_modified);
-        current_state = game_state::RACING; // temporal, el server debería confirmar
-        current_race++;
+        client.send_modifications(speed_modified, health_modified);
     }
 }
 
@@ -259,7 +258,7 @@ void Game::show_modifications(const CarProperties& props) {
     current_properties = props;
     mod_timer_ms = props.countdown_ms;
     speed_modified = false;
-    accel_modified = false;
+    health_modified = false;
 }
 
 
@@ -280,10 +279,10 @@ void Game::render() {
         case game_state::ELIMINATED:
             break;
         case game_state::SHOWING_STATS:
-            ui_renderer.render_stats_popup(current_results, stats_timer_ms); 
+            ui_renderer.render_stats_popup(current_results, stats_timer_ms, ui_renderer.get_speed_button_rect()); 
             break;
         case game_state::MODIFYING_CAR:
-            ui_renderer.render_modification_popup(speed_modified, accel_modified, mod_timer_ms); 
+            ui_renderer.render_modification_popup(speed_modified, health_modified, mod_timer_ms, ui_renderer.get_speed_button_rect()); 
             break;
         case game_state::GAME_END:
             break;

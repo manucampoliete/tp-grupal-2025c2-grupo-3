@@ -17,6 +17,7 @@ class UIRenderer {
 private:
     Renderer& renderer;
     Font& font;
+    Font& font_small;
     Texture& map_texture;
     World& world;
     uint8_t player_id;
@@ -28,7 +29,7 @@ private:
     // actualizo los botones (posiciones relativas al popup de mods)
     // chequear!!
     Rect speed_button_rect;
-    Rect accel_button_rect;
+    Rect health_button_rect;
     Rect save_button_rect;
 
     // minimapa
@@ -37,16 +38,16 @@ private:
     Rect minimap_rect;
 
 public:
-    UIRenderer(Renderer& renderer, Font& font, Texture& map_texture, World& world, uint8_t player_id);
+    UIRenderer(Renderer& renderer, Font& font, Font& font_small, Texture& map_texture, World& world, uint8_t player_id);
 
     // renderizar la ui sin la cámara y sin escalado
     void render_countdown(uint8_t countdown_number);
 
     void render_race_ui(uint32_t race_timer_ms, int current_race, int total_races, int window_width);
     
-    void render_stats_popup(const RaceResults& current_results, uint32_t stats_timer_ms);
+    void render_stats_popup(const RaceResults& current_results, uint32_t stats_timer_ms, const Rect& dummy_rect);
     
-    void render_modification_popup(bool speed_modified, bool accel_modified, uint32_t mod_timer_ms);
+    void render_modification_popup(bool speed_modified, bool health_modified, uint32_t mod_timer_ms, const Rect& dummy_rect);
     
     // fondo semi-transparente
     // mapa completo, achicado (NullOpt es "copiar toda la textura")
@@ -59,7 +60,7 @@ public:
 
     // Getters para los rectángulos (usado para detección de clicks)
     const Rect& get_speed_button_rect() const { return speed_button_rect; }
-    const Rect& get_accel_button_rect() const { return accel_button_rect; }
+    const Rect& get_health_button_rect() const { return health_button_rect; }
     const Rect& get_save_button_rect() const { return save_button_rect; }
 };
 
