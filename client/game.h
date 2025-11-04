@@ -14,7 +14,7 @@
 #include "client.h"
 #include "event_handler.h"
 #include "world_renderer.h"
-#include "ui_renderer.h"
+#include "interface_renderer.h"
 
 using namespace SDL2pp;
 
@@ -50,7 +50,7 @@ private:
 
     // Renderers
     WorldRenderer world_renderer;
-    UIRenderer ui_renderer;
+    UIRenderer interface_renderer;
 
     game_state current_state = game_state::COUNTDOWN;
 

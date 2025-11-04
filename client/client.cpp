@@ -8,15 +8,18 @@
 #include <sys/socket.h>
 
 
+Client::Client(const std::string& hostname, const std::string& servname):
+        socket(hostname.c_str(), servname.c_str()),
+        protocol(socket),
+        client_requests_q(),
+        server_responses_q(),
+        sender(protocol, client_requests_q),
+        receiver(protocol, server_responses_q, *this) {}
+
 /*
 int Client::run(int argc, char* argv[]) {
     try {
         QApplication app(argc, argv);
-
-        if (argc < 3) {
-            std::cerr << "Uso: ./taller_client <IP> <Puerto>\n";
-            return 1;
-        }
 
         std::string ip = argv[1];
         std::string port = argv[2];
@@ -33,18 +36,24 @@ int Client::run(int argc, char* argv[]) {
 }
 */
 
-Client::Client(const std::string& hostname, const std::string& servname):
-        socket(hostname.c_str(), servname.c_str()),
-        protocol(socket),
-        client_requests_q(),
-        server_responses_q(),
-        sender(protocol, client_requests_q),
-        receiver(protocol, server_responses_q, *this) {}
 
-void Client::run() {
+
+void Client::run(int argc, char* argv[]) {
+    QApplication app(argc, argv);
+
+    std::string ip = argv[1];
+    std::string port = argv[2];
+    
+    Lobby lobby;
+    lobby.initiate_connection(ip, port);
+    lobby.show();
+    app.exec(); 
+
     sender.start();
     receiver.start();
+    
 }
+
 
 void Client::stop() {
     try {
@@ -113,15 +122,13 @@ void Client::update_world(const std::vector<std::pair<ClientID, Vector2D>>& posi
 }
 
 void Client::show_stats_screen(const RaceResults& results) {
-    if (game_ptr) {
+    if (game_ptr)
         game_ptr->show_stats(results);
-    }
 }
 
 void Client::show_mod_screen(const CarProperties& props) {
-    if (game_ptr) {
+    if (game_ptr)
         game_ptr->show_modifications(props);
-    }
 }
 
 

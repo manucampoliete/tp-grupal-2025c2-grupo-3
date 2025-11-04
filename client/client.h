@@ -54,7 +54,7 @@ public:
      * Runs the client: starts the sender and receiver threads,
      * handles user input and displays server responses.
      */
-    void run();
+    void run(int argc, char* argv[]);
     
     void stop();
 

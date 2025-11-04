@@ -1,8 +1,8 @@
 #ifndef PROTOCOL_CONSTANTS_H
 #define PROTOCOL_CONSTANTS_H
 
-// #define COD_MOVE        0x00
-// #define COD_POSITIONS   0x01
+#define COD_MOVE        0x00
+#define COD_POSITIONS   0x01
 
 #define SEND_USERNAME       0x01
 #define SEND_INITIAL_INFO   0x02

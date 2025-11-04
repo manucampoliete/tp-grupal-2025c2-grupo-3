@@ -8,7 +8,7 @@ target_sources(taller_client
     sender.cpp
     game.cpp
     world_renderer.cpp
-    ui_renderer.cpp
+    interface_renderer.cpp
     car.cpp
     world.cpp
     event_handler.cpp
@@ -20,7 +20,7 @@ target_sources(taller_client
     sender.h
     game.h
     world_renderer.h
-    ui_renderer.h
+    interface_renderer.h
     car.h
     world.h
     event_handler.h

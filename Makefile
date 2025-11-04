@@ -1,4 +1,4 @@
-.PHONY: all debug release run clean
+.PHONY: all test clean editor client common server build
 
 TARGET = taller_client
 BUILD_DIR = build
@@ -15,6 +15,19 @@ release:
 
 run: debug
 	./$(BUILD_DIR)/$(TARGET)
+
+compile-debug:
+	mkdir -p build/
+	cmake -S . -B ./build -DCMAKE_BUILD_TYPE=Debug $(EXTRA_GENERATE)
+	cmake --build  build/ $(EXTRA_COMPILE)
+
+compile-release:
+	mkdir -p build/
+	cmake -S . -B ./build -DCMAKE_BUILD_TYPE=Release $(EXTRA_GENERATE)
+	cmake --build  build/ $(EXTRA_COMPILE)
+
+run-tests: compile-debug
+	./build/taller_tests
 
 clean:
 	rm -rf $(BUILD_DIR)

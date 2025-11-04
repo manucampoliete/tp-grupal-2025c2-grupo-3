@@ -1,5 +1,5 @@
-#ifndef UI_RENDERER_H
-#define UI_RENDERER_H
+#ifndef INTERFACE_RENDERER_H
+#define INTERFACE_RENDERER_H
 
 #include <SDL2pp/Renderer.hh>
 #include <SDL2pp/Texture.hh>
@@ -64,4 +64,4 @@ public:
     const Rect& get_save_button_rect() const { return save_button_rect; }
 };
 
-#endif // UI_RENDERER_H
+#endif // INTERFACE_RENDERER_H

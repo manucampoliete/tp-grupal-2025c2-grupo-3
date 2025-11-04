@@ -38,7 +38,7 @@ Game::Game(World& world, Client& client, uint8_t player_id) :
 
     // Inicializo los renderers
     world_renderer(renderer, map_texture, car_sprites, world, player_car, player_id),
-    ui_renderer(renderer, font, font_small, map_texture, world, player_id) { 
+    interface_renderer(renderer, font, font_small, map_texture, world, player_id) { 
 
     SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "0");
     SDL_SetWindowMinimumSize(window.Get(), 800, 600);
@@ -90,7 +90,7 @@ void Game::update_ui_layout() {
     
     // Actualizar layouts de los renderers
     world_renderer.update_layout(w, h);
-    ui_renderer.update_layout(w, h);
+    interface_renderer.update_layout(w, h);
 }
 
 
@@ -109,13 +109,13 @@ void Game::process_input() {
             int x = event.button.x;
             int y = event.button.y;
 
-            if (ui_renderer.get_speed_button_rect().Contains(x, y))
+            if (interface_renderer.get_speed_button_rect().Contains(x, y))
                 speed_modified = !speed_modified;
 
-            if (ui_renderer.get_health_button_rect().Contains(x, y))
+            if (interface_renderer.get_health_button_rect().Contains(x, y))
                 health_modified = !health_modified;
 
-            if (ui_renderer.get_save_button_rect().Contains(x, y)) {
+            if (interface_renderer.get_save_button_rect().Contains(x, y)) {
                 saved = !saved;
             }
         }
@@ -128,13 +128,13 @@ game_state Game::get_current_state() const {
 }
 
 void Game::handle_modification_click(int x, int y) {
-    if (ui_renderer.get_speed_button_rect().Contains(x, y))
+    if (interface_renderer.get_speed_button_rect().Contains(x, y))
         speed_modified = !speed_modified;
 
-    if (ui_renderer.get_health_button_rect().Contains(x, y))
+    if (interface_renderer.get_health_button_rect().Contains(x, y))
         health_modified = !health_modified;
 
-    if (ui_renderer.get_save_button_rect().Contains(x, y)) {
+    if (interface_renderer.get_save_button_rect().Contains(x, y)) {
         saved = !saved;
         client.send_modifications(speed_modified, health_modified);
     }
@@ -269,25 +269,25 @@ void Game::render() {
     // renderizar la ui sin la cámara y sin escalado
     switch (current_state) {
         case game_state::COUNTDOWN:
-            ui_renderer.render_countdown(countdown_number);
+            interface_renderer.render_countdown(countdown_number);
             break;
         case game_state::RACING:
-            ui_renderer.render_race_ui(race_timer_ms, current_race, total_races, window.GetWidth());
+            interface_renderer.render_race_ui(race_timer_ms, current_race, total_races, window.GetWidth());
             break;
         case game_state::ELIMINATED:
             break;
         case game_state::SHOWING_STATS:
-            ui_renderer.render_stats_popup(current_results, stats_timer_ms, ui_renderer.get_speed_button_rect()); 
+            interface_renderer.render_stats_popup(current_results, stats_timer_ms, interface_renderer.get_speed_button_rect()); 
             break;
         case game_state::MODIFYING_CAR:
-            ui_renderer.render_modification_popup(speed_modified, health_modified, mod_timer_ms, ui_renderer.get_speed_button_rect()); 
+            interface_renderer.render_modification_popup(speed_modified, health_modified, mod_timer_ms, interface_renderer.get_speed_button_rect()); 
             break;
         case game_state::GAME_END:
             break;
     }
 
     if (current_state == game_state::RACING)
-        ui_renderer.render_minimap();
+        interface_renderer.render_minimap();
         
     renderer.Present();
 }
