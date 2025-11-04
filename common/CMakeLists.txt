@@ -1,11 +1,13 @@
 target_sources(taller_common
     PRIVATE
     # .cpp files
-    foo.cpp
     PUBLIC
     # .h files
-    foo.h
     )
 
 add_subdirectory(protocol)
 add_subdirectory(socket)
+add_subdirectory(commands)
+add_subdirectory(queue)
+add_subdirectory(thread)
+add_subdirectory(utils)
