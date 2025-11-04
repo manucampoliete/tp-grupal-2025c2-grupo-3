@@ -1,6 +1,9 @@
 #ifndef CLIENT_H
 #define CLIENT_H
 
+#include <QApplication>
+#include "lobby/lobby.h"
+
 #include <string>
 #include <utility>
 #include <vector>

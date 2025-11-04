@@ -1,3 +1,8 @@
+#include "client.h"
+#include <QApplication>
+#include "lobby/lobby.h"
+
+#include <iostream>
 #include <exception>
 #include <iostream>
 #include <string>
@@ -19,34 +24,11 @@
  */
 int main(int argc, char* argv[]) {
     try {
-
-        if (argc != /*ARGS_COUNT*/ 4) {
-            std::cerr << "Bad program call. Expected " << BINARY << " <hostname> <servname>\n";
-            return EXIT_FAILURE;
-        }
-
-        Client client(HOSTNAME, SERVNAME); // creo el client, lo conecto con el server
-
-    //    uint8_t my_id = client.get_my_id(); 
-        const uint8_t my_id = static_cast<uint8_t>(std::stoi(argv[3]));
-        Game game(client.get_world(), client, my_id); // creo la ventana (game) y lo conecto con el client y con el world que esta adentor de client
-        client.set_game(&game); // conecto a client con el game
-
-        client.run(); // inicio los hilos del cliente
-        game.run();
-
-        client.stop(); // cuando la partida termina detengo al cliente
-
-    } catch (const std::exception& err) {
-
-        syslog(LOG_CRIT, "[Crit] Error!: %s", err.what());
-        return EXIT_FAILURE;
-
-    } catch (...) {
-
-        syslog(LOG_CRIT, "[Crit] Unknown error!");
-        return EXIT_FAILURE;
+        Client client;
+        client.run(argc, argv);
+        return 0;
+    } catch (const std::exception& e) {
+        std::cerr << e.what() << std::endl;
+        return 1;
     }
-
-    return EXIT_SUCCESS;
 }
