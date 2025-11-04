@@ -130,11 +130,14 @@ void Lobby::startGame()
     
     this->close();
     
-    //runSDLGame(get_protocol()); 
+    /* auto movedProtocol = lobby.take_protocol();
+    if (movedProtocol.has_value()) 
+        runSDLGame(std::move(movedProtocol.value())); */
+
 }
 
-/* ClientProtocol&& Lobby::get_protocol() {
-    return std::move(protocol.value());
+/* std::optional<ClientProtocol> Lobby::take_protocol() {
+    return std::move(protocol);
 } */
 
 Lobby::~Lobby()

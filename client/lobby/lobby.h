@@ -28,7 +28,7 @@ public:
     void initiate_connection(const std::string& ip, const std::string& port);
     void startGame();
 
-    //ClientProtocol&& get_protocol();
+    //std::optional<ClientProtocol> take_protocol();
 
 private:
     Ui::Lobby *ui;
