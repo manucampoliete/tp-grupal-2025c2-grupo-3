@@ -2,16 +2,12 @@
 #include "car.h"
 #include <string>
 
-UIRenderer::UIRenderer(Renderer& renderer, 
-                       Font& font,
-                       Texture& map_texture,
-                       World& world,
-                       uint8_t player_id)
-    : renderer(renderer),
-      font(font),
-      map_texture(map_texture),
-      world(world),
-      player_id(player_id) {
+UIRenderer::UIRenderer(Renderer& renderer, Font& font, Texture& map_texture, World& world, uint8_t player_id) :
+    renderer(renderer),
+    font(font),
+    map_texture(map_texture),
+    world(world),
+    player_id(player_id) {
 }
 
 
@@ -28,7 +24,7 @@ void UIRenderer::update_layout(int window_width, int window_height) {
     // actualizo los botones (posiciones relativas al popup de mods)
     // chequear!!
     int btn_w = static_cast<int>(popup_w * 0.4f);
-    int btn_h = static_cast<int>(popup_h * 0.1f);
+    int btn_h = static_cast<int>(popup_h * 0.15f);
     int margin_x = static_cast<int>(popup_w * 0.1f);
     int margin_y = static_cast<int>(popup_h * 0.1f);
 
@@ -45,6 +41,46 @@ void UIRenderer::update_layout(int window_width, int window_height) {
     
     // esq derecha abajpo
     minimap_rect = Rect(window_width - minimap_w - margin, window_height - minimap_h - margin, minimap_w, minimap_h);
+}
+
+
+void UIRenderer::render_countdown(uint8_t countdown_number) {
+    // resetear escalado
+    renderer.SetScale(1.0f, 1.0f);
+
+    // overlay oscuro semi-transparente
+    renderer.SetDrawBlendMode(SDL_BLENDMODE_BLEND);
+    renderer.SetDrawColor(0, 0, 0, 150);
+    renderer.FillRect(Rect(0, 0, renderer.GetOutputWidth(), renderer.GetOutputHeight()));
+
+    // texto del countdown
+    std::string text;
+    SDL_Color color;
+    
+    if (countdown_number == 3) {
+        text = "3";
+        color = {255, 0, 0, 255}; // rojo
+    } else if (countdown_number == 2) {
+        text = "2";
+        color = {255, 165, 0, 255}; // naranja
+    } else if (countdown_number == 1) {
+        text = "1";
+        color = {255, 255, 0, 255}; // amarillo
+    } else { // 0 = GO!
+        text = "GO!";
+        color = {0, 255, 0, 255}; // verde
+    }
+
+    // crear fuente gigante para el countdown
+    Font big_font("assets/fonts/VCR_OSD_MONO.ttf", 140);
+    Surface s = big_font.RenderText_Solid(text, color);
+    Texture t(renderer, s);
+
+    // centrar en pantalla
+    int x = (renderer.GetOutputWidth() - t.GetWidth()) / 2;
+    int y = (renderer.GetOutputHeight() - t.GetHeight()) / 2;
+
+    renderer.Copy(t, NullOpt, Rect(x, y, t.GetWidth(), t.GetHeight()));
 }
 
 
@@ -76,7 +112,7 @@ void UIRenderer::render_race_ui(uint32_t race_timer_ms, int current_race, int to
 }
 
 
-void UIRenderer::render_stats_popup(const RaceResults& current_results, uint32_t stats_timer_ms, const Rect& stats_popup_rect) {
+void UIRenderer::render_stats_popup(const RaceResults& current_results, uint32_t stats_timer_ms) {
     // reseteo el escalado para la UI
     renderer.SetScale(1.0f, 1.0f);
     
@@ -88,35 +124,116 @@ void UIRenderer::render_stats_popup(const RaceResults& current_results, uint32_t
     renderer.SetDrawColor(40, 40, 40, 255);
     renderer.FillRect(stats_popup_rect);
 
+    // borde del popup
+    renderer.SetDrawBlendMode(SDL_BLENDMODE_NONE);
+    renderer.SetDrawColor(100, 100, 150, 255);
+    renderer.DrawRect(stats_popup_rect);
+
     Surface title_surface = font.RenderText_Solid("Resultados de la carrera", {255, 255, 0, 255});
     Texture title_texture(renderer, title_surface);
     int title_x = stats_popup_rect.x + (stats_popup_rect.w - title_texture.GetWidth()) / 2;
-    renderer.Copy(title_texture, NullOpt, Rect(title_x, stats_popup_rect.y + 20, title_texture.GetWidth(), title_texture.GetHeight()));
+    renderer.Copy(title_texture, NullOpt, Rect(title_x, stats_popup_rect.y + 30, title_texture.GetWidth(), title_texture.GetHeight()));
 
-    int row_y = stats_popup_rect.y + 80;
+    // ENCABEZADOS DE LA TABLA (centrados en columnas)
+    int table_start_y = stats_popup_rect.y + 100;
+    int row_height = 50;
+    
+    // definir anchos de columnas (proporcionales al popup)
+    int col_pos_w = static_cast<int>(stats_popup_rect.w * 0.15f);
+    int col_name_w = static_cast<int>(stats_popup_rect.w * 0.35f);
+    int col_race_w = static_cast<int>(stats_popup_rect.w * 0.25f);
+    int col_total_w = static_cast<int>(stats_popup_rect.w * 0.25f);
+    
+    int col_pos_x = stats_popup_rect.x + 20;
+    int col_name_x = col_pos_x + col_pos_w;
+    int col_race_x = col_name_x + col_name_w;
+    int col_total_x = col_race_x + col_race_w;
+    
+    // renderizar encabezados
+    Surface h1_s = font.RenderText_Solid("POS", {200, 200, 200, 255});
+    Texture h1_t(renderer, h1_s);
+    int h1_x = col_pos_x + (col_pos_w / 2) - (h1_t.GetWidth() / 2); // Centrado
+    renderer.Copy(h1_t, NullOpt, Rect(h1_x, table_start_y, h1_t.GetWidth(), h1_t.GetHeight()));
+    
+    Surface h2_s = font.RenderText_Solid("JUGADOR", {200, 200, 200, 255});
+    Texture h2_t(renderer, h2_s);
+    int h2_x = col_name_x + (col_name_w / 2) - (h2_t.GetWidth() / 2); // Centrado
+    renderer.Copy(h2_t, NullOpt, Rect(h2_x, table_start_y, h2_t.GetWidth(), h2_t.GetHeight()));
+    
+    Surface h3_s = font.RenderText_Solid("TIEMPO CARRERA", {200, 200, 200, 255});
+    Texture h3_t(renderer, h3_s);
+    int h3_x = col_race_x + (col_race_w / 2) - (h3_t.GetWidth() / 2); // Centrado
+    renderer.Copy(h3_t, NullOpt, Rect(h3_x, table_start_y, h3_t.GetWidth(), h3_t.GetHeight()));
+    
+    Surface h4_s = font.RenderText_Solid("TIEMPO TOTAL", {200, 200, 200, 255});
+    Texture h4_t(renderer, h4_s);
+    int h4_x = col_total_x + (col_total_w / 2) - (h4_t.GetWidth() / 2); // Centrado
+    renderer.Copy(h4_t, NullOpt, Rect(h4_x, table_start_y, h4_t.GetWidth(), h4_t.GetHeight()));
+    
+    // línea separadora bajo encabezados
+    renderer.SetDrawColor(100, 100, 150, 255);
+    int line_y = table_start_y + 35;
+    renderer.DrawLine(col_pos_x, line_y, col_total_x + col_total_w - 40, line_y);
+
+    // FILAS DE JUGADORES
+    int row_y = line_y + 15;
+    int position = 1;
+    
     for (const auto& player : current_results.players) {
-        std::string name = player.player_name;
-        std::string race_t = std::to_string(player.race_time_ms / 1000.0f) + "s";
-        std::string total_t = std::to_string(player.total_time_ms / 1000.0f) + "s";
+        // posición
+        std::string pos_text = std::to_string(position) + "°";
+        SDL_Color row_color = (position == 1) ? SDL_Color{255, 215, 0, 255} : // dorado para 1°
+                              (position == 2) ? SDL_Color{192, 192, 192, 255} : // plateado para 2°
+                              (position == 3) ? SDL_Color{205, 127, 50, 255} : // bronce para 3°
+                              SDL_Color{255, 255, 255, 255}; // blanco para el resto
         
-        std::string row = name + "     " + race_t + "     " + total_t;
-        Surface row_surface = font.RenderText_Solid(row, {255, 255, 255, 255});
-        Texture row_texture(renderer, row_surface);
-        renderer.Copy(row_texture, NullOpt, Rect(stats_popup_rect.x + 50, row_y, row_texture.GetWidth(), row_texture.GetHeight()));
-        row_y += 40;
+        Surface pos_s = font.RenderText_Solid(pos_text, row_color);
+        Texture pos_t(renderer, pos_s);
+        renderer.Copy(pos_t, NullOpt, Rect(col_pos_x, row_y, pos_t.GetWidth(), pos_t.GetHeight()));
+        
+        // nombre
+        Surface name_s = font.RenderText_Solid(player.player_name, row_color);
+        Texture name_t(renderer, name_s);
+        renderer.Copy(name_t, NullOpt, Rect(col_name_x, row_y, name_t.GetWidth(), name_t.GetHeight()));
+        
+        // tiempo de carrera
+        int race_minutes = player.race_time_ms / 60000;
+        int race_seconds = (player.race_time_ms % 60000) / 1000;
+        int race_millis = player.race_time_ms % 1000;
+        char race_time_buf[32];
+        snprintf(race_time_buf, sizeof(race_time_buf), "%02d:%02d.%03d", race_minutes, race_seconds, race_millis);
+        
+        Surface race_s = font.RenderText_Solid(race_time_buf, row_color);
+        Texture race_t(renderer, race_s);
+        renderer.Copy(race_t, NullOpt, Rect(col_race_x, row_y, race_t.GetWidth(), race_t.GetHeight()));
+        
+        // tiempo total
+        int total_minutes = player.total_time_ms / 60000;
+        int total_seconds = (player.total_time_ms % 60000) / 1000;
+        int total_millis = player.total_time_ms % 1000;
+        char total_time_buf[32];
+        snprintf(total_time_buf, sizeof(total_time_buf), "%02d:%02d.%03d", total_minutes, total_seconds, total_millis);
+        
+        Surface total_s = font.RenderText_Solid(total_time_buf, row_color);
+        Texture total_t(renderer, total_s);
+        renderer.Copy(total_t, NullOpt, Rect(col_total_x, row_y, total_t.GetWidth(), total_t.GetHeight()));
+        
+        row_y += row_height;
+        position++;
     }
     
-    // timer
+    // COUNTDOWN (centrado abajo)
     int seconds = stats_timer_ms / 1000;
-    std::string timer_text = "Siguiente carrera en: " + std::to_string(seconds);
-    Surface timer_surface = font.RenderText_Solid(timer_text, {255, 255, 255, 255});
+    std::string timer_text = "Siguiente carrera en: " + std::to_string(seconds) + "s";
+    Surface timer_surface = font.RenderText_Solid(timer_text, {150, 255, 150, 255}); // verde claro
     Texture timer_texture(renderer, timer_surface);
     int timer_x = stats_popup_rect.x + (stats_popup_rect.w - timer_texture.GetWidth()) / 2;
-    renderer.Copy(timer_texture, NullOpt, Rect(timer_x, stats_popup_rect.y + stats_popup_rect.h - 50, timer_texture.GetWidth(), timer_texture.GetHeight()));
+    int timer_y = stats_popup_rect.y + stats_popup_rect.h - 60;
+    renderer.Copy(timer_texture, NullOpt, Rect(timer_x, timer_y, timer_texture.GetWidth(), timer_texture.GetHeight()));
 }
 
 
-void UIRenderer::render_modification_popup(bool speed_modified, bool accel_modified, uint32_t mod_timer_ms, const Rect& mod_popup_rect) {
+void UIRenderer::render_modification_popup(bool speed_modified, bool accel_modified, uint32_t mod_timer_ms) {
     // reseteo el escalado para la UI
     renderer.SetScale(1.0f, 1.0f);
     
@@ -128,37 +245,90 @@ void UIRenderer::render_modification_popup(bool speed_modified, bool accel_modif
     renderer.SetDrawColor(40, 40, 40, 255);
     renderer.FillRect(mod_popup_rect);
 
+    // borde del popup
+    renderer.SetDrawBlendMode(SDL_BLENDMODE_NONE);
+    renderer.SetDrawColor(100, 100, 150, 255);
+    renderer.DrawRect(mod_popup_rect);
+
     Surface title_surface = font.RenderText_Solid("Modificación de auto", {255, 255, 0, 255});
     Texture title_texture(renderer, title_surface);
     int title_x = mod_popup_rect.x + (mod_popup_rect.w - title_texture.GetWidth()) / 2;
-    renderer.Copy(title_texture, NullOpt, Rect(title_x, mod_popup_rect.y + 20, title_texture.GetWidth(), title_texture.GetHeight()));
+    renderer.Copy(title_texture, NullOpt, Rect(title_x, mod_popup_rect.y + 30, title_texture.GetWidth(), title_texture.GetHeight()));
 
-    // botones (rects responsivos)
-    renderer.SetDrawColor(speed_modified ? 0 : 100, speed_modified ? 200 : 100, 100, 255);
+    // SUBTITULO
+    Surface sub_surface = font.RenderText_Solid("Selecciona las mejoras para tu auto", {180, 180, 180, 255});
+    Texture sub_texture(renderer, sub_surface);
+    int sub_x = mod_popup_rect.x + (mod_popup_rect.w - sub_texture.GetWidth()) / 2;
+    renderer.Copy(sub_texture, NullOpt, Rect(sub_x, mod_popup_rect.y + 70, sub_texture.GetWidth(), sub_texture.GetHeight()));
+
+    // BOTON DE VELOCIDAD
+    renderer.SetDrawBlendMode(SDL_BLENDMODE_BLEND);
+    renderer.SetDrawColor(speed_modified ? 50 : 80, speed_modified ? 200 : 80, speed_modified ? 50 : 100, 255);
     renderer.FillRect(speed_button_rect);
+    
+    // borde del botón
+    renderer.SetDrawBlendMode(SDL_BLENDMODE_NONE);
+    renderer.SetDrawColor(speed_modified ? 100 : 60, speed_modified ? 255 : 100, speed_modified ? 100 : 120, 255);
+    renderer.DrawRect(speed_button_rect);
+    
+    // texto del botón (centrado verticalmente)
     Surface speed_surface = font.RenderText_Solid("Velocidad +5%", {255, 255, 255, 255});
     Texture speed_texture(renderer, speed_surface);
-    renderer.Copy(speed_texture, NullOpt, Rect(speed_button_rect.x + 10, speed_button_rect.y + 10, speed_texture.GetWidth(), speed_texture.GetHeight()));
+    // mover texto 10px hacia arriba del centro
+    int speed_text_y = speed_button_rect.y + (speed_button_rect.h / 2) - speed_texture.GetHeight(); 
+    renderer.Copy(speed_texture, NullOpt, Rect(speed_button_rect.x + 20, speed_text_y, speed_texture.GetWidth(), speed_texture.GetHeight()));
+    
+    // penalización (derecha del botón)
+    Surface speed_pen = font.RenderText_Solid("Costo: +10s", {255, 200, 100, 255});
+    Texture speed_pen_t(renderer, speed_pen);
+    // mover texto 10px hacia abajo del centro
+    int pen_y = speed_button_rect.y + (speed_button_rect.h / 2) + 5; 
+    renderer.Copy(speed_pen_t, NullOpt, Rect(speed_button_rect.x + 20, pen_y, speed_pen_t.GetWidth(), speed_pen_t.GetHeight()));
 
-    renderer.SetDrawColor(accel_modified ? 0 : 100, accel_modified ? 200 : 100, 100, 255);
+    // BOTON DE ACELERACIÓN
+    renderer.SetDrawBlendMode(SDL_BLENDMODE_BLEND);
+    renderer.SetDrawColor(accel_modified ? 50 : 80, accel_modified ? 200 : 80, accel_modified ? 50 : 100, 255);
     renderer.FillRect(accel_button_rect);
-    Surface accel_surface = font.RenderText_Solid("Aceleración +5%", {255, 255, 255, 255});
+    
+    renderer.SetDrawBlendMode(SDL_BLENDMODE_NONE);
+    renderer.SetDrawColor(accel_modified ? 100 : 60, accel_modified ? 255 : 100, accel_modified ? 100 : 120, 255);
+    renderer.DrawRect(accel_button_rect);
+    
+    Surface accel_surface = font.RenderText_Solid("Aceleracion +5%", {255, 255, 255, 255});
     Texture accel_texture(renderer, accel_surface);
-    renderer.Copy(accel_texture, NullOpt, Rect(accel_button_rect.x + 10, accel_button_rect.y + 10, accel_texture.GetWidth(), accel_texture.GetHeight()));
+    // mover texto 10px hacia arriba del centro
+    int accel_text_y = accel_button_rect.y + (accel_button_rect.h / 2) - accel_texture.GetHeight();
+    renderer.Copy(accel_texture, NullOpt, Rect(accel_button_rect.x + 20, accel_text_y, accel_texture.GetWidth(), accel_texture.GetHeight()));
+    
+    Surface accel_pen = font.RenderText_Solid("Costo: +8s", {255, 200, 100, 255});
+    Texture accel_pen_t(renderer, accel_pen);
+    // mover texto 10px hacia abajo del centro
+    int accel_pen_y = accel_button_rect.y + (accel_button_rect.h / 2) + 5;
+    renderer.Copy(accel_pen_t, NullOpt, Rect(accel_button_rect.x + 20, accel_pen_y, accel_pen_t.GetWidth(), accel_pen_t.GetHeight()));
 
-    renderer.SetDrawColor(0, 150, 0, 255);
+    // BOTON GUARDAR
+    renderer.SetDrawBlendMode(SDL_BLENDMODE_BLEND);
+    renderer.SetDrawColor(50, 150, 255, 255); // azul
     renderer.FillRect(save_button_rect);
-    Surface save_surface = font.RenderText_Solid("Guardar cambios", {255, 255, 255, 255});
+    
+    renderer.SetDrawBlendMode(SDL_BLENDMODE_NONE);
+    renderer.SetDrawColor(100, 200, 255, 255);
+    renderer.DrawRect(save_button_rect);
+    
+    Surface save_surface = font.RenderText_Solid("GUARDAR Y CONTINUAR", {255, 255, 255, 255});
     Texture save_texture(renderer, save_surface);
-    renderer.Copy(save_texture, NullOpt, Rect(save_button_rect.x + 15, save_button_rect.y + 15, save_texture.GetWidth(), save_texture.GetHeight()));
+    int save_text_x = save_button_rect.x + (save_button_rect.w - save_texture.GetWidth()) / 2;
+    int save_text_y = save_button_rect.y + (save_button_rect.h - save_texture.GetHeight()) / 2;
+    renderer.Copy(save_texture, NullOpt, Rect(save_text_x, save_text_y, save_texture.GetWidth(), save_texture.GetHeight()));
 
-    // timer
+    // COUNTDOWN (centrado abajo)
     int seconds = mod_timer_ms / 1000;
-    std::string countdown = "Tiempo restante: " + std::to_string(seconds) + " s";
-    Surface countdown_surface = font.RenderText_Solid(countdown, {255, 255, 255, 255});
+    std::string countdown = "Tiempo restante: " + std::to_string(seconds) + "s";
+    Surface countdown_surface = font.RenderText_Solid(countdown, {255, 150, 150, 255}); // rojo claro
     Texture countdown_texture(renderer, countdown_surface);
     int timer_x = mod_popup_rect.x + (mod_popup_rect.w - countdown_texture.GetWidth()) / 2;
-    renderer.Copy(countdown_texture, NullOpt, Rect(timer_x, mod_popup_rect.y + mod_popup_rect.h - 50, countdown_texture.GetWidth(), countdown_texture.GetHeight()));
+    int timer_y = mod_popup_rect.y + mod_popup_rect.h - 60;
+    renderer.Copy(countdown_texture, NullOpt, Rect(timer_x, timer_y, countdown_texture.GetWidth(), countdown_texture.GetHeight()));
 }
 
 

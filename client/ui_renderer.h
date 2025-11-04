@@ -37,19 +37,16 @@ private:
     Rect minimap_rect;
 
 public:
-    UIRenderer(Renderer& renderer, 
-               Font& font,
-               Texture& map_texture,
-               World& world,
-               uint8_t player_id);
+    UIRenderer(Renderer& renderer, Font& font, Texture& map_texture, World& world, uint8_t player_id);
 
-    void render_countdown(uint8_t number);
+    // renderizar la ui sin la cámara y sin escalado
+    void render_countdown(uint8_t countdown_number);
 
     void render_race_ui(uint32_t race_timer_ms, int current_race, int total_races, int window_width);
     
-    void render_stats_popup(const RaceResults& current_results, uint32_t stats_timer_ms, const Rect& stats_popup_rect);
+    void render_stats_popup(const RaceResults& current_results, uint32_t stats_timer_ms);
     
-    void render_modification_popup(bool speed_modified, bool accel_modified, uint32_t mod_timer_ms, const Rect& mod_popup_rect);
+    void render_modification_popup(bool speed_modified, bool accel_modified, uint32_t mod_timer_ms);
     
     // fondo semi-transparente
     // mapa completo, achicado (NullOpt es "copiar toda la textura")

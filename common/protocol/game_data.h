@@ -19,8 +19,14 @@ struct PlayerStats {
 };
 
 struct RaceResults {
-    std::vector<PlayerStats> players;
-    uint16_t countdown_ms; // timer para la pantalla de stats
+    struct PlayerResult {
+        std::string player_name;
+        uint32_t race_time_ms;
+        uint32_t total_time_ms;
+    };
+
+    std::vector<PlayerResult> players;
+    uint32_t countdown_ms; 
 };
 
 // para la fase de modificación

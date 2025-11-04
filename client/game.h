@@ -51,10 +51,14 @@ private:
     WorldRenderer world_renderer;
     UIRenderer ui_renderer;
 
-    game_state current_state = game_state::RACING;
+    game_state current_state = game_state::COUNTDOWN;
+
+    // countdown
+    uint8_t countdown_number = 3; // 3, 2, 1, 0=GO
+    float countdown_timer = 0.0f; // timer interno para cambiar numeros
 
     // esto lo envia el servidor
-    uint32_t race_timer_ms = 60000; // 10 min
+    uint32_t race_timer_ms = 20000; // 20 seg
     uint32_t stats_timer_ms = 10000;
     uint32_t mod_timer_ms = 10000;
 
@@ -69,8 +73,6 @@ private:
     // flags para simular modificaciones
     bool speed_modified = false;
     bool accel_modified = false;
-
-    uint8_t countdown_number = 3; // 3, 2, 1, 0=GO
 
     void process_input();
     void update(float dt);

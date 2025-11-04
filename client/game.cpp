@@ -100,6 +100,10 @@ void Game::process_input() {
             return;
         }
 
+        // durante countdown no procesamos inputs
+        if (current_state == game_state::COUNTDOWN)
+            continue;
+
         if (current_state == game_state::MODIFYING_CAR && event.type == SDL_MOUSEBUTTONDOWN) {
             int x = event.button.x;
             int y = event.button.y;
@@ -111,8 +115,10 @@ void Game::process_input() {
                 accel_modified = !accel_modified;
 
             if (ui_renderer.get_save_button_rect().Contains(x, y)) {
-                current_state = game_state::RACING;
-                race_timer_ms = 60000;
+                // volver a countdown
+                countdown_number = 3;
+                countdown_timer = 0.0f;
+                current_state = game_state::COUNTDOWN;
                 current_race++;
             }
         }
@@ -155,6 +161,72 @@ void Game::update(float dt) {
         // Actualizar cámara
         world_renderer.update_camera(my_car_state.x, my_car_state.y);
     }
+
+
+    // HARDCODEADO: manejar transiciones para testear lo visual
+    if (current_state == game_state::COUNTDOWN) {
+        countdown_timer += dt;
+        
+        if (countdown_timer >= 1000.0f) { // cada 1 seg
+            countdown_timer = 0.0f;
+            
+            if (countdown_number > 0) {
+                countdown_number--;
+            } else {
+                // despues del GO empezar carrera
+                current_state = game_state::RACING;
+                race_timer_ms = 20000; // resetear a 20 seg
+            }
+        }
+    } else if (current_state == game_state::RACING) {
+        if (race_timer_ms > dt) {
+            race_timer_ms -= static_cast<uint32_t>(dt);
+        } else {
+            // cuando se acaba el tiempo, mostrar stats
+            race_timer_ms = 0;
+            
+            // HARDCODEADO: resultados de prueba
+            RaceResults fake_results;
+            fake_results.countdown_ms = 10000; // 10 seg
+            
+            RaceResults::PlayerResult p1;
+            p1.player_name = "Player1";
+            p1.race_time_ms = 58000;
+            p1.total_time_ms = 180000;
+            fake_results.players.push_back(p1);
+            
+            RaceResults::PlayerResult p2;
+            p2.player_name = "Player2";
+            p2.race_time_ms = 60000;
+            p2.total_time_ms = 185000;
+            fake_results.players.push_back(p2);
+            
+            show_stats(fake_results);
+        }
+    } else if (current_state == game_state::SHOWING_STATS) {
+        if (stats_timer_ms > dt) {
+            stats_timer_ms -= static_cast<uint32_t>(dt);
+        } else {
+            // pasar a modificaciones
+            stats_timer_ms = 0;
+            
+            // HARDCODEADO: propiedades de prueba
+            CarProperties fake_props;
+            fake_props.countdown_ms = 10000; // 10 seg
+            show_modifications(fake_props);
+        }
+    } else if (current_state == game_state::MODIFYING_CAR) {
+        if (mod_timer_ms > dt) {
+            mod_timer_ms -= static_cast<uint32_t>(dt);
+        } else {
+            // volver a countdown para siguiente carrera
+            mod_timer_ms = 0;
+            countdown_number = 3;
+            countdown_timer = 0.0f;
+            current_state = game_state::COUNTDOWN;
+            current_race++;
+        }
+    }
 }
 
 
@@ -173,6 +245,7 @@ void Game::set_race_timer(uint16_t time_ms) {
 void Game::show_countdown(uint8_t number) {
     current_state = game_state::COUNTDOWN;
     countdown_number = number;
+    countdown_timer = 0.0f;
 }
 
 void Game::show_stats(const RaceResults& results) {
@@ -199,6 +272,7 @@ void Game::render() {
     // renderizar la ui sin la cámara y sin escalado
     switch (current_state) {
         case game_state::COUNTDOWN:
+            ui_renderer.render_countdown(countdown_number);
             break;
         case game_state::RACING:
             ui_renderer.render_race_ui(race_timer_ms, current_race, total_races, window.GetWidth());
@@ -206,10 +280,10 @@ void Game::render() {
         case game_state::ELIMINATED:
             break;
         case game_state::SHOWING_STATS:
-            ui_renderer.render_stats_popup(current_results, stats_timer_ms, ui_renderer.get_speed_button_rect()); 
+            ui_renderer.render_stats_popup(current_results, stats_timer_ms); 
             break;
         case game_state::MODIFYING_CAR:
-            ui_renderer.render_modification_popup(speed_modified, accel_modified, mod_timer_ms, ui_renderer.get_speed_button_rect()); 
+            ui_renderer.render_modification_popup(speed_modified, accel_modified, mod_timer_ms); 
             break;
         case game_state::GAME_END:
             break;
@@ -217,6 +291,6 @@ void Game::render() {
 
     if (current_state == game_state::RACING)
         ui_renderer.render_minimap();
-
+        
     renderer.Present();
 }
