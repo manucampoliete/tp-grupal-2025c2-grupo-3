@@ -5,6 +5,7 @@ target_sources(taller_common
     # .h files
     )
 
+add_subdirectory(errors)
 add_subdirectory(commands)
 add_subdirectory(protocol)
 add_subdirectory(queue)
