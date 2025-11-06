@@ -4,20 +4,26 @@
 #include "../common/queue/queue.h"
 #include "../common/thread/thread.h"
 #include "../common/commands/move_request.h"
-#include "../common/protocol/dummy_client_protocol.h"
+#include "../common/protocol/client_protocol.h"
 
 
+/**
+ * Sender: hilo que envía comandos del cliente al servidor
+ * - Lee comandos de la cola client_requests_q
+ * - Los serializa y envía usando ClientProtocol
+ */
 class Sender: public Thread {
 private:
-    DummyClientProtocol& protocol;
+    ClientProtocol& protocol;
     Queue<MoveRequest>& client_requests_q;
 
 public:
     /**
      * Constructor: initializes the Sender with the given parameters.
+     * client_requests_q: cola de comandos a enviar
      */
-    Sender(DummyClientProtocol& protocol, Queue<MoveRequest>& client_requests_q);
-
+    Sender(ClientProtocol& protocol, Queue<MoveRequest>& client_requests_q);
+    
     /**
      * TODO: add proper documentation
      */
@@ -30,4 +36,5 @@ public:
     ~Sender() override = default;
 };
 
-#endif  // SENDER_H
+
+#endif // SENDER_H

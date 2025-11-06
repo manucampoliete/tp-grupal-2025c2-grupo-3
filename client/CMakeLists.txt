@@ -3,7 +3,6 @@ target_sources(taller_client
     # .cpp files
     client.cpp
     main.cpp
-    client_protocol.cpp
     receiver.cpp
     sender.cpp
     game.cpp
@@ -12,10 +11,10 @@ target_sources(taller_client
     car.cpp
     world.cpp
     event_handler.cpp
+    game_handler.cpp
     PUBLIC
     # .h files
     client.h
-    client_protocol.h
     receiver.h
     sender.h
     game.h
@@ -24,4 +23,5 @@ target_sources(taller_client
     car.h
     world.h
     event_handler.h
+    game_handler.h
     )

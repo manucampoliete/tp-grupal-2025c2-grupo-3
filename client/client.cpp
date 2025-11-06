@@ -1,188 +1,61 @@
 #include "client.h"
-#include "game.h"
-#include "../common/protocol/dummy_client_protocol.h"
-#include "../common/socket/socket.h"
+#include "lobby/lobby.h"
+#include "../common/protocol/client_protocol.h"
 
+#include <QApplication>
 #include <iostream>
-#include <utility>
-#include <sys/socket.h>
 
 
-Client::Client(const std::string& hostname, const std::string& servname):
-        socket(hostname.c_str(), servname.c_str()),
-        protocol(socket),
-        client_requests_q(),
-        server_responses_q(),
-        sender(protocol, client_requests_q),
-        receiver(protocol, server_responses_q, *this) {}
 
-/*
-int Client::run(int argc, char* argv[]) {
-    try {
-        QApplication app(argc, argv);
-
-        std::string ip = argv[1];
-        std::string port = argv[2];
-        
-        Lobby lobby;
-        lobby.initiate_connection(ip, port);
-        lobby.show();
-        return app.exec(); 
-
-    } catch (const std::exception& e) {
-        std::cerr << "Error: " << e.what() << std::endl;
-        return 1;
-    }
+Client::Client(const std::string& hostname, const std::string& servname, uint8_t player_id) :
+    socket(hostname.c_str(), servname.c_str()),
+    protocol(socket),
+    player_id(player_id),
+    lobby_finished(false) {
 }
-*/
-
 
 
 void Client::run(int argc, char* argv[]) {
+    // FASE 1: lobby (qt)
     QApplication app(argc, argv);
 
     std::string ip = argv[1];
     std::string port = argv[2];
     
     Lobby lobby;
-    lobby.initiate_connection(ip, port);
+    lobby.initiate_connection(ip, port/*, protocol*/);
+ 
+    // señal de lobby terminado
+    // CHEQUEAR
+    /*
+    QObject::connect(&lobby, &Lobby::game_started, [this]() {
+        this->on_lobby_finished();
+    });
+    */
+
     lobby.show();
-    app.exec(); 
-
-    sender.start();
-    receiver.start();
+    app.exec(); // blocking hasta que se cierre el lobby
     
-}
 
-
-void Client::stop() {
-    try {
-        // cierra la comunicación y detiene los hilos
-        client_requests_q.close();
-        server_responses_q.close();
-        sender.stop();
-        receiver.stop();
-        sender.join();
-        receiver.join();
-        socket.shutdown(SHUT_RDWR);
-        socket.close();
-    } catch (const std::exception& e) {
-        std::cerr << "Error al detener el cliente: " << e.what() << std::endl;
-    }
-    std::cout << "[CLIENT] Cliente detenido." << std::endl;
-}
-
-
-void Client::set_game(Game* game) {
-    this->game_ptr = game;
-}
-
-World& Client::get_world() {
-    return world;
-}
-
-
-void Client::send_movement(bool up, bool down, bool left, bool right) {
-    MoveRequest req(up, down, left, right);
-    client_requests_q.try_push(req); // try_push para no bloquear el hilo de juego
-}
-
-void Client::send_modifications(bool speed, bool accel) {
-    try {
-        // Esta es la línea que faltaba:
-        protocol.send_modifications(speed, accel);
-    } catch (const std::exception& e) {
-        std::cerr << "Error al enviar modificaciones: " << e.what() << std::endl;
+    // FASE 2: game (SDL)
+    if (lobby_finished) {
+        std::cout << "[CLIENT] Lobby finished, starting game..." << std::endl;
+        
+        GameHandler game_handler(protocol, player_id);
+        game_handler.run(); // blocking hasta que se cierre el juego
+        
+        std::cout << "[CLIENT] Juego finished" << std::endl;
+    } else {
+        std::cout << "[CLIENT] Lobby cancelled, closing client" << std::endl;
     }
 }
 
-void Client::update_world(const std::vector<std::pair<ClientID, Vector2D>>& positions) {
-    // cambio la informacion a la estructura del broadcast
-    // despues vemos si lo pasamos directamente asi o si dejamos esta transformacion
-    BroadcastData data;
-    for (const auto& p : positions) {
-        BroadcastData::CarState car_state;
-        car_state.id = p.first;
-        car_state.x = p.second.x;
-        car_state.y = p.second.y;
-
-        // el protocolo debe enviar ángulo
-        // el tipo de auto ya lo tendria asignado el cliente desde que lo elige en el lobby
-        // por ahora, los dejo en 0
-
-        car_state.angle = 0.0f; 
-        car_state.type = 0;
-        data.cars.push_back(car_state);
-    }
-
-    // el protocolo deberá enviar el tiempo restante
-    data.countdown = 60000; // 1 minuto como ejemplo
-    
-    world.update(data);
-}
-
-void Client::show_stats_screen(const RaceResults& results) {
-    if (game_ptr)
-        game_ptr->show_stats(results);
-}
-
-void Client::show_mod_screen(const CarProperties& props) {
-    if (game_ptr)
-        game_ptr->show_modifications(props);
-}
-
-
-
-
-ClientID Client::get_my_id() {
-    // TEMPORAL
-    // el server va a mandar un mensaje con el id asignado al cliente
-    return 0;
+void Client::on_lobby_finished() {
+    lobby_finished = true;
+    std::cout << "[CLIENT] Signal received: lobby finished." << std::endl;
 }
 
 Client::~Client() {
-    stop();
+    socket.shutdown(SHUT_RDWR);
+    socket.close();
 }
-
-
-
-
-/*
-
-void Client::on_countdown(uint8_t number) {
-      if (game_ptr) game_ptr->show_countdown(number);
-  }
-  
-  void Client::on_race_start() {
-      if (game_ptr) game_ptr->start_race();
-  }
-  
-  void Client::on_checkpoint_crossed(uint8_t id) {
-      // Opcional: mostrar feedback visual/sonido
-  }
-  
-  void Client::on_collision(CollisionData collision) {
-      if (game_ptr) game_ptr->show_collision_effect(collision);
-  }
-  
-  void Client::on_player_died(uint8_t id) {
-      if (id == get_my_id() && game_ptr) {
-          game_ptr->show_eliminated_screen();
-      }
-      // Activar animación de explosión para ese auto
-      if (game_ptr) game_ptr->trigger_explosion(id);
-  }
-  
-  void Client::on_race_end(RaceResults results) {
-      if (game_ptr) game_ptr->show_stats(results);
-  }
-  
-  void Client::on_modification_phase(CarProperties props) {
-      if (game_ptr) game_ptr->show_modifications(props);
-  }
-  
-  void Client::on_game_end(FinalResults results) {
-      if (game_ptr) game_ptr->show_game_end(results);
-  }
-
-*/

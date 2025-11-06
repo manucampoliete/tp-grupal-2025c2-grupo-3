@@ -4,24 +4,31 @@
 #include "../common/queue/queue.h"
 #include "../common/thread/thread.h"
 #include "../common/commands/move_request.h"
-#include "../common/protocol/dummy_client_protocol.h"
+#include "../common/protocol/protocol_constants.h"
 #include "../server/types.h"
-#include <vector>
+#include "../common/protocol/client_protocol.h"
 
 
-class Client;
+class GameHandler;
 
+/**
+ * Receiver: hilo que recibe mensajes del servidor
+ * - Lee mensajes del servidor usando ClientProtocol
+ * - Los deserializa y notifica al GameHandler
+ */
 class Receiver: public Thread {
 private:
-    DummyClientProtocol& protocol;
-    Queue<std::vector<std::pair<ClientID, Vector2D>>>& server_responses_q; 
-    Client& client; // referencia para avisarle de las actualizaciones
+    ClientProtocol& protocol;
+    Queue<Snapshot>& server_snapshots_q;
+    GameHandler& game_handler;
 
 public:
     /**
      * Constructor: initializes the Receiver with the given parameters.
+     * server_snapshots_q: cola de snapshots recibidos
+     * game_handler: referencia al GameHandler para notificar eventos
      */
-    Receiver(DummyClientProtocol& protocol, Queue<std::vector<std::pair<ClientID, Vector2D>>>& server_responses_q, Client& client);
+    Receiver(ClientProtocol& protocol, Queue<Snapshot>& server_snapshots_q, GameHandler& game_handler);
 
     /**
      * TODO: Add proper documentation
@@ -36,4 +43,4 @@ public:
 };
 
 
-#endif  // RECEIVER_H
+#endif // RECEIVER_H

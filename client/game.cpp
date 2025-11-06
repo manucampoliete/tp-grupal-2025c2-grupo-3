@@ -9,7 +9,7 @@
 // por ahi mas adelante cuando haya mas cosas convenga separar en mas clases
 
 
-Game::Game(World& world, Client& client, uint8_t player_id) :
+Game::Game(World& world, GameHandler& game_handler, uint8_t player_id) :
     sdl(SDL_INIT_VIDEO),
     ttf(),
 
@@ -29,12 +29,12 @@ Game::Game(World& world, Client& client, uint8_t player_id) :
     car_sprites(renderer, SDL2pp::Surface("assets/cars/Mobile - Grand Theft Auto 4 - Miscellaneous - Cars.png").SetColorKey(true, 0xa3a30d)),
 
     world(world),
-    client(client),
+    game_handler(game_handler),
     player_id(player_id),
 
     // creo el auto del jugador
     player_car(renderer, car_sprites, player_id),
-    event_handler(client, player_car, *this),
+    event_handler(game_handler, player_car, *this),
 
     // Inicializo los renderers
     world_renderer(renderer, map_texture, car_sprites, world, player_car, player_id),
@@ -136,7 +136,7 @@ void Game::handle_modification_click(int x, int y) {
 
     if (interface_renderer.get_save_button_rect().Contains(x, y)) {
         saved = !saved;
-        client.send_modifications(speed_modified, health_modified);
+        game_handler.send_modifications(speed_modified, health_modified);
     }
 }
 

@@ -2,9 +2,11 @@
 #include <SDL2pp/SDL.hh>
 #include <iostream>
 #include "game.h"
+#include "client.h"
+#include "event_handler.h"
 
-EventHandler::EventHandler(Client& client, Car& player_car, Game& game)
-    : client(client), player_car(player_car), game(game) {}
+EventHandler::EventHandler(GameHandler& game_handler, Car& player_car, Game& game)
+    : game_handler(game_handler), player_car(player_car), game(game) {}
 
 
 /**
@@ -31,7 +33,7 @@ bool EventHandler::handle_events() {
     // comparo el estado actual con el anterior
     if (up != last_up || down != last_down || left != last_left || right != last_right) {
         // si hubo un cambio envio el nuevo estado
-        client.send_movement(up, down, left, right);
+        game_handler.send_movement(up, down, left, right);
 
         // y actualizo el estado anterior
         last_up = up;
@@ -77,7 +79,7 @@ bool EventHandler::handle_events() {
         bool last_left = state[SDL_SCANCODE_A] || state[SDL_SCANCODE_LEFT];
         bool last_right = state[SDL_SCANCODE_D] || state[SDL_SCANCODE_RIGHT];
         
-        client.send_movement(last_up, last_down, last_left, last_right);
+        game_handler.send_movement(last_up, last_down, last_left, last_right);
     }
 
     return true;

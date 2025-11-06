@@ -11,12 +11,14 @@
 #include "../common/protocol/game_data.h"
 #include "car.h"
 #include "world.h"
-#include "client.h"
 #include "event_handler.h"
 #include "world_renderer.h"
 #include "interface_renderer.h"
 
 using namespace SDL2pp;
+
+
+class Client;
 
 enum class game_state {
     COUNTDOWN,
@@ -40,7 +42,7 @@ private:
     SDL2pp::Texture car_sprites;
 
     World& world;
-    Client& client;
+    GameHandler& game_handler;
     uint8_t player_id;
 
     Car player_car;
@@ -81,7 +83,7 @@ private:
     void render();
 
 public:
-    Game(World& world, Client& client, uint8_t player_id);
+    Game(World& world, GameHandler& game_handler, uint8_t player_id);
     void run();
     void start_race();
 

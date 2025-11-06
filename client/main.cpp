@@ -56,16 +56,8 @@ int main(int argc, char* argv[]) {
     
         const uint8_t my_id = static_cast<uint8_t>(std::stoi(argv[3]));
 
-        Client client(HOSTNAME, SERVNAME); // creo el client, lo conecto con el server
-
-
-        Game game(client.get_world(), client, my_id); // creo la ventana (game) y lo conecto con el client y con el world que esta adentor de client
-        client.set_game(&game); // conecto a client con el game
-
-        client.run(argc, argv); // inicio los hilos del cliente
-        game.run();
-
-        client.stop(); // cuando la partida termina detengo al cliente
+        Client client(HOSTNAME, SERVNAME, my_id); // creo el client, lo conecto con el server
+        client.run(argc, argv);
 
     } catch (const std::exception& err) {
 
