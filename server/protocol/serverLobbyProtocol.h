@@ -1,10 +1,12 @@
 #ifndef SERVER_LOBBY_PROTOCOL_H
 #define SERVER_LOBBY_PROTOCOL_H
 
-#include "../common/protocol/recvProtocol.h"
-#include "../common/protocol/sendProtocol.h"
-#include "../common/socket/socket.h"
+#include "../../common/protocol/recvProtocol.h"
+#include "../../common/protocol/sendProtocol.h"
+#include "../../common/socket/socket.h"
 #include "../requestsResolving/lobbyResolver.h"
+
+class LobbyResolver;
 
 class ServerLobbyProtocol: public RecvProtocol, public SendProtocol {
 private:

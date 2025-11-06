@@ -5,10 +5,10 @@
 #include <memory>
 #include <mutex>
 
-#include "../common/messages/snapshot.h"
-#include "../common/queue/queue.h"
+#include "../../common/messages/snapshot.h"
+#include "../../common/queue/queue.h"
 
-#include "types.h"
+#include "../../common/types/types.h"
 
 class ResponseQueuesMonitor {
 private:

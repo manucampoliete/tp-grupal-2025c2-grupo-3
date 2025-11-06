@@ -14,24 +14,24 @@ public:
     Serializer(Socket &socket) : skt(socket) {}
 
     void send_byte(uint8_t value) {
-        skt.sendall(&value, sizeof(value));
+        skt.sendAll(&value, sizeof(value));
     }
 
     void send_short(uint16_t value) {
         uint16_t value_net = htons(value);
-        skt.sendall(&value_net, sizeof(value_net));
+        skt.sendAll(&value_net, sizeof(value_net));
     }
 
     void send_int(uint32_t value) {
         uint32_t value_net = htonl(value);
-        skt.sendall(&value_net, sizeof(value_net));
+        skt.sendAll(&value_net, sizeof(value_net));
     }
 
     void send_string(const std::string &str) {
         uint16_t length = static_cast<uint16_t>(str.size());
         uint16_t length_net = htons(length);
-        skt.sendall(&length_net, sizeof(length_net));
-        skt.sendall(str.data(), length);
+        skt.sendAll(&length_net, sizeof(length_net));
+        skt.sendAll(str.data(), length);
     }
 
     ~Serializer() {}

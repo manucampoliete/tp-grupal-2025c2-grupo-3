@@ -24,115 +24,113 @@ struct ClosedQueue: public std::runtime_error {
  * On a closed queue, any method will raise ClosedQueue.
  *
  * */
-template <typename T, class C = std::deque<T> >
+
+template <typename T, class C = std::deque<T>>
 class Queue {
 private:
     std::queue<T, C> q;
-    const unsigned int maxSize;
-
+    const unsigned int max_size;
     bool closed;
-
     std::mutex mtx;
-    std::condition_variable isNotFull;
-    std::condition_variable isNotEmpty;
+    std::condition_variable is_not_full;
+    std::condition_variable is_not_empty;
 
 public:
-    Queue(): maxSize(UINT_MAX - 1), closed(false) {}
-    explicit Queue(const unsigned int maxSize): maxSize(maxSize), closed(false) {}
+    explicit Queue(unsigned int max_size = UINT_MAX - 1)
+        : max_size(max_size), closed(false) {}
 
-
-    bool tryPush(T const& val) {
+    bool tryPush(T val) {
         std::unique_lock<std::mutex> lck(mtx);
 
-        if (closed) {
+        if (closed)
             throw ClosedQueue();
-        }
 
-        if (q.size() == this->maxSize) {
+        if (q.size() == this->max_size)
             return false;
-        }
 
-        if (q.empty()) {
-            isNotEmpty.notify_all();
-        }
+        if (q.empty())
+            is_not_empty.notify_all();
 
-        q.push(val);
+        push_value(std::move(val));  // 👈 llamada a helper
         return true;
+    }
+
+    void push(T val) {
+        std::unique_lock<std::mutex> lck(mtx);
+
+        if (closed)
+            throw ClosedQueue();
+
+        while (q.size() == this->max_size)
+            is_not_full.wait(lck);
+
+        if (q.empty())
+            is_not_empty.notify_all();
+
+        push_value(std::move(val));  // 👈 llamada a helper
     }
 
     bool tryPop(T& val) {
         std::unique_lock<std::mutex> lck(mtx);
 
         if (q.empty()) {
-            if (closed) {
+            if (closed)
                 throw ClosedQueue();
-            }
             return false;
         }
 
-        if (q.size() == this->maxSize) {
-            isNotFull.notify_all();
-        }
+        if (q.size() == this->max_size)
+            is_not_full.notify_all();
 
-        val = q.front();
-        q.pop();
+        val = pop_value();  // 👈 mover o copiar según el tipo
         return true;
     }
 
-    void push(T const& val) {
-        std::unique_lock<std::mutex> lck(mtx);
-
-        if (closed) {
-            throw ClosedQueue();
-        }
-
-        while (q.size() == this->maxSize) {
-            isNotFull.wait(lck);
-        }
-
-        if (q.empty()) {
-            isNotEmpty.notify_all();
-        }
-
-        q.push(val);
-    }
-
-    // cppcheck-suppress duplInheritedMember
     T pop() {
         std::unique_lock<std::mutex> lck(mtx);
 
         while (q.empty()) {
-            if (closed) {
+            if (closed)
                 throw ClosedQueue();
-            }
-            isNotEmpty.wait(lck);
+            is_not_empty.wait(lck);
         }
 
-        if (q.size() == this->maxSize) {
-            isNotFull.notify_all();
-        }
+        if (q.size() == this->max_size)
+            is_not_full.notify_all();
 
-        T const val = q.front();
-        q.pop();
-
-        return val;
+        return pop_value();  // 👈 mover o copiar según el tipo
     }
 
-    // cppcheck-suppress duplInheritedMember
     void close() {
         std::unique_lock<std::mutex> lck(mtx);
-
-        if (closed) {
-            throw std::runtime_error("The queue is already closed.");
-        }
-
         closed = true;
-        isNotEmpty.notify_all();
+        is_not_empty.notify_all();
     }
 
-private:
-    Queue(const Queue&) = delete;
-    Queue& operator=(const Queue&) = delete;
+    private:
+    // Helpers que adaptan comportamiento automáticamente:
+
+    // Para tipos movibles (como unique_ptr)
+    template <typename U = T>
+    std::enable_if_t<!std::is_copy_constructible_v<U>>
+    push_value(U&& val) {
+        q.push(std::move(val));
+    }
+
+    // Para tipos copiables (como shared_ptr o int)
+    template <typename U = T>
+    std::enable_if_t<std::is_copy_constructible_v<U>>
+    push_value(const U& val) {
+        q.push(val);
+    }
+
+    // Para pop, usamos std::move si el tipo no es copiable
+    template <typename U = T>
+    U pop_value() {
+        U val = std::move(q.front());
+        q.pop();
+        return val;
+    }
 };
 
 template <>

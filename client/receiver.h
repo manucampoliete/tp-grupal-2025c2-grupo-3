@@ -3,9 +3,9 @@
 
 #include "../common/queue/queue.h"
 #include "../common/thread/thread.h"
-#include "../common/commands/move_request.h"
+#include "../common/utils/move_request.h"
 #include "../common/protocol/protocol_constants.h"
-#include "../server/types.h"
+#include "../common/types/types.h"
 #include "../common/protocol/client_protocol.h"
 
 

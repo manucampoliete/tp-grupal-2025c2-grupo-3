@@ -4,8 +4,8 @@
 #include <memory>
 
 #include "../commands/command.h"
-#include "../common/queue/queue.h"
-#include "../common/types/types.h"
+#include "../../common/queue/queue.h"
+#include "../../common/types/types.h"
 #include "../protocol/serverGameRecvProtocol.h"
 
 /**
@@ -20,7 +20,7 @@ public:
     /**
      * Constructor: initializes the Receiver with the given parameters.
      */
-    Receiver(Socket& skt, ClientID clientId, Queue<std::unique_ptr<Command>>& clientCommandsQueue);
+    Receiver(Socket& skt, Queue<std::unique_ptr<Command>>& clientCommandsQueue, ClientID clientId);
 
     /**
      * This is a fake start(). No std::thread is created here. This method just

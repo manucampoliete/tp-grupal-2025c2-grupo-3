@@ -19,21 +19,27 @@ void GameHandler::run() {
     running = true;
     
     sender.start();
+    std::cout << "1" << std::endl;
     receiver.start();
     
+    std::cout << "2" << std::endl;
     // crear e iniciar el juego (SDL)
     game = std::make_unique<Game>(world, *this, player_id);
     game->run(); // blocking hasta que se cierre la ventana
     
+    std::cout << "3" << std::endl;
     // cuando game->run() termina, detener todo
     stop();
 }
 
 void GameHandler::stop() {
+    std::cout << "stop 1" << std::endl;
     running = false;
     
     client_requests_q.close();
+    std::cout << "stop 1" << std::endl;
     server_snapshots_q.close();
+    std::cout << "stop 3" << std::endl;
     
     sender.stop();
     receiver.stop();
@@ -120,7 +126,7 @@ void GameHandler::on_game_end(const FinalResults& results) {
 
 void GameHandler::send_movement(bool up, bool down, bool left, bool right) {
     MoveRequest req(up, down, left, right);
-    client_requests_q.try_push(req);
+    client_requests_q.tryPush(req);
 }
 
 void GameHandler::send_modifications(bool speed, bool health) {

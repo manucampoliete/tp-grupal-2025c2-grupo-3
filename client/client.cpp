@@ -38,16 +38,16 @@ void Client::run(int argc, char* argv[]) {
     
 
     // FASE 2: game (SDL)
-    if (lobby_finished) {
+//    if (lobby_finished) {
         std::cout << "[CLIENT] Lobby finished, starting game..." << std::endl;
         
         GameHandler game_handler(protocol, player_id);
         game_handler.run(); // blocking hasta que se cierre el juego
         
         std::cout << "[CLIENT] Juego finished" << std::endl;
-    } else {
+//    } else {
         std::cout << "[CLIENT] Lobby cancelled, closing client" << std::endl;
-    }
+//    }
 }
 
 void Client::on_lobby_finished() {

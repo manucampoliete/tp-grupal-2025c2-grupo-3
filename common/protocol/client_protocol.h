@@ -2,7 +2,7 @@
 #define CLIENT_PROTOCOL_H
 
 #include "../socket/socket.h"
-#include "../commands/move_request.h"
+#include "../utils/move_request.h"
 #include "game_data.h"
 
 #include <cstdint>

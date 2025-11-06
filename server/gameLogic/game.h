@@ -8,14 +8,16 @@
 
 #include <box2d/box2d.h>
 
-#include "../common/queue/queue.h"
-#include "../common/thread/thread.h"
-#include "commands/command.h"
+#include "../../common/queue/queue.h"
+#include "../../common/thread/thread.h"
+#include "../commands/command.h"
 
 #include "car.h"
 #include "player.h"
-#include "responseQueuesMonitor.h"
-#include "types.h"
+#include "../synchronized/responseQueuesMonitor.h"
+#include "../../common/types/types.h"
+
+class Command;
 
 class Game: public Thread {
 private:

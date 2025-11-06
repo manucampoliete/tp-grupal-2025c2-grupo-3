@@ -6,8 +6,8 @@
 #include <vector>
 
 #include "../../common/types/types.h"
-#include "../common/socket/socket.h"
-#include "../common/thread/thread.h"
+#include "../../common/socket/socket.h"
+#include "../../common/thread/thread.h"
 #include "../synchronized/matchesMapMonitor.h"
 
 #include "clientHandler.h"
@@ -25,7 +25,7 @@ private:
     /**
      * Reaps dead ClientHandlers: joins and deletes them, and removes them from the clients vector.
      */
-    void Acceptor::reapDeadClients();
+    void reapDeadClients();
 
     /**
      * Reaps dead ClientHandlers and reaps finished matches in the MatchesMapMonitor.

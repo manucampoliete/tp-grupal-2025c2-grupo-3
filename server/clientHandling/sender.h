@@ -3,8 +3,8 @@
 
 #include <memory>
 
-#include "../common/queue/queue.h"
-#include "../common/thread/thread.h"
+#include "../../common/queue/queue.h"
+#include "../../common/thread/thread.h"
 #include "../protocol/serverGameSendProtocol.h"
 
 /**

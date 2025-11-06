@@ -4,7 +4,7 @@
 #include "../../common/utils/activeDirections.h"
 #include "../requestsResolving/gameResolver.h"
 
-#include "recvProtocol.h"
+#include "../../common/protocol/recvProtocol.h"
 
 class ServerGameRecvProtocol: public RecvProtocol {
 private:

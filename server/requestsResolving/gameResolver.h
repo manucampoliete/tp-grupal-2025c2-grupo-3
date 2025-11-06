@@ -4,9 +4,9 @@
 #include <memory>
 
 #include "../commands/moveCommand.h"
-#include "../common/queue/queue.h"
-#include "../common/types/types.h"
-#include "../common/utils/activeDirections.h"
+#include "../../common/queue/queue.h"
+#include "../../common/types/types.h"
+#include "../../common/utils/activeDirections.h"
 
 class GameResolver {
 private:

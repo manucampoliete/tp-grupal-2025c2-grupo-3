@@ -1,6 +1,6 @@
 #include "serverGameSendProtocol.h"
 
-#include "../protocol/protocolConstants.h"
+#include "../../common/protocol/protocolConstants.h"
 
 ServerGameSendProtocol::ServerGameSendProtocol(Socket& socket): SendProtocol(socket) {}
 

@@ -15,29 +15,29 @@ public:
 
     uint8_t recv_byte() {
         uint8_t value;
-        skt.recvall(&value, sizeof(value));
+        skt.recvAll(&value, sizeof(value));
         return value;
     }
 
     uint16_t recv_short() {
         uint16_t value;
-        skt.recvall(&value, sizeof(value));
+        skt.recvAll(&value, sizeof(value));
         return ntohs(value);
     }
 
     uint32_t recv_int() {
         uint32_t value;
-        skt.recvall(&value, sizeof(value));
+        skt.recvAll(&value, sizeof(value));
         return ntohl(value);
     }
 
     std::string recv_string() {
         uint16_t length_net;
-        skt.recvall(&length_net, sizeof(length_net));
+        skt.recvAll(&length_net, sizeof(length_net));
         uint16_t length = ntohs(length_net);
 
         std::string str(length, '\0');
-        skt.recvall(&str[0], length);
+        skt.recvAll(&str[0], length);
         return str;
     }
 

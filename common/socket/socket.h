@@ -121,8 +121,8 @@ public:
     int recvSome(void* data, unsigned int sz);
 
     /*
-     * `Socket::sendall` envía exactamente `sz` bytes leídos del buffer, ni más,
-     * ni menos. `Socket::recvall` recibe exactamente sz bytes.
+     * `Socket::sendll` envía exactamente `sz` bytes leídos del buffer, ni más,
+     * ni menos. `Socket::recvll` recibe exactamente sz bytes.
      *
      * Si hay un error se lanza una excepción.
      *

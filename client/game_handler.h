@@ -10,7 +10,7 @@
 #include "../common/protocol/client_protocol.h"
 #include "../common/protocol/game_data.h"
 #include "../common/queue/queue.h"
-#include "../common/commands/move_request.h"
+#include "../common/utils/move_request.h"
 
 
 class Game;

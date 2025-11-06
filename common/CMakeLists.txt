@@ -10,7 +10,6 @@ add_subdirectory(messages)
 
 add_subdirectory(protocol)
 add_subdirectory(socket)
-add_subdirectory(commands)
 add_subdirectory(queue)
 add_subdirectory(thread)
 

@@ -3,8 +3,8 @@
 
 #include <string>
 
-#include "../clientHandling/acceptor.h"
-#include "../synchronized/matchesMapMonitor.h"
+#include "clientHandling/acceptor.h"
+#include "synchronized/matchesMapMonitor.h"
 
 class Server {
 private:

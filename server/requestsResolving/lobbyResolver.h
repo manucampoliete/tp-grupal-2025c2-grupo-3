@@ -4,13 +4,15 @@
 #include <memory>
 #include <string>
 
-#include "../common/messages/snapshot.h"
-#include "../common/queue/queue.h"
-#include "../common/types/types.h"
-#include "../server/commands/command.h"
+#include "../../common/messages/snapshot.h"
+#include "../../common/queue/queue.h"
+#include "../../common/types/types.h"
+#include "../commands/command.h"
 
-#include "matchesMapMonitor.h"
-#include "serverLobbyProtocol.h"
+#include "../synchronized/matchesMapMonitor.h"
+#include "../protocol/serverLobbyProtocol.h"
+
+class ServerLobbyProtocol;
 
 class LobbyResolver {
 private:

@@ -4,6 +4,8 @@
 #include "../../common/types/types.h"
 #include "../gameLogic/game.h"
 
+class Game;
+
 /**
  * Interface for commands that can be executed by the Game.
  */

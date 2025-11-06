@@ -1,6 +1,6 @@
 #include "serverGameRecvProtocol.h"
 
-#include "protocolConstants.h"
+#include "../../common/protocol/protocolConstants.h"
 
 ActiveDirections ServerGameRecvProtocol::decodeMoveState(uint8_t moveState) {
     return ActiveDirections(moveState & UP_MASK, moveState & DOWN_MASK, moveState & LEFT_MASK,
@@ -12,7 +12,7 @@ void ServerGameRecvProtocol::recvMoveState(GameResolver& gameResolver) {
     gameResolver.handleMove(decodeMoveState(moveState));
 }
 
-explicit ServerGameRecvProtocol::ServerGameRecvProtocol(Socket& skt): RecvProtocol(skt) {}
+ServerGameRecvProtocol::ServerGameRecvProtocol(Socket& skt): RecvProtocol(skt) {}
 
 void ServerGameRecvProtocol::consumeOne(GameResolver& gameResolver) {
     switch (recvU8()) {

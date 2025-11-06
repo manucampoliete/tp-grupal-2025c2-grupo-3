@@ -8,47 +8,47 @@ ClientProtocol::ClientProtocol(Socket& socket) :
     socket(socket) {}
 
 void ClientProtocol::send_u8(uint8_t value) {
-    socket.sendall(&value, sizeof(value));
+    socket.sendAll(&value, sizeof(value));
 }
 
 void ClientProtocol::send_u16(uint16_t value) {
     value = htons(value);
-    socket.sendall(&value, sizeof(value));
+    socket.sendAll(&value, sizeof(value));
 }
 
 void ClientProtocol::send_u32(uint32_t value) {
     value = htonl(value);
-    socket.sendall(&value, sizeof(value));
+    socket.sendAll(&value, sizeof(value));
 }
 
 void ClientProtocol::send_string(const std::string& str) {
     uint16_t length = static_cast<uint16_t>(str.size());
     send_u16(length);
-    socket.sendall(str.data(), length);
+    socket.sendAll(str.data(), length);
 }
 
 uint8_t ClientProtocol::recv_u8() {
     uint8_t value;
-    socket.recvall(&value, sizeof(value));
+    socket.recvAll(&value, sizeof(value));
     return value;
 }
 
 uint16_t ClientProtocol::recv_u16() {
     uint16_t value;
-    socket.recvall(&value, sizeof(value));
+    socket.recvAll(&value, sizeof(value));
     return ntohs(value);
 }
 
 uint32_t ClientProtocol::recv_u32() {
     uint32_t value;
-    socket.recvall(&value, sizeof(value));
+    socket.recvAll(&value, sizeof(value));
     return ntohl(value);
 }
 
 std::string ClientProtocol::recv_string() {
     uint16_t length = recv_u16();
     std::string str(length, '\0');
-    socket.recvall(&str[0], length);
+    socket.recvAll(&str[0], length);
     return str;
 }
 

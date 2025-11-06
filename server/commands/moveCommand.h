@@ -1,7 +1,7 @@
 #ifndef MOVE_COMMAND_H
 #define MOVE_COMMAND_H
 
-#include "../common/utils/activeDirections.h"
+#include "../../common/utils/activeDirections.h"
 
 #include "command.h"
 

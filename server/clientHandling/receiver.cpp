@@ -2,8 +2,8 @@
 
 #include <syslog.h>
 
-Receiver::Receiver(Socket& skt, ClientID clientId,
-                   Queue<std::unique_ptr<Command>>& clientCommandsQueue):
+Receiver::Receiver(Socket& skt, 
+                   Queue<std::unique_ptr<Command>>& clientCommandsQueue, ClientID clientId):
         protocol(skt), gameResolver(clientId, clientCommandsQueue) {}
 
 void Receiver::start() { run(); }

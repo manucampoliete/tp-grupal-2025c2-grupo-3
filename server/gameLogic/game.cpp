@@ -108,6 +108,8 @@ Queue<std::shared_ptr<Snapshot>>& Game::getResponsesQueue(ClientID clientId) {
 
 void Game::addPlayer(ClientID clientId, const std::string& username,
                      uint8_t carId) {  // carId unused for now
+    (void)carId;
+
     if (players.find(clientId) == players.end()) {
         b2Body* newCarBody = createNewCarBody();
         players.emplace(clientId, Player(clientId, username, newCarBody));
