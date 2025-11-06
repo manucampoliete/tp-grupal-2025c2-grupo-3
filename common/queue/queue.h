@@ -18,7 +18,7 @@ struct ClosedQueue: public std::runtime_error {
  * Queue is a generic MPMC queue with blocking operations
  * push() and pop().
  *
- * Two additional methods, try_push() and try_pop() allow
+ * Two additional methods, tryPush() and tryPop() allow
  * non-blocking operations.
  *
  * On a closed queue, any method will raise ClosedQueue.
@@ -28,39 +28,39 @@ template <typename T, class C = std::deque<T> >
 class Queue {
 private:
     std::queue<T, C> q;
-    const unsigned int max_size;
+    const unsigned int maxSize;
 
     bool closed;
 
     std::mutex mtx;
-    std::condition_variable is_not_full;
-    std::condition_variable is_not_empty;
+    std::condition_variable isNotFull;
+    std::condition_variable isNotEmpty;
 
 public:
-    Queue(): max_size(UINT_MAX - 1), closed(false) {}
-    explicit Queue(const unsigned int max_size): max_size(max_size), closed(false) {}
+    Queue(): maxSize(UINT_MAX - 1), closed(false) {}
+    explicit Queue(const unsigned int maxSize): maxSize(maxSize), closed(false) {}
 
 
-    bool try_push(T const& val) {
+    bool tryPush(T const& val) {
         std::unique_lock<std::mutex> lck(mtx);
 
         if (closed) {
             throw ClosedQueue();
         }
 
-        if (q.size() == this->max_size) {
+        if (q.size() == this->maxSize) {
             return false;
         }
 
         if (q.empty()) {
-            is_not_empty.notify_all();
+            isNotEmpty.notify_all();
         }
 
         q.push(val);
         return true;
     }
 
-    bool try_pop(T& val) {
+    bool tryPop(T& val) {
         std::unique_lock<std::mutex> lck(mtx);
 
         if (q.empty()) {
@@ -70,8 +70,8 @@ public:
             return false;
         }
 
-        if (q.size() == this->max_size) {
-            is_not_full.notify_all();
+        if (q.size() == this->maxSize) {
+            isNotFull.notify_all();
         }
 
         val = q.front();
@@ -86,12 +86,12 @@ public:
             throw ClosedQueue();
         }
 
-        while (q.size() == this->max_size) {
-            is_not_full.wait(lck);
+        while (q.size() == this->maxSize) {
+            isNotFull.wait(lck);
         }
 
         if (q.empty()) {
-            is_not_empty.notify_all();
+            isNotEmpty.notify_all();
         }
 
         q.push(val);
@@ -105,11 +105,11 @@ public:
             if (closed) {
                 throw ClosedQueue();
             }
-            is_not_empty.wait(lck);
+            isNotEmpty.wait(lck);
         }
 
-        if (q.size() == this->max_size) {
-            is_not_full.notify_all();
+        if (q.size() == this->maxSize) {
+            isNotFull.notify_all();
         }
 
         T const val = q.front();
@@ -127,7 +127,7 @@ public:
         }
 
         closed = true;
-        is_not_empty.notify_all();
+        isNotEmpty.notify_all();
     }
 
 private:
@@ -139,38 +139,38 @@ template <>
 class Queue<void*> {
 private:
     std::queue<void*> q;
-    const unsigned int max_size;
+    const unsigned int maxSize;
 
     bool closed;
 
     std::mutex mtx;
-    std::condition_variable is_not_full;
-    std::condition_variable is_not_empty;
+    std::condition_variable isNotFull;
+    std::condition_variable isNotEmpty;
 
 public:
-    explicit Queue(const unsigned int max_size): max_size(max_size), closed(false) {}
+    explicit Queue(const unsigned int maxSize): maxSize(maxSize), closed(false) {}
 
 
-    bool try_push(void* const& val) {
+    bool tryPush(void* const& val) {
         std::unique_lock<std::mutex> lck(mtx);
 
         if (closed) {
             throw ClosedQueue();
         }
 
-        if (q.size() == this->max_size) {
+        if (q.size() == this->maxSize) {
             return false;
         }
 
         if (q.empty()) {
-            is_not_empty.notify_all();
+            isNotEmpty.notify_all();
         }
 
         q.push(val);
         return true;
     }
 
-    bool try_pop(void*& val) {
+    bool tryPop(void*& val) {
         std::unique_lock<std::mutex> lck(mtx);
 
         if (q.empty()) {
@@ -180,8 +180,8 @@ public:
             return false;
         }
 
-        if (q.size() == this->max_size) {
-            is_not_full.notify_all();
+        if (q.size() == this->maxSize) {
+            isNotFull.notify_all();
         }
 
         val = q.front();
@@ -196,12 +196,12 @@ public:
             throw ClosedQueue();
         }
 
-        while (q.size() == this->max_size) {
-            is_not_full.wait(lck);
+        while (q.size() == this->maxSize) {
+            isNotFull.wait(lck);
         }
 
         if (q.empty()) {
-            is_not_empty.notify_all();
+            isNotEmpty.notify_all();
         }
 
         q.push(val);
@@ -215,11 +215,11 @@ public:
             if (closed) {
                 throw ClosedQueue();
             }
-            is_not_empty.wait(lck);
+            isNotEmpty.wait(lck);
         }
 
-        if (q.size() == this->max_size) {
-            is_not_full.notify_all();
+        if (q.size() == this->maxSize) {
+            isNotFull.notify_all();
         }
 
         void* const val = q.front();
@@ -236,7 +236,7 @@ public:
         }
 
         closed = true;
-        is_not_empty.notify_all();
+        isNotEmpty.notify_all();
     }
 
 private:
@@ -248,12 +248,12 @@ private:
 template <typename T>
 class Queue<T*>: private Queue<void*> {
 public:
-    explicit Queue(const unsigned int max_size): Queue<void*>(max_size) {}
+    explicit Queue(const unsigned int maxSize): Queue<void*>(maxSize) {}
 
 
-    bool try_push(T* const& val) { return Queue<void*>::try_push(val); }
+    bool tryPush(T* const& val) { return Queue<void*>::tryPush(val); }
 
-    bool try_pop(T*& val) { return Queue<void*>::try_pop(static_cast<void*&>(val)); }
+    bool tryPop(T*& val) { return Queue<void*>::tryPop(static_cast<void*&>(val)); }
 
     void push(T* const& val) { return Queue<void*>::push(val); }
 
@@ -268,4 +268,4 @@ private:
     Queue& operator=(const Queue&) = delete;
 };
 
-#endif
+#endif  // QUEUE_H_

@@ -11,10 +11,10 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#include "liberror.h"
-#include "resolvererror.h"
+#include "../errors/libError.h"
+#include "../errors/resolverError.h"
 
-Resolver::Resolver(const char* hostname, const char* servname, bool is_passive) {
+Resolver::Resolver(const char* hostname, const char* servname, bool isPassive) {
     struct addrinfo hints;
     this->result = this->_next = nullptr;
 
@@ -33,7 +33,7 @@ Resolver::Resolver(const char* hostname, const char* servname, bool is_passive) 
     memset(&hints, 0, sizeof(struct addrinfo));
     hints.ai_family = AF_INET;       /* IPv4 (or AF_INET6 for IPv6)     */
     hints.ai_socktype = SOCK_STREAM; /* TCP  (or SOCK_DGRAM for UDP)    */
-    hints.ai_flags = is_passive ? AI_PASSIVE : 0;
+    hints.ai_flags = isPassive ? AI_PASSIVE : 0;
 
     /* Obtengo la (o las) direcciones según el nombre de host y servicio que
      * busco
@@ -127,13 +127,13 @@ Resolver& Resolver::operator=(Resolver&& other) {
     return *this;
 }
 
-bool Resolver::has_next() {
-    chk_addr_or_fail();
+bool Resolver::hasNext() {
+    chkAddrOrFail();
     return this->_next != NULL;
 }
 
 struct addrinfo* Resolver::next() {
-    chk_addr_or_fail();
+    chkAddrOrFail();
     struct addrinfo* ret = this->_next;
     this->_next = ret->ai_next;
     return ret;
@@ -153,7 +153,7 @@ Resolver::~Resolver() {
 }
 
 
-void Resolver::chk_addr_or_fail() const {
+void Resolver::chkAddrOrFail() const {
     if (result == nullptr) {
         throw std::runtime_error("addresses list is invalid (null), "
                                  "perhaps you are using a *previously moved* "

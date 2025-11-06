@@ -4,13 +4,13 @@
 
 #include <syslog.h>
 
-bool Thread::should_keep_running() const { return _keep_running; }
+bool Thread::shouldKeepRunning() const { return _keepRunning; }
 
-Thread::Thread(): _keep_running(true), _is_alive(false) {}
+Thread::Thread(): _keepRunning(true), _isAlive(false) {}
 
 void Thread::start() {
-    _is_alive = true;
-    _keep_running = true;
+    _isAlive = true;
+    _keepRunning = true;
     thread = std::thread(&Thread::main, this);
 }
 
@@ -25,9 +25,9 @@ void Thread::main() {
         syslog(LOG_CRIT, "[Crit] Unknown error!");
     }
 
-    _is_alive = false;
+    _isAlive = false;
 }
 
-void Thread::stop() { _keep_running = false; }
+void Thread::stop() { _keepRunning = false; }
 
-bool Thread::is_alive() const { return _is_alive; }
+bool Thread::isAlive() const { return _isAlive; }

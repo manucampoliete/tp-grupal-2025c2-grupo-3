@@ -12,7 +12,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#include "liberror.h"
+#include "../errors/libError.h"
 #include "resolver.h"
 
 #define STREAM_SEND_CLOSED 0x01
@@ -26,7 +26,7 @@ Socket::Socket(const char* hostname, const char* servname) {
     int s = -1;
     int _skt = -1;
     this->closed = true;
-    this->stream_status = STREAM_BOTH_CLOSED;
+    this->streamStatus = STREAM_BOTH_CLOSED;
 
     /*
      * Por cada dirección obtenida tenemos que ver cual es realmente funcional.
@@ -37,7 +37,7 @@ Socket::Socket(const char* hostname, const char* servname) {
      * Es responsabilidad nuestra probar cada una de ellas hasta encontrar
      * una que funcione.
      * */
-    while (resolver.has_next()) {
+    while (resolver.hasNext()) {
         struct addrinfo* addr = resolver.next();
 
         /* Cerramos el socket si nos quedo abierto de la iteración
@@ -70,7 +70,7 @@ Socket::Socket(const char* hostname, const char* servname) {
          * Conexión exitosa!
          * */
         this->closed = false;
-        this->stream_status = STREAM_BOTH_OPEN;
+        this->streamStatus = STREAM_BOTH_OPEN;
         this->skt = _skt;
         return;
     }
@@ -102,8 +102,8 @@ Socket::Socket(const char* servname) {
     int s = -1;
     int _skt = -1;
     this->closed = true;
-    this->stream_status = STREAM_BOTH_CLOSED;
-    while (resolver.has_next()) {
+    this->streamStatus = STREAM_BOTH_CLOSED;
+    while (resolver.hasNext()) {
         struct addrinfo* addr = resolver.next();
 
         if (_skt != -1)
@@ -181,7 +181,7 @@ Socket::Socket(const char* servname) {
          * Setup exitoso!
          * */
         this->closed = false;
-        this->stream_status = STREAM_BOTH_OPEN;
+        this->streamStatus = STREAM_BOTH_OPEN;
         this->skt = _skt;
         return;
     }
@@ -199,7 +199,7 @@ Socket::Socket(Socket&& other) {
     /* Nos copiamos del otro socket... */
     this->skt = other.skt;
     this->closed = other.closed;
-    this->stream_status = other.stream_status;
+    this->streamStatus = other.streamStatus;
 
     /* ...pero luego le sacamos al otro socket
      * el ownership del recurso.
@@ -214,7 +214,7 @@ Socket::Socket(Socket&& other) {
      * */
     other.skt = -1;
     other.closed = true;
-    other.stream_status = STREAM_BOTH_CLOSED;
+    other.streamStatus = STREAM_BOTH_CLOSED;
 }
 
 Socket& Socket::operator=(Socket&& other) {
@@ -238,16 +238,16 @@ Socket& Socket::operator=(Socket&& other) {
     /* Ahora hacemos los mismos pasos que en el move constructor */
     this->skt = other.skt;
     this->closed = other.closed;
-    this->stream_status = other.stream_status;
+    this->streamStatus = other.streamStatus;
     other.skt = -1;
     other.closed = true;
-    other.stream_status = STREAM_BOTH_CLOSED;
+    other.streamStatus = STREAM_BOTH_CLOSED;
 
     return *this;
 }
 
-int Socket::recvsome(void* data, unsigned int sz) {
-    chk_skt_or_fail();
+int Socket::recvSome(void* data, unsigned int sz) {
+    chkSktOrFail();
     int s = recv(this->skt, static_cast<char*>(data), sz, 0);
     if (s == 0) {
         /*
@@ -256,7 +256,7 @@ int Socket::recvsome(void* data, unsigned int sz) {
          * que la conexión se cierra" en cuyo caso el cierre del socket
          * no es un error sino algo esperado.
          * */
-        stream_status |= STREAM_RECV_CLOSED;
+        streamStatus |= STREAM_RECV_CLOSED;
         return 0;
     } else if (s == -1) {
         /*
@@ -268,8 +268,8 @@ int Socket::recvsome(void* data, unsigned int sz) {
     }
 }
 
-int Socket::sendsome(const void* data, unsigned int sz) {
-    chk_skt_or_fail();
+int Socket::sendSome(const void* data, unsigned int sz) {
+    chkSktOrFail();
     /*
      * Cuando se hace un send, el sistema operativo puede aceptar
      * la data pero descubrir luego que el socket fue cerrado
@@ -298,9 +298,9 @@ int Socket::sendsome(const void* data, unsigned int sz) {
          * */
         if (errno == EPIPE) {
             /*
-             * Puede o no ser un error (véase el comentario en `Socket::recvsome`)
+             * Puede o no ser un error (véase el comentario en `Socket::recvSome`)
              * */
-            stream_status |= STREAM_SEND_CLOSED;
+            streamStatus |= STREAM_SEND_CLOSED;
             return 0;
         }
 
@@ -312,29 +312,29 @@ int Socket::sendsome(const void* data, unsigned int sz) {
         /*
          * Jamas debería pasar.
          * */
-        stream_status |= STREAM_SEND_CLOSED;
+        streamStatus |= STREAM_SEND_CLOSED;
         return 0;
     } else {
         return s;
     }
 }
 
-int Socket::recvall(void* data, unsigned int sz) {
+int Socket::recvAll(void* data, unsigned int sz) {
     unsigned int received = 0;
 
     while (received < sz) {
-        int s = recvsome(static_cast<char*>(data) + received, sz - received);
+        int s = recvSome(static_cast<char*>(data) + received, sz - received);
 
         if (s <= 0) {
             /*
              * Si el socket fue cerrado (`s == 0`) o hubo un error
-             * `Socket::recvsome` ya debería haber seteado `stream_status`
+             * `Socket::recvSome` ya debería haber seteado `streamStatus`
              * y haber notificado el error.
              *
              * Nosotros podemos entonces meramente
              *  - lanzar excepción si recibimos algunos bytes pero no todos los pedidos
-             *  - propagar la excepción `Socket::recvsome` si esto falló.
-             *  - retornar end of stream (0) si es lo q recibimos de `Socket::recvsome`
+             *  - propagar la excepción `Socket::recvSome` si esto falló.
+             *  - retornar end of stream (0) si es lo q recibimos de `Socket::recvSome`
              * */
             assert(s == 0);
             if (received)
@@ -354,13 +354,13 @@ int Socket::recvall(void* data, unsigned int sz) {
 }
 
 
-int Socket::sendall(const void* data, unsigned int sz) {
+int Socket::sendAll(const void* data, unsigned int sz) {
     unsigned int sent = 0;
 
     while (sent < sz) {
-        int s = sendsome(static_cast<const char*>(data) + sent, sz - sent);
+        int s = sendSome(static_cast<const char*>(data) + sent, sz - sent);
 
-        /* Véase los comentarios de `Socket::recvall` */
+        /* Véase los comentarios de `Socket::recvAll` */
         if (s <= 0) {
             assert(s == 0);
             if (sent)
@@ -378,11 +378,11 @@ int Socket::sendall(const void* data, unsigned int sz) {
 Socket::Socket(int skt) {
     this->skt = skt;
     this->closed = false;
-    this->stream_status = STREAM_BOTH_OPEN;
+    this->streamStatus = STREAM_BOTH_OPEN;
 }
 
 Socket Socket::accept() {
-    chk_skt_or_fail();
+    chkSktOrFail();
     /*
      * `accept` nos bloqueara hasta que algún cliente se conecte a nosotros
      * y la conexión se establezca.
@@ -410,34 +410,34 @@ Socket Socket::accept() {
 }
 
 void Socket::shutdown(int how) {
-    chk_skt_or_fail();
+    chkSktOrFail();
     if (::shutdown(this->skt, how) == -1) {
         throw LibError(errno, "socket shutdown failed");
     }
 
     switch (how) {
         case 0:
-            stream_status |= STREAM_RECV_CLOSED;
+            streamStatus |= STREAM_RECV_CLOSED;
             break;
         case 1:
-            stream_status |= STREAM_SEND_CLOSED;
+            streamStatus |= STREAM_SEND_CLOSED;
             break;
         case 2:
-            stream_status |= STREAM_BOTH_CLOSED;
+            streamStatus |= STREAM_BOTH_CLOSED;
             break;
         default:
             throw std::runtime_error("Unknow shutdown value");
     }
 }
 
-bool Socket::is_stream_send_closed() const { return stream_status & STREAM_SEND_CLOSED; }
+bool Socket::isStreamSendClosed() const { return streamStatus & STREAM_SEND_CLOSED; }
 
-bool Socket::is_stream_recv_closed() const { return stream_status & STREAM_RECV_CLOSED; }
+bool Socket::isStreamRecvClosed() const { return streamStatus & STREAM_RECV_CLOSED; }
 
 int Socket::close() {
-    chk_skt_or_fail();
+    chkSktOrFail();
     this->closed = true;
-    this->stream_status = STREAM_BOTH_CLOSED;
+    this->streamStatus = STREAM_BOTH_CLOSED;
     return ::close(this->skt);
 }
 
@@ -448,7 +448,7 @@ Socket::~Socket() {
     }
 }
 
-void Socket::chk_skt_or_fail() const {
+void Socket::chkSktOrFail() const {
     if (skt == -1) {
         throw std::runtime_error("socket with invalid file descriptor (-1), "
                                  "perhaps you are using a *previously moved* "

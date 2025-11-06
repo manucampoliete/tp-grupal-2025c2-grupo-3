@@ -10,7 +10,7 @@ class Socket {
 private:
     int skt;
     bool closed;
-    int stream_status;
+    int streamStatus;
 
     /*
      * Construye el socket pasándole directamente el file descriptor.
@@ -40,7 +40,7 @@ private:
      * excepción. No es lo más bonito del universo pero te dará una
      * pista de que puede estar andando mal.
      * */
-    void chk_skt_or_fail() const;
+    void chkSktOrFail() const;
 
 public:
     /*
@@ -117,8 +117,8 @@ public:
      *
      * Lease manpage de `send` y `recv`
      * */
-    int sendsome(const void* data, unsigned int sz);
-    int recvsome(void* data, unsigned int sz);
+    int sendSome(const void* data, unsigned int sz);
+    int recvSome(void* data, unsigned int sz);
 
     /*
      * `Socket::sendall` envía exactamente `sz` bytes leídos del buffer, ni más,
@@ -140,8 +140,8 @@ public:
      * para envio/recibo, lease `sz`.
      *
      * */
-    int sendall(const void* data, unsigned int sz);
-    int recvall(void* data, unsigned int sz);
+    int sendAll(const void* data, unsigned int sz);
+    int recvAll(void* data, unsigned int sz);
 
     /*
      * Acepta una conexión entrante y retorna un nuevo socket
@@ -162,8 +162,8 @@ public:
      * están cerrado (sea por que se hizo un shutdown o por que el
      * otro endpoint hizo un shutdown).
      * */
-    bool is_stream_send_closed() const;
-    bool is_stream_recv_closed() const;
+    bool isStreamSendClosed() const;
+    bool isStreamRecvClosed() const;
 
     /*
      * Cierra el socket. El cierre no implica un `shutdown`

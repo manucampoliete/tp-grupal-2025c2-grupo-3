@@ -29,18 +29,18 @@ private:
      * excepción. No es lo más bonito del universo pero te dará una
      * pista de que puede estar andando mal.
      * */
-    void chk_addr_or_fail() const;
+    void chkAddrOrFail() const;
 
 public:
     /* Crea el objeto y resuelve el dado nombre del host y servicio.
      *
-     * Si `is_passive` es `true` y `hostname` es `nullptr`,
+     * Si `isPassive` es `true` y `hostname` es `nullptr`,
      * las direcciones retornadas serán aptas para hacer un `bind`
      * y poner al socket en modo escucha para recibir conexiones.
      *
      * En caso de error se lanza una excepción.
      * */
-    Resolver(const char* hostname, const char* servname, bool is_passive);
+    Resolver(const char* hostname, const char* servname, bool isPassive);
 
     /*
      * Deshabilitamos el constructor por copia y operador asignación por copia
@@ -63,7 +63,7 @@ public:
      *
      * Si no la hay se puede asumir que el resolver está extinguido.
      * */
-    bool has_next();
+    bool hasNext();
 
     /* Retorna la siguiente dirección para testear e internamente
      * mueve el iterador a la siguiente dirección.
