@@ -2,8 +2,8 @@
 #define RESPONSE_QUEUES_MONITOR_H
 
 #include <map>
-#include <mutex>
 #include <memory>
+#include <mutex>
 
 #include "../common/messages/snapshot.h"
 #include "../common/queue/queue.h"
@@ -22,21 +22,21 @@ public:
     ResponseQueuesMonitor();
 
     /**
-     * Adds a new response queue for the given client_id.
-     * If a queue for the given client_id already exists, returns a reference to it.
+     * Adds a new response queue for the given clientId.
+     * If a queue for the given clientId already exists, returns a reference to it.
      * Otherwise, creates a new queue, adds it to the map, and returns a reference to it.
      */
     Queue<std::shared_ptr<Snapshot>>& addQueue(ClientID clientId);
 
     /**
-     * Returns a reference to the response queue for the given client_id.
-     * If no queue for the given client_id exists, throws std::out_of_range.
+     * Returns a reference to the response queue for the given clientId.
+     * If no queue for the given clientId exists, throws std::out_of_range.
      */
     Queue<std::shared_ptr<Snapshot>>& getQueue(ClientID clientId);
-    
+
     /**
-     * Removes the response queue for the given client_id.
-     * If a queue for the given client_id exists, removes it from the map and returns 1.
+     * Removes the response queue for the given clientId.
+     * If a queue for the given clientId exists, removes it from the map and returns 1.
      * Otherwise, returns 0.
      * Note: this does not close the queue. The Sender associated with the queue should have been
      * stopped before calling this method.

@@ -1,12 +1,12 @@
 #ifndef SERVER_LOBBY_PROTOCOL_H
 #define SERVER_LOBBY_PROTOCOL_H
 
-#include "../common/socket/socket.h"
 #include "../common/protocol/recvProtocol.h"
 #include "../common/protocol/sendProtocol.h"
+#include "../common/socket/socket.h"
 #include "../requestsResolving/lobbyResolver.h"
 
-class ServerLobbyProtocol : public RecvProtocol, public SendProtocol {
+class ServerLobbyProtocol: public RecvProtocol, public SendProtocol {
 private:
     /**
      * Receives a SEND_CREATE message and processes it using the given LobbyResolver.
@@ -17,7 +17,7 @@ private:
      * Receives a SEND_JOIN message and processes it using the given LobbyResolver.
      */
     void recvJoinMatch(LobbyResolver& lobbyResolver);
-    
+
     /**
      * Receives a SEND_START message and processes it using the given LobbyResolver.
      */
@@ -35,9 +35,9 @@ public:
     void consumeOne(LobbyResolver& lobbyResolver);
 
     /**
-     * Sends a SEND_CREATED message with the given match_id.
+     * Sends a SEND_CREATED message with the given matchId.
      */
-    void sendCreated(MatchID match_id);
+    void sendCreated(MatchID matchId);
 
     /**
      * Sends a SEND_JOINED message with the given success status.
@@ -50,4 +50,4 @@ public:
     void sendStarted(bool success);
 };
 
-#endif // SERVER_LOBBY_PROTOCOL_H
+#endif  // SERVER_LOBBY_PROTOCOL_H

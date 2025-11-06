@@ -1,12 +1,12 @@
 #ifndef MATCHES_MAP_MONITOR_H
 #define MATCHES_MAP_MONITOR_H
 
-#include "../gameLogic/game.h"
-
 #include <map>
 #include <memory>
 #include <mutex>
 #include <string>
+
+#include "../gameLogic/game.h"
 
 class MatchesMapMonitor {
 private:
@@ -44,7 +44,8 @@ public:
     Queue<std::unique_ptr<Command>>& getClientCommandsQueue(MatchID matchId);
 
     /**
-     * Returns a reference to the responses queue for the given client in the match with the given MatchID.
+     * Returns a reference to the responses queue for the given client in the match with the given
+     * MatchID.
      */
     Queue<std::shared_ptr<Snapshot>>& getResponsesQueue(MatchID matchId, ClientID clientId);
 };

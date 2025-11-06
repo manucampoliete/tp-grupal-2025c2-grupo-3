@@ -1,10 +1,12 @@
 #include "acceptor.h"
-#include "../../common/errors/libError.h"
 
 #include <algorithm>
 #include <utility>
+
 #include <sys/socket.h>  // SHUT_RDWR
 #include <syslog.h>
+
+#include "../../common/errors/libError.h"
 
 #define FIRST_CLIENT_ID 0
 
@@ -16,7 +18,7 @@ void Acceptor::reapDeadClients() {
         }
         return isDead;
     });
-    clients.erase(it, clients.end());
+    clients.erase(it, clients.end());  // cppcheck-suppress missingReturn
 }
 
 void Acceptor::reapDead() {
@@ -25,7 +27,7 @@ void Acceptor::reapDead() {
 }
 
 void Acceptor::clear() {
-    for (const auto& c : clients) {
+    for (const auto& c: clients) {
         c->kill();
         c->join();
     }
@@ -42,7 +44,8 @@ void Acceptor::run() {
     while (shouldKeepRunning()) {
         try {
             Socket peer = acceptor.accept();
-            auto c = std::make_unique<ClientHandler>(std::move(peer), matchesMapMonitor, nextClientId++);
+            auto c = std::make_unique<ClientHandler>(std::move(peer), matchesMapMonitor,
+                                                     nextClientId++);
             reapDead();
             clients.push_back(std::move(c));
             clients.back()->start();

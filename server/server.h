@@ -1,10 +1,10 @@
 #ifndef SERVER_H
 #define SERVER_H
 
-#include "../synchronized/matchesMapMonitor.h"
-#include "../clientHandling/acceptor.h"
-
 #include <string>
+
+#include "../clientHandling/acceptor.h"
+#include "../synchronized/matchesMapMonitor.h"
 
 class Server {
 private:

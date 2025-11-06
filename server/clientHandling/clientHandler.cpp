@@ -1,18 +1,21 @@
 #include "clientHandler.h"
-#include "receiver.h"
-#include "sender.h"
+
+#include <utility>
+
+#include <sys/socket.h>  // For SHUT_RDWR
+
 #include "../protocol/serverLobbyProtocol.h"
 #include "../requestsResolving/lobbyResolver.h"
 
-#include <utility>
-#include <sys/socket.h>  // For SHUT_RDWR
+#include "receiver.h"
+#include "sender.h"
 
 void ClientHandler::politeKill() {
-    if (receiver_ptr) {
-        receiver_ptr->stop();
+    if (receiverPtr) {
+        receiverPtr->stop();
     }
-    if (sender_ptr) {
-        sender_ptr->stop();
+    if (senderPtr) {
+        senderPtr->stop();
     }
 }
 
@@ -22,25 +25,39 @@ void ClientHandler::hardKill() {
     peer.close();
 }
 
-ClientHandler::ClientHandler(Socket&& peer, MatchesMapMonitor& matches_map_monitor,
-                             ClientID client_id):
-        peer(std::move(peer)),
-        lobbyResolver(client_id, matches_map_monitor),
-        client_id(client_id),
-        receiver_ptr(nullptr),
-        sender_ptr(nullptr) {}
-
-void ClientHandler::run() {
+void ClientHandler::handleLobbyPhase() {
     ServerLobbyProtocol serverLobbyProtocol(peer);
-    while (shouldKeepRunning() && lobbyResolver.isInLobbyPhase()) {
+    while (shouldKeepRunning() and lobbyResolver.isInLobbyPhase()) {
         serverLobbyProtocol.consumeOne(lobbyResolver);
     }
+}
 
-    sender_ptr = std::make_unique<Sender>(peer, lobbyResolver.getResponsesQueue());
-    sender_ptr->start();
+void ClientHandler::launchSenderThread() {
+    senderPtr = std::make_unique<Sender>(peer, lobbyResolver.getResponsesQueue());
+    senderPtr->start();
+}
 
-    receiver_ptr = std::make_unique<Receiver>(peer, lobbyResolver.getClientCommandsQueue(), client_id);
-    receiver_ptr->start();
+void ClientHandler::fakeLaunchReceiverThread() {
+    receiverPtr =
+            std::make_unique<Receiver>(peer, lobbyResolver.getClientCommandsQueue(), clientId);
+    receiverPtr->start();
+}
+
+ClientHandler::ClientHandler(Socket&& peer, MatchesMapMonitor& matchesMapMonitor,
+                             ClientID clientId):
+        peer(std::move(peer)),
+        lobbyResolver(clientId, matchesMapMonitor),
+        clientId(clientId),
+        receiverPtr(nullptr),
+        senderPtr(nullptr) {}
+
+void ClientHandler::run() {
+    handleLobbyPhase();
+    if (!shouldKeepRunning()) {
+        return;
+    }
+    launchSenderThread();
+    fakeLaunchReceiverThread();
 }
 
 void ClientHandler::kill() {
@@ -48,9 +65,6 @@ void ClientHandler::kill() {
                  // other parts of the code
 }
 
-bool ClientHandler::isDead() const { 
-    return !(receiver_ptr && receiver_ptr->isAlive()) &&
-           !(sender_ptr && sender_ptr->isAlive());
-}
+bool ClientHandler::isDead() const { return !isAlive() and !(senderPtr and senderPtr->isAlive()); }
 
 ClientHandler::~ClientHandler() {}

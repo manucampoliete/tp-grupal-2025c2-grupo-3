@@ -1,17 +1,18 @@
 #include "serverGameSendProtocol.h"
+
 #include "../protocol/protocolConstants.h"
 
-ServerGameSendProtocol::ServerGameSendProtocol(Socket& socket) : SendProtocol(socket) {}
+ServerGameSendProtocol::ServerGameSendProtocol(Socket& socket): SendProtocol(socket) {}
 
 void ServerGameSendProtocol::sendSnapshot(std::shared_ptr<Snapshot> snapshot) {
     sendU8(SEND_SNAPSHOT);
-    
+
     // Send countdown
-    sendU16(snapshot->countdown);
+    sendU32(snapshot->countdown);
 
     // Send number of cars
-    uint16_t num_cars = static_cast<uint16_t>(snapshot->cars.size());
-    sendU16(num_cars);
+    uint8_t numCars = static_cast<uint8_t>(snapshot->cars.size());
+    sendU8(numCars);
 
     // Send each car's snapshot
     for (const auto& car: snapshot->cars) {

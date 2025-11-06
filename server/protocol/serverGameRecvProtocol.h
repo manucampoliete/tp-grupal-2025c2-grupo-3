@@ -1,11 +1,12 @@
 #ifndef SERVER_GAME_RECV_PROTOCOL_H
 #define SERVER_GAME_RECV_PROTOCOL_H
 
-#include "recvProtocol.h"
 #include "../../common/utils/activeDirections.h"
 #include "../requestsResolving/gameResolver.h"
 
-class ServerGameRecvProtocol : public RecvProtocol {
+#include "recvProtocol.h"
+
+class ServerGameRecvProtocol: public RecvProtocol {
 private:
     /**
      * Decodes a Move State byte into an ActiveDirections object.
@@ -31,4 +32,4 @@ public:
     void consumeOne(GameResolver& gameResolver);
 };
 
-#endif // SERVER_GAME_RECV_PROTOCOL_H
+#endif  // SERVER_GAME_RECV_PROTOCOL_H

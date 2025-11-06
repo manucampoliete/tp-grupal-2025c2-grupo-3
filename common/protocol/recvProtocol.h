@@ -1,10 +1,10 @@
 #ifndef RECV_PROTOCOL_H
 #define RECV_PROTOCOL_H
 
-#include "../socket/socket.h"
-
 #include <cstdint>
 #include <string>
+
+#include "../socket/socket.h"
 
 /**
  * Class that provides methods to receive various data types over a socket.
@@ -17,7 +17,7 @@ public:
     /**
      * Constructor that takes a reference to a Socket object.
      */
-    explicit RecvProtocol(Socket& skt) : skt(skt) {}
+    explicit RecvProtocol(Socket& skt): skt(skt) {}
 
     /**
      * Receives an 8-bit unsigned integer from the socket.

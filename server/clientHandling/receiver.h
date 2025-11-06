@@ -1,17 +1,17 @@
 #ifndef RECEIVER_H
 #define RECEIVER_H
 
-#include "../protocol/serverGameRecvProtocol.h"
+#include <memory>
+
+#include "../commands/command.h"
 #include "../common/queue/queue.h"
 #include "../common/types/types.h"
-#include "../commands/command.h"
-
-#include <memory>
+#include "../protocol/serverGameRecvProtocol.h"
 
 /**
  * Receiver class: receives Command requests from the client.
  */
-class Receiver : public Thread {
+class Receiver: public Thread {
 private:
     ServerGameRecvProtocol protocol;
     GameResolver gameResolver;
@@ -27,11 +27,11 @@ public:
      * calls run() directly.
      */
     void start() override;
-    
+
     /**
      * TODO: add proper documentation
      */
-    void run();
+    void run() override;
 
     /**
      * Destructor

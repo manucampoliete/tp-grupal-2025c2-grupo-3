@@ -2,9 +2,7 @@
 
 #include <arpa/inet.h>
 
-void SendProtocol::sendU8(uint8_t value) {
-    skt.sendAll(&value, sizeof(value));
-}
+void SendProtocol::sendU8(uint8_t value) { skt.sendAll(&value, sizeof(value)); }
 
 void SendProtocol::sendU16(uint16_t value) {
     value = htons(value);

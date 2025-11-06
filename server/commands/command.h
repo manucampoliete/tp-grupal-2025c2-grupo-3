@@ -5,17 +5,17 @@
 #include "../gameLogic/game.h"
 
 /**
- * Interface for commands that can be executed by the GameController.
+ * Interface for commands that can be executed by the Game.
  */
 class Command {
 private:
-    ClientID client_id;
+    ClientID clientId;
 
 protected:
     ClientID getClientID() const;
 
 public:
-    Command(ClientID id);
+    explicit Command(ClientID clientId);
     virtual void execute(Game& game) = 0;
     virtual ~Command() = default;
 };

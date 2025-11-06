@@ -5,7 +5,9 @@
 // Para facilitar la lectura del codigo recordar que "velocity" es un vector y "speed" es una
 // magnitud
 
-// TODO: modularizar
+/**
+ * TODO: modularizar
+ */
 void Car::updatePhysics() {
     // manejo del giro
     b2Vec2 vel = body->GetLinearVelocity();
@@ -34,8 +36,8 @@ void Car::updatePhysics() {
 
     if (currentActiveDirections.up) {
         b2Vec2 desiredVel(forward.x * maxSpeed,
-                          forward.y * maxSpeed);   // recordar que la velocity es vectorial y speed
-                                                   // es una magnitud
+                          forward.y * maxSpeed);  // recordar que la velocity es vectorial y speed
+                                                  // es una magnitud
         b2Vec2 currentVel = body->GetLinearVelocity();
 
         b2Vec2 force((desiredVel.x - currentVel.x) * body->GetMass() * acceleration,

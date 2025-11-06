@@ -1,17 +1,19 @@
 #include "serverLobbyProtocol.h"
 
+#include <string>
+
 #include "../../common/protocol/protocolConstants.h"
 
 void ServerLobbyProtocol::recvCreateMatch(LobbyResolver& lobbyResolver) {
     std::string username = recvString();
-    uint8_t carId = recvU8();
+    CarID carId = recvU8();
     lobbyResolver.handleCreateMatch(username, carId, *this);
 }
 
 void ServerLobbyProtocol::recvJoinMatch(LobbyResolver& lobbyResolver) {
     MatchID matchId = recvU16();
     std::string username = recvString();
-    uint8_t carId = recvU8();
+    CarID carId = recvU8();
     lobbyResolver.handleJoinMatch(matchId, username, carId, *this);
 }
 
@@ -20,7 +22,8 @@ void ServerLobbyProtocol::recvStartMatch(LobbyResolver& lobbyResolver) {
     lobbyResolver.handleStartMatch(matchId, *this);
 }
 
-ServerLobbyProtocol::ServerLobbyProtocol(Socket& socket): RecvProtocol(socket), SendProtocol(socket) {}
+ServerLobbyProtocol::ServerLobbyProtocol(Socket& socket):
+        RecvProtocol(socket), SendProtocol(socket) {}
 
 void ServerLobbyProtocol::consumeOne(LobbyResolver& lobbyResolver) {
     switch (recvU8()) {
@@ -44,17 +47,17 @@ void ServerLobbyProtocol::consumeOne(LobbyResolver& lobbyResolver) {
     }
 }
 
-void ServerLobbyProtocol::sendCreated(MatchID match_id) {
+void ServerLobbyProtocol::sendCreated(MatchID matchId) {
     sendU8(SEND_CREATED);
-    sendU16(match_id);
+    sendU16(matchId);
 }
 
 void ServerLobbyProtocol::sendJoined(bool success) {
     sendU8(SEND_JOINED);
-    sendU8(success);
+    sendU8(success ? 0x00 : 0x01);
 }
 
 void ServerLobbyProtocol::sendStarted(bool success) {
     sendU8(SEND_STARTED);
-    sendU8(success);
+    sendU8(success ? 0x00 : 0x01);
 }

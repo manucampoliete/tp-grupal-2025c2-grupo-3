@@ -26,10 +26,19 @@ private:
     ResponseQueuesMonitor responseQueuesMonitor;
     std::map<ClientID, Player> players;
 
+    /**
+     * Creates and returns a new b2Body for a car.
+     */
     b2Body* createNewCarBody();
 
+    /**
+     * Updates the physics of all player cars.
+     */
     void updatePlayerCars();
 
+    /**
+     * Builds and broadcasts a Snapshot to all players.
+     */
     void broadcast();
 
 public:
@@ -39,7 +48,7 @@ public:
     Game();
 
     /**
-     * Main game logic: processes commands from the clientCommandsQ queue.
+     * Main game logic: processes commands from the clientCommandsQueue.
      * If Thread::shouldKeepRunning() becomes false, the game stops.
      * Any exception thrown by Queue::tryPop() or ResponseQueuesMonitor::broadcast()
      * is caught and logged in Thread::main() and causes the game to stop.
@@ -50,18 +59,18 @@ public:
     /**
      * Calls Thread::stop(), setting shouldKeepRunning() = false
      * and then:
-     * - closes the clientCommandsQ queue
+     * - closes the clientCommandsQueue
      * - calls ResponseQueuesMonitor::closeAll()
      */
     void stop() override;
 
     /**
-     * Returns a reference to the clientCommandsQ queue.
+     * Returns a reference to the clientCommandsQueue.
      */
     Queue<std::unique_ptr<Command>>& getClientCommandsQueue();
 
     /**
-     * Returns a reference to the responseQueues monitor.
+     * Returns a reference to the response queue for the given clientId.
      */
     Queue<std::shared_ptr<Snapshot>>& getResponsesQueue(ClientID clientId);
 
@@ -70,6 +79,9 @@ public:
      */
     void addPlayer(ClientID clientId, const std::string& username, uint8_t carId);
 
+    /**
+     * Moves the player with the given clientId according to the given activeDirections.
+     */
     void movePlayer(ClientID clientId, ActiveDirections activeDirections);
 
     /**

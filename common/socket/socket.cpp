@@ -13,6 +13,7 @@
 #include <unistd.h>
 
 #include "../errors/libError.h"
+
 #include "resolver.h"
 
 #define STREAM_SEND_CLOSED 0x01
@@ -79,7 +80,7 @@ Socket::Socket(const char* hostname, const char* servname) {
      * Si terminamos el while-loop es por que no nos pudimos
      * conectar.
      * */
-    int saved_errno = errno;
+    int savedErrno = errno;
 
     /*
      * Si el `_skt` es -1 es por q (1) no entramos nunca al for-loop
@@ -92,7 +93,7 @@ Socket::Socket(const char* hostname, const char* servname) {
     if (_skt != -1)
         ::close(_skt);
 
-    throw LibError(saved_errno, "socket construction failed (connect to %s:%s)",
+    throw LibError(savedErrno, "socket construction failed (connect to %s:%s)",
                    (hostname ? hostname : ""), (servname ? servname : ""));
 }
 
@@ -186,12 +187,12 @@ Socket::Socket(const char* servname) {
         return;
     }
 
-    int saved_errno = errno;
+    int savedErrno = errno;
 
     if (_skt != -1)
         ::close(_skt);
 
-    throw LibError(saved_errno, "socket construction failed (listen on %s)",
+    throw LibError(savedErrno, "socket construction failed (listen on %s)",
                    (servname ? servname : ""));
 }
 
@@ -388,25 +389,25 @@ Socket Socket::accept() {
      * y la conexión se establezca.
      *
      * Una vez que eso suceda, `accept` retornara el file descriptor
-     * de un *nuevo* socket (`peer_skt`) que representara a la
+     * de un *nuevo* socket (`peerSkt`) que representara a la
      * conexión establecida con *ese* cliente.
      *
      * En todo momento podemos seguir usando *nuestro* file descriptor
      * (`this->skt`) para seguir haciendo más llamadas a `accept`
      * independientemente de que enviemos/recibamos del socket `peer`.
      * */
-    int peer_skt = ::accept(this->skt, nullptr, nullptr);
-    if (peer_skt == -1)
+    int peerSkt = ::accept(this->skt, nullptr, nullptr);
+    if (peerSkt == -1)
         throw LibError(errno, "socket accept failed");
 
     /*
-     * `peer_skt` es un file descriptor crudo y no queremos
+     * `peerSkt` es un file descriptor crudo y no queremos
      * que nuestro cliente manipule recursos crudos sino que
      * los use a través de un TDA.
      *
      * Por eso creamos un `Socket` y lo pasamos por movimiento
      * */
-    return Socket(peer_skt);
+    return Socket(peerSkt);
 }
 
 void Socket::shutdown(int how) {

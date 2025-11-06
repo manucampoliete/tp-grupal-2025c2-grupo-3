@@ -2,8 +2,8 @@
 
 #include <syslog.h>
 
-Sender::Sender(Socket& skt, Queue<std::shared_ptr<Snapshot>>& responsesQueue): 
-    protocol(skt), responsesQueue(responsesQueue) {}
+Sender::Sender(Socket& skt, Queue<std::shared_ptr<Snapshot>>& responsesQueue):
+        protocol(skt), responsesQueue(responsesQueue) {}
 
 void Sender::run() {
     while (shouldKeepRunning()) {

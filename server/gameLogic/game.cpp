@@ -10,7 +10,7 @@
 #define FRAME_DURATION_MS (1000 / TARGET_FPS)
 #define PLAYER_SPEED 200.0f  // píxeles por segundo
 
-Game::Game() : 
+Game::Game():
         world(new b2World(b2Vec2(0, 0))),
         velocityIt(8),
         positionIt(3),
@@ -38,10 +38,6 @@ b2Body* Game::createNewCarBody() {
     return car;
 }
 
-void Game::movePlayer(ClientID clientId, ActiveDirections activeDirections) {
-    players.at(clientId).move(activeDirections);
-}
-
 void Game::updatePlayerCars() {
     for (auto& [id, player]: players) {
         player.updateCarPhysics();
@@ -50,29 +46,33 @@ void Game::updatePlayerCars() {
 
 void Game::broadcast() {
     std::vector<Snapshot::CarSnapshot> snapshots;
-    for (auto& [client_id, player]: players) {
+    for (auto& [clientId, player]: players) {
         Snapshot::CarSnapshot snp = player.buildCarSnapshot();
         snapshots.emplace_back(snp);
     }
-    Snapshot snapshot(0, snapshots);
-    responseQueuesMonitor.broadcast(std::make_shared<Snapshot>(snapshot));
+    responseQueuesMonitor.broadcast(
+            std::make_shared<Snapshot>(0, snapshots));  // dummy timestamp for now
 }
 
 /**
- * TODO: implement constant rate loop
+ * TODO: implement constant rate loop!
  */
 void Game::run() {
+    /**
+     * TODO: broadcast that the game is about to start!
+     */
+
     using clock = std::chrono::high_resolution_clock;
-    auto last_time = clock::now();
+    auto lastTime = clock::now();
 
     while (shouldKeepRunning()) {
         auto now = clock::now();
-        std::chrono::duration<float> elapsed = now - last_time;
-        float delta_time = elapsed.count();  // segundos
-        last_time = now;
+        std::chrono::duration<float> elapsed = now - lastTime;
+        float deltaTime = elapsed.count();  // segundos
+        lastTime = now;
 
         /**
-         * Command pattern
+         * Command pattern!
          */
         std::unique_ptr<Command> cmd;
         while (clientCommandsQueue.tryPop(cmd)) {
@@ -81,23 +81,23 @@ void Game::run() {
 
         updatePlayerCars();
 
-        world->Step(delta_time, velocityIt, positionIt);
+        world->Step(deltaTime, velocityIt, positionIt);
 
         broadcast();
 
         // Mantener FPS constante
-        auto frame_time =
+        auto frameTime =
                 std::chrono::duration_cast<std::chrono::milliseconds>(clock::now() - now).count();
-        if (frame_time < FRAME_DURATION_MS) {
-            std::this_thread::sleep_for(std::chrono::milliseconds(FRAME_DURATION_MS - frame_time));
+        if (frameTime < FRAME_DURATION_MS) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(FRAME_DURATION_MS - frameTime));
         }
     }
 }
 
 void Game::stop() {
     Thread::stop();
-    clientCommandsQueue.close();    // Receivers cannot push, game cannot try_pop (once it's empty)
-    responseQueuesMonitor.closeAll();  // Senders cannot pop, game cannot try_push when broadcasting
+    clientCommandsQueue.close();  // Receivers cannot push, game cannot tryPop (once it's empty)
+    responseQueuesMonitor.closeAll();  // Senders cannot pop, game cannot tryPush when broadcasting
 }
 
 Queue<std::unique_ptr<Command>>& Game::getClientCommandsQueue() { return clientCommandsQueue; }
@@ -106,12 +106,17 @@ Queue<std::shared_ptr<Snapshot>>& Game::getResponsesQueue(ClientID clientId) {
     return responseQueuesMonitor.getQueue(clientId);
 }
 
-void Game::addPlayer(ClientID client_id, const std::string& username, uint8_t car_id) {
-    if (players.find(client_id) == players.end()) {
-        b2Body* new_car_body = createNewCarBody();
-        players.emplace(client_id, Player(client_id, username, new_car_body));
+void Game::addPlayer(ClientID clientId, const std::string& username,
+                     uint8_t carId) {  // carId unused for now
+    if (players.find(clientId) == players.end()) {
+        b2Body* newCarBody = createNewCarBody();
+        players.emplace(clientId, Player(clientId, username, newCarBody));
     }
-    responseQueuesMonitor.addQueue(client_id);
+    responseQueuesMonitor.addQueue(clientId);
+}
+
+void Game::movePlayer(ClientID clientId, ActiveDirections activeDirections) {
+    players.at(clientId).move(activeDirections);
 }
 
 Game::~Game() {}

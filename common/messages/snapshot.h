@@ -1,10 +1,10 @@
 #ifndef SNAPSHOT_H
 #define SNAPSHOT_H
 
-#include "../types/types.h"
-
 #include <cstdint>
 #include <vector>
+
+#include "../types/types.h"
 
 struct Snapshot {
     struct CarSnapshot {
@@ -18,7 +18,8 @@ struct Snapshot {
         /**
          * Constructor for CarSnapshot
          */
-        CarSnapshot(ClientID id, uint32_t x, uint32_t y, uint16_t angle, uint16_t speed, CarID carId);
+        CarSnapshot(ClientID id, uint32_t x, uint32_t y, uint16_t angle, uint16_t speed,
+                    CarID carId);
 
         /**
          * Copy constructor for CarSnapshot
@@ -26,13 +27,13 @@ struct Snapshot {
         CarSnapshot(const CarSnapshot& other);
     };
 
-    uint16_t countdown;  // remaining race time in milliseconds (or maybe seconds?)
+    uint32_t countdown;  // remaining race time in milliseconds
     std::vector<CarSnapshot> cars;
 
     /**
      * Constructor for Snapshot
      */
-    Snapshot(uint16_t countdown, const std::vector<CarSnapshot>& cars);
+    Snapshot(uint32_t countdown, const std::vector<CarSnapshot>& cars);
 
     /**
      * Copy constructor for Snapshot

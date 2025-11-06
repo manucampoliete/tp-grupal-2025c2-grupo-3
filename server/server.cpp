@@ -5,7 +5,7 @@
 #define END_SERVER_KEY 'q'
 
 Server::Server(const std::string& servname):
-    matchesMapMonitor(), acceptor(servname, matchesMapMonitor) {}
+        matchesMapMonitor(), acceptor(servname, matchesMapMonitor) {}
 
 int Server::run() {
     acceptor.start();

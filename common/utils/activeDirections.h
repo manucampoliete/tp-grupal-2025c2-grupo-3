@@ -1,8 +1,7 @@
 #ifndef ACTIVE_DIRECTIONS_H
 #define ACTIVE_DIRECTIONS_H
 
-class ActiveDirections {
-public:
+struct ActiveDirections {
     bool up;
     bool down;
     bool left;
@@ -11,7 +10,8 @@ public:
     /**
      * Constructor
      */
-    explicit ActiveDirections(bool up = false, bool down = false, bool left = false, bool right = false);
+    explicit ActiveDirections(bool up = false, bool down = false, bool left = false,
+                              bool right = false);
 
     /**
      * Copy constructor

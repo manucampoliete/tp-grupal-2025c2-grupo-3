@@ -1,16 +1,16 @@
 #ifndef ACCEPTOR_H
 #define ACCEPTOR_H
 
+#include <memory>
 #include <string>
 #include <vector>
-#include <memory>
 
+#include "../../common/types/types.h"
 #include "../common/socket/socket.h"
 #include "../common/thread/thread.h"
+#include "../synchronized/matchesMapMonitor.h"
 
 #include "clientHandler.h"
-#include "../synchronized/matchesMapMonitor.h"
-#include "../../common/types/types.h"
 
 /**
  * Acceptor class: accepts new client connections and spawns a ClientHandler for each one.
@@ -28,7 +28,7 @@ private:
     void Acceptor::reapDeadClients();
 
     /**
-     * Reaps dead ClientHandlers and stops finished matches in the MatchesMapMonitor.
+     * Reaps dead ClientHandlers and reaps finished matches in the MatchesMapMonitor.
      */
     void reapDead();
 
