@@ -7,10 +7,13 @@ target_sources(taller_common
 
 add_subdirectory(errors)
 add_subdirectory(messages)
+
 add_subdirectory(protocol)
-add_subdirectory(queue)
 add_subdirectory(socket)
+add_subdirectory(commands)
+add_subdirectory(queue)
 add_subdirectory(thread)
+
 add_subdirectory(types)
 add_subdirectory(utils)
 
