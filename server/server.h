@@ -1,14 +1,14 @@
 #ifndef SERVER_H
 #define SERVER_H
 
-#include <string>
+#include "../synchronized/matchesMapMonitor.h"
+#include "../clientHandling/acceptor.h"
 
-#include "acceptor.h"
-#include "matches_map_monitor.h"
+#include <string>
 
 class Server {
 private:
-    MatchesMapMonitor matches_map_monitor;
+    MatchesMapMonitor matchesMapMonitor;
     Acceptor acceptor;
 
     /**
@@ -37,7 +37,7 @@ public:
     int run();
 
     /**
-     * Destructor: joins the game and acceptor threads.
+     * Destructor: joins the acceptor thread.
      */
     ~Server();
 };
