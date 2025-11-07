@@ -17,9 +17,10 @@
 #include <ui_guestwaiting.h>
 #include <iostream>
 
-Lobby::Lobby(QWidget *parent)
+Lobby::Lobby(ClientProtocol& protocol, QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::Lobby)
+    , protocol(protocol)
 {
     ui->setupUi(this);
 
@@ -89,11 +90,9 @@ Lobby::Lobby(QWidget *parent)
     stackedWidget->setCurrentWidget(main_menu);
 }
 
-void Lobby::initiate_connection(const std::string& ip, const std::string& port){
+void Lobby::initiate_connection(){
     try {
-        std::cout << "Iniciando conexión a " << ip << ":" << port << "...\n";
-        //Socket socket(ip.c_str(), port.c_str());
-        //protocol.emplace(std::move(socket));
+        std::cout << "Iniciando conexión...\n";
 
         //available_cars = protocol.receive_car_info();
     } catch (const std::exception& e) {
@@ -115,10 +114,11 @@ void Lobby::handleJoinGameRequest(const QString &username, const QString &gameId
 
 void Lobby::handleNewGameRequest(const QString &username, const CarInfo &car) //car pasarlo a id y a uint
 {   
-    //uint16_t match_id = protocol->send_create(username.toStdString(), car.id);
+    uint16_t match_id = protocol.send_create(username.toStdString(), static_cast<uint8_t>(car.id));
     std::cout << "Nuevo juego solicitado por " << username.toStdString()
               << " con el auto " << car.name << std::endl << std::flush;
 
+    std::cout << "ID de la nueva partida: " << match_id << std::endl << std::flush;
     stackedWidget->setCurrentWidget(host_waiting);
 }
 
@@ -129,16 +129,7 @@ void Lobby::startGame()
     std::cout << "El host ha comenzado la partida!" << std::endl;
     
     this->close();
-    
-    /* auto movedProtocol = lobby.take_protocol();
-    if (movedProtocol.has_value()) 
-        runSDLGame(std::move(movedProtocol.value())); */
-
 }
-
-/* std::optional<ClientProtocol> Lobby::take_protocol() {
-    return std::move(protocol);
-} */
 
 Lobby::~Lobby()
 {

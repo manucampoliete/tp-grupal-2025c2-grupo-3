@@ -21,9 +21,9 @@ void Client::run(int argc, char* argv[]) {
 
     std::string ip = argv[1];
     std::string port = argv[2];
-    
-    Lobby lobby;
-    lobby.initiate_connection(ip, port/*, protocol*/);
+
+    Lobby lobby(protocol);
+    lobby.initiate_connection();
  
     // señal de lobby terminado
     // CHEQUEAR

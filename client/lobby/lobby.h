@@ -7,10 +7,12 @@
 #include "guestwaiting.h"
 #include "hostwaiting.h"
 #include "carinfo.h"
-//#include "../client_protocol.h"
+#include "../../common/protocol/client_protocol.h"
 
 #include <QMainWindow>
 #include <QStackedWidget>
+
+class ClientProtocol;
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -23,12 +25,11 @@ class Lobby : public QMainWindow
     Q_OBJECT
 
 public:
-    Lobby(QWidget *parent = nullptr);
+    Lobby(ClientProtocol& protocol, QWidget *parent = nullptr);
     ~Lobby();
-    void initiate_connection(const std::string& ip, const std::string& port);
+    void initiate_connection();
     void startGame();
 
-    //std::optional<ClientProtocol> take_protocol();
 
 private:
     Ui::Lobby *ui;
@@ -38,7 +39,7 @@ private:
     JoinGame* join_game;
     guestWaiting* guest_waiting;
     HostWaiting* host_waiting;
-    //std::optional<ClientProtocol> protocol;
+    ClientProtocol& protocol;
     std::vector<CarInfo> available_cars;
 
     void handleJoinGameRequest(const QString &username, const QString &gameId, const CarInfo &car);
