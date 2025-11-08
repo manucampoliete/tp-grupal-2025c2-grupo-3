@@ -54,13 +54,16 @@ void Game::broadcast() {
             std::make_shared<Snapshot>(0, snapshots));  // dummy timestamp for now
 }
 
+void Game::broadcast_start_signal() {
+    responseQueuesMonitor.broadcast(
+            std::make_shared<Snapshot>());  // dummy timestamp for now
+}
+
 /**
  * TODO: implement constant rate loop!
  */
 void Game::run() {
-    /**
-     * TODO: broadcast that the game is about to start!
-     */
+    broadcast_start_signal();
 
     using clock = std::chrono::high_resolution_clock;
     auto lastTime = clock::now();

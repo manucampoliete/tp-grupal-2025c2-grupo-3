@@ -16,6 +16,7 @@
 #include <QFontDatabase>
 #include <ui_guestwaiting.h>
 #include <iostream>
+#include <thread>
 
 Lobby::Lobby(ClientProtocol& protocol, QWidget *parent)
     : QMainWindow(parent)
@@ -101,15 +102,20 @@ void Lobby::initiate_connection(){
     }
 }
 
+void Lobby::wait_start(){
+    protocol.recv_start_signal();
+    std::cout << "El juego ha comenzado!" << std::endl;
+    this->close();
+}
+
 void Lobby::handleJoinGameRequest(const QString &username, const QString &gameId, const CarInfo &car)
 {
-    //bool joined = protocol->sendJoinGameRequest(username.toStdString(), gameId.toStdString(), car.id);
-    std::cout << "El jugador " << username.toStdString()
-              << " quiere unirse al juego " << gameId.toStdString()
-              << " con el auto " << car.name << std::endl << std::flush;
+    bool joined = protocol.send_join(static_cast<uint16_t>(gameId.toInt()), username.toStdString(), static_cast<uint8_t>(car.id));
+    std::cout << joined << std::endl;
 
     stackedWidget->setCurrentWidget(guest_waiting);
-    //recv_start_signal();
+    std::this_thread::sleep_for(std::chrono::seconds(4));
+    wait_start();
 }
 
 void Lobby::handleNewGameRequest(const QString &username, const CarInfo &car) //car pasarlo a id y a uint
@@ -125,8 +131,8 @@ void Lobby::handleNewGameRequest(const QString &username, const CarInfo &car) //
 
 void Lobby::startGame()
 {
-    //bool started = protocol->send_start();
-    
+    protocol.send_start();
+    protocol.recv_start_signal();
     std::cout << "El host ha comenzado la partida!" << std::endl;
     
     this->close();

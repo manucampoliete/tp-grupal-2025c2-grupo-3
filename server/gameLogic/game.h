@@ -43,6 +43,11 @@ private:
      */
     void broadcast();
 
+    /**
+     * Broadcasts a start signal to all players.
+     */
+    void broadcast_start_signal();
+
 public:
     /**
      * Constructor

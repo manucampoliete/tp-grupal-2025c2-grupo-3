@@ -18,8 +18,7 @@ void ServerLobbyProtocol::recvJoinMatch(LobbyResolver& lobbyResolver) {
 }
 
 void ServerLobbyProtocol::recvStartMatch(LobbyResolver& lobbyResolver) {
-    MatchID matchId = recvU16();
-    lobbyResolver.handleStartMatch(matchId, *this);
+    lobbyResolver.handleStartMatch(*this);
 }
 
 ServerLobbyProtocol::ServerLobbyProtocol(Socket& socket):

@@ -42,7 +42,7 @@ public:
     /**
      * Handles a START_MATCH request from the client.
      */
-    void handleStartMatch(MatchID matchId, ServerLobbyProtocol& protocol);
+    void handleStartMatch(ServerLobbyProtocol& protocol);
 
     /**
      * Returns true if the client is in the lobby phase, false otherwise.

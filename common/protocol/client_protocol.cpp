@@ -83,12 +83,9 @@ bool ClientProtocol::send_join(uint16_t match_id, const std::string& username, u
     return recv_u8() == 0x00;  // 0x00 for success, 0x01 for failure
 }
 
-bool ClientProtocol::send_start() {
+void ClientProtocol::send_start() {
     uint8_t action_code = SEND_START;
-    send_u8(action_code);
-
-    action_code = recv_u8();
-    return recv_u8() == 0x00;  // 0x00 for success, 0x01 for failure
+    send_u8(action_code);  // 0x00 for success, 0x01 for failure
 }
 
 void ClientProtocol::recv_start_signal() {

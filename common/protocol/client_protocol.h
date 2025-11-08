@@ -34,7 +34,7 @@ public:
 
     bool send_join(uint16_t match_id, const std::string& username, uint8_t car_id);
 
-    bool send_start();
+    void send_start();
 
     void recv_start_signal();
 

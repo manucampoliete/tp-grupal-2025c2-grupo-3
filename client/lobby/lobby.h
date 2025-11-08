@@ -44,5 +44,6 @@ private:
 
     void handleJoinGameRequest(const QString &username, const QString &gameId, const CarInfo &car);
     void handleNewGameRequest(const QString &username, const CarInfo &car);
+    void wait_start();
 };
 #endif // LOBBY_H

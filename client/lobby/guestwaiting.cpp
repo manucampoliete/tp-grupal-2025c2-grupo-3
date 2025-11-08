@@ -28,7 +28,6 @@ guestWaiting::guestWaiting(QWidget *parent)
 
     ui->mainLayout->addLayout(hLayout);
 }
-
 guestWaiting::~guestWaiting()
 {
     delete ui;
