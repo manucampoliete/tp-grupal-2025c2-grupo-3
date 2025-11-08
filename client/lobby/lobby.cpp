@@ -102,20 +102,21 @@ void Lobby::initiate_connection(){
     }
 }
 
-void Lobby::wait_start(){
-    protocol.recv_start_signal();
-    std::cout << "El juego ha comenzado!" << std::endl;
-    this->close();
-}
-
 void Lobby::handleJoinGameRequest(const QString &username, const QString &gameId, const CarInfo &car)
 {
     bool joined = protocol.send_join(static_cast<uint16_t>(gameId.toInt()), username.toStdString(), static_cast<uint8_t>(car.id));
     std::cout << joined << std::endl;
 
     stackedWidget->setCurrentWidget(guest_waiting);
-    std::this_thread::sleep_for(std::chrono::seconds(4));
-    wait_start();
+        std::thread([this]() {
+        protocol.recv_start_signal();
+
+        std::cout << "El juego ha comenzado!" << std::endl;
+
+        QMetaObject::invokeMethod(this, [this]() {
+            this->close();
+        });
+    }).detach();
 }
 
 void Lobby::handleNewGameRequest(const QString &username, const CarInfo &car) //car pasarlo a id y a uint
@@ -134,7 +135,6 @@ void Lobby::startGame()
     protocol.send_start();
     protocol.recv_start_signal();
     std::cout << "El host ha comenzado la partida!" << std::endl;
-    
     this->close();
 }
 
