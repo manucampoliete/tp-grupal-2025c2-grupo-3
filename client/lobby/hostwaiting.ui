@@ -118,7 +118,7 @@ QLineEdit::placeholder {
      <string>/ 8</string>
     </property>
    </widget>
-   <widget class="QLabel" name="label_3">
+   <widget class="QLabel" name="labelGameID">
     <property name="geometry">
      <rect>
       <x>80</x>

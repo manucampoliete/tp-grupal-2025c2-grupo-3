@@ -13,6 +13,13 @@ void HostWaiting::on_buttonStart_clicked()
     emit startClicked();
 }
 
+void HostWaiting::setMatchID(QString match_id)
+{
+    this->match_id = match_id;
+    QString currentText = ui->labelGameID->text();
+    ui->labelGameID->setText(currentText + "   " + match_id);
+}
+
 HostWaiting::~HostWaiting()
 {
     delete ui;

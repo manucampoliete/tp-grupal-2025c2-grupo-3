@@ -119,6 +119,7 @@ void Lobby::handleNewGameRequest(const QString &username, const CarInfo &car) //
               << " con el auto " << car.name << std::endl << std::flush;
 
     std::cout << "ID de la nueva partida: " << match_id << std::endl << std::flush;
+    host_waiting->setMatchID(QString::number(match_id));
     stackedWidget->setCurrentWidget(host_waiting);
 }
 
