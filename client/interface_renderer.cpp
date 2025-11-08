@@ -73,7 +73,7 @@ void UIRenderer::render_countdown(uint8_t countdown_number) {
     }
 
     // crear fuente gigante para el countdown
-    Font big_font("assets/fonts/VCR_OSD_MONO.ttf", 140);
+    Font big_font("client/assets/fonts/VCR_OSD_MONO.ttf", 140);
     Surface s = big_font.RenderText_Solid(text, color);
     Texture t(renderer, s);
 

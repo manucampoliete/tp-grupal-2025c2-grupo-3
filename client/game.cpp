@@ -18,15 +18,15 @@ Game::Game(World& world, GameHandler& game_handler, uint8_t player_id) :
     
     // renderer acelerado por hardware
     renderer(window, -1, SDL_RENDERER_ACCELERATED),
-    font("assets/fonts/VCR_OSD_MONO.ttf", 24), // font
-    font_small("assets/fonts/VCR_OSD_MONO.ttf", 18),
+    font("client/assets/fonts/VCR_OSD_MONO.ttf", 24), // font
+    font_small("client/assets/fonts/VCR_OSD_MONO.ttf", 18),
 
     // cargo la textura del mapa desde un archivo
     // por ahora hardcodeo una cualquiera
-    map_texture(renderer, "assets/cities/Game Boy _ GBC - Grand Theft Auto - Backgrounds - Vice City.png"),
+    map_texture(renderer, "client/assets/cities/Game Boy _ GBC - Grand Theft Auto - Backgrounds - Vice City.png"),
 
     // cargo la textura con los sprites de autos
-    car_sprites(renderer, SDL2pp::Surface("assets/cars/Mobile - Grand Theft Auto 4 - Miscellaneous - Cars.png").SetColorKey(true, 0xa3a30d)),
+    car_sprites(renderer, SDL2pp::Surface("client/assets/cars/Mobile - Grand Theft Auto 4 - Miscellaneous - Cars.png").SetColorKey(true, 0xa3a30d)),
 
     world(world),
     game_handler(game_handler),
