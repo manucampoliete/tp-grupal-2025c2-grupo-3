@@ -110,7 +110,7 @@ Snapshot ClientProtocol::recv_snapshot() {
 }
 
 
-/*
+
 void ClientProtocol::send_modifications(bool speed_mod, bool accel_mod) {
     sendU8(MSG_MODIFY_CAR);
     sendU8(speed_mod ? 0x01 : 0x00);
@@ -151,7 +151,7 @@ RaceResults ClientProtocol::recv_race_results() {
     
     for (uint16_t i = 0; i < num_players; ++i) {
         RaceResults::PlayerResult player;
-        player.player_name = recv_string();
+        player.player_name = recvString();
         player.race_time_ms = recvU32();
         player.total_time_ms = recvU32();
         
@@ -182,7 +182,7 @@ FinalResults ClientProtocol::recv_final_results() {
     for (uint16_t i = 0; i < num_standings; ++i) {
         FinalResults::FinalStanding standing;
         standing.player_id = recvU16();
-        standing.player_name = recv_string();
+        standing.player_name = recvString();
         standing.total_time_ms = recvU32();
         standing.position = recvU8();
         
@@ -190,8 +190,7 @@ FinalResults ClientProtocol::recv_final_results() {
     }
     
     results.winner_id = recvU16();
-    results.winner_name = recv_string();
+    results.winner_name = recvString();
     
     return results;
 }
-*/

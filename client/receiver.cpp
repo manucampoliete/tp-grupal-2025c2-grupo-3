@@ -28,6 +28,54 @@ void Receiver::run() {
                     break;
                 }
                 
+                case MSG_COUNTDOWN: {
+                    std::cout << "[RECEIVER] → Procesando COUNTDOWN" << std::endl;
+                    uint8_t number = protocol.recv_countdown();
+                    game_handler.on_countdown(number);
+                    break;
+                }
+
+                case MSG_RACE_START: {
+                    std::cout << "[RECEIVER] → Procesando RACE_START" << std::endl;
+                    game_handler.on_race_start();
+                    break;
+                }
+
+                case MSG_RACE_END: {
+                    std::cout << "[RECEIVER] → Procesando RACE_END" << std::endl;
+                    RaceResults results = protocol.recv_race_results();
+                    game_handler.on_race_end(results);
+                    break;
+                }
+                
+                case MSG_MOD_PHASE: {
+                    std::cout << "[RECEIVER] → Procesando MOD_PHASE" << std::endl;
+                    CarProperties props = protocol.recv_car_properties();
+                    game_handler.on_modification_phase(props);
+                    break;
+                }
+
+                case MSG_GAME_END: {
+                    std::cout << "[RECEIVER] → Procesando GAME_END" << std::endl;
+                    FinalResults results = protocol.recv_final_results();
+                    game_handler.on_game_end(results);
+                    break;
+                }
+
+                case MSG_COLLISION: {
+                    std::cout << "[RECEIVER] → Procesando COLLISION" << std::endl;
+                    CollisionData collision = protocol.recv_collision();
+                    game_handler.on_collision(collision);
+                    break;
+                }
+
+                case MSG_PLAYER_DIED: {
+                    std::cout << "[RECEIVER] → Procesando PLAYER_DIED" << std::endl;
+                    uint16_t dead_player_id = protocol.recv_player_died();
+                    game_handler.on_player_died(dead_player_id);
+                    break;
+                }
+                
                 default:
                     std::cerr << "[RECEIVER] MENSAJE DESCONOCIDO: " << (int)msg_type << std::endl;
                     break;

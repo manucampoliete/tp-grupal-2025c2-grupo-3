@@ -47,7 +47,6 @@ public:
 
     std::string recv_username();
     
-    /*
     // envía modificaciones del auto al servidor
     void send_modifications(bool speed_mod, bool accel_mod);
     
@@ -71,7 +70,6 @@ public:
     
     // recibe resultados finales de la partida
     FinalResults recv_final_results();
-    */
 
 };
 #endif // CLIENT_PROTOCOL_H

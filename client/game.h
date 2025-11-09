@@ -55,7 +55,7 @@ private:
     WorldRenderer world_renderer;
     UIRenderer interface_renderer;
 
-    game_state current_state = game_state::COUNTDOWN;
+    game_state current_state = game_state::RACING; // va COUNTDOWN pero hasta arreglarlo asi se ve la carrera
 
     // countdown
     uint8_t countdown_number = 3; // 3, 2, 1, 0=GO

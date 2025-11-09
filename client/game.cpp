@@ -149,6 +149,8 @@ void Game::update(float dt) {
 
     std::cout << "[GAME] Update: " << car_states.size() << " autos en world" << std::endl;
 
+    race_timer_ms = world.getCountdown(); 
+
     // actualiza la posición y ángulo del auto del jugador local
     //  y mas adelante de los otros autos?
     if (car_states.count(player_id)) {
@@ -165,7 +167,7 @@ void Game::update(float dt) {
         std::cout << "[GAME] Mi auto (id=" << (int)player_id << ") NO está en el world!" << std::endl;
     }
 
-
+    /*
     // HARDCODEADO: manejar transiciones para testear lo visual
     if (current_state == game_state::COUNTDOWN) {
         countdown_timer += dt;
@@ -230,6 +232,7 @@ void Game::update(float dt) {
             current_race++;
         }
     }
+    */
 }
 
 
