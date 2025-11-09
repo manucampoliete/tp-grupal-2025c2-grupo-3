@@ -18,7 +18,7 @@ private:
     Texture& map_texture;
     Texture& car_sprites;
     World& world;
-    Car& player_car;
+ //   Car& player_car;
     uint8_t player_id;
 
     Rect camera;
@@ -30,7 +30,7 @@ public:
                   Texture& map_texture, 
                   Texture& car_sprites,
                   World& world,
-                  Car& player_car,
+                  /*Car& player_car,*/
                   uint8_t player_id);
 
     // renderizar el mundo (mapa + autos) Con la camara y escalado

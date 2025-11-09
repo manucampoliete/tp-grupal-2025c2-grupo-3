@@ -33,11 +33,11 @@ Game::Game(World& world, GameHandler& game_handler, uint8_t player_id) :
     player_id(player_id),
 
     // creo el auto del jugador
-    player_car(renderer, car_sprites, player_id),
-    event_handler(game_handler, player_car, *this),
+ //   player_car(renderer, car_sprites, player_id),
+    event_handler(game_handler,/* player_car,*/ *this),
 
     // Inicializo los renderers
-    world_renderer(renderer, map_texture, car_sprites, world, player_car, player_id),
+    world_renderer(renderer, map_texture, car_sprites, world,/* player_car,*/ player_id),
     interface_renderer(renderer, font, font_small, map_texture, world, player_id) { 
 
     SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "0");
@@ -147,15 +147,22 @@ void Game::update(float dt) {
     // obtiene el estado de todos los autos desde el World (que es actualizado por el Receiver)
     auto car_states = world.getCars();
 
+    std::cout << "[GAME] Update: " << car_states.size() << " autos en world" << std::endl;
+
     // actualiza la posición y ángulo del auto del jugador local
     //  y mas adelante de los otros autos?
     if (car_states.count(player_id)) {
         const auto& my_car_state = car_states.at(player_id);
+        
+        std::cout << "[GAME] Mi auto: pos=(" << my_car_state.x << "," << my_car_state.y << "), angle=" << my_car_state.angle << std::endl;
+
         // para actualizar la posición en pantalla del auto segun lo que dice el server
-        player_car.set_state(my_car_state.x, my_car_state.y, my_car_state.angle);
+    //    player_car.set_state(my_car_state.x, my_car_state.y, my_car_state.angle);
         
         // Actualizar cámara
         world_renderer.update_camera(my_car_state.x, my_car_state.y);
+    } else {
+        std::cout << "[GAME] Mi auto (id=" << (int)player_id << ") NO está en el world!" << std::endl;
     }
 
 

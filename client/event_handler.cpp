@@ -5,8 +5,8 @@
 #include "client.h"
 #include "event_handler.h"
 
-EventHandler::EventHandler(GameHandler& game_handler, Car& player_car, Game& game)
-    : game_handler(game_handler), player_car(player_car), game(game) {}
+EventHandler::EventHandler(GameHandler& game_handler,/* Car& player_car,*/ Game& game) : 
+    game_handler(game_handler),/* player_car(player_car),*/ game(game) {}
 
 
 /**
