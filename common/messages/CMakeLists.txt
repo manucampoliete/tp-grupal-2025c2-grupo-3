@@ -5,4 +5,5 @@ target_sources(taller_common
     PUBLIC
     # .h files
     snapshot.h
+    game_data.h
     )

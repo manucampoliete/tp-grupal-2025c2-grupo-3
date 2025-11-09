@@ -29,7 +29,7 @@ public:
     /**
      * Constructor that takes a reference to a Socket object.
      */
-    explicit ServerLobbyProtocol(Socket& skt);
+    ServerLobbyProtocol(Socket& skt, ClientID clientId);
 
     /**
      * Consumes one message from the socket and processes it using the given LobbyResolver.

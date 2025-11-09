@@ -26,3 +26,4 @@ target_sources(taller_client
     game_handler.h
     )
 
+add_subdirectory(protocol)

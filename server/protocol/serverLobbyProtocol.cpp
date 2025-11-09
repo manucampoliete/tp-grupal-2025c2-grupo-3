@@ -21,8 +21,11 @@ void ServerLobbyProtocol::recvStartMatch(LobbyResolver& lobbyResolver) {
     lobbyResolver.handleStartMatch(*this);
 }
 
-ServerLobbyProtocol::ServerLobbyProtocol(Socket& socket):
-        RecvProtocol(socket), SendProtocol(socket) {}
+ServerLobbyProtocol::ServerLobbyProtocol(Socket& socket, ClientID clientId):
+        RecvProtocol(socket), SendProtocol(socket) {
+            sendU8(SEND_CLIENT_ID);
+            sendU16(clientId);
+        }
 
 void ServerLobbyProtocol::consumeOne(LobbyResolver& lobbyResolver) {
     switch (recvU8()) {

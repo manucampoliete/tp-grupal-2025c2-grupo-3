@@ -8,7 +8,7 @@
 #include <SDL2pp/SDLTTF.hh> 
 #include <SDL2pp/Font.hh>
 
-#include "../common/protocol/game_data.h"
+#include "../common/messages/game_data.h"
 #include "../common/messages/snapshot.h"
 #include "car.h"
 #include "world.h"

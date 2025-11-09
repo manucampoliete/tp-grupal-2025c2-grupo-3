@@ -8,7 +8,7 @@
 #include <map>
 #include <cstdint>
 
-#include "../common/protocol/game_data.h"
+#include "../common/messages/game_data.h"
 #include "world.h"
 
 using namespace SDL2pp;

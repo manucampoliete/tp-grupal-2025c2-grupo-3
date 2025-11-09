@@ -1,55 +1,77 @@
 #ifndef CLIENT_PROTOCOL_H
 #define CLIENT_PROTOCOL_H
 
-#include <cstdint>
-#include <string>
+#include "../../common/socket/socket.h"
+#include "../../common/utils/move_request.h"
+#include "../../common/messages/snapshot.h"
+#include "../../common/messages/game_data.h"
+#include "../../common/types/types.h"
 
 #include "../../common/protocol/sendProtocol.h"
 #include "../../common/protocol/recvProtocol.h"
-#include "../utils/activeDirections.h"
-#include "../types/types.h"
 
-class ClientProtocol : public SendProtocol, public RecvProtocol {
+#include <cstdint>
+#include <string>
+
+class ClientProtocol: public SendProtocol, public RecvProtocol {
 private:
-    /**
-     * Handshake method to receive initial information from the server.
-     */
-    void recvInitialInfo();
 
-    /**
-     * Encodes ActiveDirections into a single byte.
-     */
-    uint8_t encodeActiveDirections(const ActiveDirections& activeDirections);
 
 public:
-    /**
-     * Constructor that takes a reference to a Socket object.
-     */
-    explicit ClientProtocol(Socket& skt);
+    explicit ClientProtocol(Socket& socket);
 
-    /**
-     * Sends a create match request to the server.
-     */
-    MatchID sendCreate(const std::string& username, CarID carId);
+    // Handshake methods
+    void recv_initial_info();
 
-    /**
-     * Sends a join match request to the server.
-     */
-    bool sendJoin(MatchID matchId, const std::string& username, CarID carId);
+    uint16_t send_create(const std::string& username, uint8_t car_id);
 
-    /**
-     * Sends a start match request to the server.
-     */
-    bool sendStart(MatchID matchId);
+    bool send_join(uint16_t match_id, const std::string& username, uint8_t car_id);
 
-    /**
-     * Sends the player's move to the server.
-     */
-    void sendMove(const ActiveDirections& activeDirections);
+    void send_start();
 
-    /**
-     * Receives the start signal from the server.
-     */
-    void recvStartSignal();
+    void recv_start_signal();
+
+
+    // GAME
+
+    ClientID recv_client_id();
+    
+    // lee el tipo de mensaje del servidor y devuelve el código
+    uint8_t recv_message_type();
+    
+    // envía un input de movimiento al servidor
+    void send_move(const MoveRequest& request);
+    
+    // recibe un snapshot del estado del juego (ahora usando snapshot.h)
+    Snapshot recv_snapshot();
+
+    std::string recv_username();
+    
+    /*
+    // envía modificaciones del auto al servidor
+    void send_modifications(bool speed_mod, bool accel_mod);
+    
+    // recibe número de countdown (3, 2, 1, 0=GO)
+    uint8_t recv_countdown();
+    
+    // recibe ID de checkpoint cruzado
+    uint8_t recv_checkpoint();
+    
+    // recibe datos de colisión
+    CollisionData recv_collision();
+    
+    // recibe ID del jugador que murió
+    uint16_t recv_player_died();
+    
+    // recibe resultados de la carrera
+    RaceResults recv_race_results();
+    
+    // recibe propiedades del auto para modificación
+    CarProperties recv_car_properties();
+    
+    // recibe resultados finales de la partida
+    FinalResults recv_final_results();
+    */
+
 };
-#endif  // CLIENT_PROTOCOL_H
+#endif // CLIENT_PROTOCOL_H

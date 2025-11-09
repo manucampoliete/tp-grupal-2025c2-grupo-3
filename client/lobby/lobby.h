@@ -7,7 +7,7 @@
 #include "guestwaiting.h"
 #include "hostwaiting.h"
 #include "carinfo.h"
-#include "../../common/protocol/client_protocol.h"
+#include "../protocol/client_protocol.h"
 
 #include <QMainWindow>
 #include <QStackedWidget>

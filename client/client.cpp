@@ -1,17 +1,16 @@
 #include "client.h"
 #include "lobby/lobby.h"
-#include "../common/protocol/client_protocol.h"
+#include "../protocol/client_protocol.h"
 
 #include <QApplication>
 #include <iostream>
 
 
-Client::Client(const std::string& hostname, const std::string& servname, uint8_t player_id) :
+Client::Client(const std::string& hostname, const std::string& servname) :
     socket(hostname.c_str(), servname.c_str()),
     protocol(socket),
-    player_id(player_id),
-    lobby_finished(false) {
-}
+    player_id(protocol.recv_client_id()),
+    lobby_finished(false) {}
 
 
 void Client::run(int argc, char* argv[]) {

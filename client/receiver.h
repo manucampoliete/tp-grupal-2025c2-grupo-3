@@ -6,7 +6,7 @@
 #include "../common/utils/move_request.h"
 #include "../common/protocol/protocolConstants.h"
 #include "../common/types/types.h"
-#include "../common/protocol/client_protocol.h"
+#include "../protocol/client_protocol.h"
 #include "../common/messages/snapshot.h"
 
 
