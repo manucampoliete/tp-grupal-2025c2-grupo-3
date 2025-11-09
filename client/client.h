@@ -6,6 +6,7 @@
 
 #include "../common/socket/socket.h"
 #include "../common/protocol/client_protocol.h"
+#include "../common/messages/snapshot.h"
 #include "game_handler.h"
 #include <sys/socket.h>
 

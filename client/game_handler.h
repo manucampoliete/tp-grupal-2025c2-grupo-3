@@ -9,6 +9,7 @@
 #include "receiver.h"
 #include "../common/protocol/client_protocol.h"
 #include "../common/protocol/game_data.h"
+#include "../common/messages/snapshot.h"
 #include "../common/queue/queue.h"
 #include "../common/utils/move_request.h"
 

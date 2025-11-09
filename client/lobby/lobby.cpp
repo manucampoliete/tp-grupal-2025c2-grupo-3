@@ -27,7 +27,7 @@ Lobby::Lobby(ClientProtocol& protocol, QWidget *parent)
 
     this->setWindowTitle("Need For Speed");
     this->setFixedSize(960, 540);
-
+    this->setStyleSheet("QWidget { color: white; }");
     QScreen *screen = QGuiApplication::primaryScreen();
 
     int screenWidth = screen->geometry().width();

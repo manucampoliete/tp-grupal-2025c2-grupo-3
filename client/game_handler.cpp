@@ -19,27 +19,27 @@ void GameHandler::run() {
     running = true;
     
     sender.start();
-    std::cout << "1" << std::endl;
-    receiver.start();
+    std::cout << "[GAME_HANDLER] Sender iniciado" << std::endl;
     
-    std::cout << "2" << std::endl;
+    receiver.start();
+    std::cout << "[GAME_HANDLER] Receiver iniciado" << std::endl;
+    
     // crear e iniciar el juego (SDL)
     game = std::make_unique<Game>(world, *this, player_id);
+    
+    std::cout << "[GAME_HANDLER] Iniciando game loop..." << std::endl;
     game->run(); // blocking hasta que se cierre la ventana
     
-    std::cout << "3" << std::endl;
-    // cuando game->run() termina, detener todo
+    std::cout << "[GAME_HANDLER] Game loop terminado, cerrando hilos..." << std::endl;
     stop();
 }
 
 void GameHandler::stop() {
-    std::cout << "stop 1" << std::endl;
+    std::cout << "[GAME_HANDLER] Deteniendo..." << std::endl;
     running = false;
     
     client_requests_q.close();
-    std::cout << "stop 1" << std::endl;
     server_snapshots_q.close();
-    std::cout << "stop 3" << std::endl;
     
     sender.stop();
     receiver.stop();
@@ -55,13 +55,15 @@ void GameHandler::update_world(const Snapshot& snapshot) {
     // desp veo si uso directamente snapshot o si lo dejo asi
     BroadcastData data;
     
+    std::cout << "[GAME_HANDLER] Actualizando world con " << snapshot.cars.size() << " autos" << std::endl;
+    
     for (const auto& car_snap : snapshot.cars) {
         BroadcastData::CarState car_state;
         car_state.id = car_snap.id;
         car_state.x = car_snap.x / 1000.0f;  // convertir de uint32_t*1000 a float
         car_state.y = car_snap.y / 1000.0f;
         car_state.angle = car_snap.angle;
-        car_state.type = car_snap.type;
+        car_state.type = car_snap.carId;
         
         data.cars.push_back(car_state);
     }

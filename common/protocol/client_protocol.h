@@ -3,6 +3,7 @@
 
 #include "../socket/socket.h"
 #include "../utils/move_request.h"
+#include "../messages/snapshot.h"
 #include "game_data.h"
 
 #include <cstdint>
@@ -47,11 +48,12 @@ public:
     // envía un input de movimiento al servidor
     void send_move(const MoveRequest& request);
     
+    // recibe un snapshot del estado del juego (ahora usando snapshot.h)
+    Snapshot recv_snapshot();
+    
+    /*
     // envía modificaciones del auto al servidor
     void send_modifications(bool speed_mod, bool accel_mod);
-    
-    // recibe un snapshot del estado del juego
-    Snapshot recv_snapshot();
     
     // recibe número de countdown (3, 2, 1, 0=GO)
     uint8_t recv_countdown();
@@ -73,6 +75,7 @@ public:
     
     // recibe resultados finales de la partida
     FinalResults recv_final_results();
+    */
 
 };
 #endif // CLIENT_PROTOCOL_H

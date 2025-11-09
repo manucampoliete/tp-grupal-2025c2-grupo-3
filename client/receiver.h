@@ -4,9 +4,10 @@
 #include "../common/queue/queue.h"
 #include "../common/thread/thread.h"
 #include "../common/utils/move_request.h"
-#include "../common/protocol/protocol_constants.h"
+#include "../common/protocol/protocolConstants.h"
 #include "../common/types/types.h"
 #include "../common/protocol/client_protocol.h"
+#include "../common/messages/snapshot.h"
 
 
 class GameHandler;

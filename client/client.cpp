@@ -6,7 +6,6 @@
 #include <iostream>
 
 
-
 Client::Client(const std::string& hostname, const std::string& servname, uint8_t player_id) :
     socket(hostname.c_str(), servname.c_str()),
     protocol(socket),
@@ -24,30 +23,17 @@ void Client::run(int argc, char* argv[]) {
 
     Lobby lobby(protocol);
     lobby.initiate_connection();
- 
-    // señal de lobby terminado
-    // CHEQUEAR
-    /*
-    QObject::connect(&lobby, &Lobby::game_started, [this]() {
-        this->on_lobby_finished();
-    });
-    */
 
     lobby.show();
     app.exec(); // blocking hasta que se cierre el lobby
     
+    std::cout << "[CLIENT] Lobby finished, starting game..." << std::endl;
 
     // FASE 2: game (SDL)
-//    if (lobby_finished) {
-        std::cout << "[CLIENT] Lobby finished, starting game..." << std::endl;
-        
-        GameHandler game_handler(protocol, player_id);
-        game_handler.run(); // blocking hasta que se cierre el juego
-        
-        std::cout << "[CLIENT] Juego finished" << std::endl;
-//    } else {
-        std::cout << "[CLIENT] Lobby cancelled, closing client" << std::endl;
-//    }
+    GameHandler game_handler(protocol, player_id);
+    game_handler.run(); // blocking hasta que se cierre el juego
+    
+    std::cout << "[CLIENT] Juego finished" << std::endl;
 }
 
 void Client::on_lobby_finished() {

@@ -1,8 +1,9 @@
 #include "client_protocol.h"
-#include "protocol_constants.h"
+#include "protocolConstants.h"
 
 #include <arpa/inet.h>
 #include <stdexcept>
+#include <iostream>
 
 ClientProtocol::ClientProtocol(Socket& socket) :
     socket(socket) {}
@@ -93,6 +94,7 @@ void ClientProtocol::recv_start_signal() {
     if (action_code != SEND_STARTED) {
         throw std::runtime_error("Expected STARTED signal from server");
     }
+   // recv_u8();
 }
 
 
@@ -103,27 +105,27 @@ uint8_t ClientProtocol::recv_message_type() {
 }
 
 void ClientProtocol::send_move(const MoveRequest& request) {
-    send_u8(MSG_MOVE);
+    send_u8(SEND_MOVE_STATE);
     
     // ewmpaquetar direcciones en un byte (bits: up/down/left/right)
     uint8_t directions = 0;
-    if (request.up)    directions |= 0b1000;
-    if (request.down)  directions |= 0b0100;
-    if (request.left)  directions |= 0b0010;
-    if (request.right) directions |= 0b0001;
+    if (request.up)    directions |= UP_MASK;
+    if (request.down)  directions |= DOWN_MASK;
+    if (request.left)  directions |= LEFT_MASK;
+    if (request.right) directions |= RIGHT_MASK;
     
     send_u8(directions);
-}
-
-void ClientProtocol::send_modifications(bool speed_mod, bool accel_mod) {
-    send_u8(MSG_MODIFY_CAR);
-    send_u8(speed_mod ? 0x01 : 0x00);
-    send_u8(accel_mod ? 0x01 : 0x00);
+    
+    // DEBUG
+    // std::cout << "[PROTOCOL] Enviando movimiento: 0x" 
+    //           << std::hex << (int)directions << std::dec << std::endl;
 }
 
 Snapshot ClientProtocol::recv_snapshot() {
-    uint16_t countdown = recv_u16();
+    uint32_t countdown = recv_u32();
     uint16_t num_cars = recv_u16();
+    
+    std::cout << "[PROTOCOL] Snapshot recibido: countdown=" << countdown << "ms, num_cars=" << num_cars << std::endl;
     
     std::vector<Snapshot::CarSnapshot> cars;
     for (uint16_t i = 0; i < num_cars; ++i) {
@@ -132,12 +134,22 @@ Snapshot ClientProtocol::recv_snapshot() {
         uint32_t y = recv_u32();
         uint16_t angle = recv_u16();
         uint16_t speed = recv_u16();
-        uint8_t type = recv_u8();
+        uint8_t carId = recv_u8();
         
-        cars.emplace_back(id, x, y, angle, speed, type);
+        std::cout << "  [Car " << i << "] id=" << id  << ", pos=(" << x << "," << y << ")" << ", angle=" << angle  << ", carId=" << (int)carId << std::endl;
+        
+        cars.emplace_back(id, x, y, angle, speed, carId);
     }
     
     return Snapshot(countdown, cars);
+}
+
+
+/*
+void ClientProtocol::send_modifications(bool speed_mod, bool accel_mod) {
+    send_u8(MSG_MODIFY_CAR);
+    send_u8(speed_mod ? 0x01 : 0x00);
+    send_u8(accel_mod ? 0x01 : 0x00);
 }
 
 uint8_t ClientProtocol::recv_countdown() {
@@ -217,3 +229,4 @@ FinalResults ClientProtocol::recv_final_results() {
     
     return results;
 }
+*/
