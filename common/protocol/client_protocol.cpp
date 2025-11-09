@@ -123,12 +123,12 @@ void ClientProtocol::send_move(const MoveRequest& request) {
 
 Snapshot ClientProtocol::recv_snapshot() {
     uint32_t countdown = recv_u32();
-    uint16_t num_cars = recv_u16();
+    uint8_t num_cars = recv_u8();
     
     std::cout << "[PROTOCOL] Snapshot recibido: countdown=" << countdown << "ms, num_cars=" << num_cars << std::endl;
     
     std::vector<Snapshot::CarSnapshot> cars;
-    for (uint16_t i = 0; i < num_cars; ++i) {
+    for (uint8_t i = 0; i < num_cars; ++i) {
         uint16_t id = recv_u16();
         uint32_t x = recv_u32();
         uint32_t y = recv_u32();
@@ -136,7 +136,7 @@ Snapshot ClientProtocol::recv_snapshot() {
         uint16_t speed = recv_u16();
         uint8_t carId = recv_u8();
         
-        std::cout << "  [Car " << i << "] id=" << id  << ", pos=(" << x << "," << y << ")" << ", angle=" << angle  << ", carId=" << (int)carId << std::endl;
+        std::cout << "  [Car " << i << "] id=" << id  << ", pos=(" << x << "," << y << ")" << ", angle=" << angle << ", speed=" << speed << ", carId=" << (int)carId << std::endl;
         
         cars.emplace_back(id, x, y, angle, speed, carId);
     }

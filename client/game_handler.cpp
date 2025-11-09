@@ -3,6 +3,8 @@
 #include "client.h"
 #include <iostream>
 
+#define WORLD_HEIGHT 4672.0f
+
 GameHandler::GameHandler(ClientProtocol& protocol, uint8_t player_id) :
     protocol(protocol),
     player_id(player_id),
@@ -61,8 +63,8 @@ void GameHandler::update_world(const Snapshot& snapshot) {
         BroadcastData::CarState car_state;
         car_state.id = car_snap.id;
         car_state.x = car_snap.x / 1000.0f;  // convertir de uint32_t*1000 a float
-        car_state.y = car_snap.y / 1000.0f;
-        car_state.angle = car_snap.angle;
+        car_state.y = WORLD_HEIGHT - car_snap.y / 1000.0f; // traduccion de y entre box2d y sdl2 (tienen el Y al revés)
+        car_state.angle = car_snap.angle + 90.0f; // para que coincida con el angulo 0º de box2d (que el sprite arranque mirando a la derecha)
         car_state.type = car_snap.carId;
         
         data.cars.push_back(car_state);

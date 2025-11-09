@@ -5,6 +5,14 @@
 
 #include "../../common/utils/activeDirections.h"
 
+#define MAX_SPEED 100.0f
+#define ACC 20.0f
+#define ANGULAR_SPEED 2.0f
+#define TURN_FACTOR_THRESHOLD MAX_SPEED / 3
+#define LINEAR_VEL_THRESHOLD 1.0f
+#define ANGULAR_VEL_THRESHOLD 1.0f
+
+
 class Car {
 private:
     /**
@@ -32,12 +40,12 @@ public:
      */
     explicit Car(b2Body* body):
             body(body),
-            maxSpeed(10.0f),
-            acceleration(2.0f),
-            angularSpeed(1.0f),
-            turnFactorThreshold(this->maxSpeed / 4),
-            linearVelThreshold(0.1f),
-            angularVelThreshold(0.1f) {}
+            maxSpeed(MAX_SPEED),
+            acceleration(ACC),
+            angularSpeed(ANGULAR_SPEED),
+            turnFactorThreshold(TURN_FACTOR_THRESHOLD),
+            linearVelThreshold(LINEAR_VEL_THRESHOLD),
+            angularVelThreshold(ANGULAR_VEL_THRESHOLD) {}
 
     /**
      * Updates the physics of the car based on the current active directions.
