@@ -246,17 +246,13 @@ void Game::set_race_timer(uint16_t time_ms) {
 }
 
 void Game::show_countdown(uint8_t number) {
-    // current_state = game_state::COUNTDOWN;
-    start_race();
-    
+    current_state = game_state::COUNTDOWN;
     countdown_number = number;
     countdown_timer = 0.0f;
 }
 
 void Game::show_stats(const RaceResults& results) {
-    // current_state = game_state::SHOWING_STATS;
-    start_race();
-
+    current_state = game_state::SHOWING_STATS;
     current_results = results;
     stats_timer_ms = results.countdown_ms;
 }
