@@ -2,12 +2,13 @@
 #define CARINFO_H
 
 #include <string>
+#include "../types/types.h"
 
 struct CarInfo {
-    int id;
+    CarID id;
     std::string name;
-    int health;
-    int speed;
+    uint16_t health;
+    uint16_t speed;
 };
 
 #endif // CARINFO_H

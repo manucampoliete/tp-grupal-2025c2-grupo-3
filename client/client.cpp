@@ -29,7 +29,7 @@ void Client::run(int argc, char* argv[]) {
     std::cout << "[CLIENT] Lobby finished, starting game..." << std::endl;
 
     // FASE 2: game (SDL)
-    GameHandler game_handler(protocol, player_id);
+    GameHandler game_handler(protocol, player_id /*lobby.getCarID()*/);
     game_handler.run(); // blocking hasta que se cierre el juego
     
     std::cout << "[CLIENT] Juego finished" << std::endl;

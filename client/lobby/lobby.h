@@ -6,7 +6,7 @@
 #include "joingame.h"
 #include "guestwaiting.h"
 #include "hostwaiting.h"
-#include "carinfo.h"
+#include "../../common/utils/carinfo.h"
 #include "../protocol/client_protocol.h"
 
 #include <QMainWindow>
@@ -29,7 +29,7 @@ public:
     ~Lobby();
     void initiate_connection();
     void startGame();
-
+    uint16_t getCarID() const { return car_id; }
 
 private:
     Ui::Lobby *ui;
@@ -41,6 +41,7 @@ private:
     HostWaiting* host_waiting;
     ClientProtocol& protocol;
     std::vector<CarInfo> available_cars;
+    uint16_t car_id;
 
     void handleJoinGameRequest(const QString &username, const QString &gameId, const CarInfo &car);
     void handleNewGameRequest(const QString &username, const CarInfo &car);

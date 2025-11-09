@@ -94,8 +94,7 @@ Lobby::Lobby(ClientProtocol& protocol, QWidget *parent)
 void Lobby::initiate_connection(){
     try {
         std::cout << "Iniciando conexión...\n";
-
-        //available_cars = protocol.receive_car_info();
+        available_cars = protocol.receive_car_info();
     } catch (const std::exception& e) {
         std::cerr << "Error al conectar con el servidor: " << e.what() << std::endl;
         throw;
@@ -105,6 +104,7 @@ void Lobby::initiate_connection(){
 void Lobby::handleJoinGameRequest(const QString &username, const QString &gameId, const CarInfo &car)
 {
     bool joined = protocol.send_join(static_cast<uint16_t>(gameId.toInt()), username.toStdString(), static_cast<uint8_t>(car.id));
+    car_id = static_cast<uint16_t>(car.id);
     std::cout << joined << std::endl;
 
     stackedWidget->setCurrentWidget(guest_waiting);
@@ -122,6 +122,7 @@ void Lobby::handleJoinGameRequest(const QString &username, const QString &gameId
 void Lobby::handleNewGameRequest(const QString &username, const CarInfo &car) //car pasarlo a id y a uint
 {   
     uint16_t match_id = protocol.send_create(username.toStdString(), static_cast<uint8_t>(car.id));
+    car_id = static_cast<uint16_t>(car.id);
     std::cout << "Nuevo juego solicitado por " << username.toStdString()
               << " con el auto " << car.name << std::endl << std::flush;
 
