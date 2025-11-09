@@ -9,6 +9,7 @@
 #define TARGET_FPS 60
 #define FRAME_DURATION_MS (1000 / TARGET_FPS)
 #define PLAYER_SPEED 200.0f  // píxeles por segundo
+#define WORLD_HEIGHT 4672
 
 Game::Game():
         world(new b2World(b2Vec2(0, 0))),
@@ -21,7 +22,8 @@ Game::Game():
 b2Body* Game::createNewCarBody() {
     b2BodyDef body_def;
     body_def.type = b2_dynamicBody;
-    body_def.position.Set(0, 0);
+    // body_def.position.Set(0, 0);
+    body_def.position.Set(WORLD_HEIGHT/2, WORLD_HEIGHT/2);
     body_def.angle = 0;
     b2Body* car = world->CreateBody(&body_def);
 
