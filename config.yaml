@@ -25,7 +25,7 @@ cars:
     #
     name: "BMW Z4"
     health: 50.0
-    car_id: 1
+    car_id: 2
   3:
     #fisicas
     max_speed: 50.0
@@ -34,7 +34,7 @@ cars:
     #
     name: "VW Beetle"
     health: 2.0
-    car_id: 1
+    car_id: 3
   4:
     #fisicas
     max_speed: 200.0
@@ -43,7 +43,7 @@ cars:
     #
     name: "Ford Bronco"
     health: 100.0
-    car_id: 1
+    car_id: 4
   5:
     #fisicas
     max_speed: 2.0
@@ -52,7 +52,7 @@ cars:
     #
     name: "Ford F100"
     health: 50.0
-    car_id: 1
+    car_id: 5
   6:
     #fisicas
     max_speed: 100.0
@@ -61,4 +61,4 @@ cars:
     #
     name: "MB S-Class"
     health: 80.0
-    car_id: 1
+    car_id: 6
