@@ -8,10 +8,12 @@
 
 #include <iostream>
 
+#include "collision_loader.h"
+
 #define TARGET_FPS 60
 #define FRAME_DURATION_MS (1000 / TARGET_FPS)
 #define PLAYER_SPEED 200.0f  // píxeles por segundo
-#define WORLD_HEIGHT 4672
+#define WORLD_HEIGHT 4672.0f
 
 Game::Game():
         world(new b2World(b2Vec2(0, 0))),
@@ -27,6 +29,11 @@ b2Body* Game::createNewCarBody() {
     // body_def.position.Set(0, 0);
     body_def.position.Set(WORLD_HEIGHT/2, WORLD_HEIGHT/2);
     body_def.angle = 0;
+
+    // box2d permite darle el caracter de "bala" a objetos para que estos atraviesen colisiones lo menos posible
+    // sin esto un auto muy rapido podria atravesar edificios
+    // body_def.bullet = true;
+
     b2Body* car = world->CreateBody(&body_def);
 
     b2PolygonShape boxShape;
@@ -35,6 +42,7 @@ b2Body* Game::createNewCarBody() {
     b2FixtureDef boxFixtureDef;
     boxFixtureDef.shape = &boxShape;
     boxFixtureDef.density = 1;
+    // boxFixtureDef.friction = 0.3f;
     car->CreateFixture(&boxFixtureDef);
 
     car->SetLinearDamping(0.5f);  // para que se frene con el tiempo
@@ -68,6 +76,11 @@ void Game::broadcast_start_signal() {
  */
 void Game::run() {
     broadcast_start_signal();
+
+    auto collisionBodies = CollisionLoader::LoadCollisions("server/gameLogic/collisions.yaml", world, 1.0f, WORLD_HEIGHT);
+    std::cerr << "Total de cuerpos de colisión: " << collisionBodies.size() << std::endl;
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
     using clock = std::chrono::high_resolution_clock;
     auto lastTime = clock::now();
