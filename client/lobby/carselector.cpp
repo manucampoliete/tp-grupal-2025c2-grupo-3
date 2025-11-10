@@ -5,8 +5,8 @@
 #include <QHBoxLayout>
 #include <iostream>
 
-CarSelector::CarSelector(QWidget *parent)
-    : QWidget(parent)
+CarSelector::CarSelector(QWidget *parent, const std::vector<CarInfo>& cars)
+    : QWidget(parent), car_list(cars)
 {
     this->setObjectName("CarSelector");
 
@@ -37,26 +37,8 @@ CarSelector::CarSelector(QWidget *parent)
 
 void CarSelector::setupCars(const std::vector<CarInfo>& cars)
 {
-    /* car_list.clear();
-    carStack->clear();
-
-    car_list = cars; */
-
-    car_list = {
-        {0, "Jeep Wrangler", 80, 6},
-        {1, "Ferrari F40", 90, 9},
-        {2, "BMW Z4", 85, 8},
-        {3, "VW Beetle", 75, 7},
-        {4, "Ford Bronco", 88, 7},
-        {5, "Ford F100", 95, 10},
-        {6, "MB S-Class", 92, 8}
-    };
-
-    for (const auto& car : car_list) 
-        carStack->addWidget(new CarCard(car, this));
-
     for (const auto& car : cars) 
-        std::cout << "Auto recibido: " << car.name << std::endl;
+        carStack->addWidget(new CarCard(car, this));
 }
 
 void CarSelector::on_prevButton_clicked()
@@ -86,10 +68,11 @@ void CarSelector::on_nextButton_clicked()
 CarInfo CarSelector::getSelectedCar() const
 {
     int index = carStack->currentIndex();
+    std::cerr << "index: " << index << std::endl;
     if (index >= 0 && index < static_cast<int>(car_list.size()))
         return car_list[index];
 
-    return {-1, "Unknown", 0, 0};
+    return {0, "Unknown", 0, 0};
 }
 
 CarSelector::~CarSelector()

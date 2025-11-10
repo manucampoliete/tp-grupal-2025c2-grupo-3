@@ -53,6 +53,9 @@ target_include_directories(taller_common PUBLIC .)
 #
 # también para Box2D:
 # sudo apt-get install libbox2d-dev
+#
+# Y para el parser de yaml:
+# sudo apt install libyaml-cpp-dev
 
 # Install libSDL2 and libSDL2pp (for client or editor)
 # HEY!! TODO XXX: add more dependendies (either for client, server or editor)
@@ -161,12 +164,24 @@ if(TALLER_SERVER)
 
     if(BOX2D_INCLUDE_DIR AND BOX2D_LIBRARY)
         target_include_directories(taller_server PRIVATE ${BOX2D_INCLUDE_DIR})
-        # Link the taller_common lib target + box2d
-        target_link_libraries(taller_server taller_common ${BOX2D_LIBRARY})
     else()
         # Si llegas aca probablemente te falte hacer sudo apt-get install libbox2d-dev
         message(FATAL_ERROR "Box2D not found")
     endif()
+
+    # Add yaml-cpp
+    find_path(YAMLCPP_INCLUDE_DIR yaml-cpp/yaml.h)
+    find_library(YAMLCPP_LIBRARY yaml-cpp)
+
+    if(YAMLCPP_INCLUDE_DIR AND YAMLCPP_LIBRARY)
+        target_include_directories(taller_server PRIVATE ${YAMLCPP_INCLUDE_DIR})
+    else()
+        # Si llegas aca probablemente te falte hacer sudo apt-get install libbox2d-dev
+        message(FATAL_ERROR "yaml-cpp not found")
+    endif()
+
+    # Link the taller_common lib target + box2d + yaml-cpp
+    target_link_libraries(taller_server taller_common ${BOX2D_LIBRARY} ${YAMLCPP_LIBRARY})
 endif()
 
 if(TALLER_EDITOR)

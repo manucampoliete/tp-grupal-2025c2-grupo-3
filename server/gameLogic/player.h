@@ -3,22 +3,24 @@
 
 #include <string>
 #include <utility>
+#include <memory>
 
 #include "../../common/messages/snapshot.h"
 
-#include "car.h"
+#include "cars/car.h"
 
 class Player {
 private:
     ClientID clientId;
     std::string username;
     Car car;
+    
 
 public:
     /**
      * Constructor
      */
-    Player(ClientID clientId, const std::string& username, b2Body* body);
+    Player(ClientID clientId, const std::string& username, b2Body* body, CarID carId);
 
     /**
      * Updates the active directions of the player's car.

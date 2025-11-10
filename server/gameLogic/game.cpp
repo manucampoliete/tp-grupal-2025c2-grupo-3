@@ -6,6 +6,8 @@
 #include <utility>
 #include <vector>
 
+#include <iostream>
+
 #define TARGET_FPS 60
 #define FRAME_DURATION_MS (1000 / TARGET_FPS)
 #define PLAYER_SPEED 200.0f  // píxeles por segundo
@@ -112,12 +114,16 @@ Queue<std::shared_ptr<Snapshot>>& Game::getResponsesQueue(ClientID clientId) {
 }
 
 void Game::addPlayer(ClientID clientId, const std::string& username,
-                     uint8_t carId) {  // carId unused for now
-    (void)carId;
-
+                     CarID carId) {
     if (players.find(clientId) == players.end()) {
         b2Body* newCarBody = createNewCarBody();
-        players.emplace(clientId, Player(clientId, username, newCarBody));
+        try {
+            players.emplace(clientId, Player(clientId, username, newCarBody, carId));
+        } catch (std::exception& e) {
+            std::cerr << "Error en addPlayer: " << e.what() << std::endl;
+        } catch (...) {
+            std::cerr << "Error en addPlayer: no se" << std::endl;
+        }
     }
     responseQueuesMonitor.addQueue(clientId);
 }

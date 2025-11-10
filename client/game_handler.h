@@ -11,7 +11,7 @@
 #include "../common/messages/game_data.h"
 #include "../common/messages/snapshot.h"
 #include "../common/queue/queue.h"
-#include "../common/utils/move_request.h"
+#include "../common/utils/activeDirections.h"
 
 
 class Game;
@@ -34,7 +34,7 @@ private:
     // estado del juego
     World world;
     
-    Queue<MoveRequest> client_requests_q;
+    Queue<ActiveDirections> client_requests_q;
     Queue<Snapshot> server_snapshots_q;
 
     Sender sender;

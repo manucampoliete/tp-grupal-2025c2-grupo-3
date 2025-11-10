@@ -1,7 +1,7 @@
 #ifndef CARCARD_H
 #define CARCARD_H
 
-#include "carinfo.h"
+#include "../../common/utils/carinfo.h"
 
 #include <QWidget>
 #include <QString>

@@ -1,5 +1,5 @@
 #include "newgame.h"
-#include "carinfo.h"
+#include "../../common/utils/carinfo.h"
 #include "ui_newgame.h"
 
 #include <QFontDatabase>
@@ -17,7 +17,7 @@ NewGame::NewGame(QWidget *parent, const std::vector<CarInfo>& cars)
 
     QFontDatabase::addApplicationFont(":/media/orbitron.ttf");
 
-    carSelector = new CarSelector(this);
+    carSelector = new CarSelector(this, available_cars);
     carSelector->setupCars(available_cars);
     ui->mainLayout->addWidget(carSelector);
 }

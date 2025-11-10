@@ -12,13 +12,25 @@ ClientProtocol::ClientProtocol(Socket& socket) :
 
 // lobby
 
-void ClientProtocol::recv_initial_info() {
+std::vector<CarInfo> ClientProtocol::recv_initial_info() {
+    sendU8(SEND_INITIAL_INFO);
     uint8_t action_code = recvU8();
     if (action_code != SEND_INITIAL_INFO) {
         throw std::runtime_error("Expected initial info from server");
     }
     
-    // Deserializar + construir struct
+    std::vector<CarInfo> infos;
+    uint16_t size = recvU16();
+    for(int i = 0; i<size; i++) {
+        CarInfo info;
+        info.id = recvU8();
+        info.name = recvString();
+        info.speed = recvU16();
+        info.health = recvU16();
+
+        infos.emplace_back(info);
+    }
+    return infos;
 }
 
 uint16_t ClientProtocol::send_create(const std::string& username, uint8_t car_id) {
@@ -69,7 +81,7 @@ uint8_t ClientProtocol::recv_message_type() {
     return recvU8();
 }
 
-void ClientProtocol::send_move(const MoveRequest& request) {
+void ClientProtocol::send_move(const ActiveDirections& request) {
     sendU8(SEND_MOVE_STATE);
     
     // ewmpaquetar direcciones en un byte (bits: up/down/left/right)

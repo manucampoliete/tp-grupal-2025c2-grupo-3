@@ -10,6 +10,9 @@ class LobbyResolver;
 
 class ServerLobbyProtocol: public RecvProtocol, public SendProtocol {
 private:
+
+    void sendInitialInfo();
+
     /**
      * Receives a SEND_CREATE message and processes it using the given LobbyResolver.
      */

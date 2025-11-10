@@ -1,0 +1,64 @@
+cars:
+  0:
+    #fisicas
+    max_speed: 100.0
+    acceleration: 20.0
+    angular_speed: 2.0
+    #
+    name: "Jeep Wrangler"
+    health: 100.0
+    car_id: 0
+  1:
+    #fisicas
+    max_speed: 20.0
+    acceleration: 50.0
+    angular_speed: 3.0
+    #
+    name: "Ferrari F40"
+    health: 50.0
+    car_id: 1
+  2:
+  #fisicas
+    max_speed: 20.0
+    acceleration: 50.0
+    angular_speed: 3.0
+    #
+    name: "BMW Z4"
+    health: 50.0
+    car_id: 1
+  3:
+    #fisicas
+    max_speed: 50.0
+    acceleration: 1.0
+    angular_speed: 3.0
+    #
+    name: "VW Beetle"
+    health: 2.0
+    car_id: 1
+  4:
+    #fisicas
+    max_speed: 200.0
+    acceleration: 50.0
+    angular_speed: 3.0
+    #
+    name: "Ford Bronco"
+    health: 100.0
+    car_id: 1
+  5:
+    #fisicas
+    max_speed: 2.0
+    acceleration: 50.0
+    angular_speed: 3.0
+    #
+    name: "Ford F100"
+    health: 50.0
+    car_id: 1
+  6:
+    #fisicas
+    max_speed: 100.0
+    acceleration: 50.0
+    angular_speed: 3.0
+    #
+    name: "MB S-Class"
+    health: 80.0
+    car_id: 1

@@ -3,6 +3,42 @@
 #include <string>
 
 #include "../../common/protocol/protocolConstants.h"
+#include "../../common/utils/carinfo.h"
+
+#include <yaml-cpp/yaml.h>
+
+void ServerLobbyProtocol::sendInitialInfo() {
+    YAML::Node config = YAML::LoadFile("config.yaml");
+    
+    CarID carId = 0;
+    YAML::Node carInfo = config["cars"][static_cast<int>(carId)];
+    std::vector<CarInfo> infos;
+    while(carInfo) {
+        CarInfo info;
+        info.id = carId;
+        info.name = carInfo["name"].as<std::string>();
+
+        float max_speed = carInfo["max_speed"].as<float>();
+        info.speed = static_cast<uint16_t>(std::round(max_speed));
+
+        float health = carInfo["health"].as<float>();
+        info.health = static_cast<uint16_t>(std::round(health));
+
+        infos.emplace_back(info);
+
+        carInfo = config["cars"][static_cast<int>(++carId)];
+    }
+
+    sendU8(SEND_INITIAL_INFO);
+    sendU16(infos.size());
+
+    for(auto info : infos) {
+        sendU8(info.id);
+        sendString(info.name);
+        sendU16(info.speed);
+        sendU16(info.health);
+    }
+}
 
 void ServerLobbyProtocol::recvCreateMatch(LobbyResolver& lobbyResolver) {
     std::string username = recvString();
@@ -29,6 +65,10 @@ ServerLobbyProtocol::ServerLobbyProtocol(Socket& socket, ClientID clientId):
 
 void ServerLobbyProtocol::consumeOne(LobbyResolver& lobbyResolver) {
     switch (recvU8()) {
+        case SEND_INITIAL_INFO: {
+            sendInitialInfo();
+            break;
+        }
         case SEND_CREATE: {
             recvCreateMatch(lobbyResolver);
             break;

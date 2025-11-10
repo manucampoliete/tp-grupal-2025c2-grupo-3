@@ -1,9 +1,12 @@
 #include "player.h"
 
+#include "yaml-cpp/yaml.h"
+#include "cars/car_factory.h"
+
 #define RADTODEG 57.295779513082320876f
 
-Player::Player(ClientID clientId, const std::string& username, b2Body* body):
-        clientId(clientId), username(username), car(body) {}
+Player::Player(ClientID clientId, const std::string& username, b2Body* body, CarID carId):
+        clientId(clientId), username(username), car(CarFactory::createCar(body, carId)) {}
 
 void Player::move(ActiveDirections activeDirections) {
     car.updateActiveDirections(activeDirections);
@@ -20,8 +23,9 @@ Snapshot::CarSnapshot Player::buildCarSnapshot() {
     float angleDeg = -car.getAngle() * RADTODEG;
     angleDeg = fmodf(angleDeg, 360.0f);
     if (angleDeg < 0.0f) angleDeg += 360.0f;
-
     uint16 angle = static_cast<uint16_t>(std::round(angleDeg));
+    
+    uint16_t speed = static_cast<uint16_t>(std::round(car.getSpeed() * 1000));
 
-    return Snapshot::CarSnapshot(clientId, x, y, angle, 0, 0);  // speed and carId are dummy for now
+    return Snapshot::CarSnapshot(clientId, x, y, angle, speed, car.getId());
 }

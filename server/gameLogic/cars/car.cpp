@@ -79,3 +79,7 @@ void Car::updateActiveDirections(ActiveDirections activeDirections) {
 b2Vec2 Car::getPosition() { return body->GetPosition(); }
 
 float Car::getAngle() { return body->GetAngle(); }
+
+float Car::getSpeed() { return body->GetLinearVelocity().Length(); }
+
+CarID Car::getId() { return carId; }

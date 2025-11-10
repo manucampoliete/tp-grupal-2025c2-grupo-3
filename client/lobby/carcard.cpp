@@ -28,7 +28,7 @@ CarCard::CarCard(const CarInfo &car, QWidget *parent)
     healthBar->setValue(car.health);
     healthBar->setTextVisible(false);
 
-    speedBar->setRange(0, 10);
+    speedBar->setRange(0, 250);
     speedBar->setValue(car.speed);
     speedBar->setTextVisible(false);
 

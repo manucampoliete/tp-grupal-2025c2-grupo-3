@@ -12,7 +12,7 @@
 #include "../../common/thread/thread.h"
 #include "../commands/command.h"
 
-#include "car.h"
+#include "cars/car.h"
 #include "player.h"
 #include "../synchronized/responseQueuesMonitor.h"
 #include "../../common/types/types.h"
@@ -84,7 +84,7 @@ public:
     /**
      * Adds a new player to the game with the given parameters.
      */
-    void addPlayer(ClientID clientId, const std::string& username, uint8_t carId);
+    void addPlayer(ClientID clientId, const std::string& username, CarID carId);
 
     /**
      * Moves the player with the given clientId according to the given activeDirections.

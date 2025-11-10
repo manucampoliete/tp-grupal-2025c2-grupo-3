@@ -27,7 +27,6 @@ class Lobby : public QMainWindow
 public:
     Lobby(ClientProtocol& protocol, QWidget *parent = nullptr);
     ~Lobby();
-    void initiate_connection();
     void startGame();
     uint16_t getCarID() const { return car_id; }
 

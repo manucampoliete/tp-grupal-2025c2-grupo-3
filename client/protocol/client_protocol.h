@@ -2,7 +2,9 @@
 #define CLIENT_PROTOCOL_H
 
 #include "../../common/socket/socket.h"
-#include "../../common/utils/move_request.h"
+// #include "../../common/utils/activeDirections.h"
+#include "../../common/utils/activeDirections.h"
+#include "../../common/utils/carinfo.h"
 #include "../../common/messages/snapshot.h"
 #include "../../common/messages/game_data.h"
 #include "../../common/types/types.h"
@@ -21,7 +23,7 @@ public:
     explicit ClientProtocol(Socket& socket);
 
     // Handshake methods
-    void recv_initial_info();
+    std::vector<CarInfo> recv_initial_info();
 
     uint16_t send_create(const std::string& username, uint8_t car_id);
 
@@ -40,7 +42,8 @@ public:
     uint8_t recv_message_type();
     
     // envía un input de movimiento al servidor
-    void send_move(const MoveRequest& request);
+    // void send_move(const ActiveDirections& request);
+    void send_move(const ActiveDirections& request);
     
     // recibe un snapshot del estado del juego (ahora usando snapshot.h)
     Snapshot recv_snapshot();

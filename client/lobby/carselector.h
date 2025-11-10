@@ -1,7 +1,7 @@
 #ifndef CARSELECTOR_H
 #define CARSELECTOR_H
 
-#include "carinfo.h"
+#include "../../common/utils/carinfo.h"
 #include <QWidget>
 #include <QStackedWidget>
 #include <QPushButton>
@@ -13,7 +13,7 @@ class CarSelector : public QWidget
     Q_OBJECT
 
 public:
-    explicit CarSelector(QWidget *parent = nullptr);
+    explicit CarSelector(QWidget *parent = nullptr, const std::vector<CarInfo>& cars = {});
     ~CarSelector();
 
     CarInfo getSelectedCar() const;

@@ -21,7 +21,6 @@ void Client::run(int argc, char* argv[]) {
     std::string port = argv[2];
 
     Lobby lobby(protocol);
-    lobby.initiate_connection();
 
     lobby.show();
     app.exec(); // blocking hasta que se cierre el lobby

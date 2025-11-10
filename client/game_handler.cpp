@@ -129,7 +129,7 @@ void GameHandler::on_game_end(const FinalResults& results) {
 
 
 void GameHandler::send_movement(bool up, bool down, bool left, bool right) {
-    MoveRequest req(up, down, left, right);
+    ActiveDirections req(up, down, left, right);
     client_requests_q.tryPush(req);
 }
 

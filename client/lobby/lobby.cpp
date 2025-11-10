@@ -41,9 +41,11 @@ Lobby::Lobby(ClientProtocol& protocol, QWidget *parent)
 
     this->move(newX, newY);
 
+    available_cars = protocol.recv_initial_info();
+
     main_menu = new MainMenu(this);
-    new_game = new NewGame(this);
-    join_game = new JoinGame(this);
+    new_game = new NewGame(this, available_cars);
+    join_game = new JoinGame(this, available_cars);
     guest_waiting = new guestWaiting(this);
     host_waiting = new HostWaiting(this);
 
@@ -89,16 +91,6 @@ Lobby::Lobby(ClientProtocol& protocol, QWidget *parent)
     connect(host_waiting, &HostWaiting::startClicked, this, &Lobby::startGame);
 
     stackedWidget->setCurrentWidget(main_menu);
-}
-
-void Lobby::initiate_connection(){
-    try {
-        std::cout << "Iniciando conexión...\n";
-        available_cars = protocol.receive_car_info();
-    } catch (const std::exception& e) {
-        std::cerr << "Error al conectar con el servidor: " << e.what() << std::endl;
-        throw;
-    }
 }
 
 void Lobby::handleJoinGameRequest(const QString &username, const QString &gameId, const CarInfo &car)
