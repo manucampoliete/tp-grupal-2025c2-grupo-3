@@ -14,7 +14,7 @@ JoinGame::JoinGame(QWidget* parent, const std::vector<CarInfo>& cars):
 
     QFontDatabase::addApplicationFont(":/media/orbitron.ttf");
 
-    carSelector = new CarSelector(this);
+    carSelector = new CarSelector(this, available_cars);
     carSelector->setupCars(available_cars);
     ui->mainLayout->addWidget(carSelector);
 

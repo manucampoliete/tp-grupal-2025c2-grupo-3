@@ -19,6 +19,8 @@ NewGame::NewGame(QWidget* parent, const std::vector<CarInfo>& cars):
     carSelector = new CarSelector(this, available_cars);
     carSelector->setupCars(available_cars);
     ui->mainLayout->addWidget(carSelector);
+
+    ui->buttonCreate->setFixedWidth(350);
 }
 
 void NewGame::on_buttonReturn_clicked() { emit returnToMenuClicked(); }
