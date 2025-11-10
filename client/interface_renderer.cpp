@@ -445,7 +445,7 @@ void UIRenderer::render_minimap() {
         // TEMPORAL!!!
         // ahora que uso el id como indice de auto hago este punto de color hardcodeado.
         // despues habria que chequear por auto segun id
-        uint8_t car_type = id;
+        uint8_t car_type = car_state.type; 
         switch (car_type) {
             case 0:  // verde (CARS[0])
                 renderer.SetDrawColor(0, 255, 0, 255);
