@@ -10,7 +10,15 @@ ClientProtocol::ClientProtocol(Socket& socket) :
     SendProtocol(socket), RecvProtocol(socket) {}
 
 
-// lobby
+/**
+ * HANDSHAKE
+ */
+ClientID ClientProtocol::recv_client_id() {
+    uint8_t action_code = recvU8();
+    if (action_code != SEND_CLIENT_ID)
+        throw std::runtime_error("Expected initial info from server");
+    return recvU16();
+}
 
 std::vector<CarInfo> ClientProtocol::recv_initial_info() {
     sendU8(SEND_INITIAL_INFO);
@@ -33,6 +41,10 @@ std::vector<CarInfo> ClientProtocol::recv_initial_info() {
     return infos;
 }
 
+
+/**
+ * LOBBY
+ */
 uint16_t ClientProtocol::send_create(const std::string& username, uint8_t car_id) {
     uint8_t action_code = SEND_CREATE;
     sendU8(action_code);
@@ -68,15 +80,9 @@ void ClientProtocol::recv_start_signal() {
 }
 
 
-// GAME
-
-ClientID ClientProtocol::recv_client_id() {
-    uint8_t action_code = recvU8();
-    if (action_code != SEND_CLIENT_ID)
-        throw std::runtime_error("Expected initial info from server");
-    return recvU16();
-}
-
+/**
+ * GAME
+ */
 uint8_t ClientProtocol::recv_message_type() {
     return recvU8();
 }
@@ -120,8 +126,6 @@ Snapshot ClientProtocol::recv_snapshot() {
     
     return Snapshot(countdown, cars);
 }
-
-
 
 void ClientProtocol::send_modifications(bool speed_mod, bool accel_mod) {
     sendU8(MSG_MODIFY_CAR);
@@ -205,4 +209,17 @@ FinalResults ClientProtocol::recv_final_results() {
     results.winner_name = recvString();
     
     return results;
+}
+
+// Cheats!
+void ClientProtocol::send_inmortality_request() {
+    sendU8(SEND_INMORTALITY);
+}
+
+void ClientProtocol::send_insta_win_request() {
+    sendU8(SEND_INSTA_WIN);
+}
+
+void ClientProtocol::send_insta_lose_request() {
+    sendU8(SEND_INSTA_LOSE);
 }

@@ -23,6 +23,13 @@
 #define LEFT_MASK 0b0010
 #define RIGHT_MASK 0b0001
 
+/**
+ * Cheats!
+ */
+#define SEND_INMORTALITY 0xFF
+#define SEND_INSTA_WIN 0xFE
+#define SEND_INSTA_LOSE 0xFD
+
 // Cliente → Servidor
 #define MSG_MODIFY_CAR      0x0D  // enviar modificaciones de auto
 #define MSG_DISCONNECT      0x0F  // desconexión del cliente
