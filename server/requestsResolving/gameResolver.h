@@ -3,7 +3,6 @@
 
 #include <memory>
 
-#include "../commands/moveCommand.h"
 #include "../../common/queue/queue.h"
 #include "../../common/types/types.h"
 #include "../../common/utils/activeDirections.h"
@@ -23,6 +22,21 @@ public:
      * Handles a MOVE request from the client.
      */
     void handleMove(const ActiveDirections& activeDirections);
+
+    /**
+     * Handles an INMORTALITY request from the client.
+     */
+    void handleInmortality();
+
+    /**
+     * Handles an INSTA_WIN request from the client.
+     */
+    void handleInstaWin();
+
+    /**
+     * Handles an INSTA_LOSE request from the client.
+     */
+    void handleInstaLose();
 };
 
 #endif  // GAME_RESOLVER_H
