@@ -23,7 +23,7 @@ public:
      * client_requests_q: cola de comandos a enviar
      */
     Sender(ClientProtocol& protocol, Queue<ActiveDirections>& client_requests_q);
-    
+
     /**
      * TODO: add proper documentation
      */
@@ -36,5 +36,4 @@ public:
     ~Sender() override = default;
 };
 
-
-#endif // SENDER_H
+#endif  // SENDER_H

@@ -1,8 +1,5 @@
 #include "inmortalityCommand.h"
 
-InmortalityCommand::InmortalityCommand(ClientID clientId)
-    : Command(clientId) {}
+InmortalityCommand::InmortalityCommand(ClientID clientId): Command(clientId) {}
 
-void InmortalityCommand::execute(Game& game) {
-    game.makeInmortal(getClientID());
-}
+void InmortalityCommand::execute(Game& game) { game.makeInmortal(getClientID()); }

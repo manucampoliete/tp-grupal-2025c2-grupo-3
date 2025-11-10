@@ -1,12 +1,12 @@
 #ifndef RECEIVER_H
 #define RECEIVER_H
 
-#include <memory>
 #include <atomic>
+#include <memory>
 
-#include "../commands/command.h"
 #include "../../common/queue/queue.h"
 #include "../../common/types/types.h"
+#include "../commands/command.h"
 #include "../protocol/serverGameRecvProtocol.h"
 
 /**

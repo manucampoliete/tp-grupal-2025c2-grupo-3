@@ -1,7 +1,7 @@
-#include <cstdint>
-#include <cmath>
-#include <functional>
 #include <chrono>
+#include <cmath>
+#include <cstdint>
+#include <functional>
 #include <thread>
 
 /**
@@ -17,12 +17,12 @@ private:
     uint64_t it;
 
 public:
-    ConstantRateLoop() : t1(now()), it(0) {};
+    ConstantRateLoop(): t1(now()), it(0) {}
 
     uint64_t sleepAndCalcIt() {
         double t2 = now();
         double rest = RATE - (t2 - t1);
-        
+
         if (rest < 0) {
             double behind = -rest;
             rest = RATE - std::fmod(behind, RATE);
@@ -30,7 +30,7 @@ public:
             t1 += lost;
             it += static_cast<uint64_t>(lost / RATE);
         }
-        
+
         sleep(rest);
         t1 += RATE;
         return ++it;
@@ -38,11 +38,13 @@ public:
 
     double now() {
         using namespace std::chrono;
-        return duration_cast<duration<double, std::milli>>(steady_clock::now().time_since_epoch()).count();
+        return duration_cast<duration<double, std::milli>>(steady_clock::now().time_since_epoch())
+                .count();
     }
 
     void sleep(double ms) {
-        if (ms <= 0.0) return;
+        if (ms <= 0.0)
+            return;
         std::this_thread::sleep_for(std::chrono::duration<double, std::milli>(ms));
     }
 };

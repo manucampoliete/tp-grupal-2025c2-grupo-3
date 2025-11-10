@@ -3,12 +3,11 @@
 
 #include "command.h"
 
-class InstaLoseCommand : public Command {
+class InstaLoseCommand: public Command {
 public:
     explicit InstaLoseCommand(ClientID clientId);
 
     void execute(Game& game) override;
 };
 
-#endif // INSTA_LOSE_COMMAND_H
-
+#endif  // INSTA_LOSE_COMMAND_H

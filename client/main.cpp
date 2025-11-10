@@ -1,11 +1,10 @@
-#include "client.h"
-#include "lobby/lobby.h"
-
-#include <iostream>
 #include <exception>
 #include <iostream>
 #include <string>
+
 #include <syslog.h>
+
+#include "lobby/lobby.h"
 
 #include "client.h"
 #include "game.h"

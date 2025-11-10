@@ -2,22 +2,22 @@
 #define CAR_H
 
 #include <SDL.h>
+#include <SDL2pp/Rect.hh>
 #include <SDL2pp/Renderer.hh>
 #include <SDL2pp/Texture.hh>
-#include <SDL2pp/Rect.hh>
 
 using namespace SDL2pp;
 
 
 // coordenadas (x, y, ancho, alto) para cada auto
 const SDL2pp::Rect CARS[7] = {
-    {134, 34, 20, 27},  // auto 1
-    {170, 105, 20, 40}, // auto 2
-    {170, 186, 20, 38}, // auto 3
-    {170, 265, 20, 40}, // auto 4
-    {170, 344, 20, 40}, // auto 5
-    {170, 425, 20, 40}, // auto 6
-    {205, 515, 20, 45}, // auto 7
+        {134, 34, 20, 27},   // auto 1
+        {170, 105, 20, 40},  // auto 2
+        {170, 186, 20, 38},  // auto 3
+        {170, 265, 20, 40},  // auto 4
+        {170, 344, 20, 40},  // auto 5
+        {170, 425, 20, 40},  // auto 6
+        {205, 515, 20, 45},  // auto 7
 };
 
 // índices de direcciones
@@ -38,7 +38,7 @@ private:
 
     float x;
     float y;
-    double rotation_angle = 0.0; // angulo en grados
+    double rotation_angle = 0.0;  // angulo en grados
 
     // flags de movimiento
     bool move_up = false;
@@ -52,7 +52,6 @@ public:
     void update(float dt);
     void render(const SDL2pp::Rect& camera, float scale_factor);
     void set_state(float x, float y, double angle);
-
 };
 
-#endif // CAR_H
+#endif  // CAR_H

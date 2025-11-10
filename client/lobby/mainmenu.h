@@ -7,12 +7,11 @@ namespace Ui {
 class MainMenu;
 }
 
-class MainMenu : public QWidget
-{
+class MainMenu: public QWidget {
     Q_OBJECT
 
 public:
-    explicit MainMenu(QWidget *parent = nullptr);
+    explicit MainMenu(QWidget* parent = nullptr);
     ~MainMenu();
 
 signals:
@@ -26,9 +25,9 @@ private slots:
     void on_buttonExit_clicked();
 
 private:
-    Ui::MainMenu *ui;
+    Ui::MainMenu* ui;
 
     void handleJoinGameRequest();
 };
 
-#endif // MAINMENU_H
+#endif  // MAINMENU_H

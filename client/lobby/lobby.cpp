@@ -1,34 +1,34 @@
 #include "lobby.h"
-#include "mainmenu.h"
-#include "newgame.h"
-#include "joingame.h"
-#include "guestwaiting.h"
-#include "hostwaiting.h"
-#include "./ui_lobby.h"
 
-#include <QStackedWidget>
-#include <QPushButton>
-#include <QScreen>
-#include <QGuiApplication>
-#include <QPixmap>
-#include <QPalette>
 #include <QBrush>
 #include <QFontDatabase>
-#include <ui_guestwaiting.h>
+#include <QGuiApplication>
+#include <QPalette>
+#include <QPixmap>
+#include <QPushButton>
+#include <QScreen>
+#include <QStackedWidget>
 #include <iostream>
 #include <thread>
 
-Lobby::Lobby(ClientProtocol& protocol, QWidget *parent)
-    : QMainWindow(parent)
-    , ui(new Ui::Lobby)
-    , protocol(protocol)
-{
+#include <ui_guestwaiting.h>
+
+#include "./ui_lobby.h"
+
+#include "guestwaiting.h"
+#include "hostwaiting.h"
+#include "joingame.h"
+#include "mainmenu.h"
+#include "newgame.h"
+
+Lobby::Lobby(ClientProtocol& protocol, QWidget* parent):
+        QMainWindow(parent), ui(new Ui::Lobby), protocol(protocol) {
     ui->setupUi(this);
 
     this->setWindowTitle("Need For Speed");
     this->setFixedSize(960, 540);
     this->setStyleSheet("QWidget { color: white; }");
-    QScreen *screen = QGuiApplication::primaryScreen();
+    QScreen* screen = QGuiApplication::primaryScreen();
 
     int screenWidth = screen->geometry().width();
     int screenHeight = screen->geometry().height();
@@ -58,33 +58,29 @@ Lobby::Lobby(ClientProtocol& protocol, QWidget *parent)
     this->setPalette(palette);
     this->setAutoFillBackground(true);
 
-    stackedWidget->addWidget(main_menu);  // índice 0
-    stackedWidget->addWidget(new_game);     // índice 1
-    stackedWidget->addWidget(join_game);    // indice 2
-    stackedWidget->addWidget(guest_waiting);    // indice 3
-    stackedWidget->addWidget(host_waiting);     // indice 4
+    stackedWidget->addWidget(main_menu);      // índice 0
+    stackedWidget->addWidget(new_game);       // índice 1
+    stackedWidget->addWidget(join_game);      // indice 2
+    stackedWidget->addWidget(guest_waiting);  // indice 3
+    stackedWidget->addWidget(host_waiting);   // indice 4
 
     setCentralWidget(stackedWidget);
 
-    connect(main_menu, &MainMenu::newGameClicked, this, [this]() {
-        stackedWidget->setCurrentIndex(1); 
-    });
+    connect(main_menu, &MainMenu::newGameClicked, this,
+            [this]() { stackedWidget->setCurrentIndex(1); });
 
-    connect(main_menu, &MainMenu::joinGameClicked, this, [this]() {
-        stackedWidget->setCurrentIndex(2); 
-    });
+    connect(main_menu, &MainMenu::joinGameClicked, this,
+            [this]() { stackedWidget->setCurrentIndex(2); });
 
     connect(main_menu, &MainMenu::exitClicked, qApp, &QApplication::quit);
 
-    connect(join_game, &JoinGame::returnToMenuClicked, this, [this]() {
-        stackedWidget->setCurrentIndex(0); 
-    });
+    connect(join_game, &JoinGame::returnToMenuClicked, this,
+            [this]() { stackedWidget->setCurrentIndex(0); });
 
     connect(join_game, &JoinGame::joinGameRequested, this, &Lobby::handleJoinGameRequest);
 
-    connect(new_game, &NewGame::returnToMenuClicked, this, [this]() {
-        stackedWidget->setCurrentIndex(0); 
-    });
+    connect(new_game, &NewGame::returnToMenuClicked, this,
+            [this]() { stackedWidget->setCurrentIndex(0); });
 
     connect(new_game, &NewGame::newGameRequested, this, &Lobby::handleNewGameRequest);
 
@@ -93,45 +89,42 @@ Lobby::Lobby(ClientProtocol& protocol, QWidget *parent)
     stackedWidget->setCurrentWidget(main_menu);
 }
 
-void Lobby::handleJoinGameRequest(const QString &username, const QString &gameId, const CarInfo &car)
-{
-    bool joined = protocol.send_join(static_cast<uint16_t>(gameId.toInt()), username.toStdString(), static_cast<uint8_t>(car.id));
+void Lobby::handleJoinGameRequest(const QString& username, const QString& gameId,
+                                  const CarInfo& car) {
+    bool joined = protocol.send_join(static_cast<uint16_t>(gameId.toInt()), username.toStdString(),
+                                     static_cast<uint8_t>(car.id));
     car_id = static_cast<uint16_t>(car.id);
     std::cout << joined << std::endl;
 
     stackedWidget->setCurrentWidget(guest_waiting);
-        std::thread([this]() {
+    std::thread([this]() {
         protocol.recv_start_signal();
 
         std::cout << "El juego ha comenzado!" << std::endl;
 
-        QMetaObject::invokeMethod(this, [this]() {
-            this->close();
-        });
+        QMetaObject::invokeMethod(this, [this]() { this->close(); });
     }).detach();
 }
 
-void Lobby::handleNewGameRequest(const QString &username, const CarInfo &car) //car pasarlo a id y a uint
-{   
+void Lobby::handleNewGameRequest(const QString& username,
+                                 const CarInfo& car)  // car pasarlo a id y a uint
+{
     uint16_t match_id = protocol.send_create(username.toStdString(), static_cast<uint8_t>(car.id));
     car_id = static_cast<uint16_t>(car.id);
-    std::cout << "Nuevo juego solicitado por " << username.toStdString()
-              << " con el auto " << car.name << std::endl << std::flush;
+    std::cout << "Nuevo juego solicitado por " << username.toStdString() << " con el auto "
+              << car.name << std::endl
+              << std::flush;
 
     std::cout << "ID de la nueva partida: " << match_id << std::endl << std::flush;
     host_waiting->setMatchID(QString::number(match_id));
     stackedWidget->setCurrentWidget(host_waiting);
 }
 
-void Lobby::startGame()
-{
+void Lobby::startGame() {
     protocol.send_start();
     protocol.recv_start_signal();
     std::cout << "El host ha comenzado la partida!" << std::endl;
     this->close();
 }
 
-Lobby::~Lobby()
-{
-    delete ui;
-}
+Lobby::~Lobby() { delete ui; }

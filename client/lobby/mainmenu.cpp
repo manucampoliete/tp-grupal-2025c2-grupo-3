@@ -1,12 +1,10 @@
 #include "mainmenu.h"
-#include "ui_mainmenu.h"
 
 #include <QFontDatabase>
 
-MainMenu::MainMenu(QWidget *parent)
-    : QWidget(parent)
-    , ui(new Ui::MainMenu)
-{
+#include "ui_mainmenu.h"
+
+MainMenu::MainMenu(QWidget* parent): QWidget(parent), ui(new Ui::MainMenu) {
     ui->setupUi(this);
 
     this->setAttribute(Qt::WA_StyledBackground, true);
@@ -15,22 +13,10 @@ MainMenu::MainMenu(QWidget *parent)
     QFontDatabase::addApplicationFont(":/media/orbitron.ttf");
 }
 
-void MainMenu::on_buttonNewGame_clicked()
-{
-    emit newGameClicked();
-}
+void MainMenu::on_buttonNewGame_clicked() { emit newGameClicked(); }
 
-void MainMenu::on_buttonJoinGame_clicked()
-{
-    emit joinGameClicked();
-}
+void MainMenu::on_buttonJoinGame_clicked() { emit joinGameClicked(); }
 
-void MainMenu::on_buttonExit_clicked()
-{
-    emit exitClicked();
-}
+void MainMenu::on_buttonExit_clicked() { emit exitClicked(); }
 
-MainMenu::~MainMenu()
-{
-    delete ui;
-}
+MainMenu::~MainMenu() { delete ui; }

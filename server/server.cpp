@@ -15,7 +15,7 @@ int Server::run() {
     return EXIT_SUCCESS;
 }
 
-Server::~Server() { 
+Server::~Server() {
     acceptor.join();
     matchesMapMonitor.joinAllMatches();
 }

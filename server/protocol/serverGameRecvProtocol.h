@@ -1,10 +1,9 @@
 #ifndef SERVER_GAME_RECV_PROTOCOL_H
 #define SERVER_GAME_RECV_PROTOCOL_H
 
+#include "../../common/protocol/recvProtocol.h"
 #include "../../common/utils/activeDirections.h"
 #include "../requestsResolving/gameResolver.h"
-
-#include "../../common/protocol/recvProtocol.h"
 
 class ServerGameRecvProtocol: public RecvProtocol {
 private:

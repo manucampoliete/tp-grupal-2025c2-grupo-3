@@ -1,9 +1,9 @@
 #ifndef WORLD_H
 #define WORLD_H
 
+#include <cstdint>
 #include <map>
 #include <mutex>
-#include <cstdint>
 #include <vector>
 
 // la información que llega del servidor
@@ -12,15 +12,15 @@
 // - tiempo restante de la carrera
 struct BroadcastData {
     struct CarState {
-        uint8_t id;     // id del jugador
-        float x;        // posición x
-        float y;        // posición y
-        float angle;    // ángulo en grados
-        uint8_t type;   // tipo de auto
+        uint8_t id;    // id del jugador
+        float x;       // posición x
+        float y;       // posición y
+        float angle;   // ángulo en grados
+        uint8_t type;  // tipo de auto
     };
 
     std::vector<CarState> cars;
-    uint32_t countdown; // tiempo restante de la carrera en milisegundos
+    uint32_t countdown;  // tiempo restante de la carrera en milisegundos
 };
 
 
@@ -28,9 +28,9 @@ struct BroadcastData {
 // cada cliente tiene su propio World que refleja lo que el servidor le envía en los broadcasts
 class World {
 private:
-    std::map<uint8_t, BroadcastData::CarState> cars; // estado de cada auto
-    uint32_t countdown = 0; // cuenta regresiva
-    mutable std::mutex mtx; // para poder bloquear en métodos const
+    std::map<uint8_t, BroadcastData::CarState> cars;  // estado de cada auto
+    uint32_t countdown = 0;                           // cuenta regresiva
+    mutable std::mutex mtx;                           // para poder bloquear en métodos const
 
 public:
     // limpia el estado del mundo (por ejemplo, al iniciar una nueva carrera)
@@ -46,4 +46,4 @@ public:
     uint32_t getCountdown() const;
 };
 
-#endif // WORLD_H
+#endif  // WORLD_H

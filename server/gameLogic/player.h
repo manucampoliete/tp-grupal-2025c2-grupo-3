@@ -1,12 +1,11 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
+#include <memory>
 #include <string>
 #include <utility>
-#include <memory>
 
 #include "../../common/messages/snapshot.h"
-
 #include "cars/car.h"
 
 class Player {
@@ -14,7 +13,7 @@ private:
     ClientID clientId;
     std::string username;
     Car car;
-    
+
 
 public:
     /**

@@ -10,12 +10,12 @@
 
 #include "../../common/queue/queue.h"
 #include "../../common/thread/thread.h"
-#include "../commands/command.h"
-
-#include "cars/car.h"
-#include "player.h"
-#include "../synchronized/responseQueuesMonitor.h"
 #include "../../common/types/types.h"
+#include "../commands/command.h"
+#include "../synchronized/responseQueuesMonitor.h"
+#include "cars/car.h"
+
+#include "player.h"
 
 class Command;
 

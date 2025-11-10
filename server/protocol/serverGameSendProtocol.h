@@ -4,7 +4,6 @@
 #include <memory>
 
 #include "../../common/messages/snapshot.h"
-
 #include "../../common/protocol/sendProtocol.h"
 
 class ServerGameSendProtocol: public SendProtocol {

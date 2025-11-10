@@ -4,20 +4,18 @@
 // a revisar, aca sigue habiendo muchas cosas hardcodeadas
 
 
-
 // velocidad del auto en píxeles por milisegundo
 // por ahora harcodeado como constante
 const float CAR_SPEED = 0.2f;
 
-Car::Car(Renderer& renderer, Texture& sprite_sheet, uint8_t car_type) :
-    renderer(renderer),
-    sprite_sheet(sprite_sheet),
-    // elijo un auto hardcodeado para probar (por ejemplo el 3)
-    src_rect(CARS[car_type]),
-    x(0),
-    y(0),
-    rotation_angle(0.0)
-{
+Car::Car(Renderer& renderer, Texture& sprite_sheet, uint8_t car_type):
+        renderer(renderer),
+        sprite_sheet(sprite_sheet),
+        // elijo un auto hardcodeado para probar (por ejemplo el 3)
+        src_rect(CARS[car_type]),
+        x(0),
+        y(0),
+        rotation_angle(0.0) {
     int window_w = renderer.GetOutputWidth();
     int window_h = renderer.GetOutputHeight();
     x = window_w / 2;
@@ -29,17 +27,33 @@ Car::Car(Renderer& renderer, Texture& sprite_sheet, uint8_t car_type) :
 void Car::handle_event(const SDL_Event& event) {
     if (event.type == SDL_KEYDOWN) {
         switch (event.key.keysym.sym) {
-            case SDLK_UP:    move_up = true; break;
-            case SDLK_DOWN:  move_down = true; break;
-            case SDLK_LEFT:  move_left = true; break;
-            case SDLK_RIGHT: move_right = true; break;
+            case SDLK_UP:
+                move_up = true;
+                break;
+            case SDLK_DOWN:
+                move_down = true;
+                break;
+            case SDLK_LEFT:
+                move_left = true;
+                break;
+            case SDLK_RIGHT:
+                move_right = true;
+                break;
         }
     } else if (event.type == SDL_KEYUP) {
         switch (event.key.keysym.sym) {
-            case SDLK_UP:    move_up = false; break;
-            case SDLK_DOWN:  move_down = false; break;
-            case SDLK_LEFT:  move_left = false; break;
-            case SDLK_RIGHT: move_right = false; break;
+            case SDLK_UP:
+                move_up = false;
+                break;
+            case SDLK_DOWN:
+                move_down = false;
+                break;
+            case SDLK_LEFT:
+                move_left = false;
+                break;
+            case SDLK_RIGHT:
+                move_right = false;
+                break;
         }
     }
 }
@@ -86,15 +100,8 @@ void Car::render(const SDL2pp::Rect& camera, float scale_factor) {
     // creo el Rect de dest final
     Rect dest_rect(screen_x, screen_y, scaled_w, scaled_h);
 
-    SDL_Point center = { dest_rect.GetW() / 2, dest_rect.GetH() / 2 };
-    renderer.Copy(
-        sprite_sheet,
-        src_rect,
-        dest_rect,
-        rotation_angle,
-        center,
-        SDL_FLIP_NONE
-    );
+    SDL_Point center = {dest_rect.GetW() / 2, dest_rect.GetH() / 2};
+    renderer.Copy(sprite_sheet, src_rect, dest_rect, rotation_angle, center, SDL_FLIP_NONE);
 }
 
 void Car::set_state(float x, float y, double angle) {

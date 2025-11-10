@@ -3,17 +3,19 @@
 
 #include <memory>
 #include <string>
+
 #include <yaml-cpp/yaml.h>
-#include "car.h"
 
 #include "../../../common/types/types.h"
+
+#include "car.h"
 
 class CarFactory {
 public:
     static Car createCar(b2Body* body, CarID carId) {
         YAML::Node config = YAML::LoadFile("config.yaml");
         YAML::Node carConfig = config["cars"][static_cast<int>(carId)];
-        
+
         if (!carConfig)
             throw std::runtime_error("Car id not found in YAML: " + carId);
 

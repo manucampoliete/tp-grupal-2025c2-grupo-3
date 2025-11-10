@@ -1,13 +1,13 @@
 #include "carselector.h"
+
 #include "carcard.h"
 //#include "ui_carselector.h"
 
 #include <QHBoxLayout>
 #include <iostream>
 
-CarSelector::CarSelector(QWidget *parent, const std::vector<CarInfo>& cars)
-    : QWidget(parent), car_list(cars)
-{
+CarSelector::CarSelector(QWidget* parent, const std::vector<CarInfo>& cars):
+        QWidget(parent), car_list(cars) {
     this->setObjectName("CarSelector");
 
     carStack = new QStackedWidget(this);
@@ -17,7 +17,7 @@ CarSelector::CarSelector(QWidget *parent, const std::vector<CarInfo>& cars)
     connect(prevButton, &QPushButton::clicked, this, &CarSelector::on_prevButton_clicked);
     connect(nextButton, &QPushButton::clicked, this, &CarSelector::on_nextButton_clicked);
 
-    QHBoxLayout *navLayout = new QHBoxLayout();
+    QHBoxLayout* navLayout = new QHBoxLayout();
     navLayout->addWidget(prevButton);
     navLayout->addWidget(carStack, 1);
     navLayout->addWidget(nextButton);
@@ -27,22 +27,17 @@ CarSelector::CarSelector(QWidget *parent, const std::vector<CarInfo>& cars)
     int topMargin = 30;
     int generalMargin = 5;
 
-    this->layout()->setContentsMargins(
-        generalMargin, // izquierdo
-        topMargin,     // superior
-        generalMargin, // inferior
-        generalMargin  // derecho
-        );
+    this->layout()->setContentsMargins(generalMargin,   // izquierdo
+                                       topMargin,       // superior
+                                       generalMargin,   // inferior
+                                       generalMargin);  // derecho
 }
 
-void CarSelector::setupCars(const std::vector<CarInfo>& cars)
-{
-    for (const auto& car : cars) 
-        carStack->addWidget(new CarCard(car, this));
+void CarSelector::setupCars(const std::vector<CarInfo>& cars) {
+    for (const auto& car: cars) carStack->addWidget(new CarCard(car, this));
 }
 
-void CarSelector::on_prevButton_clicked()
-{
+void CarSelector::on_prevButton_clicked() {
     int currentIndex = carStack->currentIndex();
     int maxIndex = carStack->count() - 1;
 
@@ -53,8 +48,7 @@ void CarSelector::on_prevButton_clicked()
     }
 }
 
-void CarSelector::on_nextButton_clicked()
-{
+void CarSelector::on_nextButton_clicked() {
     int currentIndex = carStack->currentIndex();
     int maxIndex = carStack->count() - 1;
 
@@ -65,8 +59,7 @@ void CarSelector::on_nextButton_clicked()
     }
 }
 
-CarInfo CarSelector::getSelectedCar() const
-{
+CarInfo CarSelector::getSelectedCar() const {
     int index = carStack->currentIndex();
     std::cerr << "index: " << index << std::endl;
     if (index >= 0 && index < static_cast<int>(car_list.size()))
@@ -75,6 +68,4 @@ CarInfo CarSelector::getSelectedCar() const
     return {0, "Unknown", 0, 0};
 }
 
-CarSelector::~CarSelector()
-{
-}
+CarSelector::~CarSelector() {}

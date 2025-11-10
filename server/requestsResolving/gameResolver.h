@@ -3,10 +3,10 @@
 
 #include <memory>
 
-#include "../commands/command.h"
 #include "../../common/queue/queue.h"
 #include "../../common/types/types.h"
 #include "../../common/utils/activeDirections.h"
+#include "../commands/command.h"
 
 class GameResolver {
 private:

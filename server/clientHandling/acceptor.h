@@ -5,9 +5,9 @@
 #include <string>
 #include <vector>
 
-#include "../../common/types/types.h"
 #include "../../common/socket/socket.h"
 #include "../../common/thread/thread.h"
+#include "../../common/types/types.h"
 #include "../synchronized/matchesMapMonitor.h"
 
 #include "clientHandler.h"

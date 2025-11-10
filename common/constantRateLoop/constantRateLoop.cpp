@@ -1,7 +1,7 @@
-#include <cstdint>
-#include <cmath>
-#include <functional>
 #include <chrono>
+#include <cmath>
+#include <cstdint>
+#include <functional>
 #include <thread>
 
 /**
@@ -16,8 +16,9 @@ public:
         double t1 = now();
         uint64_t it = 0;
         while (true) {
-            if (!func(it)) break;
-            
+            if (!func(it))
+                break;
+
             double t2 = now();
             double rest = rate - (t2 - t1);
             if (rest < 0) {
@@ -27,7 +28,7 @@ public:
                 t1 += lost;
                 it += static_cast<uint64_t>(lost / rate);
             }
-            
+
             sleep(rest);
             t1 += rate;
             it++;
@@ -36,11 +37,13 @@ public:
 
     double now() {
         using namespace std::chrono;
-        return duration_cast<duration<double, std::milli>>(steady_clock::now().time_since_epoch()).count();
+        return duration_cast<duration<double, std::milli>>(steady_clock::now().time_since_epoch())
+                .count();
     }
 
     void sleep(double ms) {
-        if (ms <= 0.0) return;
+        if (ms <= 0.0)
+            return;
         std::this_thread::sleep_for(std::chrono::duration<double, std::milli>(ms));
     }
 };

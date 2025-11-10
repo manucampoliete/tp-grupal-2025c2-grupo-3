@@ -1,11 +1,13 @@
 #ifndef CAR_H
 #define CAR_H
 
-#include <box2d/box2d.h>
 #include <string>
+#include <utility>
 
-#include "../../../common/utils/activeDirections.h"
+#include <box2d/box2d.h>
+
 #include "../../../common/types/types.h"
+#include "../../../common/utils/activeDirections.h"
 
 /* #define MAX_SPEED 100.0f
 #define ACC 20.0f
@@ -30,7 +32,7 @@ private:
     b2Body* body;
     ActiveDirections currentActiveDirections;
 
-    //fisicas
+    // fisicas
     float maxSpeed;
     float acceleration;
     float angularSpeed;  // que tan rapido gira, se podria implementar con aceleracion angular para
@@ -40,7 +42,7 @@ private:
     float linearVelThreshold;   // si no se mueve mas rapido que esto se frena
     float angularVelThreshold;  // si no gira mas rapido que esto deja de girar
 
-    //datos
+    // datos
     std::string name;
     float health;
     CarID carId;
@@ -49,25 +51,19 @@ public:
     /**
      * Constructor
      */
-    explicit Car(b2Body* body,
-                CarID carId = 0,
-                std::string name = "Car",
-                float maxSpeed = MAX_SPEED,
-                float acceleration = ACC,
-                float angularSpeed = ANGULAR_SPEED,
-                float health = 100.0f
-                )
-        : 
-        body(body),
-        maxSpeed(maxSpeed),
-        acceleration(acceleration),
-        angularSpeed(angularSpeed),
-        turnFactorThreshold(TURN_FACTOR_THRESHOLD),
-        linearVelThreshold(LINEAR_VEL_THRESHOLD),
-        angularVelThreshold(ANGULAR_VEL_THRESHOLD),
-        name(std::move(name)),
-        health(health),
-        carId(carId) {}
+    explicit Car(b2Body* body, CarID carId = 0, std::string name = "Car",
+                 float maxSpeed = MAX_SPEED, float acceleration = ACC,
+                 float angularSpeed = ANGULAR_SPEED, float health = 100.0f):
+            body(body),
+            maxSpeed(maxSpeed),
+            acceleration(acceleration),
+            angularSpeed(angularSpeed),
+            turnFactorThreshold(TURN_FACTOR_THRESHOLD),
+            linearVelThreshold(LINEAR_VEL_THRESHOLD),
+            angularVelThreshold(ANGULAR_VEL_THRESHOLD),
+            name(std::move(name)),
+            health(health),
+            carId(carId) {}
 
     /**
      * Updates the physics of the car based on the current active directions.

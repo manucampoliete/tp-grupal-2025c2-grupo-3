@@ -1,9 +1,9 @@
 #include "gameResolver.h"
 
-#include "../commands/moveCommand.h"
 #include "../commands/inmortalityCommand.h"
-#include "../commands/instaWinCommand.h"
 #include "../commands/instaLoseCommand.h"
+#include "../commands/instaWinCommand.h"
+#include "../commands/moveCommand.h"
 
 GameResolver::GameResolver(ClientID clientId, Queue<std::unique_ptr<Command>>& clientCommandsQueue):
         clientId(clientId), clientCommandsQueue(clientCommandsQueue) {}

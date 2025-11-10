@@ -2,6 +2,7 @@
 #define CARINFO_H
 
 #include <string>
+
 #include "../types/types.h"
 
 struct CarInfo {
@@ -11,4 +12,4 @@ struct CarInfo {
     uint16_t speed;
 };
 
-#endif // CARINFO_H
+#endif  // CARINFO_H

@@ -8,9 +8,8 @@
 #include "../../common/queue/queue.h"
 #include "../../common/types/types.h"
 #include "../commands/command.h"
-
-#include "../synchronized/matchesMapMonitor.h"
 #include "../protocol/serverLobbyProtocol.h"
+#include "../synchronized/matchesMapMonitor.h"
 
 class ServerLobbyProtocol;
 

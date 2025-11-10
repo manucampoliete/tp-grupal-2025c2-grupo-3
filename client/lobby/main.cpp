@@ -1,9 +1,8 @@
-#include "lobby.h"
-
 #include <QApplication>
 
-int main(int argc, char *argv[])
-{
+#include "lobby.h"
+
+int main(int argc, char* argv[]) {
     QApplication a(argc, argv);
     Lobby w;
     w.show();
