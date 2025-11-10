@@ -75,6 +75,13 @@ void Receiver::run() {
                     game_handler.on_player_died(dead_player_id);
                     break;
                 }
+
+                case MSG_CHECKPOINT: {
+                    std::cout << "[RECEIVER] → Procesando CHECKPOINT" << std::endl;
+                    uint8_t checkpoint_id = protocol.recv_checkpoint();
+                    game_handler.on_checkpoint_crossed(checkpoint_id);
+                    break;
+                }
                 
                 default:
                     std::cerr << "[RECEIVER] MENSAJE DESCONOCIDO: " << (int)msg_type << std::endl;

@@ -49,7 +49,7 @@ public:
     Snapshot recv_snapshot();
     
     // Envía modificaciones del auto al servidor
-    void send_modifications(bool speed_mod, bool accel_mod);
+    void send_modifications(bool speed_mod, bool health_mod);
     
     // Recibe número de countdown (3, 2, 1, 0=GO)
     uint8_t recv_countdown();
