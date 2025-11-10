@@ -132,4 +132,25 @@ void Game::movePlayer(ClientID clientId, ActiveDirections activeDirections) {
     players.at(clientId).move(activeDirections);
 }
 
+void Game::makeInmortal(ClientID clientId) {
+    std::cout << "Making player " << clientId << " inmortal!" << std::endl;
+    /**
+     * TODO: implementar
+     */
+}
+
+void Game::makeInstaWin(ClientID clientId) {
+    std::cout << "Making player " << clientId << " insta win!" << std::endl;
+    /**
+     * TODO: implementar
+     */
+}
+
+void Game::makeInstaLose(ClientID clientId) {
+    std::cout << "Making player " << clientId << " insta lose!" << std::endl;
+    /**
+     * TODO: implementar
+     */
+}
+
 Game::~Game() {}

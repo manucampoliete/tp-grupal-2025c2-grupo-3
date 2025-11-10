@@ -4,5 +4,5 @@ InstaLoseCommand::InstaLoseCommand(ClientID clientId)
     : Command(clientId) {}
 
 void InstaLoseCommand::execute(Game& game) {
-    // game.instaLose(getClientID());
+    game.makeInstaLose(getClientID());
 }

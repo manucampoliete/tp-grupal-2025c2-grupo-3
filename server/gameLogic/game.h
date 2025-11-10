@@ -92,6 +92,13 @@ public:
     void movePlayer(ClientID clientId, ActiveDirections activeDirections);
 
     /**
+     * Cheats!
+     */
+    void makeInmortal(ClientID clientId);
+    void makeInstaWin(ClientID clientId);
+    void makeInstaLose(ClientID clientId);
+
+    /**
      * Destructor
      * Nothing special to do
      */
