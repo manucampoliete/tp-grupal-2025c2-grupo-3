@@ -2,6 +2,7 @@
 #define RECEIVER_H
 
 #include <memory>
+#include <atomic>
 
 #include "../commands/command.h"
 #include "../../common/queue/queue.h"
@@ -11,10 +12,11 @@
 /**
  * Receiver class: receives Command requests from the client.
  */
-class Receiver: public Thread {
+class Receiver {
 private:
     ServerGameRecvProtocol protocol;
     GameResolver gameResolver;
+    std::atomic<bool> _keepRunning;  // Emulate a Thread-like behavior
 
 public:
     /**
@@ -23,15 +25,15 @@ public:
     Receiver(Socket& skt, Queue<std::unique_ptr<Command>>& clientCommandsQueue, ClientID clientId);
 
     /**
-     * This is a fake start(). No std::thread is created here. This method just
-     * calls run() directly.
+     * Stops the Receiver's run loop using an atomic flag.
      */
-    void start() override;
+    void stop();
 
     /**
-     * TODO: add proper documentation
+     * Run method: continuously consumes protocol messages from the socket
+     * and processes them using the GameResolver until stopped or an error occurs.
      */
-    void run() override;
+    void run();
 
     /**
      * Destructor
