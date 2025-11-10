@@ -40,7 +40,6 @@ private:
 public:
     /**
      * Constructor: initializes the acceptor with the given parameters.
-     * Takes the ownership of the acceptor Socket.
      */
     Acceptor(const std::string& servname, MatchesMapMonitor& matchesMapMonitor);
 
