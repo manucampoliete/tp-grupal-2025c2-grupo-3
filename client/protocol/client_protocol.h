@@ -72,7 +72,7 @@ public:
     // Recibe resultados finales de la partida
     FinalResults recv_final_results();
 
-    // Cheats!
+    // Cheats
     void send_inmortality_request();
     void send_insta_win_request();
     void send_insta_lose_request();

@@ -147,6 +147,20 @@ void GameHandler::send_modifications(bool speed, bool health) {
               << std::endl;
 }
 
+
+void GameHandler::send_cheat_inmortality() {
+    protocol.send_inmortality_request();
+}
+
+void GameHandler::send_cheat_insta_win() {
+    protocol.send_insta_win_request();
+}
+
+void GameHandler::send_cheat_insta_lose() {
+    protocol.send_insta_lose_request();
+}
+
+
 GameHandler::~GameHandler() {
     if (running)
         stop();

@@ -211,7 +211,10 @@ FinalResults ClientProtocol::recv_final_results() {
     return results;
 }
 
-// Cheats!
+
+/**
+ * CHEATS
+ */
 void ClientProtocol::send_inmortality_request() { sendU8(SEND_INMORTALITY); }
 
 void ClientProtocol::send_insta_win_request() { sendU8(SEND_INSTA_WIN); }

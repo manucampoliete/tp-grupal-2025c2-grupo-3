@@ -99,6 +99,10 @@ public:
     World& get_world() { return world; }
     uint8_t get_player_id() const { return player_id; }
 
+    void send_cheat_inmortality();
+    void send_cheat_insta_win();
+    void send_cheat_insta_lose();
+
 
     ~GameHandler();
 };
