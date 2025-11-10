@@ -1,18 +1,18 @@
 target_sources(taller_common
     PRIVATE
     # .cpp files
-    liberror.cpp
-    resolver.cpp
-    resolvererror.cpp
-    socket.cpp
-    thread.cpp
     PUBLIC
     # .h files
-    liberror.h
-    queue.h
-    resolver.h
-    resolvererror.h
-    runnable.h
-    socket.h
-    thread.h
     )
+
+add_subdirectory(errors)
+add_subdirectory(messages)
+
+add_subdirectory(protocol)
+add_subdirectory(socket)
+add_subdirectory(queue)
+add_subdirectory(thread)
+
+add_subdirectory(types)
+add_subdirectory(utils)
+

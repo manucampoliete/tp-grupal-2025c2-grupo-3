@@ -9,6 +9,8 @@ if (NOT DEFINED CMAKE_CXX_STANDARD)
 endif()
 
 set(CMAKE_CXX_EXTENSIONS ON)
+SET(SDL2PP_WITH_IMAGE YES)
+SET(SDL2PP_WITH_TTF YES)
 
 project(taller_tp
     VERSION 1.0
@@ -16,10 +18,10 @@ project(taller_tp
     LANGUAGES CXX
     )
 
-option(TALLER_TESTS "Enable / disable tests." ON)
+option(TALLER_TESTS "Enable / disable tests." OFF)
 option(TALLER_CLIENT "Enable / disable client program." ON)
 option(TALLER_SERVER "Enable / disable server program." ON)
-option(TALLER_EDITOR "Enable / disable editor program." ON)
+option(TALLER_EDITOR "Enable / disable editor program." OFF)
 option(TALLER_MAKE_WARNINGS_AS_ERRORS "Enable / disable warnings as errors." ON)
 
 message(CMAKE_CXX_COMPILER_ID="${CMAKE_CXX_COMPILER_ID}")
@@ -49,6 +51,11 @@ target_include_directories(taller_common PUBLIC .)
 #
 # sudo apt-get install libopus-dev libopusfile-dev libxmp-dev libfluidsynth-dev fluidsynth libwavpack1 libwavpack-dev libfreetype-dev wavpack
 #
+# también para Box2D:
+# sudo apt-get install libbox2d-dev
+#
+# Y para el parser de yaml:
+# sudo apt install libyaml-cpp-dev
 
 # Install libSDL2 and libSDL2pp (for client or editor)
 # HEY!! TODO XXX: add more dependendies (either for client, server or editor)
@@ -102,6 +109,10 @@ endif()
 # Program section
 # ---------------
 if(TALLER_CLIENT)
+
+    set(CMAKE_AUTOMOC ON)
+    set(CMAKE_AUTOUIC ON)
+    set(CMAKE_AUTORCC ON)
     # HEY!! TODO XXX: Change the name of the executable to the one you like!
     add_executable(taller_client)
 
@@ -112,13 +123,26 @@ if(TALLER_CLIENT)
     # HEY!! TODO XXX: add more subfolders here
     add_subdirectory(client)
 
+    find_package(Qt6 COMPONENTS Widgets Multimedia Core Gui REQUIRED)
+    add_subdirectory(client/lobby)
+
     set_project_warnings(taller_client ${TALLER_MAKE_WARNINGS_AS_ERRORS} FALSE)
 
     # add libSDL2pp's headers
-    target_include_directories(taller_client PRIVATE ${libSDL2pp_SOURCE_DIR})
+    target_include_directories(taller_client PRIVATE
+        ${libSDL2pp_SOURCE_DIR}
+        ${CMAKE_CURRENT_SOURCE_DIR}/client/lobby
+    )
 
     # Link the taller_common lib target
-    target_link_libraries(taller_client taller_common SDL2pp::SDL2pp)
+    target_link_libraries(taller_client
+    PRIVATE
+        Qt${QT_VERSION_MAJOR}::Widgets
+        Qt${QT_VERSION_MAJOR}::Multimedia
+        taller_common
+        SDL2pp::SDL2pp
+    )
+
 endif()
 
 if(TALLER_SERVER)
@@ -134,8 +158,30 @@ if(TALLER_SERVER)
 
     set_project_warnings(taller_server ${TALLER_MAKE_WARNINGS_AS_ERRORS} FALSE)
 
-    # Link the taller_common lib target
-    target_link_libraries(taller_server taller_common)
+    # Add Box2D
+    find_path(BOX2D_INCLUDE_DIR box2d/box2d.h)
+    find_library(BOX2D_LIBRARY box2d)
+
+    if(BOX2D_INCLUDE_DIR AND BOX2D_LIBRARY)
+        target_include_directories(taller_server PRIVATE ${BOX2D_INCLUDE_DIR})
+    else()
+        # Si llegas aca probablemente te falte hacer sudo apt-get install libbox2d-dev
+        message(FATAL_ERROR "Box2D not found")
+    endif()
+
+    # Add yaml-cpp
+    find_path(YAMLCPP_INCLUDE_DIR yaml-cpp/yaml.h)
+    find_library(YAMLCPP_LIBRARY yaml-cpp)
+
+    if(YAMLCPP_INCLUDE_DIR AND YAMLCPP_LIBRARY)
+        target_include_directories(taller_server PRIVATE ${YAMLCPP_INCLUDE_DIR})
+    else()
+        # Si llegas aca probablemente te falte hacer sudo apt-get install libbox2d-dev
+        message(FATAL_ERROR "yaml-cpp not found")
+    endif()
+
+    # Link the taller_common lib target + box2d + yaml-cpp
+    target_link_libraries(taller_server taller_common ${BOX2D_LIBRARY} ${YAMLCPP_LIBRARY})
 endif()
 
 if(TALLER_EDITOR)

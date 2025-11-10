@@ -1,39 +1,46 @@
-#include "common/foo.h"
+#include "client.h"
+#include "lobby/lobby.h"
 
 #include <iostream>
 #include <exception>
+#include <iostream>
+#include <string>
+#include <syslog.h>
 
-#include <SDL2pp/SDL2pp.hh>
-#include <SDL2/SDL.h>
+#include "client.h"
+#include "game.h"
 
-using namespace SDL2pp;
+#define ARGS_COUNT 3
+#define BINARY argv[0]
+#define HOSTNAME argv[1]
+#define SERVNAME argv[2]
 
-int main() try {
-	// Initialize SDL library
-	SDL sdl(SDL_INIT_VIDEO);
+/**
+ * Main function: creates and runs the client.
+ * Expects exactly two arguments: the server hostname and service name (to connect to).
+ * Catches and logs all exceptions, returning EXIT_FAILURE in that case.
+ * Returns EXIT_SUCCESS if everything went fine.
+ */
+int main(int argc, char* argv[]) {
+    try {
+        if (argc != ARGS_COUNT) {
+            std::cerr << "Bad program call. Expected " << BINARY << " <hostname> <servname>\n";
+            return EXIT_FAILURE;
+        }
 
-	// Create main window: 640x480 dimensions, resizable, "SDL2pp demo" title
-	Window window("SDL2pp demo",
-			SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-			640, 480,
-			SDL_WINDOW_RESIZABLE);
+        Client client(HOSTNAME, SERVNAME);
+        client.run(argc, argv);
 
-	// Create accelerated video renderer with default driver
-	Renderer renderer(window, -1, SDL_RENDERER_ACCELERATED);
+    } catch (const std::exception& err) {
 
-	// Clear screen
-	renderer.Clear();
+        syslog(LOG_CRIT, "[Crit] Error!: %s", err.what());
+        return EXIT_FAILURE;
 
-	// Show rendered frame
-	renderer.Present();
+    } catch (...) {
 
-	// 5 second delay
-	SDL_Delay(5000);
+        syslog(LOG_CRIT, "[Crit] Unknown error!");
+        return EXIT_FAILURE;
+    }
 
-	// Here all resources are automatically released and library deinitialized
-	return 0;
-} catch (std::exception& e) {
-	// If case of error, print it and exit with error
-	std::cerr << e.what() << std::endl;
-	return 1;
+    return EXIT_SUCCESS;
 }

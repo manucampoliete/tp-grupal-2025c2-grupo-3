@@ -1,5 +1,5 @@
-#include "common/foo.h"
+#include <iostream>
 
-int main() {
-    return foo(4);
-}
+int main(int argc, char* argv[]) { 
+    std::cout << argc << " " << argv[0] << std::endl;
+    return 0; }
