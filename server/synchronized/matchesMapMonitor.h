@@ -39,7 +39,7 @@ public:
     bool startMatch(MatchID matchId);
 
     /**
-     * Returns a reference to the clientCommands queue for the match with the given MatchID.
+     * Returns a reference to the client commands queue for the match with the given MatchID.
      */
     Queue<std::unique_ptr<Command>>& getClientCommandsQueue(MatchID matchId);
 

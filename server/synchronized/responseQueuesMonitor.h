@@ -38,15 +38,15 @@ public:
      * Removes the response queue for the given clientId.
      * If a queue for the given clientId exists, removes it from the map and returns 1.
      * Otherwise, returns 0.
-     * Note: this does not close the queue. The Sender associated with the queue should have been
+     * Note: the Sender associated with the queue should have been
      * stopped before calling this method.
      */
     std::size_t removeQueue(ClientID clientId);
 
     /**
-     * Broadcasts the given response to all response queues.
-     * Returns true if all try_push operations succeeded, false otherwise.
-     * Note: because try_push is used, this method does not block the gameloop.
+     * Broadcasts the given snapshot to all response queues.
+     * Returns true if all tryPush operations succeeded, false otherwise.
+     * Note: because tryPush is used, this method does not block the gameloop.
      */
     bool broadcast(std::shared_ptr<Snapshot> snapshot);
 
