@@ -11,11 +11,11 @@ int Server::run() {
     acceptor.start();
     while (std::cin.get() != END_SERVER_KEY) {}
     acceptor.stop();
-    // matchesMapMonitor.stopAllMatches();
+    matchesMapMonitor.stopAllMatches();
     return EXIT_SUCCESS;
 }
 
 Server::~Server() { 
     acceptor.join();
-    // matchesMapMonitor.joinAllMatches();
+    matchesMapMonitor.joinAllMatches();
 }

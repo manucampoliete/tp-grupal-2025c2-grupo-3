@@ -30,7 +30,7 @@ private:
     /**
      * Reaps dead ClientHandlers and reaps finished matches in the MatchesMapMonitor.
      */
-    void reapDead();
+    void fullReapDead();
 
     /**
      * Clears all ClientHandlers: kills, joins, and deletes them, and clears the clients vector.

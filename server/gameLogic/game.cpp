@@ -107,6 +107,10 @@ void Game::stop() {
     responseQueuesMonitor.closeAll();  // Senders cannot pop, game cannot tryPush when broadcasting
 }
 
+bool Game::isDead() {
+    return !isAlive();
+}
+
 Queue<std::unique_ptr<Command>>& Game::getClientCommandsQueue() { return clientCommandsQueue; }
 
 Queue<std::shared_ptr<Snapshot>>& Game::getResponsesQueue(ClientID clientId) {

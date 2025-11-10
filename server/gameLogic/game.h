@@ -72,6 +72,11 @@ public:
     void stop() override;
 
     /**
+     * Returns true if the game thread has ended, false otherwise.
+     */
+    bool isDead();
+
+    /**
      * Returns a reference to the clientCommandsQueue.
      */
     Queue<std::unique_ptr<Command>>& getClientCommandsQueue();
