@@ -3,11 +3,11 @@
 
 #include "command.h"
 
-class InmortalityCommand : public Command {
+class InmortalityCommand: public Command {
 public:
     explicit InmortalityCommand(ClientID clientId);
-    
+
     void execute(Game& game) override;
 };
 
-#endif // INMORTALITY_COMMAND_H
+#endif  // INMORTALITY_COMMAND_H

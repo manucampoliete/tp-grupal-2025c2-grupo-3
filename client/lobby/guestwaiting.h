@@ -7,16 +7,15 @@ namespace Ui {
 class guestWaiting;
 }
 
-class guestWaiting : public QWidget
-{
+class guestWaiting: public QWidget {
     Q_OBJECT
 
 public:
-    explicit guestWaiting(QWidget *parent = nullptr);
+    explicit guestWaiting(QWidget* parent = nullptr);
     ~guestWaiting();
 
 private:
-    Ui::guestWaiting *ui;
+    Ui::guestWaiting* ui;
 };
 
-#endif // GUESTWAITING_H
+#endif  // GUESTWAITING_H

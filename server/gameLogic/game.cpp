@@ -2,11 +2,10 @@
 
 #include <algorithm>
 #include <chrono>
+#include <iostream>
 #include <thread>
 #include <utility>
 #include <vector>
-
-#include <iostream>
 
 #define TARGET_FPS 60
 #define FRAME_DURATION_MS (1000 / TARGET_FPS)
@@ -25,7 +24,7 @@ b2Body* Game::createNewCarBody() {
     b2BodyDef body_def;
     body_def.type = b2_dynamicBody;
     // body_def.position.Set(0, 0);
-    body_def.position.Set(WORLD_HEIGHT/2, WORLD_HEIGHT/2);
+    body_def.position.Set(WORLD_HEIGHT / 2, WORLD_HEIGHT / 2);
     body_def.angle = 0;
     b2Body* car = world->CreateBody(&body_def);
 
@@ -59,8 +58,7 @@ void Game::broadcast() {
 }
 
 void Game::broadcast_start_signal() {
-    responseQueuesMonitor.broadcast(
-            std::make_shared<Snapshot>());  // dummy timestamp for now
+    responseQueuesMonitor.broadcast(std::make_shared<Snapshot>());  // dummy timestamp for now
 }
 
 /**
@@ -107,9 +105,7 @@ void Game::stop() {
     responseQueuesMonitor.closeAll();  // Senders cannot pop, game cannot tryPush when broadcasting
 }
 
-bool Game::isDead() {
-    return !isAlive();
-}
+bool Game::isDead() { return !isAlive(); }
 
 Queue<std::unique_ptr<Command>>& Game::getClientCommandsQueue() { return clientCommandsQueue; }
 
@@ -117,8 +113,7 @@ Queue<std::shared_ptr<Snapshot>>& Game::getResponsesQueue(ClientID clientId) {
     return responseQueuesMonitor.getQueue(clientId);
 }
 
-void Game::addPlayer(ClientID clientId, const std::string& username,
-                     CarID carId) {
+void Game::addPlayer(ClientID clientId, const std::string& username, CarID carId) {
     if (players.find(clientId) == players.end()) {
         b2Body* newCarBody = createNewCarBody();
         try {

@@ -1,16 +1,20 @@
 #include "clientHandler.h"
-#include "../protocol/serverLobbyProtocol.h"
-#include "../requestsResolving/lobbyResolver.h"
 
 #include <utility>
+
 #include <sys/socket.h>  // For SHUT_RDWR
+
+#include "../protocol/serverLobbyProtocol.h"
+#include "../requestsResolving/lobbyResolver.h"
 
 void ClientHandler::politeKill() {
     Thread::stop();  // If in lobby phase, stop this thread
 
     // If in game phase, stop sender thread and this thread (which is running in receiver object)
-    if (sender) sender->stop();
-    if (receiver) receiver->stop();
+    if (sender)
+        sender->stop();
+    if (receiver)
+        receiver->stop();
 }
 
 void ClientHandler::hardKill() {
@@ -33,7 +37,7 @@ void ClientHandler::launchSenderThread() {
 
 void ClientHandler::fakeLaunchReceiverThread() {
     receiver.emplace(peer, lobbyResolver.getClientCommandsQueue(), clientId);
-    receiver->run(); // Executes here in this thread until it is stopped
+    receiver->run();  // Executes here in this thread until it is stopped
 }
 
 ClientHandler::ClientHandler(Socket&& peer, MatchesMapMonitor& matchesMapMonitor,
@@ -46,7 +50,8 @@ ClientHandler::ClientHandler(Socket&& peer, MatchesMapMonitor& matchesMapMonitor
 
 void ClientHandler::join() {
     Thread::join();
-    if (sender) sender->join();
+    if (sender)
+        sender->join();
 }
 
 void ClientHandler::kill() {
@@ -54,9 +59,7 @@ void ClientHandler::kill() {
                  // other parts of the code
 }
 
-bool ClientHandler::isDead() const { 
-    return !isAlive() and (!sender or !sender->isAlive());
-}
+bool ClientHandler::isDead() const { return !isAlive() and (!sender or !sender->isAlive()); }
 
 void ClientHandler::run() {
     handleLobbyPhase();

@@ -1,14 +1,15 @@
 #ifndef WORLD_RENDERER_H
 #define WORLD_RENDERER_H
 
+#include <cstdint>
+#include <map>
+
+#include <SDL2pp/Rect.hh>
 #include <SDL2pp/Renderer.hh>
 #include <SDL2pp/Texture.hh>
-#include <SDL2pp/Rect.hh>
-#include <map>
-#include <cstdint>
 
-#include "world.h"
 #include "car.h"
+#include "world.h"
 
 using namespace SDL2pp;
 
@@ -18,7 +19,7 @@ private:
     Texture& map_texture;
     Texture& car_sprites;
     World& world;
- //   Car& player_car;
+    //   Car& player_car;
     uint8_t player_id;
 
     Rect camera;
@@ -26,10 +27,7 @@ private:
     const float REFERENCE_HEIGHT = 600.0f;
 
 public:
-    WorldRenderer(Renderer& renderer, 
-                  Texture& map_texture, 
-                  Texture& car_sprites,
-                  World& world,
+    WorldRenderer(Renderer& renderer, Texture& map_texture, Texture& car_sprites, World& world,
                   /*Car& player_car,*/
                   uint8_t player_id);
 
@@ -49,11 +47,11 @@ public:
     float get_scale_factor() const { return scale_factor; }
 
 private:
-    // dibujp solo la porción de la cámara, escalada a toda la ventana    
+    // dibujp solo la porción de la cámara, escalada a toda la ventana
     // aplico el escalado manualmente al renderer asi todo lo que dibujo es a escala
     void render_map_camera();
 
     void render_all_cars();
 };
 
-#endif // WORLD_RENDERER_H
+#endif  // WORLD_RENDERER_H

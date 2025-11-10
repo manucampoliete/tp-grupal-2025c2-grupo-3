@@ -1,12 +1,15 @@
 #include "event_handler.h"
-#include <SDL2pp/SDL.hh>
+
 #include <iostream>
-#include "game.h"
+
+#include <SDL2pp/SDL.hh>
+
 #include "client.h"
 #include "event_handler.h"
+#include "game.h"
 
-EventHandler::EventHandler(GameHandler& game_handler,/* Car& player_car,*/ Game& game) : 
-    game_handler(game_handler),/* player_car(player_car),*/ game(game) {}
+EventHandler::EventHandler(GameHandler& game_handler, /* Car& player_car,*/ Game& game):
+        game_handler(game_handler), /* player_car(player_car),*/ game(game) {}
 
 
 /**
@@ -59,7 +62,7 @@ bool EventHandler::handle_events() {
     while (SDL_PollEvent(&event)) {
         if (event.type == SDL_QUIT)
             return false;
-        
+
         // manejo de ui responsive
         if (event.type == SDL_WINDOWEVENT) {
             switch (event.window.event) {
@@ -78,7 +81,7 @@ bool EventHandler::handle_events() {
         bool last_down = state[SDL_SCANCODE_S] || state[SDL_SCANCODE_DOWN];
         bool last_left = state[SDL_SCANCODE_A] || state[SDL_SCANCODE_LEFT];
         bool last_right = state[SDL_SCANCODE_D] || state[SDL_SCANCODE_RIGHT];
-        
+
         game_handler.send_movement(last_up, last_down, last_left, last_right);
     }
 

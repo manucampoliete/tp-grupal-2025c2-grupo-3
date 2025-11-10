@@ -1,19 +1,20 @@
 #include "serverLobbyProtocol.h"
 
 #include <string>
+#include <vector>
+
+#include <yaml-cpp/yaml.h>
 
 #include "../../common/protocol/protocolConstants.h"
 #include "../../common/utils/carinfo.h"
 
-#include <yaml-cpp/yaml.h>
-
 void ServerLobbyProtocol::sendInitialInfo() {
     YAML::Node config = YAML::LoadFile("config.yaml");
-    
+
     CarID carId = 0;
     YAML::Node carInfo = config["cars"][static_cast<int>(carId)];
     std::vector<CarInfo> infos;
-    while(carInfo) {
+    while (carInfo) {
         CarInfo info;
         info.id = carId;
         info.name = carInfo["name"].as<std::string>();
@@ -32,7 +33,7 @@ void ServerLobbyProtocol::sendInitialInfo() {
     sendU8(SEND_INITIAL_INFO);
     sendU16(infos.size());
 
-    for(auto info : infos) {
+    for (auto info: infos) {
         sendU8(info.id);
         sendString(info.name);
         sendU16(info.speed);
@@ -59,9 +60,9 @@ void ServerLobbyProtocol::recvStartMatch(LobbyResolver& lobbyResolver) {
 
 ServerLobbyProtocol::ServerLobbyProtocol(Socket& socket, ClientID clientId):
         RecvProtocol(socket), SendProtocol(socket) {
-            sendU8(SEND_CLIENT_ID);
-            sendU16(clientId);
-        }
+    sendU8(SEND_CLIENT_ID);
+    sendU16(clientId);
+}
 
 void ServerLobbyProtocol::consumeOne(LobbyResolver& lobbyResolver) {
     switch (recvU8()) {

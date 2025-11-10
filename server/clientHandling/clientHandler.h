@@ -79,8 +79,8 @@ public:
     bool isDead() const;
 
     /**
-     * Main ClientHandler logic: handles the lobby phase, and once it is complete launches the Sender 
-     * thread and runs the Receiver logic in this same thread.
+     * Main ClientHandler logic: handles the lobby phase, and once it is complete launches the
+     * Sender thread and runs the Receiver logic in this same thread.
      */
     void run() override;
 

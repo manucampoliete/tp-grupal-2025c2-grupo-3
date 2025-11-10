@@ -1,10 +1,11 @@
 #include "sender.h"
 
-#include <syslog.h>
 #include <iostream>
 
+#include <syslog.h>
 
-Sender::Sender(ClientProtocol& protocol, Queue<ActiveDirections>& client_requests_q) :
+
+Sender::Sender(ClientProtocol& protocol, Queue<ActiveDirections>& client_requests_q):
         protocol(protocol), client_requests_q(client_requests_q) {}
 
 void Sender::run() {

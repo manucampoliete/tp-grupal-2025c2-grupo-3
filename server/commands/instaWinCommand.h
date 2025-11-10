@@ -3,11 +3,11 @@
 
 #include "command.h"
 
-class InstaWinCommand : public Command {
+class InstaWinCommand: public Command {
 public:
     explicit InstaWinCommand(ClientID clientId);
 
     void execute(Game& game) override;
 };
 
-#endif // INSTA_WIN_COMMAND_H
+#endif  // INSTA_WIN_COMMAND_H

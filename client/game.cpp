@@ -1,48 +1,55 @@
 #include "game.h"
-#include "car.h"
 
-#include <SDL2pp/SDL2pp.hh>
 #include <SDL2pp/SDL.hh>
+#include <SDL2pp/SDL2pp.hh>
+
+#include "car.h"
 
 
 // muestro todo lo que pasa en el juego
 // por ahi mas adelante cuando haya mas cosas convenga separar en mas clases
 
 
-Game::Game(World& world, GameHandler& game_handler, uint8_t player_id) :
-    sdl(SDL_INIT_VIDEO),
-    ttf(),
+Game::Game(World& world, GameHandler& game_handler, uint8_t player_id):
+        sdl(SDL_INIT_VIDEO),
+        ttf(),
 
-    // ventana principal con título, pos automática y tamaño 800x600
-    window("Need For Speed", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 800, 600, SDL_WINDOW_RESIZABLE),
-    
-    // renderer acelerado por hardware
-    renderer(window, -1, SDL_RENDERER_ACCELERATED),
-    font("client/assets/fonts/VCR_OSD_MONO.ttf", 24), // font
-    font_small("client/assets/fonts/VCR_OSD_MONO.ttf", 18),
+        // ventana principal con título, pos automática y tamaño 800x600
+        window("Need For Speed", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 800, 600,
+               SDL_WINDOW_RESIZABLE),
 
-    // cargo la textura del mapa desde un archivo
-    // por ahora hardcodeo una cualquiera
-    map_texture(renderer, "client/assets/cities/Game Boy _ GBC - Grand Theft Auto - Backgrounds - Vice City.png"),
+        // renderer acelerado por hardware
+        renderer(window, -1, SDL_RENDERER_ACCELERATED),
+        font("client/assets/fonts/VCR_OSD_MONO.ttf", 24),  // font
+        font_small("client/assets/fonts/VCR_OSD_MONO.ttf", 18),
 
-    // cargo la textura con los sprites de autos
-    car_sprites(renderer, SDL2pp::Surface("client/assets/cars/Mobile - Grand Theft Auto 4 - Miscellaneous - Cars.png").SetColorKey(true, 0xa3a30d)),
+        // cargo la textura del mapa desde un archivo
+        // por ahora hardcodeo una cualquiera
+        map_texture(renderer, "client/assets/cities/Game Boy _ GBC - Grand Theft Auto - "
+                              "Backgrounds - Vice City.png"),
 
-    world(world),
-    game_handler(game_handler),
-    player_id(player_id),
+        // cargo la textura con los sprites de autos
+        car_sprites(
+                renderer,
+                SDL2pp::Surface(
+                        "client/assets/cars/Mobile - Grand Theft Auto 4 - Miscellaneous - Cars.png")
+                        .SetColorKey(true, 0xa3a30d)),
 
-    // creo el auto del jugador
- //   player_car(renderer, car_sprites, player_id),
-    event_handler(game_handler,/* player_car,*/ *this),
+        world(world),
+        game_handler(game_handler),
+        player_id(player_id),
 
-    // Inicializo los renderers
-    world_renderer(renderer, map_texture, car_sprites, world,/* player_car,*/ player_id),
-    interface_renderer(renderer, font, font_small, map_texture, world, player_id) { 
+        // creo el auto del jugador
+        //   player_car(renderer, car_sprites, player_id),
+        event_handler(game_handler, /* player_car,*/ *this),
+
+        // Inicializo los renderers
+        world_renderer(renderer, map_texture, car_sprites, world, /* player_car,*/ player_id),
+        interface_renderer(renderer, font, font_small, map_texture, world, player_id) {
 
     SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "0");
     SDL_SetWindowMinimumSize(window.Get(), 800, 600);
-    update_ui_layout(); 
+    update_ui_layout();
 }
 
 
@@ -87,7 +94,7 @@ void Game::run() {
 void Game::update_ui_layout() {
     int w = window.GetWidth();
     int h = window.GetHeight();
-    
+
     // Actualizar layouts de los renderers
     world_renderer.update_layout(w, h);
     interface_renderer.update_layout(w, h);
@@ -123,9 +130,7 @@ void Game::process_input() {
 }
 
 
-game_state Game::get_current_state() const {
-    return current_state;
-}
+game_state Game::get_current_state() const { return current_state; }
 
 void Game::handle_modification_click(int x, int y) {
     if (interface_renderer.get_speed_button_rect().Contains(x, y))
@@ -149,32 +154,34 @@ void Game::update(float dt) {
 
     std::cout << "[GAME] Update: " << car_states.size() << " autos en world" << std::endl;
 
-    race_timer_ms = world.getCountdown(); 
+    race_timer_ms = world.getCountdown();
 
     // actualiza la posición y ángulo del auto del jugador local
     //  y mas adelante de los otros autos?
     if (car_states.count(player_id)) {
         const auto& my_car_state = car_states.at(player_id);
-        
-        std::cout << "[GAME] Mi auto: pos=(" << my_car_state.x << "," << my_car_state.y << "), angle=" << my_car_state.angle << std::endl;
+
+        std::cout << "[GAME] Mi auto: pos=(" << my_car_state.x << "," << my_car_state.y
+                  << "), angle=" << my_car_state.angle << std::endl;
 
         // para actualizar la posición en pantalla del auto segun lo que dice el server
-    //    player_car.set_state(my_car_state.x, my_car_state.y, my_car_state.angle);
-        
+        //    player_car.set_state(my_car_state.x, my_car_state.y, my_car_state.angle);
+
         // Actualizar cámara
         world_renderer.update_camera(my_car_state.x, my_car_state.y);
     } else {
-        std::cout << "[GAME] Mi auto (id=" << (int)player_id << ") NO está en el world!" << std::endl;
+        std::cout << "[GAME] Mi auto (id=" << (int)player_id << ") NO está en el world!"
+                  << std::endl;
     }
 
     /*
     // HARDCODEADO: manejar transiciones para testear lo visual
     if (current_state == game_state::COUNTDOWN) {
         countdown_timer += dt;
-        
+
         if (countdown_timer >= 1000.0f) { // cada 1 seg
             countdown_timer = 0.0f;
-            
+
             if (countdown_number > 0) {
                 countdown_number--;
             } else {
@@ -189,23 +196,23 @@ void Game::update(float dt) {
         } else {
             // cuando se acaba el tiempo, mostrar stats
             race_timer_ms = 0;
-            
+
             // HARDCODEADO: resultados de prueba
             RaceResults fake_results;
             fake_results.countdown_ms = 10000; // 10 seg
-            
+
             RaceResults::PlayerResult p1;
             p1.player_name = "Player1";
             p1.race_time_ms = 58000;
             p1.total_time_ms = 180000;
             fake_results.players.push_back(p1);
-            
+
             RaceResults::PlayerResult p2;
             p2.player_name = "Player2";
             p2.race_time_ms = 60000;
             p2.total_time_ms = 185000;
             fake_results.players.push_back(p2);
-            
+
             show_stats(fake_results);
         }
     } else if (current_state == game_state::SHOWING_STATS) {
@@ -214,7 +221,7 @@ void Game::update(float dt) {
         } else {
             // pasar a modificaciones
             stats_timer_ms = 0;
-            
+
             // HARDCODEADO: propiedades de prueba
             CarProperties fake_props;
             fake_props.countdown_ms = 10000; // 10 seg
@@ -241,12 +248,10 @@ void Game::update(float dt) {
 void Game::start_race() {
     current_state = game_state::RACING;
     // desp recibo el tiempo del server supongo, por ahora lo pongo aca
-   // race_timer = 600.0f; 
+    // race_timer = 600.0f;
 }
 
-void Game::set_race_timer(uint16_t time_ms) {
-    this->race_timer_ms = time_ms;
-}
+void Game::set_race_timer(uint16_t time_ms) { this->race_timer_ms = time_ms; }
 
 void Game::show_countdown(uint8_t number) {
     current_state = game_state::COUNTDOWN;
@@ -282,15 +287,19 @@ void Game::render() {
             interface_renderer.render_countdown(countdown_number);
             break;
         case game_state::RACING:
-            interface_renderer.render_race_ui(race_timer_ms, current_race, total_races, window.GetWidth());
+            interface_renderer.render_race_ui(race_timer_ms, current_race, total_races,
+                                              window.GetWidth());
             break;
         case game_state::ELIMINATED:
             break;
         case game_state::SHOWING_STATS:
-            interface_renderer.render_stats_popup(current_results, stats_timer_ms, interface_renderer.get_speed_button_rect()); 
+            interface_renderer.render_stats_popup(current_results, stats_timer_ms,
+                                                  interface_renderer.get_speed_button_rect());
             break;
         case game_state::MODIFYING_CAR:
-            interface_renderer.render_modification_popup(speed_modified, health_modified, mod_timer_ms, interface_renderer.get_speed_button_rect()); 
+            interface_renderer.render_modification_popup(
+                    speed_modified, health_modified, mod_timer_ms,
+                    interface_renderer.get_speed_button_rect());
             break;
         case game_state::GAME_END:
             break;
@@ -298,6 +307,6 @@ void Game::render() {
 
     if (current_state == game_state::RACING)
         interface_renderer.render_minimap();
-        
+
     renderer.Present();
 }

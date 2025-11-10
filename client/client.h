@@ -1,14 +1,16 @@
 #ifndef CLIENT_H
 #define CLIENT_H
 
-#include <string>
 #include <memory>
+#include <string>
 
+#include <sys/socket.h>
+
+#include "../common/messages/snapshot.h"
 #include "../common/socket/socket.h"
 #include "../protocol/client_protocol.h"
-#include "../common/messages/snapshot.h"
+
 #include "game_handler.h"
-#include <sys/socket.h>
 
 /**
  * Client: conectar con el servidor y coordinar Lobby → Game
@@ -21,7 +23,7 @@ private:
     Socket socket;
     ClientProtocol protocol;
     uint8_t player_id;
-    
+
     bool lobby_finished;
 
 public:
@@ -34,16 +36,17 @@ public:
     Client(const std::string& hostname, const std::string& servname);
 
     /**
-     * ejecuta el flujo completo: lanza el lobby (Qt), espera a que termine y lanza el GameHandler (SDL)
+     * ejecuta el flujo completo: lanza el lobby (Qt), espera a que termine y lanza el GameHandler
+     * (SDL)
      */
     void run(int argc, char* argv[]);
-    
+
     /**
      * llamado cuando el lobby termina
      */
     void on_lobby_finished();
-    
+
     ~Client();
 };
 
-#endif // CLIENT_H
+#endif  // CLIENT_H

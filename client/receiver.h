@@ -1,13 +1,13 @@
 #ifndef RECEIVER_H
 #define RECEIVER_H
 
+#include "../common/messages/snapshot.h"
+#include "../common/protocol/protocolConstants.h"
 #include "../common/queue/queue.h"
 #include "../common/thread/thread.h"
-#include "../common/utils/activeDirections.h"
-#include "../common/protocol/protocolConstants.h"
 #include "../common/types/types.h"
+#include "../common/utils/activeDirections.h"
 #include "../protocol/client_protocol.h"
-#include "../common/messages/snapshot.h"
 
 
 class GameHandler;
@@ -29,7 +29,8 @@ public:
      * server_snapshots_q: cola de snapshots recibidos
      * game_handler: referencia al GameHandler para notificar eventos
      */
-    Receiver(ClientProtocol& protocol, Queue<Snapshot>& server_snapshots_q, GameHandler& game_handler);
+    Receiver(ClientProtocol& protocol, Queue<Snapshot>& server_snapshots_q,
+             GameHandler& game_handler);
 
     /**
      * TODO: Add proper documentation
@@ -43,5 +44,4 @@ public:
     ~Receiver() override = default;
 };
 
-
-#endif // RECEIVER_H
+#endif  // RECEIVER_H

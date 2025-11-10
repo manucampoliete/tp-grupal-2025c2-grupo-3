@@ -31,7 +31,7 @@ bool MatchesMapMonitor::startMatch(MatchID matchId) {
 
 void MatchesMapMonitor::reapDeadMatches() {
     std::lock_guard<std::mutex> lock(mtx);
-    for (auto it = matchMap.begin(); it != matchMap.end(); ) {
+    for (auto it = matchMap.begin(); it != matchMap.end();) {
         if (it->second->isDead()) {
             it->second->join();
             it = matchMap.erase(it);
@@ -43,14 +43,14 @@ void MatchesMapMonitor::reapDeadMatches() {
 
 void MatchesMapMonitor::stopAllMatches() {
     std::lock_guard<std::mutex> lock(mtx);
-    for (auto& pair : matchMap) {
+    for (auto& pair: matchMap) {
         pair.second->stop();
     }
 }
 
 void MatchesMapMonitor::joinAllMatches() {
     std::lock_guard<std::mutex> lock(mtx);
-    for (auto& pair : matchMap) {
+    for (auto& pair: matchMap) {
         pair.second->join();
     }
     matchMap.clear();

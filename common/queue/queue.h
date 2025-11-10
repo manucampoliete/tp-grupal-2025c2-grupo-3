@@ -7,6 +7,7 @@
 #include <mutex>
 #include <queue>
 #include <stdexcept>
+#include <utility>
 
 struct ClosedQueue: public std::runtime_error {
     ClosedQueue(): std::runtime_error("The queue is closed") {}
@@ -36,8 +37,7 @@ private:
     std::condition_variable is_not_empty;
 
 public:
-    explicit Queue(unsigned int max_size = UINT_MAX - 1)
-        : max_size(max_size), closed(false) {}
+    explicit Queue(unsigned int max_size = UINT_MAX - 1): max_size(max_size), closed(false) {}
 
     bool tryPush(T val) {
         std::unique_lock<std::mutex> lck(mtx);
@@ -61,8 +61,7 @@ public:
         if (closed)
             throw ClosedQueue();
 
-        while (q.size() == this->max_size)
-            is_not_full.wait(lck);
+        while (q.size() == this->max_size) is_not_full.wait(lck);
 
         if (q.empty())
             is_not_empty.notify_all();
@@ -107,20 +106,18 @@ public:
         is_not_empty.notify_all();
     }
 
-    private:
+private:
     // Helpers que adaptan comportamiento automáticamente:
 
     // Para tipos movibles (como unique_ptr)
     template <typename U = T>
-    std::enable_if_t<!std::is_copy_constructible_v<U>>
-    push_value(U&& val) {
+    std::enable_if_t<!std::is_copy_constructible_v<U>> push_value(U&& val) {
         q.push(std::move(val));
     }
 
     // Para tipos copiables (como shared_ptr o int)
     template <typename U = T>
-    std::enable_if_t<std::is_copy_constructible_v<U>>
-    push_value(const U& val) {
+    std::enable_if_t<std::is_copy_constructible_v<U>> push_value(const U& val) {
         q.push(val);
     }
 

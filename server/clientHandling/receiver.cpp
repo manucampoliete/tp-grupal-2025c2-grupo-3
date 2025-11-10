@@ -2,13 +2,11 @@
 
 #include <syslog.h>
 
-Receiver::Receiver(Socket& skt, 
-                   Queue<std::unique_ptr<Command>>& clientCommandsQueue, ClientID clientId):
+Receiver::Receiver(Socket& skt, Queue<std::unique_ptr<Command>>& clientCommandsQueue,
+                   ClientID clientId):
         protocol(skt), gameResolver(clientId, clientCommandsQueue), _keepRunning(true) {}
 
-void Receiver::stop() {
-    _keepRunning = false;
-}
+void Receiver::stop() { _keepRunning = false; }
 
 void Receiver::run() {
     while (_keepRunning) {

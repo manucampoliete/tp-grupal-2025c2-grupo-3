@@ -1,14 +1,16 @@
 #ifndef INTERFACE_RENDERER_H
 #define INTERFACE_RENDERER_H
 
-#include <SDL2pp/Renderer.hh>
-#include <SDL2pp/Texture.hh>
+#include <cstdint>
+#include <map>
+
 #include <SDL2pp/Font.hh>
 #include <SDL2pp/Rect.hh>
-#include <map>
-#include <cstdint>
+#include <SDL2pp/Renderer.hh>
+#include <SDL2pp/Texture.hh>
 
 #include "../common/messages/game_data.h"
+
 #include "world.h"
 
 using namespace SDL2pp;
@@ -38,17 +40,21 @@ private:
     Rect minimap_rect;
 
 public:
-    UIRenderer(Renderer& renderer, Font& font, Font& font_small, Texture& map_texture, World& world, uint8_t player_id);
+    UIRenderer(Renderer& renderer, Font& font, Font& font_small, Texture& map_texture, World& world,
+               uint8_t player_id);
 
     // renderizar la ui sin la cámara y sin escalado
     void render_countdown(uint8_t countdown_number);
 
-    void render_race_ui(uint32_t race_timer_ms, int current_race, int total_races, int window_width);
-    
-    void render_stats_popup(const RaceResults& current_results, uint32_t stats_timer_ms, const Rect& stats_popup_rect);
-    
-    void render_modification_popup(bool speed_modified, bool health_modified, uint32_t mod_timer_ms, const Rect& mod_popup_rect);
-    
+    void render_race_ui(uint32_t race_timer_ms, int current_race, int total_races,
+                        int window_width);
+
+    void render_stats_popup(const RaceResults& current_results, uint32_t stats_timer_ms,
+                            const Rect& stats_popup_rect);
+
+    void render_modification_popup(bool speed_modified, bool health_modified, uint32_t mod_timer_ms,
+                                   const Rect& mod_popup_rect);
+
     // fondo semi-transparente
     // mapa completo, achicado (NullOpt es "copiar toda la textura")
     // autos como puntos para el minimap
@@ -64,4 +70,4 @@ public:
     const Rect& get_save_button_rect() const { return save_button_rect; }
 };
 
-#endif // INTERFACE_RENDERER_H
+#endif  // INTERFACE_RENDERER_H
