@@ -101,10 +101,6 @@ void ClientProtocol::send_move(const ActiveDirections& request) {
         directions |= RIGHT_MASK;
 
     sendU8(directions);
-
-    // DEBUG
-    // std::cout << "[PROTOCOL] Enviando movimiento: 0x"
-    //           << std::hex << (int)directions << std::dec << std::endl;
 }
 
 Snapshot ClientProtocol::recv_snapshot() {

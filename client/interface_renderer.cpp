@@ -264,7 +264,7 @@ void UIRenderer::render_stats_popup(const RaceResults& current_results, uint32_t
 }
 
 
-void UIRenderer::render_modification_popup(bool speed_modified, bool health_modified,
+void UIRenderer::render_modification_popup(bool speed_modified, bool health_modified, bool saved,
                                            uint32_t mod_timer_ms, const Rect& dummy_rect) {
     (void)dummy_rect;  // no se usa
     // recalculo para hacer que el popup sea responsive
@@ -384,14 +384,25 @@ void UIRenderer::render_modification_popup(bool speed_modified, bool health_modi
 
     // BOTON GUARDAR
     renderer.SetDrawBlendMode(SDL_BLENDMODE_BLEND);
-    renderer.SetDrawColor(50, 150, 255, 255);  // azul
+    
+    if (saved)
+        // verde oscuro cuando ya se guardó (no se puede cambiar)
+        renderer.SetDrawColor(30, 120, 30, 255);
+    else
+        // azul cuando no se guardó
+        renderer.SetDrawColor(50, 150, 255, 255);
     renderer.FillRect(save_btn);
-
+    
     renderer.SetDrawBlendMode(SDL_BLENDMODE_NONE);
-    renderer.SetDrawColor(100, 200, 255, 255);
+    
+    if (saved)
+        renderer.SetDrawColor(60, 200, 60, 255); // borde verde
+    else
+        renderer.SetDrawColor(100, 200, 255, 255); // borde azul
     renderer.DrawRect(save_btn);
 
-    Surface save_surface = active_font.RenderText_Solid("SAVE AND CONTINUE", {255, 255, 255, 255});
+    std::string save_text = saved ? "SAVED!" : "SAVE AND CONTINUE";
+    Surface save_surface = active_font.RenderText_Solid(save_text, {255, 255, 255, 255});
     Texture save_texture(renderer, save_surface);
     int save_text_x = save_btn.x + (save_btn.w - save_texture.GetWidth()) / 2;
     int save_text_y = save_btn.y + (save_btn.h - save_texture.GetHeight()) / 2;
