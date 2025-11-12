@@ -17,4 +17,5 @@ Snapshot::Snapshot(): countdown(0), cars(), type(SnapshotType::START_SIGNAL) {}
 Snapshot::Snapshot(uint32_t countdown, const std::vector<CarSnapshot>& cars):
         countdown(countdown), cars(cars), type(SnapshotType::CAR_SNAPSHOT) {}
 
-Snapshot::Snapshot(const Snapshot& other): countdown(other.countdown), cars(other.cars), type(other.type) {}
+Snapshot::Snapshot(const Snapshot& other):
+        countdown(other.countdown), cars(other.cars), type(other.type) {}

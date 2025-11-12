@@ -7,12 +7,11 @@ namespace Ui {
 class HostWaiting;
 }
 
-class HostWaiting : public QWidget
-{
+class HostWaiting: public QWidget {
     Q_OBJECT
 
 public:
-    explicit HostWaiting(QWidget *parent = nullptr);
+    explicit HostWaiting(QWidget* parent = nullptr);
     ~HostWaiting();
 
     void setMatchID(QString match_id);
@@ -20,12 +19,12 @@ public:
 signals:
     void startClicked();
 
-private slots: 
+private slots:
     void on_buttonStart_clicked();
 
 private:
-    Ui::HostWaiting *ui;
+    Ui::HostWaiting* ui;
     QString match_id;
 };
 
-#endif // HOSTWAITING_H
+#endif  // HOSTWAITING_H

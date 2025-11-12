@@ -39,7 +39,22 @@ public:
     bool startMatch(MatchID matchId);
 
     /**
-     * Returns a reference to the clientCommands queue for the match with the given MatchID.
+     * Reaps dead matches from the match map.
+     */
+    void reapDeadMatches();
+
+    /**
+     * Stops all matches and clears the match map.
+     */
+    void stopAllMatches();
+
+    /**
+     * Joins all match threads.
+     */
+    void joinAllMatches();
+
+    /**
+     * Returns a reference to the client commands queue for the match with the given MatchID.
      */
     Queue<std::unique_ptr<Command>>& getClientCommandsQueue(MatchID matchId);
 

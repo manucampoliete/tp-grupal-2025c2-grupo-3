@@ -21,9 +21,9 @@ void Acceptor::reapDeadClients() {
     clients.erase(it, clients.end());  // cppcheck-suppress missingReturn
 }
 
-void Acceptor::reapDead() {
+void Acceptor::fullReapDead() {
     reapDeadClients();
-    // matchesMapMonitor.reapDeadMatches();
+    matchesMapMonitor.reapDeadMatches();
 }
 
 void Acceptor::clear() {
@@ -46,7 +46,7 @@ void Acceptor::run() {
             Socket peer = acceptor.accept();
             auto c = std::make_unique<ClientHandler>(std::move(peer), matchesMapMonitor,
                                                      nextClientId++);
-            reapDead();
+            fullReapDead();
             clients.push_back(std::move(c));
             clients.back()->start();
         } catch (const LibError& err) {

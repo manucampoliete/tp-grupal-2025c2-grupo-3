@@ -7,16 +7,14 @@
 #include "../protocol/serverLobbyProtocol.h"
 #include "../requestsResolving/lobbyResolver.h"
 
-#include "receiver.h"
-#include "sender.h"
-
 void ClientHandler::politeKill() {
-    if (receiverPtr) {
-        receiverPtr->stop();
-    }
-    if (senderPtr) {
-        senderPtr->stop();
-    }
+    Thread::stop();  // If in lobby phase, stop this thread
+
+    // If in game phase, stop sender thread and this thread (which is running in receiver object)
+    if (sender)
+        sender->stop();
+    if (receiver)
+        receiver->stop();
 }
 
 void ClientHandler::hardKill() {
@@ -33,14 +31,13 @@ void ClientHandler::handleLobbyPhase() {
 }
 
 void ClientHandler::launchSenderThread() {
-    senderPtr = std::make_unique<Sender>(peer, lobbyResolver.getResponsesQueue());
-    senderPtr->start();
+    sender.emplace(peer, lobbyResolver.getResponsesQueue());
+    sender->start();
 }
 
 void ClientHandler::fakeLaunchReceiverThread() {
-    receiverPtr =
-            std::make_unique<Receiver>(peer, lobbyResolver.getClientCommandsQueue(), clientId);
-    receiverPtr->start();
+    receiver.emplace(peer, lobbyResolver.getClientCommandsQueue(), clientId);
+    receiver->run();  // Executes here in this thread until it is stopped
 }
 
 ClientHandler::ClientHandler(Socket&& peer, MatchesMapMonitor& matchesMapMonitor,
@@ -48,8 +45,21 @@ ClientHandler::ClientHandler(Socket&& peer, MatchesMapMonitor& matchesMapMonitor
         peer(std::move(peer)),
         lobbyResolver(clientId, matchesMapMonitor),
         clientId(clientId),
-        receiverPtr(nullptr),
-        senderPtr(nullptr) {}
+        sender(std::nullopt),
+        receiver(std::nullopt) {}
+
+void ClientHandler::join() {
+    Thread::join();
+    if (sender)
+        sender->join();
+}
+
+void ClientHandler::kill() {
+    hardKill();  // Could be changed to politeKill() but it surely requires extra handling in
+                 // other parts of the code
+}
+
+bool ClientHandler::isDead() const { return !isAlive() and (!sender or !sender->isAlive()); }
 
 void ClientHandler::run() {
     handleLobbyPhase();
@@ -60,11 +70,5 @@ void ClientHandler::run() {
     fakeLaunchReceiverThread();
 }
 
-void ClientHandler::kill() {
-    hardKill();  // Could be changed to politeKill() but it surely requires extra handling in
-                 // other parts of the code
-}
-
-bool ClientHandler::isDead() const { return !isAlive() and !(senderPtr and senderPtr->isAlive()); }
 
 ClientHandler::~ClientHandler() {}

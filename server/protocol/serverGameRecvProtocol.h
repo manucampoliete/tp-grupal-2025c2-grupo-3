@@ -1,10 +1,9 @@
 #ifndef SERVER_GAME_RECV_PROTOCOL_H
 #define SERVER_GAME_RECV_PROTOCOL_H
 
+#include "../../common/protocol/recvProtocol.h"
 #include "../../common/utils/activeDirections.h"
 #include "../requestsResolving/gameResolver.h"
-
-#include "../../common/protocol/recvProtocol.h"
 
 class ServerGameRecvProtocol: public RecvProtocol {
 private:
@@ -18,6 +17,24 @@ private:
      * processes it using the provided GameResolver.
      */
     void recvMoveState(GameResolver& gameResolver);
+
+    /**
+     * Receives an Inmortality message from the socket and
+     * processes it using the provided GameResolver.
+     */
+    void recvInmortality(GameResolver& gameResolver);
+
+    /**
+     * Receives an InstaWin message from the socket and
+     * processes it using the provided GameResolver.
+     */
+    void recvInstaWin(GameResolver& gameResolver);
+
+    /**
+     * Receives an InstaLose message from the socket and
+     * processes it using the provided GameResolver.
+     */
+    void recvInstaLose(GameResolver& gameResolver);
 
 public:
     /**

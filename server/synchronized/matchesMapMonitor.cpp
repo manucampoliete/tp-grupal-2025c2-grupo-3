@@ -29,6 +29,33 @@ bool MatchesMapMonitor::startMatch(MatchID matchId) {
     return true;
 }
 
+void MatchesMapMonitor::reapDeadMatches() {
+    std::lock_guard<std::mutex> lock(mtx);
+    for (auto it = matchMap.begin(); it != matchMap.end();) {
+        if (it->second->isDead()) {
+            it->second->join();
+            it = matchMap.erase(it);
+        } else {
+            ++it;
+        }
+    }
+}
+
+void MatchesMapMonitor::stopAllMatches() {
+    std::lock_guard<std::mutex> lock(mtx);
+    for (auto& pair: matchMap) {
+        pair.second->stop();
+    }
+}
+
+void MatchesMapMonitor::joinAllMatches() {
+    std::lock_guard<std::mutex> lock(mtx);
+    for (auto& pair: matchMap) {
+        pair.second->join();
+    }
+    matchMap.clear();
+}
+
 Queue<std::unique_ptr<Command>>& MatchesMapMonitor::getClientCommandsQueue(MatchID matchId) {
     std::lock_guard<std::mutex> lock(mtx);
     return matchMap[matchId]->getClientCommandsQueue();

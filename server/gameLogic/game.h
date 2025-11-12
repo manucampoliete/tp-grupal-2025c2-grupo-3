@@ -10,12 +10,12 @@
 
 #include "../../common/queue/queue.h"
 #include "../../common/thread/thread.h"
-#include "../commands/command.h"
-
-#include "cars/car.h"
-#include "player.h"
-#include "../synchronized/responseQueuesMonitor.h"
 #include "../../common/types/types.h"
+#include "../commands/command.h"
+#include "../synchronized/responseQueuesMonitor.h"
+#include "cars/car.h"
+
+#include "player.h"
 
 class Command;
 
@@ -72,6 +72,11 @@ public:
     void stop() override;
 
     /**
+     * Returns true if the game thread has ended, false otherwise.
+     */
+    bool isDead();
+
+    /**
      * Returns a reference to the clientCommandsQueue.
      */
     Queue<std::unique_ptr<Command>>& getClientCommandsQueue();
@@ -90,6 +95,13 @@ public:
      * Moves the player with the given clientId according to the given activeDirections.
      */
     void movePlayer(ClientID clientId, ActiveDirections activeDirections);
+
+    /**
+     * Cheats!
+     */
+    void makeInmortal(ClientID clientId);
+    void makeInstaWin(ClientID clientId);
+    void makeInstaLose(ClientID clientId);
 
     /**
      * Destructor

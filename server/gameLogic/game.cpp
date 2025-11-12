@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <chrono>
+#include <iostream>
 #include <thread>
 #include <utility>
 #include <vector>
@@ -27,7 +28,7 @@ b2Body* Game::createNewCarBody() {
     b2BodyDef body_def;
     body_def.type = b2_dynamicBody;
     // body_def.position.Set(0, 0);
-    body_def.position.Set(WORLD_HEIGHT/2, WORLD_HEIGHT/2);
+    body_def.position.Set(WORLD_HEIGHT / 2, WORLD_HEIGHT / 2);
     body_def.angle = 0;
 
     // box2d permite darle el caracter de "bala" a objetos para que estos atraviesen colisiones lo menos posible
@@ -67,8 +68,7 @@ void Game::broadcast() {
 }
 
 void Game::broadcast_start_signal() {
-    responseQueuesMonitor.broadcast(
-            std::make_shared<Snapshot>());  // dummy timestamp for now
+    responseQueuesMonitor.broadcast(std::make_shared<Snapshot>());  // dummy timestamp for now
 }
 
 /**
@@ -120,14 +120,15 @@ void Game::stop() {
     responseQueuesMonitor.closeAll();  // Senders cannot pop, game cannot tryPush when broadcasting
 }
 
+bool Game::isDead() { return !isAlive(); }
+
 Queue<std::unique_ptr<Command>>& Game::getClientCommandsQueue() { return clientCommandsQueue; }
 
 Queue<std::shared_ptr<Snapshot>>& Game::getResponsesQueue(ClientID clientId) {
     return responseQueuesMonitor.getQueue(clientId);
 }
 
-void Game::addPlayer(ClientID clientId, const std::string& username,
-                     CarID carId) {
+void Game::addPlayer(ClientID clientId, const std::string& username, CarID carId) {
     if (players.find(clientId) == players.end()) {
         b2Body* newCarBody = createNewCarBody();
         try {
@@ -143,6 +144,27 @@ void Game::addPlayer(ClientID clientId, const std::string& username,
 
 void Game::movePlayer(ClientID clientId, ActiveDirections activeDirections) {
     players.at(clientId).move(activeDirections);
+}
+
+void Game::makeInmortal(ClientID clientId) {
+    std::cout << "Making player " << clientId << " inmortal!" << std::endl;
+    /**
+     * TODO: implementar
+     */
+}
+
+void Game::makeInstaWin(ClientID clientId) {
+    std::cout << "Making player " << clientId << " insta win!" << std::endl;
+    /**
+     * TODO: implementar
+     */
+}
+
+void Game::makeInstaLose(ClientID clientId) {
+    std::cout << "Making player " << clientId << " insta lose!" << std::endl;
+    /**
+     * TODO: implementar
+     */
 }
 
 Game::~Game() {}

@@ -10,7 +10,6 @@ class LobbyResolver;
 
 class ServerLobbyProtocol: public RecvProtocol, public SendProtocol {
 private:
-
     void sendInitialInfo();
 
     /**

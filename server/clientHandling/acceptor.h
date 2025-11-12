@@ -5,9 +5,9 @@
 #include <string>
 #include <vector>
 
-#include "../../common/types/types.h"
 #include "../../common/socket/socket.h"
 #include "../../common/thread/thread.h"
+#include "../../common/types/types.h"
 #include "../synchronized/matchesMapMonitor.h"
 
 #include "clientHandler.h"
@@ -30,7 +30,7 @@ private:
     /**
      * Reaps dead ClientHandlers and reaps finished matches in the MatchesMapMonitor.
      */
-    void reapDead();
+    void fullReapDead();
 
     /**
      * Clears all ClientHandlers: kills, joins, and deletes them, and clears the clients vector.
@@ -40,7 +40,6 @@ private:
 public:
     /**
      * Constructor: initializes the acceptor with the given parameters.
-     * Takes the ownership of the acceptor Socket.
      */
     Acceptor(const std::string& servname, MatchesMapMonitor& matchesMapMonitor);
 

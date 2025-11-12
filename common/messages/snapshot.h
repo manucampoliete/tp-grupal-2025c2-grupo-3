@@ -6,10 +6,7 @@
 
 #include "../types/types.h"
 
-enum class SnapshotType : uint8_t {
-    START_SIGNAL = 0,
-    CAR_SNAPSHOT = 1
-};
+enum class SnapshotType : uint8_t { START_SIGNAL = 0, CAR_SNAPSHOT = 1 };
 
 struct Snapshot {
     struct CarSnapshot {
@@ -40,7 +37,7 @@ struct Snapshot {
      * Constructor for Snapshot
      */
     Snapshot();
-    
+
     Snapshot(uint32_t countdown, const std::vector<CarSnapshot>& cars);
 
     /**

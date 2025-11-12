@@ -12,12 +12,36 @@ void ServerGameRecvProtocol::recvMoveState(GameResolver& gameResolver) {
     gameResolver.handleMove(decodeMoveState(moveState));
 }
 
+void ServerGameRecvProtocol::recvInmortality(GameResolver& gameResolver) {
+    gameResolver.handleInmortality();
+}
+
+void ServerGameRecvProtocol::recvInstaWin(GameResolver& gameResolver) {
+    gameResolver.handleInstaWin();
+}
+
+void ServerGameRecvProtocol::recvInstaLose(GameResolver& gameResolver) {
+    gameResolver.handleInstaLose();
+}
+
 ServerGameRecvProtocol::ServerGameRecvProtocol(Socket& skt): RecvProtocol(skt) {}
 
 void ServerGameRecvProtocol::consumeOne(GameResolver& gameResolver) {
     switch (recvU8()) {
         case SEND_MOVE_STATE: {
             recvMoveState(gameResolver);
+            break;
+        }
+        case SEND_INMORTALITY: {
+            recvInmortality(gameResolver);
+            break;
+        }
+        case SEND_INSTA_WIN: {
+            recvInstaWin(gameResolver);
+            break;
+        }
+        case SEND_INSTA_LOSE: {
+            recvInstaLose(gameResolver);
             break;
         }
         default:

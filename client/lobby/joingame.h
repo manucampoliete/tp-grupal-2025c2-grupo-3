@@ -1,25 +1,25 @@
 #ifndef JOINGAME_H
 #define JOINGAME_H
 
-#include "carselector.h"
-
 #include <QWidget>
+#include <vector>
+
+#include "carselector.h"
 
 namespace Ui {
 class JoinGame;
 }
 
-class JoinGame : public QWidget
-{
+class JoinGame: public QWidget {
     Q_OBJECT
 
 public:
-    explicit JoinGame(QWidget *parent = nullptr, const std::vector<CarInfo>& cars = {});
+    explicit JoinGame(QWidget* parent = nullptr, const std::vector<CarInfo>& cars = {});
     ~JoinGame();
 
 signals:
     void returnToMenuClicked();
-    void joinGameRequested(const QString &username, const QString &gameId, const CarInfo &car);
+    void joinGameRequested(const QString& username, const QString& gameId, const CarInfo& car);
 
 
 private slots:
@@ -28,9 +28,9 @@ private slots:
 
 
 private:
-    Ui::JoinGame *ui;
-    CarSelector *carSelector;
-    std::vector<CarInfo> available_cars; 
+    Ui::JoinGame* ui;
+    CarSelector* carSelector;
+    std::vector<CarInfo> available_cars;
 };
 
-#endif // JOINGAME_H
+#endif  // JOINGAME_H

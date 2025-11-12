@@ -2,8 +2,8 @@
 #define CLIENT_HANDLER_H
 
 #include <memory>
+#include <optional>
 
-#include "../../common/queue/queue.h"
 #include "../../common/socket/socket.h"
 #include "../../common/thread/thread.h"
 #include "../../common/types/types.h"
@@ -21,17 +21,18 @@ private:
     Socket peer;
     LobbyResolver lobbyResolver;
     const ClientID clientId;
-    std::unique_ptr<Receiver> receiverPtr;
-    std::unique_ptr<Sender> senderPtr;
+    std::optional<Sender> sender;
+    std::optional<Receiver> receiver;
 
     /**
-     * Sets shouldKeepRunning() = false in both the Receiver and the Sender.
+     * Does a polite kill: stops the ClientHandler-Receiver thread and the Sender thread (if it was
+     * launched).
      */
     void politeKill();
 
     /**
      * Does a polite kill, then shuts down and closes the peer socket to unblock
-     * any blocking calls in the Receiver and Sender.
+     * any blocking calls in the ClientHandler-Receiver and Sender (if it was launched) threads.
      */
     void hardKill();
 
@@ -47,7 +48,7 @@ private:
     void launchSenderThread();
 
     /**
-     * Launches the Receiver thread (fake start: calls run() directly).
+     * "Launches the Receiver thread" (fake start: calls run() directly).
      */
     void fakeLaunchReceiverThread();
 
@@ -59,22 +60,29 @@ public:
     ClientHandler(Socket&& peer, MatchesMapMonitor& matchesMapMonitor, ClientID clientId);
 
     /**
-     * TODO: Document me!
+     * Joins the ClientHandler-Receiver thread and the Sender thread (if it was launched).
      */
-    void run() override;
+    void join() override;
 
     /**
-     * Kills the Receiver and Sender threads.
+     * Kills the ClientHandler-Receiver thread and the Sender thread (if it was launched).
      * Does a polite kill, and then a hard kill (this could be changed to just a polite kill).
      * After a call to this method, ClientHandler::isDead() will return true.
      */
     void kill();
 
     /**
-     * Returns true if both the Receiver and Sender threads have finished.
+     * Returns true if both the ClientHandler-Receiver and Sender threads have finished.
      * Otherwise, returns false.
+     * Note: if the Sender thread was not launched, only checks the ClientHandler-Receiver thread.
      */
     bool isDead() const;
+
+    /**
+     * Main ClientHandler logic: handles the lobby phase, and once it is complete launches the
+     * Sender thread and runs the Receiver logic in this same thread.
+     */
+    void run() override;
 
     /**
      * Destructor

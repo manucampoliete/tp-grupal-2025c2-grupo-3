@@ -182,7 +182,7 @@ if(TALLER_SERVER)
     if(YAMLCPP_INCLUDE_DIR AND YAMLCPP_LIBRARY)
         target_include_directories(taller_server PRIVATE ${YAMLCPP_INCLUDE_DIR})
     else()
-        # Si llegas aca probablemente te falte hacer sudo apt-get install libbox2d-dev
+        # Si llegas aca probablemente te falte hacer sudo apt install libyaml-cpp-dev
         message(FATAL_ERROR "yaml-cpp not found")
     endif()
 

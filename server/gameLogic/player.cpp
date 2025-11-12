@@ -1,7 +1,7 @@
 #include "player.h"
 
-#include "yaml-cpp/yaml.h"
 #include "cars/car_factory.h"
+#include "yaml-cpp/yaml.h"
 
 #define RADTODEG 57.295779513082320876f
 
@@ -22,9 +22,10 @@ Snapshot::CarSnapshot Player::buildCarSnapshot() {
     // evita que en la animacion se vea un "snap" del auto cuando el angulo hace overflow
     float angleDeg = -car.getAngle() * RADTODEG;
     angleDeg = fmodf(angleDeg, 360.0f);
-    if (angleDeg < 0.0f) angleDeg += 360.0f;
+    if (angleDeg < 0.0f)
+        angleDeg += 360.0f;
     uint16 angle = static_cast<uint16_t>(std::round(angleDeg));
-    
+
     uint16_t speed = static_cast<uint16_t>(std::round(car.getSpeed() * 1000));
 
     return Snapshot::CarSnapshot(clientId, x, y, angle, speed, car.getId());

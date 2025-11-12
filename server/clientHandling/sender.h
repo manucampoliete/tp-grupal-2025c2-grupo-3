@@ -19,13 +19,13 @@ public:
     /**
      * Constructor: initializes the Sender with the given parameters.
      */
-    explicit Sender(Socket& skt, Queue<std::shared_ptr<Snapshot>>& responsesQueue);
+    Sender(Socket& skt, Queue<std::shared_ptr<Snapshot>>& responsesQueue);
 
     /**
-     * Main sender logic: pops Snapshot responses from its responsesQueue and sends them to the
-     * client. If Thread::shouldKeepRunning() becomes false, the sender stops. Any exception thrown
+     * Main Sender logic: pops Snapshot responses from its responsesQueue and sends them to the
+     * client. If Thread::shouldKeepRunning() becomes false, the Sender stops. Any exception thrown
      * by ServerGameSendProtocol::sendSnapshot() or Queue::pop() is caught, logged, and causes the
-     * sender to stop. In all these cases, the sender thread ends.
+     * Sender to stop. In all these cases, the Sender thread ends.
      */
     void run() override;
 

@@ -1,8 +1,8 @@
 #include "world.h"
 
 
-// para evitar que el hilo Receiver (que escribe los datos) y el hilo Game (que los lee para dibujar) 
-// accedan a la misma memoria al mismo tiempo
+// para evitar que el hilo Receiver (que escribe los datos) y el hilo Game (que los lee para
+// dibujar) accedan a la misma memoria al mismo tiempo
 
 
 // limpia el estado del mundo local
@@ -19,8 +19,8 @@ void World::reset() {
 // llamado por el Receiver
 void World::update(const BroadcastData& data) {
     std::lock_guard<std::mutex> lock(mtx);
-    for (const auto& car : data.cars) {
-        cars[car.id] = car; // actualiza el estado de ese auto
+    for (const auto& car: data.cars) {
+        cars[car.id] = car;  // actualiza el estado de ese auto
     }
     countdown = data.countdown;
 }
