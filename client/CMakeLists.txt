@@ -27,4 +27,3 @@ target_sources(taller_client
     )
 
 add_subdirectory(protocol)
-add_subdirectory(debug)
