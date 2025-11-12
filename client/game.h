@@ -11,11 +11,11 @@
 #include "../common/messages/game_data.h"
 #include "../common/messages/snapshot.h"
 
-#include "car.h"
 #include "event_handler.h"
 #include "interface_renderer.h"
 #include "world.h"
 #include "world_renderer.h"
+#include "sound_manager.h"
 
 using namespace SDL2pp;
 
@@ -48,6 +48,8 @@ private:
     // Renderers
     WorldRenderer world_renderer;
     UIRenderer interface_renderer;
+
+    SoundManager sound_manager;
 
     game_state current_state =
             game_state::RACING;  // va COUNTDOWN pero hasta arreglarlo asi se ve la carrera
@@ -93,6 +95,8 @@ public:
     void show_countdown(uint8_t number);
     void show_stats(const RaceResults& results);
     void show_modifications(const CarProperties& props);
+
+    SoundManager& get_sound_manager() { return sound_manager; }
 };
 
 #endif  // GAME_H

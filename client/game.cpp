@@ -38,9 +38,6 @@ Game::Game(World& world, GameHandler& game_handler, uint8_t player_id):
         world(world),
         game_handler(game_handler),
         player_id(player_id),
-
-        // creo el auto del jugador
-        //   player_car(renderer, car_sprites, player_id),
         event_handler(game_handler, *this),
 
         // Inicializo los renderers
@@ -49,7 +46,31 @@ Game::Game(World& world, GameHandler& game_handler, uint8_t player_id):
         sound_manager() {
 
     SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "0");
+    SDL_SetHint(SDL_HINT_AUDIO_RESAMPLING_MODE, "1");
     SDL_SetWindowMinimumSize(window.Get(), 800, 600);
+
+    try {
+        sound_manager.load_music("client/assets/sounds/music.mp3");
+        
+        sound_manager.load_sound("collision", "client/assets/sounds/crash.wav");
+        sound_manager.load_sound("explosion", "client/assets/sounds/explosion.wav");
+        sound_manager.load_sound("checkpoint", "client/assets/sounds/checkpoint.wav");
+        sound_manager.load_sound("countdown", "client/assets/sounds/beep.wav");
+        sound_manager.load_sound("race_end", "client/assets/sounds/finish.wav");
+        sound_manager.load_sound("brake", "client/assets/sounds/brake.wav");
+        sound_manager.load_sound("engine", "client/assets/sounds/engine.wav");
+        
+        std::cout << "[GAME] Todos los sonidos cargados correctamente" << std::endl;
+        
+        // iniciar música
+        // esto por ahi no tendria que ir aca cuando este el countdown?
+        sound_manager.play_music();
+        
+    } catch (const std::exception& e) {
+        std::cerr << "[GAME] Error cargando sonidos: " << e.what() << std::endl;
+        std::cerr << "[GAME] El juego continuará sin audio" << std::endl;
+    }
+
     update_ui_layout();
 }
 

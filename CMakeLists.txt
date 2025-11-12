@@ -123,6 +123,8 @@ if(TALLER_CLIENT)
     # HEY!! TODO XXX: add more subfolders here
     add_subdirectory(client)
 
+    find_package(SDL2_mixer REQUIRED)
+
     find_package(Qt6 COMPONENTS Widgets Multimedia Core Gui REQUIRED)
     add_subdirectory(client/lobby)
 
@@ -141,6 +143,7 @@ if(TALLER_CLIENT)
         Qt${QT_VERSION_MAJOR}::Multimedia
         taller_common
         SDL2pp::SDL2pp
+        SDL2_mixer::SDL2_mixer
     )
 
 endif()

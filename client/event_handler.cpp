@@ -32,15 +32,15 @@ bool EventHandler::handle_events() {
             }
         }
 
-        // CHEATS
+        // CHEATS Y SONIDOS
         if (event.type == SDL_KEYDOWN) {
             const Uint8* key_state = SDL_GetKeyboardState(NULL);
 
             switch (event.key.keysym.scancode) {
-                // I + M (Trigger: M)
-                case SDL_SCANCODE_M:
+                // I + L (Trigger: L)
+                case SDL_SCANCODE_L:
                     if (key_state[SDL_SCANCODE_I]) {
-                        std::cout << "[CHEAT] Inmortalidad (I+M) activada!" << std::endl;
+                        std::cout << "[CHEAT] Inmortalidad (I+L) activada!" << std::endl;
                         game_handler.send_cheat_inmortality();
                     }
                     break;
@@ -56,6 +56,41 @@ bool EventHandler::handle_events() {
                         game_handler.send_cheat_insta_lose();
                     }
                     break;
+            
+                case SDL_SCANCODE_EQUALS: 
+                case SDL_SCANCODE_KP_PLUS:
+                    if (key_state[SDL_SCANCODE_LCTRL] || key_state[SDL_SCANCODE_RCTRL]) {
+                        // Ctrl + '+': subir vol de musica
+                        int current_vol = game.get_sound_manager().is_music_enabled() ? 64 : 0;
+                        game.get_sound_manager().set_music_volume(std::min(current_vol + 10, 128));
+                        std::cout << "[SOUND] 🔊 Volumen de música aumentado" << std::endl;
+                    }
+                    break;
+
+                case SDL_SCANCODE_MINUS:
+                case SDL_SCANCODE_KP_MINUS:
+                    if (key_state[SDL_SCANCODE_LCTRL] || key_state[SDL_SCANCODE_RCTRL]) {
+                        // Ctrl + '-': bajar vol de musica
+                        int current_vol = 64;
+                        game.get_sound_manager().set_music_volume(std::max(current_vol - 10, 0));
+                        std::cout << "[SOUND] 🔉 Volumen de música reducido" << std::endl;
+                    }
+                    break;
+
+                case SDL_SCANCODE_M:
+                    if (key_state[SDL_SCANCODE_LCTRL] || key_state[SDL_SCANCODE_RCTRL]) {
+                        // Ctrl + M: mutear/desmutear musica
+                        game.get_sound_manager().toggle_music();
+                    }
+                    break;
+
+                case SDL_SCANCODE_N:
+                    if (key_state[SDL_SCANCODE_LCTRL] || key_state[SDL_SCANCODE_RCTRL]) {
+                        // Ctrl + N: mutear/desmutear sonidos
+                        game.get_sound_manager().toggle_sfx();
+                    }
+                    break;
+
                 
                 default:
                     break;

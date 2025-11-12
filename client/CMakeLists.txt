@@ -12,6 +12,7 @@ target_sources(taller_client
     world.cpp
     event_handler.cpp
     game_handler.cpp
+    sound_manager.cpp
     PUBLIC
     # .h files
     client.h
@@ -24,6 +25,7 @@ target_sources(taller_client
     world.h
     event_handler.h
     game_handler.h
+    sound_manager.h
     )
 
 add_subdirectory(protocol)
