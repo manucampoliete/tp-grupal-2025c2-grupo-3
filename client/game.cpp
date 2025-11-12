@@ -5,8 +5,6 @@
 
 #include "car.h"
 
-#include "debug/CollisionDebugRenderer.h"
-
 // muestro todo lo que pasa en el juego
 // por ahi mas adelante cuando haya mas cosas convenga separar en mas clases
 
@@ -281,10 +279,6 @@ void Game::render() {
 
     // renderizar el mundo (mapa + autos) Con la camara y escalado
     world_renderer.render();
-
-    // debug draw (temporal)
-    /* static CollisionDebugRenderer debug_renderer(renderer, "client/assets/collisions.yaml");
-    debug_renderer.draw(world_renderer.get_camera().x, world_renderer.get_camera().y); */
 
     // renderizar la ui sin la cámara y sin escalado
     switch (current_state) {
