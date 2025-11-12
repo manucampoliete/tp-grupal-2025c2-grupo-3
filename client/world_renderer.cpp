@@ -67,14 +67,13 @@ void WorldRenderer::render_all_cars() {
         const Rect& src = CARS[car_state.type];
 
         // posición relativa a la cámara
-        float screen_x = car_state.x - camera.x;
-        float screen_y = car_state.y - camera.y;
-
-        std::cout << "  Auto id=" << (int)id << ", type=" << (int)car_state.type << ", world_pos=("
-                  << car_state.x << "," << car_state.y << ")"
-                  << ", screen_pos=(" << screen_x << "," << screen_y << ")"
-                  << ", angle=" << car_state.angle << std::endl;
-
+        // float screen_x = car_state.x - camera.x;
+        // float screen_y = car_state.y - camera.y;
+        float screen_x = car_state.x - camera.x - src.GetW() / 2.0f;
+        float screen_y = car_state.y - camera.y - src.GetH() / 2.0f;
+        
+        std::cout << "  Auto id=" << (int)id  << ", type=" << (int)car_state.type << ", world_pos=(" << car_state.x << "," << car_state.y << ")" << ", screen_pos=(" << screen_x << "," << screen_y << ")" << ", angle=" << car_state.angle << std::endl;
+        
         // el tamaño es el del sprite original, el SetScale() del renderer lo agranda
         Rect dest(screen_x, screen_y, src.GetW(), src.GetH());
 

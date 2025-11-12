@@ -7,10 +7,14 @@
 #include <utility>
 #include <vector>
 
+#include <iostream>
+
+#include "collision_loader.h"
+
 #define TARGET_FPS 60
 #define FRAME_DURATION_MS (1000 / TARGET_FPS)
 #define PLAYER_SPEED 200.0f  // píxeles por segundo
-#define WORLD_HEIGHT 4672
+#define WORLD_HEIGHT 4672.0f
 
 Game::Game():
         world(new b2World(b2Vec2(0, 0))),
@@ -26,14 +30,20 @@ b2Body* Game::createNewCarBody() {
     // body_def.position.Set(0, 0);
     body_def.position.Set(WORLD_HEIGHT / 2, WORLD_HEIGHT / 2);
     body_def.angle = 0;
+
+    // box2d permite darle el caracter de "bala" a objetos para que estos atraviesen colisiones lo menos posible
+    // sin esto un auto muy rapido podria atravesar edificios
+    // body_def.bullet = true;
+
     b2Body* car = world->CreateBody(&body_def);
 
     b2PolygonShape boxShape;
-    boxShape.SetAsBox(3, 1);
+    boxShape.SetAsBox(28.0f/2, 22.0/2);
 
     b2FixtureDef boxFixtureDef;
     boxFixtureDef.shape = &boxShape;
     boxFixtureDef.density = 1;
+    // boxFixtureDef.friction = 0.3f;
     car->CreateFixture(&boxFixtureDef);
 
     car->SetLinearDamping(0.5f);  // para que se frene con el tiempo
@@ -48,13 +58,15 @@ void Game::updatePlayerCars() {
 }
 
 void Game::broadcast() {
+    std::cerr << "elapsed: " << elapsed.count() << " ms" << std::endl;
+
     std::vector<Snapshot::CarSnapshot> snapshots;
     for (auto& [clientId, player]: players) {
         Snapshot::CarSnapshot snp = player.buildCarSnapshot();
         snapshots.emplace_back(snp);
     }
     responseQueuesMonitor.broadcast(
-            std::make_shared<Snapshot>(0, snapshots));  // dummy timestamp for now
+            std::make_shared<Snapshot>(static_cast<uint32_t>(elapsed.count()), snapshots));  // dummy timestamp for now
 }
 
 void Game::broadcast_start_signal() {
@@ -67,12 +79,18 @@ void Game::broadcast_start_signal() {
 void Game::run() {
     broadcast_start_signal();
 
+    auto collisionBodies = CollisionLoader::LoadCollisions("server/gameLogic/collisions.yaml", world, 1.0f, WORLD_HEIGHT);
+    std::cerr << "Total de cuerpos de colisión: " << collisionBodies.size() << std::endl;
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+
     using clock = std::chrono::high_resolution_clock;
     auto lastTime = clock::now();
+    auto startTime = lastTime;
 
     while (shouldKeepRunning()) {
         auto now = clock::now();
-        std::chrono::duration<float> elapsed = now - lastTime;
+        elapsed = now - lastTime;
         float deltaTime = elapsed.count();  // segundos
         lastTime = now;
 
@@ -88,7 +106,13 @@ void Game::run() {
 
         world->Step(deltaTime, velocityIt, positionIt);
 
+        elapsed = std::chrono::duration_cast<std::chrono::duration<float>>(now - startTime);
+
         broadcast();
+
+        /* std::cerr << "Tiempo de carrera: "
+                  << std::chrono::duration_cast<std::chrono::seconds>(now - startTime).count()
+                  << " segundos." << std::endl; */
 
         // Mantener FPS constante
         auto frameTime =

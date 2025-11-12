@@ -8,7 +8,7 @@
  * OPCION 2
  */
 
-#define FPS 30
+#define FPS 60
 #define RATE (1000.0 / FPS)
 
 class ConstantRateLoop {

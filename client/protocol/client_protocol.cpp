@@ -105,6 +105,7 @@ void ClientProtocol::send_move(const ActiveDirections& request) {
 
 Snapshot ClientProtocol::recv_snapshot() {
     uint32_t countdown = recvU32();
+
     uint8_t num_cars = recvU8();
 
     std::cout << "[PROTOCOL] Snapshot recibido: countdown=" << countdown

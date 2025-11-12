@@ -5,6 +5,7 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <chrono>
 
 #include <box2d/box2d.h>
 
@@ -27,6 +28,7 @@ private:
     Queue<std::unique_ptr<Command>> clientCommandsQueue;
     ResponseQueuesMonitor responseQueuesMonitor;
     std::map<ClientID, Player> players;
+    std::chrono::duration<float> elapsed;
 
     /**
      * Creates and returns a new b2Body for a car.
