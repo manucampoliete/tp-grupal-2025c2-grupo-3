@@ -25,11 +25,11 @@ static std::vector<b2Body*> LoadCollisions(const std::string& yamlPath, b2World*
             // se invierte Y
             float y = (worldHeight > 0.0f) 
                 ? (worldHeight - y_pixels) / pixelsToMeters 
-                : y_pixels / pixelsToMeters;
+                : y_pixels / pixelsToMeters; 
             
             float width = collision["width"].as<float>() / pixelsToMeters;
             float height = collision["height"].as<float>() / pixelsToMeters;
-            
+
             // BOX2D //
             b2BodyDef bodyDef;
             bodyDef.type = b2_staticBody;

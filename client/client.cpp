@@ -5,7 +5,6 @@
 #include <QApplication>
 #include <iostream>
 
-
 Client::Client(const std::string& hostname, const std::string& servname) :
     socket(hostname.c_str(), servname.c_str()),
     protocol(socket),

@@ -37,7 +37,7 @@ b2Body* Game::createNewCarBody() {
     b2Body* car = world->CreateBody(&body_def);
 
     b2PolygonShape boxShape;
-    boxShape.SetAsBox(3, 1);
+    boxShape.SetAsBox(28.0f/2, 22.0/2);
 
     b2FixtureDef boxFixtureDef;
     boxFixtureDef.shape = &boxShape;

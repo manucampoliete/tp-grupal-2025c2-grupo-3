@@ -134,6 +134,11 @@ if(TALLER_CLIENT)
         ${CMAKE_CURRENT_SOURCE_DIR}/client/lobby
     )
 
+    # Add yaml-cpp
+    find_path(YAMLCPP_INCLUDE_DIR yaml-cpp/yaml.h)
+    find_library(YAMLCPP_LIBRARY yaml-cpp)
+    target_include_directories(taller_client PRIVATE ${YAMLCPP_INCLUDE_DIR})
+
     # Link the taller_common lib target
     target_link_libraries(taller_client
     PRIVATE
@@ -141,6 +146,7 @@ if(TALLER_CLIENT)
         Qt${QT_VERSION_MAJOR}::Multimedia
         taller_common
         SDL2pp::SDL2pp
+        ${YAMLCPP_LIBRARY}
     )
 
 endif()
