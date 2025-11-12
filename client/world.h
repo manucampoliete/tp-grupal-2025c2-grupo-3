@@ -6,22 +6,7 @@
 #include <mutex>
 #include <vector>
 
-// la información que llega del servidor
-// Representa un "broadcast" del estado del juego:
-// - posición, rotación y tipo de auto de cada jugador
-// - tiempo restante de la carrera
-struct BroadcastData {
-    struct CarState {
-        uint8_t id;    // id del jugador
-        float x;       // posición x
-        float y;       // posición y
-        float angle;   // ángulo en grados
-        uint8_t type;  // tipo de auto
-    };
-
-    std::vector<CarState> cars;
-    uint32_t countdown;  // tiempo restante de la carrera en milisegundos
-};
+#include "../common/messages/game_data.h"
 
 
 // mantiene el estado del mundo local de cada cliente

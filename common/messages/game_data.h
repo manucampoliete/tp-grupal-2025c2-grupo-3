@@ -5,10 +5,42 @@
 #include <string>
 #include <vector>
 
+#include <SDL2pp/Rect.hh>
+
+
 /*
  * estructuras de datos para el protocolo
  * a chequear segun implementacion
  */
+
+
+// coordenadas (x, y, ancho, alto) para cada auto
+const SDL2pp::Rect CARS[7] = {
+        {134, 34, 20, 27},   // auto 1
+        {170, 105, 20, 40},  // auto 2
+        {170, 186, 20, 38},  // auto 3
+        {170, 265, 20, 40},  // auto 4
+        {170, 344, 20, 40},  // auto 5
+        {170, 425, 20, 40},  // auto 6
+        {205, 515, 20, 45},  // auto 7
+};
+
+
+// la información que llega del servidor
+// - posición, rotación y tipo de auto de cada jugador
+// - tiempo restante de la carrera
+struct BroadcastData {
+    struct CarState {
+        uint8_t id;    // id del jugador
+        float x;       // posición x
+        float y;       // posición y
+        float angle;   // ángulo en grados
+        uint8_t type;  // tipo de auto
+    };
+
+    std::vector<CarState> cars;
+    uint32_t countdown;  // tiempo restante de la carrera en milisegundos
+};
 
 
 struct RaceResults {
