@@ -40,7 +40,6 @@ private:
     GameHandler& game_handler;
     uint8_t player_id;
 
-    //   Car player_car;
     bool is_running = true;
 
     EventHandler event_handler;

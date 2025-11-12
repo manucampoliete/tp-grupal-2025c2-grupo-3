@@ -7,6 +7,7 @@
 
 #define WORLD_HEIGHT 4672.0f
 
+
 GameHandler::GameHandler(ClientProtocol& protocol, uint8_t player_id):
         protocol(protocol),
         player_id(player_id),

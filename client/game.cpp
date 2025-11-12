@@ -3,8 +3,6 @@
 #include <SDL2pp/SDL.hh>
 #include <SDL2pp/SDL2pp.hh>
 
-#include "car.h"
-
 
 // muestro todo lo que pasa en el juego
 // por ahi mas adelante cuando haya mas cosas convenga separar en mas clases

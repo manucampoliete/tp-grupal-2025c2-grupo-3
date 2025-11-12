@@ -2,8 +2,6 @@
 
 #include <string>
 
-#include "car.h"
-
 UIRenderer::UIRenderer(Renderer& renderer, Font& font, Font& font_small, Texture& map_texture,
                        World& world, uint8_t player_id):
         renderer(renderer),

@@ -19,7 +19,6 @@ class Game;
 class Client;
 
 
-// lo que antes tenia en client ahora lo apso a game handler
 /**
  * GameHandler: coordinar la lógica del juego en el cliente
  * - Maneja el World (estado del juego)
