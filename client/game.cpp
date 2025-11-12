@@ -53,7 +53,7 @@ Game::Game(World& world, GameHandler& game_handler, uint8_t player_id):
 
 
 void Game::run() {
-    const int FRAME_RATE = 30;
+    const int FRAME_RATE = 60;
     const float FRAME_TIME_MS = 1000.0f / FRAME_RATE;
 
     float t1 = SDL_GetTicks();

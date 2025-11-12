@@ -97,7 +97,7 @@ void UIRenderer::render_race_ui(uint32_t race_timer_ms, int current_race, int to
     renderer.SetDrawColor(0, 0, 0, 128);
     renderer.FillRect(Rect(0, 0, window_width, 40));  // 40px fijos, o podria ser h * 0.05
 
-    int total_seconds = race_timer_ms / 1000;
+    int total_seconds = race_timer_ms;
     int minutes = total_seconds / 60;
     int seconds = total_seconds % 60;
 

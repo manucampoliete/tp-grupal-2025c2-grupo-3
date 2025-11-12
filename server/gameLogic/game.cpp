@@ -58,13 +58,15 @@ void Game::updatePlayerCars() {
 }
 
 void Game::broadcast() {
+    std::cerr << "elapsed: " << elapsed.count() << " ms" << std::endl;
+
     std::vector<Snapshot::CarSnapshot> snapshots;
     for (auto& [clientId, player]: players) {
         Snapshot::CarSnapshot snp = player.buildCarSnapshot();
         snapshots.emplace_back(snp);
     }
     responseQueuesMonitor.broadcast(
-            std::make_shared<Snapshot>(0, snapshots));  // dummy timestamp for now
+            std::make_shared<Snapshot>(static_cast<uint32_t>(elapsed.count()), snapshots));  // dummy timestamp for now
 }
 
 void Game::broadcast_start_signal() {
@@ -84,10 +86,11 @@ void Game::run() {
 
     using clock = std::chrono::high_resolution_clock;
     auto lastTime = clock::now();
+    auto startTime = lastTime;
 
     while (shouldKeepRunning()) {
         auto now = clock::now();
-        std::chrono::duration<float> elapsed = now - lastTime;
+        elapsed = now - lastTime;
         float deltaTime = elapsed.count();  // segundos
         lastTime = now;
 
@@ -103,7 +106,13 @@ void Game::run() {
 
         world->Step(deltaTime, velocityIt, positionIt);
 
+        elapsed = std::chrono::duration_cast<std::chrono::duration<float>>(now - startTime);
+
         broadcast();
+
+        /* std::cerr << "Tiempo de carrera: "
+                  << std::chrono::duration_cast<std::chrono::seconds>(now - startTime).count()
+                  << " segundos." << std::endl; */
 
         // Mantener FPS constante
         auto frameTime =
