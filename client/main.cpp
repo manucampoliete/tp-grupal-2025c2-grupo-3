@@ -1,18 +1,15 @@
 #include <exception>
 #include <iostream>
 #include <string>
-
 #include <syslog.h>
 
-#include "lobby/lobby.h"
-
 #include "client.h"
-#include "game.h"
 
 #define ARGS_COUNT 3
 #define BINARY argv[0]
 #define HOSTNAME argv[1]
 #define SERVNAME argv[2]
+
 
 /**
  * Main function: creates and runs the client.

@@ -3,14 +3,13 @@
 #include <SDL2pp/SDL.hh>
 #include <SDL2pp/SDL2pp.hh>
 
-#include "car.h"
 
 // muestro todo lo que pasa en el juego
 // por ahi mas adelante cuando haya mas cosas convenga separar en mas clases
 
 
 Game::Game(World& world, GameHandler& game_handler, uint8_t player_id):
-        sdl(SDL_INIT_VIDEO),
+        sdl(SDL_INIT_VIDEO | SDL_INIT_AUDIO),
         ttf(),
 
         // ventana principal con título, pos automática y tamaño 800x600
@@ -37,17 +36,39 @@ Game::Game(World& world, GameHandler& game_handler, uint8_t player_id):
         world(world),
         game_handler(game_handler),
         player_id(player_id),
-
-        // creo el auto del jugador
-        //   player_car(renderer, car_sprites, player_id),
-        event_handler(game_handler, /* player_car,*/ *this),
+        event_handler(game_handler, *this),
 
         // Inicializo los renderers
-        world_renderer(renderer, map_texture, car_sprites, world, /* player_car,*/ player_id),
-        interface_renderer(renderer, font, font_small, map_texture, world, player_id) {
+        world_renderer(renderer, map_texture, car_sprites, world, player_id),
+        interface_renderer(renderer, font, font_small, map_texture, world, player_id),
+        sound_manager() {
 
     SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "0");
+    SDL_SetHint(SDL_HINT_AUDIO_RESAMPLING_MODE, "1");
     SDL_SetWindowMinimumSize(window.Get(), 800, 600);
+
+    try {
+        sound_manager.load_music("client/assets/sounds/music.mp3");
+        
+        sound_manager.load_sound("collision", "client/assets/sounds/crash.wav");
+        sound_manager.load_sound("explosion", "client/assets/sounds/explosion.wav");
+        sound_manager.load_sound("checkpoint", "client/assets/sounds/checkpoint.wav");
+        sound_manager.load_sound("countdown", "client/assets/sounds/beep.wav");
+        sound_manager.load_sound("race_end", "client/assets/sounds/finish.wav");
+        sound_manager.load_sound("brake", "client/assets/sounds/brake.wav");
+        sound_manager.load_sound("engine", "client/assets/sounds/engine.wav");
+        
+        std::cout << "[GAME] Todos los sonidos cargados correctamente" << std::endl;
+        
+        // iniciar música
+        // esto por ahi no tendria que ir aca cuando este el countdown?
+        sound_manager.play_music();
+        
+    } catch (const std::exception& e) {
+        std::cerr << "[GAME] Error cargando sonidos: " << e.what() << std::endl;
+        std::cerr << "[GAME] El juego continuará sin audio" << std::endl;
+    }
+
     update_ui_layout();
 }
 
@@ -115,18 +136,34 @@ void Game::process_input() {
             int x = event.button.x;
             int y = event.button.y;
 
-            if (interface_renderer.get_speed_button_rect().Contains(x, y))
-                speed_modified = !speed_modified;
+            if (!saved) {
+                // BOTÓN DE VELOCIDAD
+                if (interface_renderer.get_speed_button_rect().Contains(x, y)) {
+                    speed_modified = !speed_modified;
+                    sound_manager.play_sound("button_click");
+                    std::cout << "[GAME] Velocidad " << (speed_modified ? "activada" : "desactivada") << std::endl;
+                }
 
-            if (interface_renderer.get_health_button_rect().Contains(x, y))
-                health_modified = !health_modified;
-
-            if (interface_renderer.get_save_button_rect().Contains(x, y)) {
-                saved = !saved;
+                // BOTÓN DE SALUD
+                if (interface_renderer.get_health_button_rect().Contains(x, y)) {
+                    health_modified = !health_modified;
+                    sound_manager.play_sound("button_click");
+                    std::cout << "[GAME] Salud " << (health_modified ? "activada" : "desactivada") << std::endl;
+                }
             }
+
+            // BOTÓN GUARDAR
+            if (interface_renderer.get_save_button_rect().Contains(x, y) && !saved) {
+                saved = true; // no se puede deshacer como los otros
+                sound_manager.play_sound("confirm");
+                game_handler.send_modifications(speed_modified, health_modified);
+                std::cout << "[GAME] ✓ Modificaciones enviadas!" << std::endl;
+            }
+            
         }
     }
 }
+
 
 
 game_state Game::get_current_state() const { return current_state; }
@@ -297,7 +334,7 @@ void Game::render() {
             break;
         case game_state::MODIFYING_CAR:
             interface_renderer.render_modification_popup(
-                    speed_modified, health_modified, mod_timer_ms,
+                    speed_modified, health_modified, saved, mod_timer_ms,
                     interface_renderer.get_speed_button_rect());
             break;
         case game_state::GAME_END:

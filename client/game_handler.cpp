@@ -7,6 +7,7 @@
 
 #define WORLD_HEIGHT 4672.0f
 
+
 GameHandler::GameHandler(ClientProtocol& protocol, uint8_t player_id):
         protocol(protocol),
         player_id(player_id),
@@ -81,45 +82,89 @@ void GameHandler::update_world(const Snapshot& snapshot) {
 }
 
 void GameHandler::on_countdown(uint8_t number) {
-    if (game)
+    if (game) {
         game->show_countdown(number);
+        
+        // sonido de countdown
+        if (number <= 3)
+            game->get_sound_manager().play_sound("countdown");
+        // En GO! desp veo si usar game_start o directamente la musica
+    }
 }
 
 void GameHandler::on_race_start() {
-    if (game)
+    if (game) {
         game->start_race();
+        // sonido de inicio (diferente al countdown)
+        // game->get_sound_manager().play_sound("race_start");
+    }
 }
 
 void GameHandler::on_checkpoint_crossed(uint8_t checkpoint_id) {
-    // agregar lo visual y el sonido!!
     std::cout << "[GAME_HANDLER] Checkpoint " << (int)checkpoint_id << " crossed!" << std::endl;
+
+    // agregar lo visual
+    if (game) {
+        game->get_sound_manager().play_sound("checkpoint");
+    }
 }
 
-void GameHandler::on_collision(const CollisionData& collision) {
-    // implementar cuando Game tenga el método
-    // if (game)
-    //     game->show_collision_effect(collision);
+void GameHandler::on_collision(const CollisionData& collision) {   
     std::cout << "[GAME_HANDLER] Colisión detected, intensity: " << collision.intensity
               << std::endl;
+    
+    if (game) {
+    
+    //     game->show_collision_effect(collision);
+
+        // VOL SEGÚN INTENSIDAD
+        int volume = static_cast<int>(collision.intensity * MIX_MAX_VOLUME);
+        game->get_sound_manager().play_sound("collision", volume);
+        
+        // VOL SEGÚN DISTANCIA
+        // calcular distancia del jugador a la colisión
+        auto cars = world.getCars();
+        if (cars.count(player_id)) {
+            const auto& my_car = cars.at(player_id);
+            
+            float dx = my_car.x - (collision.x / 1000.0f);
+            float dy = my_car.y - (collision.y / 1000.0f);
+            float distance = std::sqrt(dx * dx + dy * dy);
+            
+            // reproducir con volumen modulado por distancia
+            game->get_sound_manager().play_sound_with_distance("collision", distance, 500.0f);
+        }
+    }
 }
 
 void GameHandler::on_player_died(uint16_t dead_player_id) {
+    std::cout << "[GAME_HANDLER] Player " << dead_player_id << " has died." << std::endl;
+
     if (game) {
+        game->get_sound_manager().play_sound("explosion");
+        
         if (dead_player_id == player_id) {
-            // implementar cuando Game tenga el método
-            // game->show_eliminated_screen();
             std::cout << "[GAME_HANDLER] You died!" << std::endl;
+            // game->show_eliminated_screen();
+            game->get_sound_manager().pause_music();
         } else {
             // activar animación de explosión para ese jugador
             // game->trigger_explosion(dead_player_id);
-            std::cout << "[GAME_HANDLER] Player " << dead_player_id << " has died." << std::endl;
+            
         }
     }
 }
 
 void GameHandler::on_race_end(const RaceResults& results) {
-    if (game)
+    if (game) {
         game->show_stats(results);
+        
+        // sonido de finalización
+        game->get_sound_manager().play_sound("race_end");
+        
+        // pausar musica durante las estadísticas
+        game->get_sound_manager().pause_music();
+    }
 }
 
 void GameHandler::on_modification_phase(const CarProperties& props) {
@@ -127,11 +172,15 @@ void GameHandler::on_modification_phase(const CarProperties& props) {
         game->show_modifications(props);
 }
 
-void GameHandler::on_game_end(const FinalResults& results) {
-    // implementar cuando Game tenga el método
-    // if (game)
-    //     game->show_game_end(results);
+void GameHandler::on_game_end(const FinalResults& results) {   
     std::cout << "[GAME_HANDLER] Game ended! Winner: " << results.winner_name << std::endl;
+
+    if (game) {
+        game->get_sound_manager().stop_music();
+        // música de victoria/derrota según el resultado??
+
+        // game->show_game_end(results);
+    }
 }
 
 
@@ -146,6 +195,20 @@ void GameHandler::send_modifications(bool speed, bool health) {
     std::cout << "[GAME_HANDLER] Modifications: speed=" << speed << ", health=" << health
               << std::endl;
 }
+
+
+void GameHandler::send_cheat_inmortality() {
+    protocol.send_inmortality_request();
+}
+
+void GameHandler::send_cheat_insta_win() {
+    protocol.send_insta_win_request();
+}
+
+void GameHandler::send_cheat_insta_lose() {
+    protocol.send_insta_lose_request();
+}
+
 
 GameHandler::~GameHandler() {
     if (running)

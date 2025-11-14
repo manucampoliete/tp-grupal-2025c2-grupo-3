@@ -1,5 +1,6 @@
 #include "world_renderer.h"
 
+
 WorldRenderer::WorldRenderer(Renderer& renderer, Texture& map_texture, Texture& car_sprites,
                              World& world, /* Car& player_car,*/ uint8_t player_id):
         renderer(renderer),

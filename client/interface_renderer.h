@@ -52,8 +52,8 @@ public:
     void render_stats_popup(const RaceResults& current_results, uint32_t stats_timer_ms,
                             const Rect& stats_popup_rect);
 
-    void render_modification_popup(bool speed_modified, bool health_modified, uint32_t mod_timer_ms,
-                                   const Rect& mod_popup_rect);
+    void render_modification_popup(bool speed_modified, bool health_modified, bool saved,
+                                    uint32_t mod_timer_ms, const Rect& mod_popup_rect);
 
     // fondo semi-transparente
     // mapa completo, achicado (NullOpt es "copiar toda la textura")

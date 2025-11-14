@@ -4,14 +4,16 @@
 #include <cstdint>
 #include <map>
 
+#include <SDL.h>
 #include <SDL2pp/Rect.hh>
 #include <SDL2pp/Renderer.hh>
 #include <SDL2pp/Texture.hh>
 
-#include "car.h"
+#include "../common/messages/game_data.h"
 #include "world.h"
 
 using namespace SDL2pp;
+
 
 class WorldRenderer {
 private:
@@ -19,7 +21,6 @@ private:
     Texture& map_texture;
     Texture& car_sprites;
     World& world;
-    //   Car& player_car;
     uint8_t player_id;
 
     Rect camera;
@@ -28,7 +29,6 @@ private:
 
 public:
     WorldRenderer(Renderer& renderer, Texture& map_texture, Texture& car_sprites, World& world,
-                  /*Car& player_car,*/
                   uint8_t player_id);
 
     // renderizar el mundo (mapa + autos) Con la camara y escalado
