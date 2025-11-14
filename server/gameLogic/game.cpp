@@ -22,7 +22,11 @@ Game::Game():
         positionIt(3),
         clientCommandsQueue(),
         responseQueuesMonitor(),
-        players() {}
+        players(),
+        countdownDuration(3),
+        raceDuration(10),
+        statsDuration(5),
+        upgradesDuration(10) {}
 
 b2Body* Game::createNewCarBody() {
     b2BodyDef body_def;
@@ -60,13 +64,19 @@ void Game::updatePlayerCars() {
 void Game::broadcast() {
     std::cerr << "elapsed: " << elapsed.count() << " ms" << std::endl;
 
+    auto raceSeconds = std::chrono::duration_cast<std::chrono::seconds>(raceDuration);
+    auto elapsedSeconds = std::chrono::duration_cast<std::chrono::seconds>(elapsed);
+    int64_t remaining = raceSeconds.count() - elapsedSeconds.count();
+
+    std::cerr << "remaining: " << remaining << " ms" << std::endl;
+
     std::vector<Snapshot::CarSnapshot> snapshots;
     for (auto& [clientId, player]: players) {
         Snapshot::CarSnapshot snp = player.buildCarSnapshot();
         snapshots.emplace_back(snp);
     }
     responseQueuesMonitor.broadcast(
-            std::make_shared<Snapshot>(static_cast<uint32_t>(elapsed.count()), snapshots));  // dummy timestamp for now
+            std::make_shared<Snapshot>(static_cast<uint32_t>(remaining), snapshots));
 }
 
 void Game::broadcast_start_signal() {

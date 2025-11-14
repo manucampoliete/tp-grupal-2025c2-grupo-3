@@ -28,6 +28,12 @@ private:
     Queue<std::unique_ptr<Command>> clientCommandsQueue;
     ResponseQueuesMonitor responseQueuesMonitor;
     std::map<ClientID, Player> players;
+
+    //tiempos
+    std::chrono::seconds countdownDuration;
+    std::chrono::minutes raceDuration;
+    std::chrono::seconds statsDuration;
+    std::chrono::seconds upgradesDuration;
     std::chrono::duration<float> elapsed;
 
     /**
