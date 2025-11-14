@@ -61,26 +61,156 @@ void Game::updatePlayerCars() {
     }
 }
 
+// TODO:
+// El broadcast tiene que mandar que estado de juego es (countdown, racing, etc)
+// El cliente tiene que saber interpretar estos estados
 void Game::broadcast() {
-    std::cerr << "elapsed: " << elapsed.count() << " ms" << std::endl;
-
-    auto raceSeconds = std::chrono::duration_cast<std::chrono::seconds>(raceDuration);
-    auto elapsedSeconds = std::chrono::duration_cast<std::chrono::seconds>(elapsed);
-    int64_t remaining = raceSeconds.count() - elapsedSeconds.count();
-
-    std::cerr << "remaining: " << remaining << " ms" << std::endl;
+    auto remaining = getRemainingGameStateTime();
 
     std::vector<Snapshot::CarSnapshot> snapshots;
     for (auto& [clientId, player]: players) {
         Snapshot::CarSnapshot snp = player.buildCarSnapshot();
         snapshots.emplace_back(snp);
     }
+
     responseQueuesMonitor.broadcast(
-            std::make_shared<Snapshot>(static_cast<uint32_t>(remaining), snapshots));
+            std::make_shared<Snapshot>(static_cast<uint32_t>(remaining.count()), snapshots));
 }
 
 void Game::broadcast_start_signal() {
     responseQueuesMonitor.broadcast(std::make_shared<Snapshot>());  // dummy timestamp for now
+}
+
+std::chrono::seconds Game::getRemainingGameStateTime() {
+    auto now = std::chrono::high_resolution_clock::now();
+    auto gameStateElapsed = now - gameStateStartTime;
+
+    switch (current_state) {
+        case game_state::COUNTDOWN:
+            return std::chrono::duration_cast<std::chrono::seconds>(
+                    countdownDuration - gameStateElapsed);
+        case game_state::RACING:
+            return std::chrono::duration_cast<std::chrono::seconds>(
+                    raceDuration - gameStateElapsed);
+        case game_state::SHOWING_STATS:
+            return std::chrono::duration_cast<std::chrono::seconds>(
+                    statsDuration - gameStateElapsed);
+        case game_state::MODIFYING_CAR:
+            return std::chrono::duration_cast<std::chrono::seconds>(
+                    upgradesDuration - gameStateElapsed);
+        case game_state::ELIMINATED:
+        case game_state::GAME_END:
+            return std::chrono::seconds(0);
+    }
+    return std::chrono::seconds(0);  // para evitar warning
+}
+
+void Game::setGameState(game_state new_state) {
+    current_state = new_state;
+    gameStateStartTime = std::chrono::high_resolution_clock::now();
+
+    //mandar un snapshot de que cambio el estado?
+    //o el cliente simplemente recibe el primer snapshot del nuevo estado?
+
+    /* EJEMPLO: 
+    Snapshot snp;  
+    snp.phase = newPhase;  
+    snp.remaining_ms = getPhaseRemainingMs();
+
+    responseQueuesMonitor.broadcast(
+        std::make_shared<Snapshot>(snp)
+    ); */
+}
+
+void Game::updateGameState() {
+    auto now = std::chrono::high_resolution_clock::now();
+    auto gameStateElapsed = now - gameStateStartTime;
+
+    switch (current_state) {
+        case game_state::COUNTDOWN:
+            if (gameStateElapsed >= countdownDuration) {
+                setGameState(game_state::RACING);
+            }
+            break;
+        case game_state::RACING:
+            if (gameStateElapsed >= raceDuration) {
+                setGameState(game_state::SHOWING_STATS);
+            }
+            break;
+        case game_state::SHOWING_STATS:
+            if (gameStateElapsed >= statsDuration) {
+                setGameState(game_state::MODIFYING_CAR);
+            }
+            break;
+        case game_state::MODIFYING_CAR:
+            if (gameStateElapsed >= upgradesDuration) {
+                setGameState(game_state::COUNTDOWN);
+            }
+            break;
+        case game_state::ELIMINATED: 
+        // eliminated le sirve solo al cliente?
+        // si un usuario muere el server le va a estar mandando snapshots de carrera
+        // pero tambien manda la vida del auto
+        // si el cliente checkea que su vida es 0, pasa a eliminated en vez de racing
+        case game_state::GAME_END:
+            // ?
+            break;
+    }
+}
+
+void Game::handleGameState(float deltaTime) {
+    switch (current_state) {
+        case game_state::COUNTDOWN:
+            handleCountdownState();
+            break;
+        case game_state::RACING:
+            handleRacingState(deltaTime);
+            break;
+        case game_state::SHOWING_STATS:
+            handleShowingStatsState();
+            break;
+        case game_state::MODIFYING_CAR:
+            handleModifyingCarState();
+            break;
+        case game_state::ELIMINATED:
+            // handleEliminatedState();
+            break;
+        case game_state::GAME_END:
+            handleGameEndState();
+            break;
+    }
+}
+
+void Game::handleCountdownState() {
+    // el countdown manda por protocolo 1 snapshot por segundo con el numero del countdown?
+    // el gameloop ya manda un snapshot por frame. Creo que es mejor mantenerlo consistente y mandar el segundo actual del contdown por cada frame.
+}
+
+void Game::handleRacingState(float deltaTime) {
+    // command pattern
+    std::unique_ptr<Command> cmd;
+    while (clientCommandsQueue.tryPop(cmd)) {
+        cmd->execute(*this);
+    }
+
+    updatePlayerCars();
+
+    world->Step(deltaTime, velocityIt, positionIt);
+}
+
+void Game::handleShowingStatsState() {
+    // el handler de showing stats es el que tiene que checkear si
+    // ya no quedan más carreras por correr 
+    // (para mostrar un ganador y no mostrar la pantalla de mejoras)
+}
+
+void Game::handleModifyingCarState() {
+    // mandar al cliente las modificaciones disponibles/su magnitud?
+    // recibir las modificaciones de los clientes (patron comando de nuevo?)
+    /* while (clientCommandsQueue.tryPop(cmd)) {
+        cmd->execute(*this);
+    } */
+    // hay que hacer un nuevo tipo de comando (ModifyCarCommand?) que modifique las propiedades del auto del jugador
 }
 
 /**
@@ -88,45 +218,28 @@ void Game::broadcast_start_signal() {
  */
 void Game::run() {
     broadcast_start_signal();
+    setGameState(game_state::COUNTDOWN);
 
-    auto collisionBodies = CollisionLoader::LoadCollisions("server/gameLogic/collisions.yaml", world, 1.0f, WORLD_HEIGHT);
-    std::cerr << "Total de cuerpos de colisión: " << collisionBodies.size() << std::endl;
-
-    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+    /* auto collisionBodies =  */CollisionLoader::LoadCollisions("server/gameLogic/collisions.yaml", world, 1.0f, WORLD_HEIGHT);
 
     using clock = std::chrono::high_resolution_clock;
     auto lastTime = clock::now();
-    auto startTime = lastTime;
 
     while (shouldKeepRunning()) {
+        updateGameState();
+
         auto now = clock::now();
-        elapsed = now - lastTime;
+        auto elapsed = now - lastTime;
         float deltaTime = elapsed.count();  // segundos
         lastTime = now;
-
-        /**
-         * Command pattern!
-         */
-        std::unique_ptr<Command> cmd;
-        while (clientCommandsQueue.tryPop(cmd)) {
-            cmd->execute(*this);
-        }
-
-        updatePlayerCars();
-
-        world->Step(deltaTime, velocityIt, positionIt);
-
-        elapsed = std::chrono::duration_cast<std::chrono::duration<float>>(now - startTime);
-
+        
+        handleGameState(deltaTime);
+        
         broadcast();
-
-        /* std::cerr << "Tiempo de carrera: "
-                  << std::chrono::duration_cast<std::chrono::seconds>(now - startTime).count()
-                  << " segundos." << std::endl; */
 
         // Mantener FPS constante
         auto frameTime =
-                std::chrono::duration_cast<std::chrono::milliseconds>(clock::now() - now).count();
+                std::chrono::duration_cast<std::chrono::milliseconds>(clock::now() - lastTime).count();
         if (frameTime < FRAME_DURATION_MS) {
             std::this_thread::sleep_for(std::chrono::milliseconds(FRAME_DURATION_MS - frameTime));
         }

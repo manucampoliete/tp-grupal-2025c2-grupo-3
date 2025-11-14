@@ -17,12 +17,12 @@
 #include "world_renderer.h"
 #include "sound_manager.h"
 
+#include "../common/utils/gameState.h"
+
 using namespace SDL2pp;
 
 
 class Client;
-
-enum class game_state { COUNTDOWN, RACING, ELIMINATED, SHOWING_STATS, MODIFYING_CAR, GAME_END };
 
 class Game {
 private:

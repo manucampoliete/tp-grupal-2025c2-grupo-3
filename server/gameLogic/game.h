@@ -14,9 +14,10 @@
 #include "../../common/types/types.h"
 #include "../commands/command.h"
 #include "../synchronized/responseQueuesMonitor.h"
-#include "cars/car.h"
-
+#include "car.h"
 #include "player.h"
+
+#include "../../common/utils/gameState.h"
 
 class Command;
 
@@ -34,7 +35,10 @@ private:
     std::chrono::minutes raceDuration;
     std::chrono::seconds statsDuration;
     std::chrono::seconds upgradesDuration;
-    std::chrono::duration<float> elapsed;
+    // std::chrono::duration<float> elapsed;
+
+    game_state current_state;
+    std::chrono::high_resolution_clock::time_point gameStateStartTime;
 
     /**
      * Creates and returns a new b2Body for a car.
@@ -55,6 +59,21 @@ private:
      * Broadcasts a start signal to all players.
      */
     void broadcast_start_signal();
+
+    void setGameState(game_state new_state);
+
+    void updateGameState();
+
+    std::chrono::seconds getRemainingGameStateTime();
+
+    void handleGameState(float deltaTime);
+
+    void handleCountdownState();
+    void handleRacingState(float deltaTime);
+    void handleShowingStatsState();
+    void handleModifyingCarState();
+    // void handleEliminatedState();
+    void handleGameEndState();
 
 public:
     /**

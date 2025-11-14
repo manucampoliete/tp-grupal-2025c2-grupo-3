@@ -3,10 +3,11 @@ target_sources(taller_server
     # .cpp files
     game.cpp
     player.cpp
+    car.cpp
     PUBLIC
     # .h files
     game.h
     player.h
+    car.h
+    car_factory.h
     )
-
-add_subdirectory(cars)
