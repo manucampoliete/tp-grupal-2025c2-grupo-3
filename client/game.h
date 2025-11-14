@@ -34,6 +34,7 @@ private:
     SDL2pp::Renderer renderer;
     SDL2pp::Font font;
     SDL2pp::Font font_small;
+    SDL2pp::Font font_big;
 
     SDL2pp::Texture map_texture;
     SDL2pp::Texture car_sprites;

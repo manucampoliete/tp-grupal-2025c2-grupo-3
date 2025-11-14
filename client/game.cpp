@@ -21,6 +21,7 @@ Game::Game(World& world, GameLoop& game_loop, uint8_t player_id):
         renderer(window, -1, SDL_RENDERER_ACCELERATED),
         font("client/assets/fonts/VCR_OSD_MONO.ttf", 24),  // font
         font_small("client/assets/fonts/VCR_OSD_MONO.ttf", 18),
+        font_big("client/assets/fonts/VCR_OSD_MONO.ttf", 150),
 
         // cargo la textura del mapa desde un archivo
         // por ahora hardcodeo una cualquiera
@@ -41,7 +42,7 @@ Game::Game(World& world, GameLoop& game_loop, uint8_t player_id):
 
         // Inicializo los renderers
         world_renderer(renderer, map_texture, car_sprites, world, player_id),
-        interface_renderer(renderer, font, font_small, map_texture, world, player_id),
+        interface_renderer(renderer, font, font_small, font_big, map_texture, world, player_id),
         sound_manager() {
 
     SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "0");

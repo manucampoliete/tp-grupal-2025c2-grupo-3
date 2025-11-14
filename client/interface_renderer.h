@@ -20,6 +20,7 @@ private:
     Renderer& renderer;
     Font& font;
     Font& font_small;
+    Font& font_big;
     Texture& map_texture;
     World& world;
     uint8_t player_id;
@@ -40,7 +41,7 @@ private:
     Rect minimap_rect;
 
 public:
-    UIRenderer(Renderer& renderer, Font& font, Font& font_small, Texture& map_texture, World& world,
+    UIRenderer(Renderer& renderer, Font& font, Font& font_small, Font& font_big, Texture& map_texture, World& world,
                uint8_t player_id);
 
     // renderizar la ui sin la cámara y sin escalado
@@ -54,6 +55,8 @@ public:
 
     void render_modification_popup(bool speed_modified, bool health_modified, bool saved,
                                     uint32_t mod_timer_ms, const Rect& mod_popup_rect);
+    
+    void render_cheat_notif(CheatType active_cheat_notification);
 
     // fondo semi-transparente
     // mapa completo, achicado (NullOpt es "copiar toda la textura")
