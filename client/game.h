@@ -20,9 +20,11 @@
 using namespace SDL2pp;
 
 
-class Client;
+class GameLoop;
+
 
 enum class game_state { COUNTDOWN, RACING, ELIMINATED, SHOWING_STATS, MODIFYING_CAR, GAME_END };
+
 
 class Game {
 private:
@@ -37,17 +39,13 @@ private:
     SDL2pp::Texture car_sprites;
 
     World& world;
-    GameHandler& game_handler;
+    GameLoop& game_loop;
     uint8_t player_id;
-
-    bool is_running = true;
 
     EventHandler event_handler;
 
-    // Renderers
     WorldRenderer world_renderer;
     UIRenderer interface_renderer;
-
     SoundManager sound_manager;
 
     game_state current_state =
@@ -57,31 +55,41 @@ private:
     uint8_t countdown_number = 3;  // 3, 2, 1, 0=GO
     float countdown_timer = 0.0f;  // timer interno para cambiar numeros
 
-    // esto lo envia el servidor
-    uint32_t race_timer_ms = 20000;  // 20 seg
-    uint32_t stats_timer_ms = 10000;
-    uint32_t mod_timer_ms = 10000;
+    uint32_t race_timer_ms;
+    uint32_t stats_timer_ms;
+    uint32_t mod_timer_ms;
 
     RaceResults current_results;
     CarProperties current_properties;
 
-    // número de carrera actual y total tambien hardocdeado, esa info la envia el sender
+    // número de carrera actual y total hardocdeado, esa info la envia el server
     int current_race = 1;
     int total_races = 6;
 
-    // hay que ver despues como armamos lo de la modificacions de propiedades
-    // flags para simular modificaciones
     bool speed_modified = false;
     bool health_modified = false;
     bool saved = false;
+
+    // efectos visuales
+    bool screen_flash_active = false;
+    float flash_timer = 0.0f;
+    
+    CheatType active_cheat_notification = CheatType::NONE;
+    float cheat_notification_timer = 0.0f;
 
     void process_input();
     void update(float dt);
     void render();
 
 public:
-    Game(World& world, GameHandler& game_handler, uint8_t player_id);
-    void run();
+    Game(World& world, GameLoop& game_loop, uint8_t player_id);
+
+    /*
+     * procesa un frame completo (input, update, render)
+     * devuelve false si debe cerrar el juego
+     */
+    bool process_frame(float dt);
+
     void start_race();
 
     // metodos llamados por EventHandler
@@ -96,6 +104,10 @@ public:
     void show_modifications(const CarProperties& props);
 
     SoundManager& get_sound_manager() { return sound_manager; }
+    WorldRenderer& get_world_renderer() { return world_renderer; }
+
+    void trigger_screen_flash();
+    void show_cheat_notification(CheatType cheat_type);
 };
 
 #endif  // GAME_H

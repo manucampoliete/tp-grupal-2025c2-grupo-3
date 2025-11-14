@@ -14,6 +14,7 @@
 #include "../../common/utils/activeDirections.h"
 #include "../../common/utils/carinfo.h"
 
+
 class ClientProtocol: public SendProtocol, public RecvProtocol {
 public:
     explicit ClientProtocol(Socket& socket);
@@ -39,7 +40,6 @@ public:
     /**
      * GAME
      */
-    // Lee el tipo de mensaje del servidor y devuelve el código
     uint8_t recv_message_type();
 
     // Envía un input de movimiento al servidor

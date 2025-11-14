@@ -1,4 +1,5 @@
 #include "game.h"
+#include "game_loop.h"
 
 #include <SDL2pp/SDL.hh>
 #include <SDL2pp/SDL2pp.hh>
@@ -8,7 +9,7 @@
 // por ahi mas adelante cuando haya mas cosas convenga separar en mas clases
 
 
-Game::Game(World& world, GameHandler& game_handler, uint8_t player_id):
+Game::Game(World& world, GameLoop& game_loop, uint8_t player_id):
         sdl(SDL_INIT_VIDEO | SDL_INIT_AUDIO),
         ttf(),
 
@@ -34,9 +35,9 @@ Game::Game(World& world, GameHandler& game_handler, uint8_t player_id):
                         .SetColorKey(true, 0xa3a30d)),
 
         world(world),
-        game_handler(game_handler),
+        game_loop(game_loop),
         player_id(player_id),
-        event_handler(game_handler, *this),
+        event_handler(game_loop, *this),
 
         // Inicializo los renderers
         world_renderer(renderer, map_texture, car_sprites, world, player_id),
@@ -49,7 +50,6 @@ Game::Game(World& world, GameHandler& game_handler, uint8_t player_id):
 
     try {
         sound_manager.load_music("client/assets/sounds/music.mp3");
-        
         sound_manager.load_sound("collision", "client/assets/sounds/crash.wav");
         sound_manager.load_sound("explosion", "client/assets/sounds/explosion.wav");
         sound_manager.load_sound("checkpoint", "client/assets/sounds/checkpoint.wav");
@@ -73,42 +73,21 @@ Game::Game(World& world, GameHandler& game_handler, uint8_t player_id):
 }
 
 
-void Game::run() {
-    const int FRAME_RATE = 60;
-    const float FRAME_TIME_MS = 1000.0f / FRAME_RATE;
-
-    float t1 = SDL_GetTicks();
-    int it = 0;
-
-    while (is_running) {
-        // 1. procesar input y actualizar estado
-        if (current_state == game_state::RACING) {
-            if (!event_handler.handle_events()) {
-                is_running = false;
-            }
-        } else {
-            process_input();
-        }
-        update(FRAME_TIME_MS);
-        render();
-
-        // 2. sincronizar con el rate constante
-        float t2 = SDL_GetTicks();
-        float rest = FRAME_TIME_MS - (t2 - t1);
-
-        if (rest < 0) {
-            float behind = -rest;
-            rest = FRAME_TIME_MS - fmod(behind, FRAME_TIME_MS);
-            float lost = behind + rest;
-            t1 += lost;
-            it += static_cast<int>(lost / FRAME_TIME_MS);
-        }
-
-        SDL_Delay(static_cast<Uint32>(rest));
-        t1 += FRAME_TIME_MS;
-        it++;
+bool Game::process_frame(float dt) {
+    // procesar input
+    if (current_state == game_state::RACING) {
+        if (!event_handler.handle_events())
+            return false;  // se cerró la ventana
+    } else {
+        process_input();
     }
+    
+    update(dt);
+    render();
+    
+    return true;
 }
+
 
 // para recalcular toda la UI
 void Game::update_ui_layout() {
@@ -124,10 +103,8 @@ void Game::update_ui_layout() {
 void Game::process_input() {
     SDL_Event event;
     while (SDL_PollEvent(&event)) {
-        if (event.type == SDL_QUIT) {
-            is_running = false;
+        if (event.type == SDL_QUIT) 
             return;
-        }
 
         if (current_state == game_state::COUNTDOWN)
             continue;
@@ -156,14 +133,13 @@ void Game::process_input() {
             if (interface_renderer.get_save_button_rect().Contains(x, y) && !saved) {
                 saved = true; // no se puede deshacer como los otros
                 sound_manager.play_sound("confirm");
-                game_handler.send_modifications(speed_modified, health_modified);
+             //   game_loop.send_modifications(speed_modified, health_modified);
                 std::cout << "[GAME] ✓ Modificaciones enviadas!" << std::endl;
             }
             
         }
     }
 }
-
 
 
 game_state Game::get_current_state() const { return current_state; }
@@ -177,7 +153,7 @@ void Game::handle_modification_click(int x, int y) {
 
     if (interface_renderer.get_save_button_rect().Contains(x, y)) {
         saved = !saved;
-        game_handler.send_modifications(speed_modified, health_modified);
+      //  game_loop.send_modifications(speed_modified, health_modified);
     }
 }
 
@@ -210,72 +186,11 @@ void Game::update(float dt) {
                   << std::endl;
     }
 
-    /*
-    // HARDCODEADO: manejar transiciones para testear lo visual
-    if (current_state == game_state::COUNTDOWN) {
-        countdown_timer += dt;
-
-        if (countdown_timer >= 1000.0f) { // cada 1 seg
-            countdown_timer = 0.0f;
-
-            if (countdown_number > 0) {
-                countdown_number--;
-            } else {
-                // despues del GO empezar carrera
-                current_state = game_state::RACING;
-                race_timer_ms = 20000; // resetear a 20 seg
-            }
-        }
-    } else if (current_state == game_state::RACING) {
-        if (race_timer_ms > dt) {
-            race_timer_ms -= static_cast<uint32_t>(dt);
-        } else {
-            // cuando se acaba el tiempo, mostrar stats
-            race_timer_ms = 0;
-
-            // HARDCODEADO: resultados de prueba
-            RaceResults fake_results;
-            fake_results.countdown_ms = 10000; // 10 seg
-
-            RaceResults::PlayerResult p1;
-            p1.player_name = "Player1";
-            p1.race_time_ms = 58000;
-            p1.total_time_ms = 180000;
-            fake_results.players.push_back(p1);
-
-            RaceResults::PlayerResult p2;
-            p2.player_name = "Player2";
-            p2.race_time_ms = 60000;
-            p2.total_time_ms = 185000;
-            fake_results.players.push_back(p2);
-
-            show_stats(fake_results);
-        }
-    } else if (current_state == game_state::SHOWING_STATS) {
-        if (stats_timer_ms > dt) {
-            stats_timer_ms -= static_cast<uint32_t>(dt);
-        } else {
-            // pasar a modificaciones
-            stats_timer_ms = 0;
-
-            // HARDCODEADO: propiedades de prueba
-            CarProperties fake_props;
-            fake_props.countdown_ms = 10000; // 10 seg
-            show_modifications(fake_props);
-        }
-    } else if (current_state == game_state::MODIFYING_CAR) {
-        if (mod_timer_ms > dt) {
-            mod_timer_ms -= static_cast<uint32_t>(dt);
-        } else {
-            // volver a countdown para siguiente carrera
-            mod_timer_ms = 0;
-            countdown_number = 3;
-            countdown_timer = 0.0f;
-            current_state = game_state::COUNTDOWN;
-            current_race++;
-        }
+    if (active_cheat_notification != CheatType::NONE) {
+        cheat_notification_timer -= dt;
+        if (cheat_notification_timer <= 0)
+            active_cheat_notification = CheatType::NONE;
     }
-    */
 }
 
 
@@ -308,6 +223,11 @@ void Game::show_modifications(const CarProperties& props) {
     speed_modified = false;
     health_modified = false;
     saved = false;
+}
+
+void Game::show_cheat_notification(CheatType cheat_type) {
+    active_cheat_notification = cheat_type;
+    cheat_notification_timer = 3000.0f;
 }
 
 
@@ -343,6 +263,9 @@ void Game::render() {
 
     if (current_state == game_state::RACING)
         interface_renderer.render_minimap();
+    
+    if (active_cheat_notification != CheatType::NONE)
+        interface_renderer.render_cheat_notif(active_cheat_notification);
 
     renderer.Present();
 }

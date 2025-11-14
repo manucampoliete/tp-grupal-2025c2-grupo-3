@@ -1,15 +1,13 @@
 #include "event_handler.h"
 
 #include <iostream>
-
 #include <SDL2pp/SDL.hh>
 
-#include "client.h"
-#include "event_handler.h"
 #include "game.h"
+#include "game_loop.h"
 
-EventHandler::EventHandler(GameHandler& game_handler, Game& game):
-        game_handler(game_handler), game(game) {}
+EventHandler::EventHandler(GameLoop& game_loop, Game& game):
+        game_loop(game_loop), game(game) {}
 
 
 bool EventHandler::handle_events() {
@@ -41,7 +39,7 @@ bool EventHandler::handle_events() {
                 case SDL_SCANCODE_L:
                     if (key_state[SDL_SCANCODE_I]) {
                         std::cout << "[CHEAT] Inmortalidad (I+L) activada!" << std::endl;
-                        game_handler.send_cheat_inmortality();
+                        game_loop.send_cheat_inmortality();
                     }
                     break;
                     
@@ -49,11 +47,11 @@ bool EventHandler::handle_events() {
                 case SDL_SCANCODE_K:
                     if (key_state[SDL_SCANCODE_I] && key_state[SDL_SCANCODE_W]) {
                         std::cout << "[CHEAT] InstaWin (I+W+K) activado!" << std::endl;
-                        game_handler.send_cheat_insta_win();
+                        game_loop.send_cheat_insta_win();
                     }
                     else if (key_state[SDL_SCANCODE_I] && key_state[SDL_SCANCODE_L]) {
                         std::cout << "[CHEAT] InstaLose (I+L+K) activado!" << std::endl;
-                        game_handler.send_cheat_insta_lose();
+                        game_loop.send_cheat_insta_lose();
                     }
                     break;
             
@@ -106,7 +104,7 @@ bool EventHandler::handle_events() {
         bool right = state[SDL_SCANCODE_D] || state[SDL_SCANCODE_RIGHT];
         
         if (up != last_up || down != last_down || left != last_left || right != last_right) {
-            game_handler.send_movement(up, down, left, right);
+            game_loop.send_movement(up, down, left, right);
             
             last_up = up;
             last_down = down;

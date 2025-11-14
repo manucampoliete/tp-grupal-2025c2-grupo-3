@@ -2,7 +2,6 @@
 
 #include <iostream>
 #include <stdexcept>
-
 #include <arpa/inet.h>
 
 #include "../../common/protocol/protocolConstants.h"
@@ -89,7 +88,7 @@ uint8_t ClientProtocol::recv_message_type() { return recvU8(); }
 void ClientProtocol::send_move(const ActiveDirections& request) {
     sendU8(SEND_MOVE_STATE);
 
-    // ewmpaquetar direcciones en un byte (bits: up/down/left/right)
+    // empaquetar direcciones en un byte
     uint8_t directions = 0;
     if (request.up)
         directions |= UP_MASK;
@@ -105,7 +104,6 @@ void ClientProtocol::send_move(const ActiveDirections& request) {
 
 Snapshot ClientProtocol::recv_snapshot() {
     uint32_t countdown = recvU32();
-
     uint8_t num_cars = recvU8();
 
     std::cout << "[PROTOCOL] Snapshot recibido: countdown=" << countdown
@@ -158,7 +156,6 @@ uint16_t ClientProtocol::recv_player_died() { return recvU16(); }
 
 RaceResults ClientProtocol::recv_race_results() {
     RaceResults results;
-
     results.countdown_ms = recvU32();
     uint16_t num_players = recvU16();
 
@@ -189,7 +186,6 @@ CarProperties ClientProtocol::recv_car_properties() {
 
 FinalResults ClientProtocol::recv_final_results() {
     FinalResults results;
-
     uint16_t num_standings = recvU16();
 
     for (uint16_t i = 0; i < num_standings; ++i) {

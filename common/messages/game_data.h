@@ -13,6 +13,7 @@
  * a chequear segun implementacion
  */
 
+enum class CheatType { NONE, INMORTALITY, INSTA_WIN, INSTA_LOSE };
 
 // coordenadas (x, y, ancho, alto) para cada auto
 const SDL2pp::Rect CARS[7] = {

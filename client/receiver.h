@@ -10,27 +10,28 @@
 #include "../protocol/client_protocol.h"
 
 
-class GameHandler;
+class GameLoop;
 
 /**
  * Receiver: hilo que recibe mensajes del servidor
  * - Lee mensajes del servidor usando ClientProtocol
- * - Los deserializa y notifica al GameHandler
+ * - Pushea snapshots a la queue
+ * - Notifica eventos al GameLoop
  */
 class Receiver: public Thread {
 private:
     ClientProtocol& protocol;
     Queue<Snapshot>& server_snapshots_q;
-    GameHandler& game_handler;
+    GameLoop& game_loop;
 
 public:
     /**
      * Constructor: initializes the Receiver with the given parameters.
      * server_snapshots_q: cola de snapshots recibidos
-     * game_handler: referencia al GameHandler para notificar eventos
+     * game_loop: referencia al GameLoop para notificar eventos
      */
     Receiver(ClientProtocol& protocol, Queue<Snapshot>& server_snapshots_q,
-             GameHandler& game_handler);
+             GameLoop& game_loop);
 
     /**
      * TODO: Add proper documentation
