@@ -61,6 +61,11 @@ public:
     
     void render_cheat_notif(CheatType active_cheat_notification);
 
+    void render_eliminated_popup();
+
+    void render_podium(const FinalResults& results);
+    
+
     // fondo semi-transparente
     // mapa completo, achicado (NullOpt es "copiar toda la textura")
     // autos como puntos para el minimap

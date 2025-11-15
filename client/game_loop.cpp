@@ -81,120 +81,43 @@ void GameLoop::run() {
 
 
 void GameLoop::on_countdown(uint8_t number) {
-    if (game) {
+    if (game)
         game->show_countdown(number);
-        if (number <= 3)
-            game->get_sound_manager().play_sound("countdown");
-        // En GO! desp veo si usar game_start o directamente la musica
-    }
 }
 
 void GameLoop::on_race_start() {
-    if (game) {
+    if (game)
         game->start_race();
-        // sonido de inicio (diferente al countdown)
-        // game->get_sound_manager().play_sound("race_start");
-    }
 }
 
 void GameLoop::on_checkpoint_crossed(uint8_t checkpoint_id) {
     std::cout << "[GAME_HANDLER] Checkpoint " << (int)checkpoint_id << " crossed!" << std::endl;
 
+    // a chequear!
+
     // agregar lo visual
-    if (game) {
+    if (game)
         game->get_sound_manager().play_sound("checkpoint");
-    }
 }
 
 void GameLoop::on_collision(const CollisionData& collision) {   
-    std::cout << "[GAME_HANDLER] Colisión detected, intensity: " << collision.intensity
-              << std::endl;
+    std::cout << "[GAME_LOOP] Colisión detectada, intensity: " << collision.intensity << std::endl;
+    if (!game) return;
     
-    if (game) {
-    
-        // unificarlos!! no tiene sentido que esten por separado
-
-        // VOL SEGÚN INTENSIDAD
-        int volume = static_cast<int>(collision.intensity * MIX_MAX_VOLUME);
-        game->get_sound_manager().play_sound("collision", volume);
-        
-        // VOL SEGÚN DISTANCIA
-        auto cars = world.getCars();
-        if (cars.count(player_id)) {
-            const auto& my_car = cars.at(player_id);
-            
-            float dx = my_car.x - (collision.x / 1000.0f);
-            float dy = my_car.y - (collision.y / 1000.0f);
-            float distance = std::sqrt(dx * dx + dy * dy);
-            
-            // reproducir con volumen modulado por distancia
-            game->get_sound_manager().play_sound_with_distance("collision", distance, 500.0f);
-        }
-
-
-        // game->show_collision_effect(collision);
-
-        /*
-        if (collision.intensity > 0.3f) {
-            float x = collision.x / 1000.0f;
-            float y = collision.y / 1000.0f;
-            int particle_count = static_cast<int>(collision.intensity * 20);
-            game->get_world_renderer().add_collision_effect(x, y, particle_count);
-        }
-        
-        if (collision.intensity > 0.7f) {
-            game->trigger_screen_flash();
-        }
-        */
-
-
-    }
+    // coordenadas del servidor mm a metros
+    float world_x = collision.x / 1000.0f;
+    float world_y = WORLD_HEIGHT - (collision.y / 1000.0f);
+    game->on_collision(world_x, world_y, collision.intensity);
 }
 
-
-// ARREGLAR ON PLAYER DIED!!!
-
 void GameLoop::on_player_died(uint16_t dead_player_id) {
-    std::cout << "[GAME_HANDLER] Player " << dead_player_id << " has died." << std::endl;
-
-    if (game) {
-        game->get_sound_manager().play_sound("explosion");
-        
-        if (dead_player_id == player_id) {
-            std::cout << "[GAME_HANDLER] You died!" << std::endl;
-            // game->show_eliminated_screen();
-            game->get_sound_manager().pause_music();
-        } else {
-            // activar animación de explosión para ese jugador
-            // game->trigger_explosion(dead_player_id);
-            
-        }
-
-
-        /*
-        game->get_sound_manager().play_sound("explosion");
-        
-        auto cars = world.getCars();
-        if (cars.count(dead_player_id)) {
-            const auto& dead_car = cars.at(dead_player_id);
-            game->get_world_renderer().add_explosion(dead_car.x, dead_car.y);
-        }
-        
-        if (dead_player_id == player_id) {
-            std::cout << "[GAME_LOOP] You died!" << std::endl;
-            game->get_sound_manager().pause_music();
-        }
-        */
-    }
+    if (game)
+        game->on_player_died(dead_player_id);
 }
 
 void GameLoop::on_race_end(const RaceResults& results) {
-    if (game) {
+    if (game)
         game->show_stats(results);
-        game->get_sound_manager().play_sound("race_end");
-        game->get_sound_manager().pause_music();
-        // probar como queda pausar primero y desp poner sonido de race_end
-    }
 }
 
 void GameLoop::on_modification_phase(const CarProperties& props) {
@@ -202,16 +125,9 @@ void GameLoop::on_modification_phase(const CarProperties& props) {
         game->show_modifications(props);
 }
 
-void GameLoop::on_game_end(const FinalResults& results) {   
-    std::cout << "[GAME_HANDLER] Game ended! Winner: " << results.winner_name << std::endl;
-
-    if (game) {
-        game->get_sound_manager().stop_music();
-
-        // música de victoria/derrota según el resultado??
-
-        // game->show_game_end(results);
-    }
+void GameLoop::on_game_end(const FinalResults& results) { 
+    if (game) 
+        game->show_final_results(results);
 }
 
 

@@ -68,6 +68,7 @@ private:
 
     RaceResults current_results;
     CarProperties current_properties;
+    FinalResults final_results;
 
     // número de carrera actual y total hardocdeado, esa info la envia el server
     int current_race = 1;
@@ -83,6 +84,8 @@ private:
     
     CheatType active_cheat_notification = CheatType::NONE;
     float cheat_notification_timer = 0.0f;
+
+    float eliminated_popup_delay_ms;
 
     void process_input();
     void update(float dt);
@@ -112,6 +115,7 @@ public:
     void show_stats(const RaceResults& results);
     void show_modifications(const CarProperties& props);
     void show_cheat_notification(CheatType cheat_type);
+    void show_final_results(const FinalResults& results);
 
     void on_player_died(uint16_t player_id);
     void on_collision(float x, float y, float intensity);
@@ -120,6 +124,7 @@ public:
     SoundManager& get_sound_manager() { return sound_manager; }
     WorldRenderer& get_world_renderer() { return world_renderer; }
     const CarProperties& get_current_properties() const { return current_properties; }
+
 };
 
 #endif  // GAME_H

@@ -49,6 +49,8 @@ Game::Game(World& world, GameLoop& game_loop, uint8_t player_id):
         interface_renderer(renderer, font, font_small, font_big, map_texture, world, player_id, cheat_inmortality_img, cheat_win_img, cheat_lose_img),
         sound_manager() {
 
+    eliminated_popup_delay_ms = 0.0f;
+
     SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "0");
     SDL_SetHint(SDL_HINT_AUDIO_RESAMPLING_MODE, "1");
     SDL_SetWindowMinimumSize(window.Get(), 800, 600);
@@ -63,6 +65,7 @@ Game::Game(World& world, GameLoop& game_loop, uint8_t player_id):
         sound_manager.load_sound("brake", "client/assets/sounds/brake.wav");
         sound_manager.load_sound("engine", "client/assets/sounds/engine.wav");
         sound_manager.load_sound("confirm", "client/assets/sounds/confirm.wav");
+        sound_manager.load_sound("victory", "client/assets/sounds/victory.wav");
         
         std::cout << "[GAME] Todos los sonidos cargados correctamente" << std::endl;
         
@@ -200,6 +203,12 @@ void Game::update(float dt) {
         if (cheat_notification_timer <= 0)
             active_cheat_notification = CheatType::NONE;
     }
+
+    if (eliminated_popup_delay_ms > 0) {
+        eliminated_popup_delay_ms -= dt;
+        if (eliminated_popup_delay_ms < 0)
+            eliminated_popup_delay_ms = 0;
+    }
 }
 
 
@@ -207,8 +216,8 @@ void Game::update(float dt) {
 
 void Game::start_race() {
     current_state = game_state::RACING;
-    // desp recibo el tiempo del server supongo, por ahora lo pongo aca
-    // race_timer = 600.0f;
+    // sonido de inicio (diferente al countdown)
+    // sound_manager.play_sound("race_start");
 }
 
 void Game::set_race_timer(uint16_t time_ms) { this->race_timer_ms = time_ms; }
@@ -217,12 +226,18 @@ void Game::show_countdown(uint8_t number) {
     current_state = game_state::COUNTDOWN;
     countdown_number = number;
     countdown_timer = 0.0f;
+    if (number <= 3)
+        sound_manager.play_sound("countdown");
+        // En GO! desp veo si usar game_start o directamente la musica
 }
 
 void Game::show_stats(const RaceResults& results) {
     current_state = game_state::SHOWING_STATS;
     current_results = results;
     stats_timer_ms = results.countdown_ms;
+
+    sound_manager.stop_music();
+    sound_manager.play_sound("race_end");
 }
 
 void Game::show_modifications(const CarProperties& props) {
@@ -239,41 +254,51 @@ void Game::show_cheat_notification(CheatType cheat_type) {
     cheat_notification_timer = 3000.0f;
 }
 
-void Game::on_player_died(uint16_t dead_player_id) {
-    auto cars = world.getCars();
-    if (cars.count(dead_player_id)) {
-        const auto& dead_car = cars.at(dead_player_id);
-        
-        // explosión en la posición del auto muerto
-        world_renderer.add_explosion(dead_car.x, dead_car.y, 50);  // 50 partículas
-        sound_manager.play_sound("explosion");
-        
-        if (dead_player_id == player_id) {
-            std::cout << "[GAME] You died!" << std::endl;
-            current_state = game_state::ELIMINATED;
-        }
-    }
+void Game::show_final_results(const FinalResults& results) {
+    current_state = game_state::GAME_END;
+    final_results = results;
+    
+    sound_manager.stop_music();
+    if (results.winner_id == player_id) 
+        sound_manager.play_sound("victory");
 }
+
 
 void Game::on_collision(float x, float y, float intensity) {
     world_renderer.add_collision_effect(x, y, intensity);
     
-    // sonido modulado por intensidad
-    // dejo aca o en gameloop?
+    // conido modulado por intensidad
     int volume = static_cast<int>(intensity * MIX_MAX_VOLUME);
     sound_manager.play_sound("collision", volume);
     
-    // si la colisión es fuerte, hacer flash en pantalla
     if (intensity > 0.7f)
         trigger_screen_flash();
+}
+
+void Game::on_player_died(uint16_t dead_player_id) {    
+    auto cars = world.getCars();
+    if (cars.count(dead_player_id)) {
+        const auto& dead_car = cars.at(dead_player_id);
+        
+        // explosion con 50 partculas
+        world_renderer.add_explosion(dead_car.x, dead_car.y, 50);
+        sound_manager.play_sound("explosion");
+        
+        std::cout << "[GAME] Explosión en (" << dead_car.x << "," << dead_car.y << ")" << std::endl;
+    }
+    
+    // para el player que murio
+    if (dead_player_id == player_id) {
+        current_state = game_state::ELIMINATED;
+        sound_manager.pause_music();
+        eliminated_popup_delay_ms = 1500.0f;
+    }
 }
 
 void Game::trigger_screen_flash() {
     screen_flash_active = true;
     flash_timer = 0.2f;  // dura 200ms
 }
-
-
 
 
 void Game::render() {
@@ -306,7 +331,8 @@ void Game::render() {
                                               window.GetWidth());
             break;
         case game_state::ELIMINATED:
-        //  interface_renderer.render_eliminated_popup();
+            if (eliminated_popup_delay_ms <= 0)
+                interface_renderer.render_eliminated_popup();
             break;
         case game_state::SHOWING_STATS:
             interface_renderer.render_stats_popup(current_results, stats_timer_ms);
@@ -316,7 +342,7 @@ void Game::render() {
                     speed_modified, health_modified, saved, mod_timer_ms, current_properties);
             break;
         case game_state::GAME_END:
-        //  interface_renderer.render_final_stats();
+            interface_renderer.render_podium(final_results);
             break;
     }
 
