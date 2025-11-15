@@ -134,10 +134,10 @@ void SoundManager::set_sfx_volume(int volume) {
 void SoundManager::toggle_music() {
     music_enabled = !music_enabled;
     if (!music_enabled) {
-        stop_music();
+        pause_music();
         std::cout << "[SOUND] Música desactivada" << std::endl;
     } else {
-        play_music();
+        resume_music();
         std::cout << "[SOUND] Música activada" << std::endl;
     }
 }
