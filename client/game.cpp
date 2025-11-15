@@ -58,6 +58,7 @@ Game::Game(World& world, GameLoop& game_loop, uint8_t player_id):
         sound_manager.load_sound("race_end", "client/assets/sounds/finish.wav");
         sound_manager.load_sound("brake", "client/assets/sounds/brake.wav");
         sound_manager.load_sound("engine", "client/assets/sounds/engine.wav");
+        sound_manager.load_sound("confirm", "client/assets/sounds/confirm.wav");
         
         std::cout << "[GAME] Todos los sonidos cargados correctamente" << std::endl;
         
@@ -144,7 +145,7 @@ void Game::process_input() {
             if (interface_renderer.get_save_button_rect().Contains(x, y) && !saved) {
                 saved = true; // no se puede deshacer como los otros
                 sound_manager.play_sound("confirm");
-             //   game_loop.send_modifications(speed_modified, health_modified);
+                game_loop.send_modifications(speed_modified, health_modified);
                 std::cout << "[GAME] ✓ Modificaciones enviadas!" << std::endl;
             }
             

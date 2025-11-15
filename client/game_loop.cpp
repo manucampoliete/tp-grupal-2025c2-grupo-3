@@ -80,12 +80,9 @@ void GameLoop::run() {
 }
 
 
-
 void GameLoop::on_countdown(uint8_t number) {
     if (game) {
         game->show_countdown(number);
-        
-        // sonido de countdown
         if (number <= 3)
             game->get_sound_manager().play_sound("countdown");
         // En GO! desp veo si usar game_start o directamente la musica
@@ -115,14 +112,13 @@ void GameLoop::on_collision(const CollisionData& collision) {
     
     if (game) {
     
-    //     game->show_collision_effect(collision);
+        // unificarlos!! no tiene sentido que esten por separado
 
         // VOL SEGÚN INTENSIDAD
         int volume = static_cast<int>(collision.intensity * MIX_MAX_VOLUME);
         game->get_sound_manager().play_sound("collision", volume);
         
         // VOL SEGÚN DISTANCIA
-        // calcular distancia del jugador a la colisión
         auto cars = world.getCars();
         if (cars.count(player_id)) {
             const auto& my_car = cars.at(player_id);
@@ -134,8 +130,29 @@ void GameLoop::on_collision(const CollisionData& collision) {
             // reproducir con volumen modulado por distancia
             game->get_sound_manager().play_sound_with_distance("collision", distance, 500.0f);
         }
+
+
+        // game->show_collision_effect(collision);
+
+        /*
+        if (collision.intensity > 0.3f) {
+            float x = collision.x / 1000.0f;
+            float y = collision.y / 1000.0f;
+            int particle_count = static_cast<int>(collision.intensity * 20);
+            game->get_world_renderer().add_collision_effect(x, y, particle_count);
+        }
+        
+        if (collision.intensity > 0.7f) {
+            game->trigger_screen_flash();
+        }
+        */
+
+
     }
 }
+
+
+// ARREGLAR ON PLAYER DIED!!!
 
 void GameLoop::on_player_died(uint16_t dead_player_id) {
     std::cout << "[GAME_HANDLER] Player " << dead_player_id << " has died." << std::endl;
@@ -152,18 +169,31 @@ void GameLoop::on_player_died(uint16_t dead_player_id) {
             // game->trigger_explosion(dead_player_id);
             
         }
+
+
+        /*
+        game->get_sound_manager().play_sound("explosion");
+        
+        auto cars = world.getCars();
+        if (cars.count(dead_player_id)) {
+            const auto& dead_car = cars.at(dead_player_id);
+            game->get_world_renderer().add_explosion(dead_car.x, dead_car.y);
+        }
+        
+        if (dead_player_id == player_id) {
+            std::cout << "[GAME_LOOP] You died!" << std::endl;
+            game->get_sound_manager().pause_music();
+        }
+        */
     }
 }
 
 void GameLoop::on_race_end(const RaceResults& results) {
     if (game) {
         game->show_stats(results);
-        
-        // sonido de finalización
         game->get_sound_manager().play_sound("race_end");
-        
-        // pausar musica durante las estadísticas
         game->get_sound_manager().pause_music();
+        // probar como queda pausar primero y desp poner sonido de race_end
     }
 }
 
@@ -177,6 +207,7 @@ void GameLoop::on_game_end(const FinalResults& results) {
 
     if (game) {
         game->get_sound_manager().stop_music();
+
         // música de victoria/derrota según el resultado??
 
         // game->show_game_end(results);
@@ -190,12 +221,10 @@ void GameLoop::send_movement(bool up, bool down, bool left, bool right) {
 }
 
 void GameLoop::send_modifications(bool speed, bool health) {
-    // implementar cuando el protocolo lo soporte
-    // por ahora solo log
     std::cout << "[GAME_HANDLER] Modifications: speed=" << speed << ", health=" << health
               << std::endl;
+    protocol.send_modifications(speed, health);
 }
-
 
 void GameLoop::send_cheat_inmortality() {
     protocol.send_inmortality_request();
@@ -214,8 +243,4 @@ void GameLoop::send_cheat_insta_lose() {
     if (game)
         game->show_cheat_notification(CheatType::INSTA_LOSE);
 }
-
-
-
-
 
