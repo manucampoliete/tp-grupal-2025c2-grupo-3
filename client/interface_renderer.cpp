@@ -4,14 +4,17 @@
 #include <sstream>
 
 UIRenderer::UIRenderer(Renderer& renderer, Font& font, Font& font_small, Font& font_big, Texture& map_texture,
-                       World& world, uint8_t player_id):
+                       World& world, uint8_t player_id, Texture& cheat_immortality_img, Texture& cheat_win_img, Texture& cheat_lose_img):
         renderer(renderer),
         font(font),
         font_small(font_small),
         font_big(font_big),
         map_texture(map_texture),
         world(world),
-        player_id(player_id) {}
+        player_id(player_id),
+        cheat_immortality_img(cheat_immortality_img),
+        cheat_win_img(cheat_win_img),
+        cheat_lose_img(cheat_lose_img) {}
 
 
 void UIRenderer::update_layout(int window_width, int window_height) {
@@ -500,65 +503,56 @@ void UIRenderer::render_cheat_notif(CheatType active_cheat_notification) {
     renderer.SetDrawColor(0, 0, 0, 180);
     renderer.FillRect(Rect(0, 0, w, h));
     
-    int popup_w = static_cast<int>(w * 0.7f);
-    int popup_h = static_cast<int>(h * 0.8f);
-    int popup_x = (w - popup_w) / 2;
-    int popup_y = (h - popup_h) / 2;
-    
-    renderer.SetDrawColor(40, 40, 40, 255);
-    renderer.FillRect(Rect(popup_x, popup_y, popup_w, popup_h));
-    
     renderer.SetDrawBlendMode(SDL_BLENDMODE_NONE);
-    renderer.SetDrawColor(100, 100, 150, 255);
-    renderer.DrawRect(Rect(popup_x, popup_y, popup_w, popup_h));
     
     std::string title;
-    std::string ascii_art;
     SDL_Color title_color;
+    Texture* cheat_img = nullptr;
     
     switch (active_cheat_notification) {
         case CheatType::INMORTALITY:
-            title = "INMORTALITY";
-            ascii_art = "( ! )";
-            title_color = {255, 215, 0, 255};
+            title = "IMMORTALITY ACTIVATED";
+            title_color = {255, 215, 0, 255}; // dorado
+            cheat_img = &cheat_immortality_img;
             break;
+            
         case CheatType::INSTA_WIN:
-            title = "INSTA WIN!";
-            ascii_art = "[WIN]";
-            title_color = {0, 255, 0, 255};
+            title = "INSTANT WIN!";
+            title_color = {0, 255, 0, 255}; // verde
+            cheat_img = &cheat_win_img;
             break;
+            
         case CheatType::INSTA_LOSE:
-            title = "INSTA LOSE";
-            ascii_art = "[LOSE]";
-            title_color = {255, 0, 0, 255};
+            title = "INSTANT LOSE";
+            title_color = {255, 0, 0, 255}; // rojo
+            cheat_img = &cheat_lose_img;
             break;
+            
         default:
-            break;
+            return;
     }
     
-    Surface art_surface = font_big.RenderText_Solid(ascii_art, {255, 255, 255, 255});
-    Texture art_texture(renderer, art_surface);
+    // renderizar png con transparencia
+    if (cheat_img) {
+        int img_w = std::min(cheat_img->GetWidth(), w / 2);
+        int img_h = (img_w * cheat_img->GetHeight()) / cheat_img->GetWidth();
+        
+        int img_x = (w - img_w) / 2;
+        int img_y = (h - img_h) / 2 + 20;
+        
+        renderer.Copy(*cheat_img, NullOpt, Rect(img_x, img_y, img_w, img_h));
+    }
     
-    int art_x = popup_x + (popup_w - art_texture.GetWidth()) / 2;
-    int art_y = popup_y + 60;
-    renderer.Copy(art_texture, NullOpt,
-                    Rect(art_x, art_y, art_texture.GetWidth(), art_texture.GetHeight()));
-    
-    Surface title_surface = font.RenderText_Solid(title, title_color);
+    // titulo abajo de la imagen
+    Surface title_surface = font_big.RenderText_Solid(title, title_color);
     Texture title_texture(renderer, title_surface);
     
-    int title_x = popup_x + (popup_w - title_texture.GetWidth()) / 2;
-    int title_y = art_y + art_texture.GetHeight() + 30; // 30px debajo del arte
+    int title_x = (w - title_texture.GetWidth()) / 2;
+    int title_y = 100;
+    
+    if (!cheat_img)
+        title_y = (h - title_texture.GetHeight()) / 2;
+    
     renderer.Copy(title_texture, NullOpt,
-                    Rect(title_x, title_y, title_texture.GetWidth(), title_texture.GetHeight()));
-
-    
-    // 3. Renderizar el SUBTÍTULO usando la fuente 'font' estándar (que ya tenías)
-    Surface sub_surface = font.RenderText_Solid("ACTIVATED", {200, 200, 200, 255});
-    Texture sub_texture(renderer, sub_surface);
-    
-    int sub_x = popup_x + (popup_w - sub_texture.GetWidth()) / 2;
-    int sub_y = title_y + title_texture.GetHeight() + 20; // 20px debajo del título
-    renderer.Copy(sub_texture, NullOpt,
-                    Rect(sub_x, sub_y, sub_texture.GetWidth(), sub_texture.GetHeight()));
+                 Rect(title_x, title_y, title_texture.GetWidth(), title_texture.GetHeight()));
 }

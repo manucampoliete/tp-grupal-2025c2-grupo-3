@@ -39,6 +39,10 @@ private:
     SDL2pp::Texture map_texture;
     SDL2pp::Texture car_sprites;
 
+    SDL2pp::Texture cheat_inmortality_img;
+    SDL2pp::Texture cheat_win_img;
+    SDL2pp::Texture cheat_lose_img;
+
     World& world;
     GameLoop& game_loop;
     uint8_t player_id;

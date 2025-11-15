@@ -41,19 +41,23 @@ bool EventHandler::handle_events() {
                         game_loop.send_cheat_inmortality();
                     }
                     break;
-                    
-                // Trigger K
-                case SDL_SCANCODE_K:
-                    if (key_state[SDL_SCANCODE_I] && key_state[SDL_SCANCODE_W]) {
-                        std::cout << "[CHEAT] InstaWin (I+W+K) activado!" << std::endl;
+                
+                // G + C (Trigger: C)
+                case SDL_SCANCODE_C:
+                    if (key_state[SDL_SCANCODE_G]) {
+                        std::cout << "[CHEAT] InstaWin (G+C) activado!" << std::endl;
                         game_loop.send_cheat_insta_win();
                     }
-                    else if (key_state[SDL_SCANCODE_I] && key_state[SDL_SCANCODE_L]) {
-                        std::cout << "[CHEAT] InstaLose (I+L+K) activado!" << std::endl;
+                    break;
+                
+                // L + E (Trigger: E)
+                case SDL_SCANCODE_E:
+                    if (key_state[SDL_SCANCODE_L]) {
+                        std::cout << "[CHEAT] InstaLose (L+E) activado!" << std::endl;
                         game_loop.send_cheat_insta_lose();
                     }
                     break;
-            
+
                 case SDL_SCANCODE_EQUALS: 
                 case SDL_SCANCODE_KP_PLUS:
                     if (key_state[SDL_SCANCODE_LCTRL] || key_state[SDL_SCANCODE_RCTRL]) {

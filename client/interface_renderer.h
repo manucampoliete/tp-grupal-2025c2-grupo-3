@@ -25,6 +25,10 @@ private:
     World& world;
     uint8_t player_id;
 
+    Texture& cheat_immortality_img;
+    Texture& cheat_win_img;
+    Texture& cheat_lose_img;
+
     // actualizo los popups
     Rect stats_popup_rect;
     Rect mod_popup_rect;
@@ -42,7 +46,7 @@ private:
 
 public:
     UIRenderer(Renderer& renderer, Font& font, Font& font_small, Font& font_big, Texture& map_texture, World& world,
-               uint8_t player_id);
+               uint8_t player_id, Texture& cheat_immortality_img, Texture& cheat_win_img, Texture& cheat_lose_img);
 
     // renderizar la ui sin la cámara y sin escalado
     void render_countdown(uint8_t countdown_number);

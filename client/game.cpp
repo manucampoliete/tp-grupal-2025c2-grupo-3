@@ -21,7 +21,7 @@ Game::Game(World& world, GameLoop& game_loop, uint8_t player_id):
         renderer(window, -1, SDL_RENDERER_ACCELERATED),
         font("client/assets/fonts/VCR_OSD_MONO.ttf", 24),  // font
         font_small("client/assets/fonts/VCR_OSD_MONO.ttf", 18),
-        font_big("client/assets/fonts/VCR_OSD_MONO.ttf", 150),
+        font_big("client/assets/fonts/VCR_OSD_MONO.ttf", 30),
 
         // cargo la textura del mapa desde un archivo
         // por ahora hardcodeo una cualquiera
@@ -34,6 +34,10 @@ Game::Game(World& world, GameLoop& game_loop, uint8_t player_id):
                 SDL2pp::Surface(
                         "client/assets/cars/Mobile - Grand Theft Auto 4 - Miscellaneous - Cars.png")
                         .SetColorKey(true, 0xa3a30d)),
+        
+        cheat_inmortality_img(renderer, "client/assets/cheats/inmortality.png"),
+        cheat_win_img(renderer, "client/assets/cheats/win.png"),
+        cheat_lose_img(renderer, "client/assets/cheats/lose.png"),
 
         world(world),
         game_loop(game_loop),
@@ -42,7 +46,7 @@ Game::Game(World& world, GameLoop& game_loop, uint8_t player_id):
 
         // Inicializo los renderers
         world_renderer(renderer, map_texture, car_sprites, world, player_id),
-        interface_renderer(renderer, font, font_small, font_big, map_texture, world, player_id),
+        interface_renderer(renderer, font, font_small, font_big, map_texture, world, player_id, cheat_inmortality_img, cheat_win_img, cheat_lose_img),
         sound_manager() {
 
     SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "0");
