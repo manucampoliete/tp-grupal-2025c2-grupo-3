@@ -27,6 +27,8 @@ struct Snapshot {
          * Copy constructor for CarSnapshot
          */
         CarSnapshot(const CarSnapshot& other);
+
+        CarSnapshot& operator=(const CarSnapshot& other);
     };
 
     uint32_t countdown;  // remaining race time in milliseconds
@@ -44,6 +46,8 @@ struct Snapshot {
      * Copy constructor for Snapshot
      */
     Snapshot(const Snapshot& other);
+
+    Snapshot& operator=(const Snapshot& other);
 };
 
 #endif  // SNAPSHOT_H

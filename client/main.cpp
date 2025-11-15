@@ -1,6 +1,7 @@
 #include <exception>
 #include <iostream>
 #include <string>
+
 #include <syslog.h>
 
 #include "client.h"

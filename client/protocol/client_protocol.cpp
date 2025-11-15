@@ -89,7 +89,7 @@ uint8_t ClientProtocol::recv_message_type() { return recvU8(); }
 void ClientProtocol::send_move(const ActiveDirections& request) {
     sendU8(SEND_MOVE_STATE);
 
-    // ewmpaquetar direcciones en un byte (bits: up/down/left/right)
+    // empaquetar direcciones en un byte
     uint8_t directions = 0;
     if (request.up)
         directions |= UP_MASK;
@@ -103,9 +103,14 @@ void ClientProtocol::send_move(const ActiveDirections& request) {
     sendU8(directions);
 }
 
+void ClientProtocol::send_modifications(bool speed_mod, bool health_mod) {
+    sendU8(MSG_MODIFY_CAR);
+    sendU8(speed_mod ? 0x01 : 0x00);
+    sendU8(health_mod ? 0x01 : 0x00);
+}
+
 Snapshot ClientProtocol::recv_snapshot() {
     uint32_t countdown = recvU32();
-
     uint8_t num_cars = recvU8();
 
     std::cout << "[PROTOCOL] Snapshot recibido: countdown=" << countdown
@@ -130,12 +135,6 @@ Snapshot ClientProtocol::recv_snapshot() {
     return Snapshot(countdown, cars);
 }
 
-void ClientProtocol::send_modifications(bool speed_mod, bool health_mod) {
-    sendU8(MSG_MODIFY_CAR);
-    sendU8(speed_mod ? 0x01 : 0x00);
-    sendU8(health_mod ? 0x01 : 0x00);
-}
-
 uint8_t ClientProtocol::recv_countdown() { return recvU8(); }
 
 uint8_t ClientProtocol::recv_checkpoint() { return recvU8(); }
@@ -158,7 +157,6 @@ uint16_t ClientProtocol::recv_player_died() { return recvU16(); }
 
 RaceResults ClientProtocol::recv_race_results() {
     RaceResults results;
-
     results.countdown_ms = recvU32();
     uint16_t num_players = recvU16();
 
@@ -178,10 +176,7 @@ CarProperties ClientProtocol::recv_car_properties() {
     CarProperties props;
 
     props.speed = recvU16();
-    props.acceleration = recvU16();
     props.health = recvU16();
-    props.mass = recvU16();
-    props.handling = recvU16();
     props.countdown_ms = recvU32();
 
     return props;
@@ -189,7 +184,6 @@ CarProperties ClientProtocol::recv_car_properties() {
 
 FinalResults ClientProtocol::recv_final_results() {
     FinalResults results;
-
     uint16_t num_standings = recvU16();
 
     for (uint16_t i = 0; i < num_standings; ++i) {
