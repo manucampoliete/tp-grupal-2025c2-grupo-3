@@ -43,6 +43,8 @@ private:
     GameLoop& game_loop;
     uint8_t player_id;
 
+    bool quit = false;
+
     EventHandler event_handler;
 
     WorldRenderer world_renderer;
@@ -93,6 +95,8 @@ public:
 
     void start_race();
 
+    bool should_close() const { return quit; }
+
     // metodos llamados por EventHandler
     game_state get_current_state() const;
     void handle_modification_click(int x, int y);
@@ -109,6 +113,8 @@ public:
 
     void trigger_screen_flash();
     void show_cheat_notification(CheatType cheat_type);
+
+    const CarProperties& get_current_properties() const { return current_properties; }
 };
 
 #endif  // GAME_H

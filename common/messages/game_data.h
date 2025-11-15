@@ -72,10 +72,7 @@ struct FinalResults {
 // para la fase de modificación
 struct CarProperties {
     uint16_t speed;
-    uint16_t acceleration;
     uint16_t health;
-    uint16_t mass;
-    uint16_t handling;
     uint16_t countdown_ms;  // timer para la pantalla de mods
 };
 

@@ -118,11 +118,7 @@ void UIRenderer::render_race_ui(uint32_t race_timer_ms, int current_race, int to
 }
 
 
-void UIRenderer::render_stats_popup(const RaceResults& current_results, uint32_t stats_timer_ms,
-                                    const Rect& dummy_rect) {
-    (void)dummy_rect;  // no se usa
-    // recalculo para hacer que el popup sea responsive
-
+void UIRenderer::render_stats_popup(const RaceResults& current_results, uint32_t stats_timer_ms) {
     // reseteo el escalado para la UI
     renderer.SetScale(1.0f, 1.0f);
 
@@ -264,10 +260,7 @@ void UIRenderer::render_stats_popup(const RaceResults& current_results, uint32_t
 
 
 void UIRenderer::render_modification_popup(bool speed_modified, bool health_modified, bool saved,
-                                           uint32_t mod_timer_ms, const Rect& dummy_rect) {
-    (void)dummy_rect;  // no se usa
-    // recalculo para hacer que el popup sea responsive
-
+                                           uint32_t mod_timer_ms, const CarProperties& props) {
     // reseteo el escalado para la UI
     renderer.SetScale(1.0f, 1.0f);
 
@@ -336,7 +329,8 @@ void UIRenderer::render_modification_popup(bool speed_modified, bool health_modi
     renderer.DrawRect(speed_btn);
 
     // texto del botón (centrado verticalmente)
-    Surface speed_surface = active_font.RenderText_Solid("Velocity +5%", {255, 255, 255, 255});
+    std::string speed_text = "Velocity: " + std::to_string(props.speed) + " → " + std::to_string(props.speed + 5);
+    Surface speed_surface = active_font.RenderText_Solid(speed_text, {255, 255, 255, 255});
     Texture speed_texture(renderer, speed_surface);
     int speed_text_x = speed_btn.x + (speed_btn.w - speed_texture.GetWidth()) / 2;  // centrado
     int speed_text_y = speed_btn.y + 15;
@@ -364,7 +358,8 @@ void UIRenderer::render_modification_popup(bool speed_modified, bool health_modi
                           health_modified ? 100 : 120, 255);
     renderer.DrawRect(health_btn);
 
-    Surface health_surface = active_font.RenderText_Solid("Health +5%", {255, 255, 255, 255});
+    std::string health_text = "Health: " + std::to_string(props.health) + " → " + std::to_string(props.health + 5);
+    Surface health_surface = active_font.RenderText_Solid(health_text, {255, 255, 255, 255});
     Texture health_texture(renderer, health_surface);
     int health_text_x = health_btn.x + (health_btn.w - health_texture.GetWidth()) / 2;  // centrado
     int health_text_y = health_btn.y + 15;

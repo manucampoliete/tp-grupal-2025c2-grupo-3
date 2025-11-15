@@ -81,6 +81,8 @@ bool Game::process_frame(float dt) {
             return false;  // se cerró la ventana
     } else {
         process_input();
+        if (quit)
+            return false;
     }
     
     update(dt);
@@ -104,8 +106,16 @@ void Game::update_ui_layout() {
 void Game::process_input() {
     SDL_Event event;
     while (SDL_PollEvent(&event)) {
-        if (event.type == SDL_QUIT) 
+        if (event.type == SDL_QUIT) {
+            quit = true;
             return;
+        }
+
+        if (event.type == SDL_KEYDOWN && 
+            event.key.keysym.scancode == SDL_SCANCODE_ESCAPE) {
+            quit = true;
+            return;
+        }
 
         if (current_state == game_state::COUNTDOWN)
             continue;
@@ -250,13 +260,11 @@ void Game::render() {
         case game_state::ELIMINATED:
             break;
         case game_state::SHOWING_STATS:
-            interface_renderer.render_stats_popup(current_results, stats_timer_ms,
-                                                  interface_renderer.get_speed_button_rect());
+            interface_renderer.render_stats_popup(current_results, stats_timer_ms);
             break;
         case game_state::MODIFYING_CAR:
             interface_renderer.render_modification_popup(
-                    speed_modified, health_modified, saved, mod_timer_ms,
-                    interface_renderer.get_speed_button_rect());
+                    speed_modified, health_modified, saved, mod_timer_ms, current_properties);
             break;
         case game_state::GAME_END:
             break;

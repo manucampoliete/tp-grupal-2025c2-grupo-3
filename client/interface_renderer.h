@@ -50,11 +50,10 @@ public:
     void render_race_ui(uint32_t race_timer_ms, int current_race, int total_races,
                         int window_width);
 
-    void render_stats_popup(const RaceResults& current_results, uint32_t stats_timer_ms,
-                            const Rect& stats_popup_rect);
+    void render_stats_popup(const RaceResults& current_results, uint32_t stats_timer_ms);
 
     void render_modification_popup(bool speed_modified, bool health_modified, bool saved,
-                                    uint32_t mod_timer_ms, const Rect& mod_popup_rect);
+                                    uint32_t mod_timer_ms, const CarProperties& props);
     
     void render_cheat_notif(CheatType active_cheat_notification);
 

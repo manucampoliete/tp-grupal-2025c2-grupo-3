@@ -17,7 +17,6 @@ bool EventHandler::handle_events() {
     while (SDL_PollEvent(&event)) {
         if (event.type == SDL_QUIT)
             return false;
-        
         // Manejo de UI responsive
         if (event.type == SDL_WINDOWEVENT) {
             switch (event.window.event) {
@@ -88,8 +87,12 @@ bool EventHandler::handle_events() {
                         game.get_sound_manager().toggle_sfx();
                     }
                     break;
-
                 
+                case SDL_SCANCODE_ESCAPE:
+                    std::cout << "[GAME] ESC presionado, cerrando juego..." << std::endl;
+                    return false;  // cerrar juego
+                    break;
+
                 default:
                     break;
             }

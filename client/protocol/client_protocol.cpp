@@ -175,10 +175,7 @@ CarProperties ClientProtocol::recv_car_properties() {
     CarProperties props;
 
     props.speed = recvU16();
-    props.acceleration = recvU16();
     props.health = recvU16();
-    props.mass = recvU16();
-    props.handling = recvU16();
     props.countdown_ms = recvU32();
 
     return props;
