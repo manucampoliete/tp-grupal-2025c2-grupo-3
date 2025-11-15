@@ -27,7 +27,6 @@ private:
     ClientProtocol& protocol;
     uint8_t player_id;
 
-    // estado del juego
     World world;
 
     Queue<ActiveDirections> client_requests_q;
@@ -37,23 +36,16 @@ private:
     Receiver receiver;
     GameLoop game_loop;
 
-    // control de ejecución
     std::atomic<bool> running;
 
 public:
-    // player_id: id asignado al jugador (por ahora hardcodeado)
     GameHandler(ClientProtocol& protocol, uint8_t player_id);
 
-    // ejecuta el juego completo:
-    // inicia los 3 hilos
+    // ejecuta el juego completo: inicia los 3 hilos
     void run();
 
     // detiene el juego y los hilos
     void stop();
-
-
-    // actualiza el estado del mundo con un nuevo snapshot del servidor
- //   void update_world(const Snapshot& snapshot);
 
     ~GameHandler();
 };

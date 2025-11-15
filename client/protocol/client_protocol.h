@@ -42,37 +42,19 @@ public:
      */
     uint8_t recv_message_type();
 
-    // Envía un input de movimiento al servidor
     void send_move(const ActiveDirections& request);
-
-    // Recibe un snapshot del estado del juego (ahora usando snapshot.h)
-    Snapshot recv_snapshot();
-
-    // Envía modificaciones del auto al servidor
     void send_modifications(bool speed_mod, bool health_mod);
 
-    // Recibe número de countdown (3, 2, 1, 0=GO)
+    Snapshot recv_snapshot();
     uint8_t recv_countdown();
-
-    // Recibe ID de checkpoint cruzado
     uint8_t recv_checkpoint();
-
-    // Recibe datos de colisión
     CollisionData recv_collision();
-
-    // Recibe ID del jugador que murió
     uint16_t recv_player_died();
-
-    // Recibe resultados de la carrera
     RaceResults recv_race_results();
-
-    // Recibe propiedades del auto para modificación
     CarProperties recv_car_properties();
-
-    // Recibe resultados finales de la partida
     FinalResults recv_final_results();
 
-    // Cheats
+    // CHEATS
     void send_inmortality_request();
     void send_insta_win_request();
     void send_insta_lose_request();

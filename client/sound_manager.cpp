@@ -10,8 +10,7 @@ SoundManager::SoundManager() : background_music(nullptr) {
     }
     
     // 16 canales para efectos de sonido 
-    Mix_AllocateChannels(16);
-    
+    Mix_AllocateChannels(16);    
     std::cout << "[SOUND] mixer inicializado correctamente" << std::endl;
 }
 
@@ -33,7 +32,7 @@ SoundManager::~SoundManager() {
 }
 
 
-//MUSICA DE FONDO DE CARRERA
+// MUSICA DE FONDO DE CARRERA
 
 void SoundManager::load_music(const std::string& path) {
     if (background_music) 
@@ -42,18 +41,14 @@ void SoundManager::load_music(const std::string& path) {
     background_music = Mix_LoadMUS(path.c_str());
     if (!background_music) 
         std::cerr << "[SOUND] Error cargando música: " << path << " - " << Mix_GetError() << std::endl;
-    else 
-        std::cout << "[SOUND] Música cargada: " << path << std::endl;
 }
 
 void SoundManager::play_music(int loops) {
     if (background_music && music_enabled) {
-        if (Mix_PlayMusic(background_music, loops) == -1) {
+        if (Mix_PlayMusic(background_music, loops) == -1)
             std::cerr << "[SOUND] Error reproduciendo música: " << Mix_GetError() << std::endl;
-        } else {
+        else
             Mix_VolumeMusic(music_volume);
-            std::cout << "[SOUND] Música iniciada (loops=" << loops << ")" << std::endl;
-        }
     }
 }
 
@@ -86,7 +81,6 @@ void SoundManager::load_sound(const std::string& name, const std::string& path) 
                   << path << " - " << Mix_GetError() << std::endl;
         return;
     }
-    
     sound_effects[name] = chunk;
     std::cout << "[SOUND] Sonido cargado: " << name << " (" << path << ")" << std::endl;
 }
@@ -120,7 +114,7 @@ void SoundManager::play_sound_with_distance(const std::string& name, float dista
     float volume_factor = 1.0f - std::min(distance / max_distance, 1.0f);
     int volume = static_cast<int>(volume_factor * sfx_volume);
     
-    if (volume > 5) // Solo reproducir si el vol es significativo
+    if (volume > 5) // reproducir solo si el vol es significativo
         play_sound(name, volume);
 }
 
@@ -153,7 +147,6 @@ void SoundManager::toggle_sfx() {
 
 bool SoundManager::can_play_sound(const std::string& name) {
     auto now = std::chrono::steady_clock::now();
-    
     auto it = last_play_time.find(name);
     if (it == last_play_time.end()) {
         last_play_time[name] = now;
@@ -161,7 +154,6 @@ bool SoundManager::can_play_sound(const std::string& name) {
     }
 
     auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - it->second).count();
-    
     if (elapsed >= THROTTLE_MS) {
         last_play_time[name] = now;
         return true;

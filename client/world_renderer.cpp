@@ -2,12 +2,11 @@
 
 
 WorldRenderer::WorldRenderer(Renderer& renderer, Texture& map_texture, Texture& car_sprites,
-                             World& world, /* Car& player_car,*/ uint8_t player_id):
+                             World& world, uint8_t player_id):
         renderer(renderer),
         map_texture(map_texture),
         car_sprites(car_sprites),
         world(world),
-        /*player_car(player_car),*/
         player_id(player_id),
         camera(0, 0, 800, 600),
         scale_factor(1.0f) {}
@@ -19,7 +18,6 @@ void WorldRenderer::update_layout(int window_width, int window_height) {
 
     // actualizo la cámara para que coincida con el tamaño de la ventana
     // pero escalado inversamente (si la ventana es 2x, la cámara ve la mitad)
-    // a chequear el zoom!!!
     camera.w = static_cast<int>(window_width / scale_factor);
     camera.h = static_cast<int>(window_height / scale_factor);
 }
@@ -73,21 +71,13 @@ void WorldRenderer::render() {
 
 
 void WorldRenderer::render_map_camera() {
-    // dibujp solo la porción de la cámara, escalada a toda la ventana
-    // aplico el escalado manualmente al renderer asi todo lo que dibujo es a escala
     renderer.SetScale(scale_factor, scale_factor);
-
-    // dibujo la porción del mapa que ve la camara
     renderer.Copy(map_texture, camera, NullOpt);
 }
 
 
 void WorldRenderer::render_all_cars() {
     auto cars = world.getCars();
-
-    std::cout << "[WORLD_RENDERER] Renderizando " << cars.size()
-              << " autos, player_id=" << (int)player_id << std::endl;
-
     for (const auto& [id, car_state]: cars) {
         const Rect& src = CARS[car_state.type];
 
@@ -98,8 +88,6 @@ void WorldRenderer::render_all_cars() {
         
         Rect dest(screen_x, screen_y, src.GetW(), src.GetH());
         SDL_Point center = {src.GetW() / 2, src.GetH() / 2};
-
-        // Renderizar el auto (TODOS se renderizan igual)
         renderer.Copy(car_sprites, src, dest, car_state.angle, center, SDL_FLIP_NONE);
     }
 }
@@ -162,7 +150,6 @@ void WorldRenderer::render_collision_effects() {
     
     renderer.SetDrawBlendMode(SDL_BLENDMODE_NONE);
 }
-
 
 void WorldRenderer::add_explosion(float x, float y, int particle_count) {
     explosions.emplace_back(x, y, particle_count);

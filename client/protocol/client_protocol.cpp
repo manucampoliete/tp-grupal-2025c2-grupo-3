@@ -102,6 +102,12 @@ void ClientProtocol::send_move(const ActiveDirections& request) {
     sendU8(directions);
 }
 
+void ClientProtocol::send_modifications(bool speed_mod, bool health_mod) {
+    sendU8(MSG_MODIFY_CAR);
+    sendU8(speed_mod ? 0x01 : 0x00);
+    sendU8(health_mod ? 0x01 : 0x00);
+}
+
 Snapshot ClientProtocol::recv_snapshot() {
     uint32_t countdown = recvU32();
     uint8_t num_cars = recvU8();
@@ -126,12 +132,6 @@ Snapshot ClientProtocol::recv_snapshot() {
     }
 
     return Snapshot(countdown, cars);
-}
-
-void ClientProtocol::send_modifications(bool speed_mod, bool health_mod) {
-    sendU8(MSG_MODIFY_CAR);
-    sendU8(speed_mod ? 0x01 : 0x00);
-    sendU8(health_mod ? 0x01 : 0x00);
 }
 
 uint8_t ClientProtocol::recv_countdown() { return recvU8(); }

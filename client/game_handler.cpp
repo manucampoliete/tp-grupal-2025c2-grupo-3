@@ -61,33 +61,3 @@ GameHandler::~GameHandler() {
     if (running)
         stop();
 }
-
-
-
-/*
-void GameHandler::update_world(const Snapshot& snapshot) {
-    // convertir Snapshot a BroadcastData (formato del World)
-    // desp veo si uso directamente snapshot o si lo dejo asi
-    BroadcastData data;
-
-    std::cout << "[GAME_HANDLER] Actualizando world con " << snapshot.cars.size() << " autos"
-              << std::endl;
-
-    for (const auto& car_snap: snapshot.cars) {
-        BroadcastData::CarState car_state;
-        car_state.id = car_snap.id;
-        car_state.x = car_snap.x / 1000.0f;  // convertir de uint32_t*1000 a float
-        car_state.y =
-                WORLD_HEIGHT -
-                car_snap.y / 1000.0f;  // traduccion de y entre box2d y sdl2 (tienen el Y al revés)
-        car_state.angle = car_snap.angle + 90.0f;  // para que coincida con el angulo 0º de box2d
-                                                   // (que el sprite arranque mirando a la derecha)
-        car_state.type = car_snap.carId;
-
-        data.cars.push_back(car_state);
-    }
-
-    data.countdown = snapshot.countdown;
-    world.update(data);
-}
-*/

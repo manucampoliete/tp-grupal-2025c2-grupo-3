@@ -104,12 +104,9 @@ public:
 
     bool should_close() const { return quit; }
 
-    // metodos llamados por EventHandler
     game_state get_current_state() const;
-    void handle_modification_click(int x, int y);
     void update_ui_layout();
 
-    // metodos llamados por Client (desde Receiver)
     void set_race_timer(uint16_t time_ms);
     void show_countdown(uint8_t number);
     void show_stats(const RaceResults& results);

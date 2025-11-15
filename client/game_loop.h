@@ -18,8 +18,6 @@ class Game;
  * GameLoop: Thread que ejecuta el loop principal del juego con SDL
  * - Procesa snapshots de la queue del Receiver
  * - Maneja input del usuario
- * - Actualiza el estado del mundo
- * - Renderiza con SDL
  * - Pushea comandos a la queue del Sender
  */
 class GameLoop : public Thread {

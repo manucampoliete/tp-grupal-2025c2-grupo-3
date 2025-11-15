@@ -15,7 +15,6 @@ void Receiver::run() {
 
     while (shouldKeepRunning()) {
         try {
-            // leer el tipo de mensaje del servidor
             uint8_t msg_type = protocol.recv_message_type();
 
             std::cout << "[RECEIVER] Mensaje recibido: 0x" << std::hex << (int)msg_type << std::dec

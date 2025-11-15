@@ -5,26 +5,19 @@
 #include <SDL2pp/SDL2pp.hh>
 
 
-// muestro todo lo que pasa en el juego
-// por ahi mas adelante cuando haya mas cosas convenga separar en mas clases
-
-
 Game::Game(World& world, GameLoop& game_loop, uint8_t player_id):
         sdl(SDL_INIT_VIDEO | SDL_INIT_AUDIO),
         ttf(),
-
-        // ventana principal con título, pos automática y tamaño 800x600
         window("Need For Speed", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 800, 600,
                SDL_WINDOW_RESIZABLE),
-
-        // renderer acelerado por hardware
         renderer(window, -1, SDL_RENDERER_ACCELERATED),
-        font("client/assets/fonts/VCR_OSD_MONO.ttf", 24),  // font
+        font("client/assets/fonts/VCR_OSD_MONO.ttf", 24), 
         font_small("client/assets/fonts/VCR_OSD_MONO.ttf", 18),
         font_big("client/assets/fonts/VCR_OSD_MONO.ttf", 30),
 
         // cargo la textura del mapa desde un archivo
-        // por ahora hardcodeo una cualquiera
+        // por ahora hardcodeo uno
+        // cambiar cunaod este el editor listo
         map_texture(renderer, "client/assets/cities/Game Boy _ GBC - Grand Theft Auto - "
                               "Backgrounds - Vice City.png"),
 
@@ -43,8 +36,6 @@ Game::Game(World& world, GameLoop& game_loop, uint8_t player_id):
         game_loop(game_loop),
         player_id(player_id),
         event_handler(game_loop, *this),
-
-        // Inicializo los renderers
         world_renderer(renderer, map_texture, car_sprites, world, player_id),
         interface_renderer(renderer, font, font_small, font_big, map_texture, world, player_id, cheat_inmortality_img, cheat_win_img, cheat_lose_img),
         sound_manager() {
@@ -69,7 +60,7 @@ Game::Game(World& world, GameLoop& game_loop, uint8_t player_id):
         
         std::cout << "[GAME] Todos los sonidos cargados correctamente" << std::endl;
         
-        // iniciar música
+        // a chequear cuando este el flujo completo!
         // esto por ahi no tendria que ir aca cuando este el countdown?
         sound_manager.play_music();
         
@@ -100,12 +91,9 @@ bool Game::process_frame(float dt) {
 }
 
 
-// para recalcular toda la UI
 void Game::update_ui_layout() {
     int w = window.GetWidth();
     int h = window.GetHeight();
-
-    // Actualizar layouts de los renderers
     world_renderer.update_layout(w, h);
     interface_renderer.update_layout(w, h);
 }
@@ -150,7 +138,7 @@ void Game::process_input() {
 
             // BOTÓN GUARDAR
             if (interface_renderer.get_save_button_rect().Contains(x, y) && !saved) {
-                saved = true; // no se puede deshacer como los otros
+                saved = true; // no se puede deshacer 
                 sound_manager.play_sound("confirm");
                 game_loop.send_modifications(speed_modified, health_modified);
                 std::cout << "[GAME] ✓ Modificaciones enviadas!" << std::endl;
@@ -160,22 +148,7 @@ void Game::process_input() {
     }
 }
 
-
 game_state Game::get_current_state() const { return current_state; }
-
-void Game::handle_modification_click(int x, int y) {
-    if (interface_renderer.get_speed_button_rect().Contains(x, y))
-        speed_modified = !speed_modified;
-
-    if (interface_renderer.get_health_button_rect().Contains(x, y))
-        health_modified = !health_modified;
-
-    if (interface_renderer.get_save_button_rect().Contains(x, y)) {
-        saved = !saved;
-      //  game_loop.send_modifications(speed_modified, health_modified);
-    }
-}
-
 
 void Game::update(float dt) {
     world_renderer.update_effects(dt / 1000.0f);
@@ -183,18 +156,8 @@ void Game::update(float dt) {
     auto car_states = world.getCars();
     race_timer_ms = world.getCountdown();
 
-    // actualiza la posición y ángulo del auto del jugador local
-    //  y mas adelante de los otros autos?
     if (car_states.count(player_id)) {
         const auto& my_car_state = car_states.at(player_id);
-
-        std::cout << "[GAME] Mi auto: pos=(" << my_car_state.x << "," << my_car_state.y
-                  << "), angle=" << my_car_state.angle << std::endl;
-
-        // para actualizar la posición en pantalla del auto segun lo que dice el server
-        //    player_car.set_state(my_car_state.x, my_car_state.y, my_car_state.angle);
-
-        // Actualizar cámara
         world_renderer.update_camera(my_car_state.x, my_car_state.y);
     }
 
@@ -211,8 +174,6 @@ void Game::update(float dt) {
     }
 }
 
-
-// metodos para que game actualice su state
 
 void Game::start_race() {
     current_state = game_state::RACING;
@@ -303,8 +264,6 @@ void Game::trigger_screen_flash() {
 
 void Game::render() {
     renderer.Clear();
-
-    // renderizar el mundo (mapa + autos) Con la camara y escalado
     world_renderer.render();
 
     if (screen_flash_active) {
@@ -321,7 +280,6 @@ void Game::render() {
             screen_flash_active = false;
     }
 
-    // renderizar la ui sin la cámara y sin escalado
     switch (current_state) {
         case game_state::COUNTDOWN:
             interface_renderer.render_countdown(countdown_number);

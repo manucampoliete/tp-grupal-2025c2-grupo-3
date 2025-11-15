@@ -5,6 +5,7 @@
 
 #define WORLD_HEIGHT 4672.0f
 
+
 GameLoop::GameLoop(Queue<Snapshot>& server_snapshots_q, Queue<ActiveDirections>& client_requests_q, ClientProtocol& protocol, World& world, uint8_t player_id) :
     server_snapshots_q(server_snapshots_q),
     client_requests_q(client_requests_q),
@@ -14,8 +15,6 @@ GameLoop::GameLoop(Queue<Snapshot>& server_snapshots_q, Queue<ActiveDirections>&
     game(nullptr) {}
 
 void GameLoop::run() {
-    std::cout << "[GAME_LOOP] Thread iniciado" << std::endl;
-    
     game = std::make_unique<Game>(world, *this, player_id);
     
     std::cout << "[GAME_LOOP] Iniciando SDL game loop..." << std::endl;
@@ -90,6 +89,8 @@ void GameLoop::on_race_start() {
         game->start_race();
 }
 
+
+// CORREGIR
 void GameLoop::on_checkpoint_crossed(uint8_t checkpoint_id) {
     std::cout << "[GAME_HANDLER] Checkpoint " << (int)checkpoint_id << " crossed!" << std::endl;
 
@@ -99,6 +100,7 @@ void GameLoop::on_checkpoint_crossed(uint8_t checkpoint_id) {
     if (game)
         game->get_sound_manager().play_sound("checkpoint");
 }
+
 
 void GameLoop::on_collision(const CollisionData& collision) {   
     std::cout << "[GAME_LOOP] Colisión detectada, intensity: " << collision.intensity << std::endl;
