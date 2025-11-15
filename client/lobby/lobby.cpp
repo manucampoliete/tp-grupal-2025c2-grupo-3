@@ -72,7 +72,7 @@ Lobby::Lobby(ClientProtocol& protocol, QWidget* parent):
     connect(main_menu, &MainMenu::joinGameClicked, this,
             [this]() { stackedWidget->setCurrentIndex(2); });
 
-    connect(main_menu, &MainMenu::exitClicked, qApp, &QApplication::quit);
+    connect(main_menu, &MainMenu::exitClicked, this, &Lobby::exitLobby);
 
     connect(join_game, &JoinGame::returnToMenuClicked, this,
             [this]() { stackedWidget->setCurrentIndex(0); });
@@ -119,9 +119,10 @@ void Lobby::handleNewGameRequest(const QString& username, const CarInfo& car)
 
 void Lobby::startGame() {
     protocol.send_start();
-
+    
     std::thread([this]() {
         protocol.recv_start_signal();
+        start_game = true;
 
         QMetaObject::invokeMethod(this, [this]() {
             this->close();
@@ -129,5 +130,16 @@ void Lobby::startGame() {
     }).detach();
 }
 
+void Lobby::exitLobby() {
+    start_game = false;
+    this->close();
+}
+
+void Lobby::closeEvent(QCloseEvent* event) {
+    if (!start_game) {
+        start_game = false;
+    }
+    QMainWindow::closeEvent(event);
+}
 
 Lobby::~Lobby() { delete ui; }
