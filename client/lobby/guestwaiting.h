@@ -14,8 +14,11 @@ public:
     explicit guestWaiting(QWidget* parent = nullptr);
     ~guestWaiting();
 
+    void setMatchID(QString match_id);
+
 private:
     Ui::guestWaiting* ui;
+    QString match_id;
 };
 
 #endif  // GUESTWAITING_H
