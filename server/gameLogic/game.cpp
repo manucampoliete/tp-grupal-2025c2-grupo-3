@@ -183,7 +183,8 @@ void Game::handleGameState(float deltaTime) {
 
 void Game::handleCountdownState() {
     // el countdown manda por protocolo 1 snapshot por segundo con el numero del countdown?
-    // el gameloop ya manda un snapshot por frame. Creo que es mejor mantenerlo consistente y mandar el segundo actual del contdown por cada frame.
+    // el gameloop ya manda un snapshot por frame, se puede aprovechar eso.
+    // igualmente tener un tipo de broadcast para cada fase puede ser util (por ejemplo, en la parte de estadisticas no hay que mandar todo 60 veces por segundo a menos que se quiera tener un relojito)
 }
 
 void Game::handleRacingState(float deltaTime) {
