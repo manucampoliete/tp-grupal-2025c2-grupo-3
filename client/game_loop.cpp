@@ -5,9 +5,10 @@
 
 #define WORLD_HEIGHT 4672.0f
 
-GameLoop::GameLoop(Queue<Snapshot>& server_snapshots_q, Queue<ActiveDirections>& client_requests_q, World& world, uint8_t player_id) :
+GameLoop::GameLoop(Queue<Snapshot>& server_snapshots_q, Queue<ActiveDirections>& client_requests_q, ClientProtocol& protocol, World& world, uint8_t player_id) :
     server_snapshots_q(server_snapshots_q),
     client_requests_q(client_requests_q),
+    protocol(protocol),
     world(world),
     player_id(player_id),
     game(nullptr) {}
@@ -197,22 +198,24 @@ void GameLoop::send_modifications(bool speed, bool health) {
 
 
 void GameLoop::send_cheat_inmortality() {
-  //  protocol.send_inmortality_request();
+    protocol.send_inmortality_request();
     if (game)
         game->show_cheat_notification(CheatType::INMORTALITY);
 }
 
 void GameLoop::send_cheat_insta_win() {
-  //  protocol.send_insta_win_request();
+    protocol.send_insta_win_request();
     if (game)
         game->show_cheat_notification(CheatType::INSTA_WIN);
 }
 
 void GameLoop::send_cheat_insta_lose() {
-   // protocol.send_insta_lose_request();
+    protocol.send_insta_lose_request();
     if (game)
         game->show_cheat_notification(CheatType::INSTA_LOSE);
 }
+
+
 
 
 

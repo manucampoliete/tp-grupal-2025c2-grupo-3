@@ -16,7 +16,7 @@ GameHandler::GameHandler(ClientProtocol& protocol, uint8_t player_id):
         server_snapshots_q(),
         sender(protocol, client_requests_q),
         receiver(protocol, server_snapshots_q, game_loop),
-        game_loop(server_snapshots_q, client_requests_q, world, player_id),
+        game_loop(server_snapshots_q, client_requests_q, protocol, world, player_id),
         running(false) {}
 
 

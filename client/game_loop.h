@@ -4,9 +4,11 @@
 #include <memory>
 
 #include "../common/messages/snapshot.h"
+#include "../common/messages/game_data.h"
 #include "../common/queue/queue.h"
 #include "../common/thread/thread.h"
 #include "../common/utils/activeDirections.h"
+#include "protocol/client_protocol.h" 
 #include "world.h"
 
 
@@ -24,7 +26,8 @@ class GameLoop : public Thread {
 private:
     Queue<Snapshot>& server_snapshots_q;
     Queue<ActiveDirections>& client_requests_q;
-    
+    ClientProtocol& protocol; 
+
     World& world;
     uint8_t player_id;
     
@@ -36,7 +39,7 @@ public:
      */
     GameLoop(Queue<Snapshot>& server_snapshots_q,
              Queue<ActiveDirections>& client_requests_q,
-             World& world,
+             ClientProtocol& protocol, World& world,
              uint8_t player_id);
 
     /**
