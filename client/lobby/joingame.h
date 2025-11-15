@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <vector>
+#include <QLabel>
 
 #include "carselector.h"
 
@@ -16,6 +17,8 @@ class JoinGame: public QWidget {
 public:
     explicit JoinGame(QWidget* parent = nullptr, const std::vector<CarInfo>& cars = {});
     ~JoinGame();
+
+    void setJoinError();
 
 signals:
     void returnToMenuClicked();
@@ -31,6 +34,7 @@ private:
     Ui::JoinGame* ui;
     CarSelector* carSelector;
     std::vector<CarInfo> available_cars;
+    QLabel* errorLabel;
 };
 
 #endif  // JOINGAME_H

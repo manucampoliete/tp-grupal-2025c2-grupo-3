@@ -72,7 +72,7 @@ Lobby::Lobby(ClientProtocol& protocol, QWidget* parent):
     connect(main_menu, &MainMenu::joinGameClicked, this,
             [this]() { stackedWidget->setCurrentIndex(2); });
 
-    connect(main_menu, &MainMenu::exitClicked, qApp, &QApplication::quit);
+    connect(main_menu, &MainMenu::exitClicked, this, &Lobby::exitLobby);
 
     connect(join_game, &JoinGame::returnToMenuClicked, this,
             [this]() { stackedWidget->setCurrentIndex(0); });
@@ -91,40 +91,55 @@ Lobby::Lobby(ClientProtocol& protocol, QWidget* parent):
 
 void Lobby::handleJoinGameRequest(const QString& username, const QString& gameId,
                                   const CarInfo& car) {
-    bool joined = protocol.send_join(static_cast<uint16_t>(gameId.toInt()), username.toStdString(),
-                                     static_cast<uint8_t>(car.id));
-    car_id = static_cast<uint16_t>(car.id);
-    std::cout << joined << std::endl;
+    bool joined = protocol.send_join(static_cast<uint16_t>(gameId.toInt()), username.toStdString(), static_cast<uint8_t>(car.id));
 
+    if (!joined) {
+        join_game->setJoinError();
+        return;
+    }
+
+    car_id = static_cast<uint16_t>(car.id);
+    
+    guest_waiting->setMatchID(gameId);
     stackedWidget->setCurrentWidget(guest_waiting);
     std::thread([this]() {
         protocol.recv_start_signal();
-
-        std::cout << "El juego ha comenzado!" << std::endl;
-
         QMetaObject::invokeMethod(this, [this]() { this->close(); });
     }).detach();
 }
 
-void Lobby::handleNewGameRequest(const QString& username,
-                                 const CarInfo& car)  // car pasarlo a id y a uint
+void Lobby::handleNewGameRequest(const QString& username, const CarInfo& car)
 {
     uint16_t match_id = protocol.send_create(username.toStdString(), static_cast<uint8_t>(car.id));
     car_id = static_cast<uint16_t>(car.id);
-    std::cout << "Nuevo juego solicitado por " << username.toStdString() << " con el auto "
-              << car.name << std::endl
-              << std::flush;
 
-    std::cout << "ID de la nueva partida: " << match_id << std::endl << std::flush;
     host_waiting->setMatchID(QString::number(match_id));
     stackedWidget->setCurrentWidget(host_waiting);
 }
 
 void Lobby::startGame() {
     protocol.send_start();
-    protocol.recv_start_signal();
-    std::cout << "El host ha comenzado la partida!" << std::endl;
+    
+    std::thread([this]() {
+        protocol.recv_start_signal();
+        start_game = true;
+
+        QMetaObject::invokeMethod(this, [this]() {
+            this->close();
+        });
+    }).detach();
+}
+
+void Lobby::exitLobby() {
+    start_game = false;
     this->close();
+}
+
+void Lobby::closeEvent(QCloseEvent* event) {
+    if (!start_game) {
+        start_game = false;
+    }
+    QMainWindow::closeEvent(event);
 }
 
 Lobby::~Lobby() { delete ui; }

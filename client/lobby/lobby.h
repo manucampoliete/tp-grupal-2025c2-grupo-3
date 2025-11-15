@@ -30,6 +30,7 @@ public:
     ~Lobby();
     void startGame();
     uint16_t getCarID() const { return car_id; }
+    bool shouldStartGame() const { return start_game; }
 
 private:
     Ui::Lobby* ui;
@@ -42,8 +43,11 @@ private:
     ClientProtocol& protocol;
     std::vector<CarInfo> available_cars;
     uint16_t car_id;
+    bool start_game = false;
 
     void handleJoinGameRequest(const QString& username, const QString& gameId, const CarInfo& car);
     void handleNewGameRequest(const QString& username, const CarInfo& car);
+    void exitLobby();
+    void closeEvent(QCloseEvent* event) override;
 };
 #endif  // LOBBY_H
