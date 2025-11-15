@@ -3,12 +3,13 @@
 
 #include <memory>
 
-#include "../common/messages/snapshot.h"
 #include "../common/messages/game_data.h"
+#include "../common/messages/snapshot.h"
 #include "../common/queue/queue.h"
 #include "../common/thread/thread.h"
 #include "../common/utils/activeDirections.h"
-#include "protocol/client_protocol.h" 
+#include "protocol/client_protocol.h"
+
 #include "world.h"
 
 
@@ -20,31 +21,29 @@ class Game;
  * - Maneja input del usuario
  * - Pushea comandos a la queue del Sender
  */
-class GameLoop : public Thread {
+class GameLoop: public Thread {
 private:
     Queue<Snapshot>& server_snapshots_q;
     Queue<ActiveDirections>& client_requests_q;
-    ClientProtocol& protocol; 
+    ClientProtocol& protocol;
 
     World& world;
     uint8_t player_id;
-    
+
     std::unique_ptr<Game> game;
 
 public:
     /**
      * Constructor
      */
-    GameLoop(Queue<Snapshot>& server_snapshots_q,
-             Queue<ActiveDirections>& client_requests_q,
-             ClientProtocol& protocol, World& world,
-             uint8_t player_id);
+    GameLoop(Queue<Snapshot>& server_snapshots_q, Queue<ActiveDirections>& client_requests_q,
+             ClientProtocol& protocol, World& world, uint8_t player_id);
 
     /**
      * Loop principal que corre en el thread
      */
     void run() override;
-    
+
     /**
      * Métodos para que otros threads notifiquen eventos
      */
@@ -56,7 +55,7 @@ public:
     void on_race_end(const RaceResults& results);
     void on_modification_phase(const CarProperties& props);
     void on_game_end(const FinalResults& results);
-    
+
     /**
      * Métodos para enviar comandos (llamados por Game)
      */

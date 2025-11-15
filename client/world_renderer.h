@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <map>
+#include <vector>
 
 #include <SDL.h>
 #include <SDL2pp/Rect.hh>
@@ -10,9 +11,10 @@
 #include <SDL2pp/Texture.hh>
 
 #include "../common/messages/game_data.h"
+
 #include "world.h"
 
-using namespace SDL2pp;
+using namespace SDL2pp;  // NOLINT
 
 
 class WorldRenderer {
@@ -50,7 +52,6 @@ public:
 
     void add_explosion(float x, float y, int particle_count = 30);
     void add_collision_effect(float x, float y, float intensity);
-
 };
 
 #endif  // WORLD_RENDERER_H

@@ -13,11 +13,11 @@
 
 #include "event_handler.h"
 #include "interface_renderer.h"
+#include "sound_manager.h"
 #include "world.h"
 #include "world_renderer.h"
-#include "sound_manager.h"
 
-using namespace SDL2pp;
+using namespace SDL2pp;  // NOLINT
 
 
 class GameLoop;
@@ -81,7 +81,7 @@ private:
     // efectos visuales
     bool screen_flash_active = false;
     float flash_timer = 0.0f;
-    
+
     CheatType active_cheat_notification = CheatType::NONE;
     float cheat_notification_timer = 0.0f;
 
@@ -121,7 +121,6 @@ public:
     SoundManager& get_sound_manager() { return sound_manager; }
     WorldRenderer& get_world_renderer() { return world_renderer; }
     const CarProperties& get_current_properties() const { return current_properties; }
-
 };
 
 #endif  // GAME_H

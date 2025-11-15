@@ -14,9 +14,9 @@
 
 class World {
 private:
-    std::map<uint8_t, BroadcastData::CarState> cars; // estado de cada auto
-    uint32_t countdown = 0; // cuenta regresiva
-    mutable std::mutex mtx; // para poder bloquear en métodos const
+    std::map<uint8_t, BroadcastData::CarState> cars;  // estado de cada auto
+    uint32_t countdown = 0;                           // cuenta regresiva
+    mutable std::mutex mtx;                           // para poder bloquear en métodos const
 
 public:
     // limpia el estado del mundo (por ejemplo, al iniciar una nueva carrera)

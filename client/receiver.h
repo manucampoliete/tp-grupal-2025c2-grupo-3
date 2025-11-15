@@ -30,8 +30,7 @@ public:
      * server_snapshots_q: cola de snapshots recibidos
      * game_loop: referencia al GameLoop para notificar eventos
      */
-    Receiver(ClientProtocol& protocol, Queue<Snapshot>& server_snapshots_q,
-             GameLoop& game_loop);
+    Receiver(ClientProtocol& protocol, Queue<Snapshot>& server_snapshots_q, GameLoop& game_loop);
 
     /**
      * TODO: Add proper documentation

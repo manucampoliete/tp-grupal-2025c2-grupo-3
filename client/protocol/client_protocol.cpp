@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <stdexcept>
+
 #include <arpa/inet.h>
 
 #include "../../common/protocol/protocolConstants.h"

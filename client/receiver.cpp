@@ -1,8 +1,10 @@
 #include "receiver.h"
-#include "game_loop.h"
 
 #include <iostream>
+
 #include <syslog.h>
+
+#include "game_loop.h"
 
 
 Receiver::Receiver(ClientProtocol& protocol, Queue<Snapshot>& server_snapshots_q,
@@ -20,7 +22,7 @@ void Receiver::run() {
             std::cout << "[RECEIVER] Mensaje recibido: 0x" << std::hex << (int)msg_type << std::dec
                       << " (" << (int)msg_type << ")" << std::endl;
 
-            // no uso la queue para eventos puntuales 
+            // no uso la queue para eventos puntuales
             // solo la uso para lso snapshots de la carrera
 
             switch (msg_type) {
@@ -85,7 +87,7 @@ void Receiver::run() {
                     game_loop.on_checkpoint_crossed(checkpoint_id);
                     break;
                 }
-                
+
                 default:
                     std::cerr << "[RECEIVER] MENSAJE DESCONOCIDO: " << (int)msg_type << std::endl;
                     break;

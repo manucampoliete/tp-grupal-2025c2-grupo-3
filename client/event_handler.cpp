@@ -1,13 +1,14 @@
 #include "event_handler.h"
 
+#include <algorithm>
 #include <iostream>
+
 #include <SDL2pp/SDL.hh>
 
 #include "game.h"
 #include "game_loop.h"
 
-EventHandler::EventHandler(GameLoop& game_loop, Game& game):
-        game_loop(game_loop), game(game) {}
+EventHandler::EventHandler(GameLoop& game_loop, Game& game): game_loop(game_loop), game(game) {}
 
 
 bool EventHandler::handle_events() {
@@ -41,7 +42,7 @@ bool EventHandler::handle_events() {
                         game_loop.send_cheat_inmortality();
                     }
                     break;
-                
+
                 // G + C (Trigger: C)
                 case SDL_SCANCODE_C:
                     if (key_state[SDL_SCANCODE_G]) {
@@ -49,7 +50,7 @@ bool EventHandler::handle_events() {
                         game_loop.send_cheat_insta_win();
                     }
                     break;
-                
+
                 // L + E (Trigger: E)
                 case SDL_SCANCODE_E:
                     if (key_state[SDL_SCANCODE_L]) {
@@ -58,7 +59,7 @@ bool EventHandler::handle_events() {
                     }
                     break;
 
-                case SDL_SCANCODE_EQUALS: 
+                case SDL_SCANCODE_EQUALS:
                 case SDL_SCANCODE_KP_PLUS:
                     if (key_state[SDL_SCANCODE_LCTRL] || key_state[SDL_SCANCODE_RCTRL]) {
                         // Ctrl + '+': subir vol de musica
@@ -91,7 +92,7 @@ bool EventHandler::handle_events() {
                         game.get_sound_manager().toggle_sfx();
                     }
                     break;
-                
+
                 case SDL_SCANCODE_ESCAPE:
                     std::cout << "[GAME] ESC presionado, cerrando juego..." << std::endl;
                     return false;  // cerrar juego
@@ -109,16 +110,15 @@ bool EventHandler::handle_events() {
         bool down = state[SDL_SCANCODE_S] || state[SDL_SCANCODE_DOWN];
         bool left = state[SDL_SCANCODE_A] || state[SDL_SCANCODE_LEFT];
         bool right = state[SDL_SCANCODE_D] || state[SDL_SCANCODE_RIGHT];
-        
+
         if (up != last_up || down != last_down || left != last_left || right != last_right) {
             game_loop.send_movement(up, down, left, right);
-            
+
             last_up = up;
             last_down = down;
             last_left = left;
             last_right = right;
         }
-        
     }
 
     return true;

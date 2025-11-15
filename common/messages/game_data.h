@@ -135,7 +135,7 @@ struct Explosion {
             float vy = sin(angle) * speed;
             
             // Colores de fuego: rojo, naranja, amarillo
-            SDL_Color colors[] = {
+            SDL_Color const colors[] = {
                 {255, 0, 0, 255}, // rojo
                 {255, 128, 0, 255}, // naranja
                 {255, 255, 0, 255} // amarillo

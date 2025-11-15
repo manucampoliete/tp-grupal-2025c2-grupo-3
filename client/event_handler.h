@@ -2,10 +2,11 @@
 #define EVENT_HANDLER_H
 
 #include <cstdint>
+
 #include <SDL2pp/SDL.hh>
 
 
-using namespace SDL2pp;
+using namespace SDL2pp;  // NOLINT
 
 
 class Game;
@@ -14,7 +15,7 @@ class GameLoop;
 
 class EventHandler {
 private:
-    GameLoop& game_loop;  
+    GameLoop& game_loop;
     Game& game;
 
     bool last_up = false;

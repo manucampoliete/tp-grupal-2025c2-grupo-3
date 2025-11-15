@@ -10,9 +10,10 @@
 #include <SDL2pp/Texture.hh>
 
 #include "../common/messages/game_data.h"
+
 #include "world.h"
 
-using namespace SDL2pp;
+using namespace SDL2pp;  // NOLINT
 
 
 class UIRenderer {
@@ -40,8 +41,9 @@ private:
     Rect minimap_rect;
 
 public:
-    UIRenderer(Renderer& renderer, Font& font, Font& font_small, Font& font_big, Texture& map_texture, World& world,
-               uint8_t player_id, Texture& cheat_immortality_img, Texture& cheat_win_img, Texture& cheat_lose_img);
+    UIRenderer(Renderer& renderer, Font& font, Font& font_small, Font& font_big,
+               Texture& map_texture, World& world, uint8_t player_id,
+               Texture& cheat_immortality_img, Texture& cheat_win_img, Texture& cheat_lose_img);
 
     void render_countdown(uint8_t countdown_number);
 
@@ -51,14 +53,14 @@ public:
     void render_stats_popup(const RaceResults& current_results, uint32_t stats_timer_ms);
 
     void render_modification_popup(bool speed_modified, bool health_modified, bool saved,
-                                    uint32_t mod_timer_ms, const CarProperties& props);
-    
+                                   uint32_t mod_timer_ms, const CarProperties& props);
+
     void render_cheat_notif(CheatType active_cheat_notification);
 
     void render_eliminated_popup();
 
     void render_podium(const FinalResults& results);
-    
+
     void render_minimap();
 
     // para recalcular toda la UI
