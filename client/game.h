@@ -107,13 +107,14 @@ public:
     void show_countdown(uint8_t number);
     void show_stats(const RaceResults& results);
     void show_modifications(const CarProperties& props);
+    void show_cheat_notification(CheatType cheat_type);
+
+    void on_player_died(uint16_t player_id);
+    void on_collision(float x, float y, float intensity);
+    void trigger_screen_flash();
 
     SoundManager& get_sound_manager() { return sound_manager; }
     WorldRenderer& get_world_renderer() { return world_renderer; }
-
-    void trigger_screen_flash();
-    void show_cheat_notification(CheatType cheat_type);
-
     const CarProperties& get_current_properties() const { return current_properties; }
 };
 

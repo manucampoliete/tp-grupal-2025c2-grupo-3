@@ -171,13 +171,9 @@ void Game::handle_modification_click(int x, int y) {
 
 
 void Game::update(float dt) {
-    (void)dt;
-    // actualizacion de world
-    // obtiene el estado de todos los autos desde el World (que es actualizado por el Receiver)
+    world_renderer.update_effects(dt / 1000.0f);
+    
     auto car_states = world.getCars();
-
-    std::cout << "[GAME] Update: " << car_states.size() << " autos en world" << std::endl;
-
     race_timer_ms = world.getCountdown();
 
     // actualiza la posición y ángulo del auto del jugador local
@@ -193,9 +189,6 @@ void Game::update(float dt) {
 
         // Actualizar cámara
         world_renderer.update_camera(my_car_state.x, my_car_state.y);
-    } else {
-        std::cout << "[GAME] Mi auto (id=" << (int)player_id << ") NO está en el world!"
-                  << std::endl;
     }
 
     if (active_cheat_notification != CheatType::NONE) {
@@ -242,12 +235,62 @@ void Game::show_cheat_notification(CheatType cheat_type) {
     cheat_notification_timer = 3000.0f;
 }
 
+void Game::on_player_died(uint16_t dead_player_id) {
+    auto cars = world.getCars();
+    if (cars.count(dead_player_id)) {
+        const auto& dead_car = cars.at(dead_player_id);
+        
+        // explosión en la posición del auto muerto
+        world_renderer.add_explosion(dead_car.x, dead_car.y, 50);  // 50 partículas
+        sound_manager.play_sound("explosion");
+        
+        if (dead_player_id == player_id) {
+            std::cout << "[GAME] You died!" << std::endl;
+            current_state = game_state::ELIMINATED;
+        }
+    }
+}
+
+void Game::on_collision(float x, float y, float intensity) {
+    world_renderer.add_collision_effect(x, y, intensity);
+    
+    // sonido modulado por intensidad
+    // dejo aca o en gameloop?
+    int volume = static_cast<int>(intensity * MIX_MAX_VOLUME);
+    sound_manager.play_sound("collision", volume);
+    
+    // si la colisión es fuerte, hacer flash en pantalla
+    if (intensity > 0.7f)
+        trigger_screen_flash();
+}
+
+void Game::trigger_screen_flash() {
+    screen_flash_active = true;
+    flash_timer = 0.2f;  // dura 200ms
+}
+
+
+
 
 void Game::render() {
     renderer.Clear();
 
     // renderizar el mundo (mapa + autos) Con la camara y escalado
     world_renderer.render();
+
+    if (screen_flash_active) {
+        renderer.SetScale(1.0f, 1.0f);
+        renderer.SetDrawBlendMode(SDL_BLENDMODE_BLEND);
+        
+        float alpha = (flash_timer / 0.2f) * 200;  // se desvanece
+        renderer.SetDrawColor(255, 255, 255, static_cast<Uint8>(alpha));
+        renderer.FillRect(Rect(0, 0, window.GetWidth(), window.GetHeight()));
+        renderer.SetDrawBlendMode(SDL_BLENDMODE_NONE);
+        
+        flash_timer -= 0.016f;  // aprox 1 frame a 60fps
+        if (flash_timer <= 0)
+            screen_flash_active = false;
+    }
 
     // renderizar la ui sin la cámara y sin escalado
     switch (current_state) {
@@ -259,6 +302,7 @@ void Game::render() {
                                               window.GetWidth());
             break;
         case game_state::ELIMINATED:
+        //  interface_renderer.render_eliminated_popup();
             break;
         case game_state::SHOWING_STATS:
             interface_renderer.render_stats_popup(current_results, stats_timer_ms);
@@ -268,6 +312,7 @@ void Game::render() {
                     speed_modified, health_modified, saved, mod_timer_ms, current_properties);
             break;
         case game_state::GAME_END:
+        //  interface_renderer.render_final_stats();
             break;
     }
 

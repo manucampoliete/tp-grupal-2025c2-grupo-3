@@ -1,6 +1,7 @@
 #include "interface_renderer.h"
 
 #include <string>
+#include <sstream>
 
 UIRenderer::UIRenderer(Renderer& renderer, Font& font, Font& font_small, Font& font_big, Texture& map_texture,
                        World& world, uint8_t player_id):
@@ -499,8 +500,8 @@ void UIRenderer::render_cheat_notif(CheatType active_cheat_notification) {
     renderer.SetDrawColor(0, 0, 0, 180);
     renderer.FillRect(Rect(0, 0, w, h));
     
-    int popup_w = static_cast<int>(w * 0.5f);
-    int popup_h = static_cast<int>(h * 0.5f);
+    int popup_w = static_cast<int>(w * 0.7f);
+    int popup_h = static_cast<int>(h * 0.8f);
     int popup_x = (w - popup_w) / 2;
     int popup_y = (h - popup_h) / 2;
     
