@@ -36,7 +36,12 @@ void Receiver::run() {
                 case MSG_COUNTDOWN: {
                     std::cout << "[RECEIVER] → Procesando COUNTDOWN" << std::endl;
                     uint8_t number = protocol.recv_countdown();
-                    game_loop.on_countdown(number);
+                    if (number != last_countdown_number) {
+                        std::cout << "[RECEIVER] → Countdown cambió: " << (int)number << std::endl;
+                        game_loop.on_countdown(number);
+                        last_countdown_number = number;
+                    }
+                    // si es el mismo numero se ignora
                     break;
                 }
 

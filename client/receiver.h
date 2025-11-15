@@ -24,6 +24,8 @@ private:
     Queue<Snapshot>& server_snapshots_q;
     GameLoop& game_loop;
 
+    uint8_t last_countdown_number = 255; // valor cualquiera para forzar el primer updte
+
 public:
     /**
      * Constructor: initializes the Receiver with the given parameters.
