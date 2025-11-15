@@ -9,6 +9,12 @@ JoinGame::JoinGame(QWidget* parent, const std::vector<CarInfo>& cars):
         QWidget(parent), ui(new Ui::JoinGame), available_cars(cars) {
     ui->setupUi(this);
 
+    errorLabel = new QLabel(this);
+    errorLabel->setText("");
+    errorLabel->setAlignment(Qt::AlignCenter);
+    errorLabel->setStyleSheet("QLabel { color : red; }");
+    ui->mainLayout->addWidget(errorLabel);
+
     this->setAttribute(Qt::WA_StyledBackground, true);
     this->setAutoFillBackground(true);
 
@@ -29,6 +35,10 @@ void JoinGame::on_buttonJoin_clicked() {
     CarInfo selected = carSelector->getSelectedCar();
 
     emit joinGameRequested(player_name, game_id, selected);
+}
+
+void JoinGame::setJoinError() {
+    errorLabel->setText("Invalid ID");
 }
 
 JoinGame::~JoinGame() { delete ui; }

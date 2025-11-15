@@ -91,10 +91,15 @@ Lobby::Lobby(ClientProtocol& protocol, QWidget* parent):
 
 void Lobby::handleJoinGameRequest(const QString& username, const QString& gameId,
                                   const CarInfo& car) {
-    bool joined = protocol.send_join(static_cast<uint16_t>(gameId.toInt()), username.toStdString(),
-                                     static_cast<uint8_t>(car.id));
+    bool joined = protocol.send_join(static_cast<uint16_t>(gameId.toInt()), username.toStdString(), static_cast<uint8_t>(car.id));
+
+    if (!joined) {
+        join_game->setJoinError();
+        return;
+    }
+
     car_id = static_cast<uint16_t>(car.id);
-    std::cout << joined << std::endl;
+    
     guest_waiting->setMatchID(gameId);
     stackedWidget->setCurrentWidget(guest_waiting);
     std::thread([this]() {
@@ -103,8 +108,7 @@ void Lobby::handleJoinGameRequest(const QString& username, const QString& gameId
     }).detach();
 }
 
-void Lobby::handleNewGameRequest(const QString& username,
-                                 const CarInfo& car)  // car pasarlo a id y a uint
+void Lobby::handleNewGameRequest(const QString& username, const CarInfo& car)
 {
     uint16_t match_id = protocol.send_create(username.toStdString(), static_cast<uint8_t>(car.id));
     car_id = static_cast<uint16_t>(car.id);
