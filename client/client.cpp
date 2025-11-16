@@ -3,7 +3,6 @@
 #include <QApplication>
 #include <iostream>
 
-#include "../protocol/client_protocol.h"
 #include "lobby/lobby.h"
 
 

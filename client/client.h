@@ -8,7 +8,7 @@
 
 #include "../common/messages/snapshot.h"
 #include "../common/socket/socket.h"
-#include "../protocol/client_protocol.h"
+#include "../protocol/clientProtocol.h"
 
 #include "gameHandler.h"
 

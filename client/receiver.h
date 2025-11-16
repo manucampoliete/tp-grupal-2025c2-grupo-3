@@ -7,7 +7,7 @@
 #include "../common/thread/thread.h"
 #include "../common/types/types.h"
 #include "../common/utils/activeDirections.h"
-#include "../protocol/client_protocol.h"
+#include "../protocol/clientProtocol.h"
 
 
 class GameLoop;

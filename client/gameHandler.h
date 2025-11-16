@@ -8,7 +8,7 @@
 #include "../common/messages/snapshot.h"
 #include "../common/queue/queue.h"
 #include "../common/utils/activeDirections.h"
-#include "../protocol/client_protocol.h"
+#include "../protocol/clientProtocol.h"
 
 #include "game_loop.h"
 #include "receiver.h"
