@@ -16,6 +16,12 @@
 
 
 class ClientProtocol: public SendProtocol, public RecvProtocol {
+private:
+    /**
+     * Packs an ActiveDirections object into a byte.
+     */
+    uint8_t encodeMoveState(const ActiveDirections& activeDirections);
+
 public:
     explicit ClientProtocol(Socket& socket);
 
@@ -42,7 +48,7 @@ public:
      */
     uint8_t recv_message_type();
 
-    void send_move(const ActiveDirections& request);
+    void sendMove(const ActiveDirections& activeDirections);
     void send_modifications(bool speed_mod, bool health_mod);
 
     Snapshot recv_snapshot();

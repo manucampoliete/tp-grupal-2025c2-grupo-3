@@ -7,6 +7,19 @@
 
 #include "../../common/protocol/protocolConstants.h"
 
+uint8_t ClientProtocol::encodeMoveState(const ActiveDirections& activeDirections) {
+    uint8_t moveState = 0;
+    if (activeDirections.up)
+        moveState |= UP_MASK;
+    if (activeDirections.down)
+        moveState |= DOWN_MASK;
+    if (activeDirections.left)
+        moveState |= LEFT_MASK;
+    if (activeDirections.right)
+        moveState |= RIGHT_MASK;
+    return moveState;
+}
+
 
 ClientProtocol::ClientProtocol(Socket& socket): SendProtocol(socket), RecvProtocol(socket) {}
 
@@ -85,21 +98,9 @@ void ClientProtocol::recv_start_signal() {
  */
 uint8_t ClientProtocol::recv_message_type() { return recvU8(); }
 
-void ClientProtocol::send_move(const ActiveDirections& request) {
+void ClientProtocol::sendMove(const ActiveDirections& activeDirections) {
     sendU8(SEND_MOVE_STATE);
-
-    // empaquetar direcciones en un byte
-    uint8_t directions = 0;
-    if (request.up)
-        directions |= UP_MASK;
-    if (request.down)
-        directions |= DOWN_MASK;
-    if (request.left)
-        directions |= LEFT_MASK;
-    if (request.right)
-        directions |= RIGHT_MASK;
-
-    sendU8(directions);
+    sendU8(encodeMoveState(activeDirections));
 }
 
 void ClientProtocol::send_modifications(bool speed_mod, bool health_mod) {
