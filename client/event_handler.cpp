@@ -1,15 +1,14 @@
 #include "event_handler.h"
 
+#include <algorithm>
 #include <iostream>
 
 #include <SDL2pp/SDL.hh>
 
-#include "client.h"
-#include "event_handler.h"
 #include "game.h"
+#include "game_loop.h"
 
-EventHandler::EventHandler(GameHandler& game_handler, Game& game):
-        game_handler(game_handler), game(game) {}
+EventHandler::EventHandler(GameLoop& game_loop, Game& game): game_loop(game_loop), game(game) {}
 
 
 bool EventHandler::handle_events() {
@@ -19,7 +18,6 @@ bool EventHandler::handle_events() {
     while (SDL_PollEvent(&event)) {
         if (event.type == SDL_QUIT)
             return false;
-        
         // Manejo de UI responsive
         if (event.type == SDL_WINDOWEVENT) {
             switch (event.window.event) {
@@ -41,23 +39,27 @@ bool EventHandler::handle_events() {
                 case SDL_SCANCODE_L:
                     if (key_state[SDL_SCANCODE_I]) {
                         std::cout << "[CHEAT] Inmortalidad (I+L) activada!" << std::endl;
-                        game_handler.send_cheat_inmortality();
+                        game_loop.send_cheat_inmortality();
                     }
                     break;
-                    
-                // Trigger K
-                case SDL_SCANCODE_K:
-                    if (key_state[SDL_SCANCODE_I] && key_state[SDL_SCANCODE_W]) {
-                        std::cout << "[CHEAT] InstaWin (I+W+K) activado!" << std::endl;
-                        game_handler.send_cheat_insta_win();
-                    }
-                    else if (key_state[SDL_SCANCODE_I] && key_state[SDL_SCANCODE_L]) {
-                        std::cout << "[CHEAT] InstaLose (I+L+K) activado!" << std::endl;
-                        game_handler.send_cheat_insta_lose();
+
+                // G + C (Trigger: C)
+                case SDL_SCANCODE_C:
+                    if (key_state[SDL_SCANCODE_G]) {
+                        std::cout << "[CHEAT] InstaWin (G+C) activado!" << std::endl;
+                        game_loop.send_cheat_insta_win();
                     }
                     break;
-            
-                case SDL_SCANCODE_EQUALS: 
+
+                // L + E (Trigger: E)
+                case SDL_SCANCODE_E:
+                    if (key_state[SDL_SCANCODE_L]) {
+                        std::cout << "[CHEAT] InstaLose (L+E) activado!" << std::endl;
+                        game_loop.send_cheat_insta_lose();
+                    }
+                    break;
+
+                case SDL_SCANCODE_EQUALS:
                 case SDL_SCANCODE_KP_PLUS:
                     if (key_state[SDL_SCANCODE_LCTRL] || key_state[SDL_SCANCODE_RCTRL]) {
                         // Ctrl + '+': subir vol de musica
@@ -91,7 +93,11 @@ bool EventHandler::handle_events() {
                     }
                     break;
 
-                
+                case SDL_SCANCODE_ESCAPE:
+                    std::cout << "[GAME] ESC presionado, cerrando juego..." << std::endl;
+                    return false;  // cerrar juego
+                    break;
+
                 default:
                     break;
             }
@@ -104,16 +110,15 @@ bool EventHandler::handle_events() {
         bool down = state[SDL_SCANCODE_S] || state[SDL_SCANCODE_DOWN];
         bool left = state[SDL_SCANCODE_A] || state[SDL_SCANCODE_LEFT];
         bool right = state[SDL_SCANCODE_D] || state[SDL_SCANCODE_RIGHT];
-        
+
         if (up != last_up || down != last_down || left != last_left || right != last_right) {
-            game_handler.send_movement(up, down, left, right);
-            
+            game_loop.send_movement(up, down, left, right);
+
             last_up = up;
             last_down = down;
             last_left = left;
             last_right = right;
         }
-        
     }
 
     return true;

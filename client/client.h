@@ -3,11 +3,13 @@
 
 #include <memory>
 #include <string>
+
 #include <sys/socket.h>
 
 #include "../common/messages/snapshot.h"
 #include "../common/socket/socket.h"
 #include "../protocol/client_protocol.h"
+
 #include "game_handler.h"
 
 

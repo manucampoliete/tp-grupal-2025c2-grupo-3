@@ -3,26 +3,22 @@
 #include <SDL2pp/SDL.hh>
 #include <SDL2pp/SDL2pp.hh>
 
-
-// muestro todo lo que pasa en el juego
-// por ahi mas adelante cuando haya mas cosas convenga separar en mas clases
+#include "game_loop.h"
 
 
-Game::Game(World& world, GameHandler& game_handler, uint8_t player_id):
+Game::Game(World& world, GameLoop& game_loop, uint8_t player_id):
         sdl(SDL_INIT_VIDEO | SDL_INIT_AUDIO),
         ttf(),
-
-        // ventana principal con título, pos automática y tamaño 800x600
         window("Need For Speed", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 800, 600,
                SDL_WINDOW_RESIZABLE),
-
-        // renderer acelerado por hardware
         renderer(window, -1, SDL_RENDERER_ACCELERATED),
-        font("client/assets/fonts/VCR_OSD_MONO.ttf", 24),  // font
+        font("client/assets/fonts/VCR_OSD_MONO.ttf", 24),
         font_small("client/assets/fonts/VCR_OSD_MONO.ttf", 18),
+        font_big("client/assets/fonts/VCR_OSD_MONO.ttf", 30),
 
         // cargo la textura del mapa desde un archivo
-        // por ahora hardcodeo una cualquiera
+        // por ahora hardcodeo uno
+        // cambiar cunaod este el editor listo
         map_texture(renderer, "client/assets/cities/Game Boy _ GBC - Grand Theft Auto - "
                               "Backgrounds - Vice City.png"),
 
@@ -33,15 +29,20 @@ Game::Game(World& world, GameHandler& game_handler, uint8_t player_id):
                         "client/assets/cars/Mobile - Grand Theft Auto 4 - Miscellaneous - Cars.png")
                         .SetColorKey(true, 0xa3a30d)),
 
-        world(world),
-        game_handler(game_handler),
-        player_id(player_id),
-        event_handler(game_handler, *this),
+        cheat_inmortality_img(renderer, "client/assets/cheats/inmortality.png"),
+        cheat_win_img(renderer, "client/assets/cheats/win.png"),
+        cheat_lose_img(renderer, "client/assets/cheats/lose.png"),
 
-        // Inicializo los renderers
+        world(world),
+        game_loop(game_loop),
+        player_id(player_id),
+        event_handler(game_loop, *this),
         world_renderer(renderer, map_texture, car_sprites, world, player_id),
-        interface_renderer(renderer, font, font_small, map_texture, world, player_id),
+        interface_renderer(renderer, font, font_small, font_big, map_texture, world, player_id,
+                           cheat_inmortality_img, cheat_win_img, cheat_lose_img),
         sound_manager() {
+
+    eliminated_popup_delay_ms = 0.0f;
 
     SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "0");
     SDL_SetHint(SDL_HINT_AUDIO_RESAMPLING_MODE, "1");
@@ -49,7 +50,6 @@ Game::Game(World& world, GameHandler& game_handler, uint8_t player_id):
 
     try {
         sound_manager.load_music("client/assets/sounds/music.mp3");
-        
         sound_manager.load_sound("collision", "client/assets/sounds/crash.wav");
         sound_manager.load_sound("explosion", "client/assets/sounds/explosion.wav");
         sound_manager.load_sound("checkpoint", "client/assets/sounds/checkpoint.wav");
@@ -57,13 +57,15 @@ Game::Game(World& world, GameHandler& game_handler, uint8_t player_id):
         sound_manager.load_sound("race_end", "client/assets/sounds/finish.wav");
         sound_manager.load_sound("brake", "client/assets/sounds/brake.wav");
         sound_manager.load_sound("engine", "client/assets/sounds/engine.wav");
-        
+        sound_manager.load_sound("confirm", "client/assets/sounds/confirm.wav");
+        sound_manager.load_sound("victory", "client/assets/sounds/victory.wav");
+
         std::cout << "[GAME] Todos los sonidos cargados correctamente" << std::endl;
-        
-        // iniciar música
+
+        // a chequear cuando este el flujo completo!
         // esto por ahi no tendria que ir aca cuando este el countdown?
         sound_manager.play_music();
-        
+
     } catch (const std::exception& e) {
         std::cerr << "[GAME] Error cargando sonidos: " << e.what() << std::endl;
         std::cerr << "[GAME] El juego continuará sin audio" << std::endl;
@@ -73,49 +75,27 @@ Game::Game(World& world, GameHandler& game_handler, uint8_t player_id):
 }
 
 
-void Game::run() {
-    const int FRAME_RATE = 60;
-    const float FRAME_TIME_MS = 1000.0f / FRAME_RATE;
-
-    float t1 = SDL_GetTicks();
-    int it = 0;
-
-    while (is_running) {
-        // 1. procesar input y actualizar estado
-        if (current_state == game_state::RACING) {
-            if (!event_handler.handle_events()) {
-                is_running = false;
-            }
-        } else {
-            process_input();
-        }
-        update(FRAME_TIME_MS);
-        render();
-
-        // 2. sincronizar con el rate constante
-        float t2 = SDL_GetTicks();
-        float rest = FRAME_TIME_MS - (t2 - t1);
-
-        if (rest < 0) {
-            float behind = -rest;
-            rest = FRAME_TIME_MS - fmod(behind, FRAME_TIME_MS);
-            float lost = behind + rest;
-            t1 += lost;
-            it += static_cast<int>(lost / FRAME_TIME_MS);
-        }
-
-        SDL_Delay(static_cast<Uint32>(rest));
-        t1 += FRAME_TIME_MS;
-        it++;
+bool Game::process_frame(float dt) {
+    // procesar input
+    if (current_state == game_state::RACING) {
+        if (!event_handler.handle_events())
+            return false;  // se cerró la ventana
+    } else {
+        process_input();
+        if (quit)
+            return false;
     }
+
+    update(dt);
+    render();
+
+    return true;
 }
 
-// para recalcular toda la UI
+
 void Game::update_ui_layout() {
     int w = window.GetWidth();
     int h = window.GetHeight();
-
-    // Actualizar layouts de los renderers
     world_renderer.update_layout(w, h);
     interface_renderer.update_layout(w, h);
 }
@@ -125,7 +105,12 @@ void Game::process_input() {
     SDL_Event event;
     while (SDL_PollEvent(&event)) {
         if (event.type == SDL_QUIT) {
-            is_running = false;
+            quit = true;
+            return;
+        }
+
+        if (event.type == SDL_KEYDOWN && event.key.keysym.scancode == SDL_SCANCODE_ESCAPE) {
+            quit = true;
             return;
         }
 
@@ -141,150 +126,61 @@ void Game::process_input() {
                 if (interface_renderer.get_speed_button_rect().Contains(x, y)) {
                     speed_modified = !speed_modified;
                     sound_manager.play_sound("button_click");
-                    std::cout << "[GAME] Velocidad " << (speed_modified ? "activada" : "desactivada") << std::endl;
+                    std::cout << "[GAME] Velocidad "
+                              << (speed_modified ? "activada" : "desactivada") << std::endl;
                 }
 
                 // BOTÓN DE SALUD
                 if (interface_renderer.get_health_button_rect().Contains(x, y)) {
                     health_modified = !health_modified;
                     sound_manager.play_sound("button_click");
-                    std::cout << "[GAME] Salud " << (health_modified ? "activada" : "desactivada") << std::endl;
+                    std::cout << "[GAME] Salud " << (health_modified ? "activada" : "desactivada")
+                              << std::endl;
                 }
             }
 
             // BOTÓN GUARDAR
             if (interface_renderer.get_save_button_rect().Contains(x, y) && !saved) {
-                saved = true; // no se puede deshacer como los otros
+                saved = true;  // no se puede deshacer
                 sound_manager.play_sound("confirm");
-                game_handler.send_modifications(speed_modified, health_modified);
+                game_loop.send_modifications(speed_modified, health_modified);
                 std::cout << "[GAME] ✓ Modificaciones enviadas!" << std::endl;
             }
-            
         }
     }
 }
-
-
 
 game_state Game::get_current_state() const { return current_state; }
 
-void Game::handle_modification_click(int x, int y) {
-    if (interface_renderer.get_speed_button_rect().Contains(x, y))
-        speed_modified = !speed_modified;
-
-    if (interface_renderer.get_health_button_rect().Contains(x, y))
-        health_modified = !health_modified;
-
-    if (interface_renderer.get_save_button_rect().Contains(x, y)) {
-        saved = !saved;
-        game_handler.send_modifications(speed_modified, health_modified);
-    }
-}
-
-
 void Game::update(float dt) {
-    (void)dt;
-    // actualizacion de world
-    // obtiene el estado de todos los autos desde el World (que es actualizado por el Receiver)
+    world_renderer.update_effects(dt / 1000.0f);
+
     auto car_states = world.getCars();
-
-    std::cout << "[GAME] Update: " << car_states.size() << " autos en world" << std::endl;
-
     race_timer_ms = world.getCountdown();
 
-    // actualiza la posición y ángulo del auto del jugador local
-    //  y mas adelante de los otros autos?
     if (car_states.count(player_id)) {
         const auto& my_car_state = car_states.at(player_id);
-
-        std::cout << "[GAME] Mi auto: pos=(" << my_car_state.x << "," << my_car_state.y
-                  << "), angle=" << my_car_state.angle << std::endl;
-
-        // para actualizar la posición en pantalla del auto segun lo que dice el server
-        //    player_car.set_state(my_car_state.x, my_car_state.y, my_car_state.angle);
-
-        // Actualizar cámara
         world_renderer.update_camera(my_car_state.x, my_car_state.y);
-    } else {
-        std::cout << "[GAME] Mi auto (id=" << (int)player_id << ") NO está en el world!"
-                  << std::endl;
     }
 
-    /*
-    // HARDCODEADO: manejar transiciones para testear lo visual
-    if (current_state == game_state::COUNTDOWN) {
-        countdown_timer += dt;
-
-        if (countdown_timer >= 1000.0f) { // cada 1 seg
-            countdown_timer = 0.0f;
-
-            if (countdown_number > 0) {
-                countdown_number--;
-            } else {
-                // despues del GO empezar carrera
-                current_state = game_state::RACING;
-                race_timer_ms = 20000; // resetear a 20 seg
-            }
-        }
-    } else if (current_state == game_state::RACING) {
-        if (race_timer_ms > dt) {
-            race_timer_ms -= static_cast<uint32_t>(dt);
-        } else {
-            // cuando se acaba el tiempo, mostrar stats
-            race_timer_ms = 0;
-
-            // HARDCODEADO: resultados de prueba
-            RaceResults fake_results;
-            fake_results.countdown_ms = 10000; // 10 seg
-
-            RaceResults::PlayerResult p1;
-            p1.player_name = "Player1";
-            p1.race_time_ms = 58000;
-            p1.total_time_ms = 180000;
-            fake_results.players.push_back(p1);
-
-            RaceResults::PlayerResult p2;
-            p2.player_name = "Player2";
-            p2.race_time_ms = 60000;
-            p2.total_time_ms = 185000;
-            fake_results.players.push_back(p2);
-
-            show_stats(fake_results);
-        }
-    } else if (current_state == game_state::SHOWING_STATS) {
-        if (stats_timer_ms > dt) {
-            stats_timer_ms -= static_cast<uint32_t>(dt);
-        } else {
-            // pasar a modificaciones
-            stats_timer_ms = 0;
-
-            // HARDCODEADO: propiedades de prueba
-            CarProperties fake_props;
-            fake_props.countdown_ms = 10000; // 10 seg
-            show_modifications(fake_props);
-        }
-    } else if (current_state == game_state::MODIFYING_CAR) {
-        if (mod_timer_ms > dt) {
-            mod_timer_ms -= static_cast<uint32_t>(dt);
-        } else {
-            // volver a countdown para siguiente carrera
-            mod_timer_ms = 0;
-            countdown_number = 3;
-            countdown_timer = 0.0f;
-            current_state = game_state::COUNTDOWN;
-            current_race++;
-        }
+    if (active_cheat_notification != CheatType::NONE) {
+        cheat_notification_timer -= dt;
+        if (cheat_notification_timer <= 0)
+            active_cheat_notification = CheatType::NONE;
     }
-    */
+
+    if (eliminated_popup_delay_ms > 0) {
+        eliminated_popup_delay_ms -= dt;
+        if (eliminated_popup_delay_ms < 0)
+            eliminated_popup_delay_ms = 0;
+    }
 }
 
-
-// metodos para que game actualice su state
 
 void Game::start_race() {
     current_state = game_state::RACING;
-    // desp recibo el tiempo del server supongo, por ahora lo pongo aca
-    // race_timer = 600.0f;
+    // sonido de inicio (diferente al countdown)
+    // sound_manager.play_sound("race_start");
 }
 
 void Game::set_race_timer(uint16_t time_ms) { this->race_timer_ms = time_ms; }
@@ -293,12 +189,18 @@ void Game::show_countdown(uint8_t number) {
     current_state = game_state::COUNTDOWN;
     countdown_number = number;
     countdown_timer = 0.0f;
+    if (number <= 3)
+        sound_manager.play_sound("countdown");
+    // En GO! desp veo si usar game_start o directamente la musica
 }
 
 void Game::show_stats(const RaceResults& results) {
     current_state = game_state::SHOWING_STATS;
     current_results = results;
     stats_timer_ms = results.countdown_ms;
+
+    sound_manager.stop_music();
+    sound_manager.play_sound("race_end");
 }
 
 void Game::show_modifications(const CarProperties& props) {
@@ -310,14 +212,76 @@ void Game::show_modifications(const CarProperties& props) {
     saved = false;
 }
 
+void Game::show_cheat_notification(CheatType cheat_type) {
+    active_cheat_notification = cheat_type;
+    cheat_notification_timer = 300.0f;
+}
+
+void Game::show_final_results(const FinalResults& results) {
+    current_state = game_state::GAME_END;
+    final_results = results;
+
+    sound_manager.stop_music();
+    if (results.winner_id == player_id)
+        sound_manager.play_sound("victory");
+}
+
+
+void Game::on_collision(float x, float y, float intensity) {
+    world_renderer.add_collision_effect(x, y, intensity);
+
+    // conido modulado por intensidad
+    int volume = static_cast<int>(intensity * MIX_MAX_VOLUME);
+    sound_manager.play_sound("collision", volume);
+
+    if (intensity > 0.7f)
+        trigger_screen_flash();
+}
+
+void Game::on_player_died(uint16_t dead_player_id) {
+    auto cars = world.getCars();
+    if (cars.count(dead_player_id)) {
+        const auto& dead_car = cars.at(dead_player_id);
+
+        // explosion con 50 partculas
+        world_renderer.add_explosion(dead_car.x, dead_car.y, 50);
+        sound_manager.play_sound("explosion");
+
+        std::cout << "[GAME] Explosión en (" << dead_car.x << "," << dead_car.y << ")" << std::endl;
+    }
+
+    // para el player que murio
+    if (dead_player_id == player_id) {
+        current_state = game_state::ELIMINATED;
+        sound_manager.pause_music();
+        eliminated_popup_delay_ms = 1500.0f;
+    }
+}
+
+void Game::trigger_screen_flash() {
+    screen_flash_active = true;
+    flash_timer = 0.2f;  // dura 200ms
+}
+
 
 void Game::render() {
     renderer.Clear();
-
-    // renderizar el mundo (mapa + autos) Con la camara y escalado
     world_renderer.render();
 
-    // renderizar la ui sin la cámara y sin escalado
+    if (screen_flash_active) {
+        renderer.SetScale(1.0f, 1.0f);
+        renderer.SetDrawBlendMode(SDL_BLENDMODE_BLEND);
+
+        float alpha = (flash_timer / 0.2f) * 200;  // se desvanece
+        renderer.SetDrawColor(255, 255, 255, static_cast<Uint8>(alpha));
+        renderer.FillRect(Rect(0, 0, window.GetWidth(), window.GetHeight()));
+        renderer.SetDrawBlendMode(SDL_BLENDMODE_NONE);
+
+        flash_timer -= 0.016f;  // aprox 1 frame a 60fps
+        if (flash_timer <= 0)
+            screen_flash_active = false;
+    }
+
     switch (current_state) {
         case game_state::COUNTDOWN:
             interface_renderer.render_countdown(countdown_number);
@@ -327,22 +291,26 @@ void Game::render() {
                                               window.GetWidth());
             break;
         case game_state::ELIMINATED:
+            if (eliminated_popup_delay_ms <= 0)
+                interface_renderer.render_eliminated_popup();
             break;
         case game_state::SHOWING_STATS:
-            interface_renderer.render_stats_popup(current_results, stats_timer_ms,
-                                                  interface_renderer.get_speed_button_rect());
+            interface_renderer.render_stats_popup(current_results, stats_timer_ms);
             break;
         case game_state::MODIFYING_CAR:
-            interface_renderer.render_modification_popup(
-                    speed_modified, health_modified, saved, mod_timer_ms,
-                    interface_renderer.get_speed_button_rect());
+            interface_renderer.render_modification_popup(speed_modified, health_modified, saved,
+                                                         mod_timer_ms, current_properties);
             break;
         case game_state::GAME_END:
+            interface_renderer.render_podium(final_results);
             break;
     }
 
     if (current_state == game_state::RACING)
         interface_renderer.render_minimap();
+
+    if (active_cheat_notification != CheatType::NONE)
+        interface_renderer.render_cheat_notif(active_cheat_notification);
 
     renderer.Present();
 }

@@ -10,28 +10,23 @@
 #include "../common/utils/activeDirections.h"
 #include "../protocol/client_protocol.h"
 
+#include "game_loop.h"
 #include "receiver.h"
 #include "sender.h"
 #include "world.h"
 
 
-class Game;
-class Client;
-
-
 /**
  * GameHandler: coordinar la lógica del juego en el cliente
  * - Maneja el World (estado del juego)
- * - Maneja Game (SDL)
- * - Maneja Sender/Receiver (comunicación con servidor)
- * - Procesa eventos del servidor y los traduce a acciones en el Game
+ * - Maneja Sender, Receiver, GameLoop
+ * - Procesa eventos del servidor
  */
 class GameHandler {
 private:
     ClientProtocol& protocol;
     uint8_t player_id;
 
-    // estado del juego
     World world;
 
     Queue<ActiveDirections> client_requests_q;
@@ -39,69 +34,18 @@ private:
 
     Sender sender;
     Receiver receiver;
+    GameLoop game_loop;
 
-    // juego (SDL)
-    std::unique_ptr<Game> game;
-
-    // control de ejecución
     std::atomic<bool> running;
 
 public:
-    // player_id: id asignado al jugador (por ahora hardcodeado)
     GameHandler(ClientProtocol& protocol, uint8_t player_id);
 
-    // ejecuta el juego completo:
-    // inicia hilos, lanza el game loop de SDL y procesa eventos del servidor
+    // ejecuta el juego completo: inicia los 3 hilos
     void run();
 
     // detiene el juego y los hilos
     void stop();
-
-
-    // actualiza el estado del mundo con un nuevo snapshot del servidor
-    void update_world(const Snapshot& snapshot);
-
-    // muestra countdown en pantalla (3, 2, 1, GO!)
-    void on_countdown(uint8_t number);
-
-    // inicia la carrera
-    void on_race_start();
-
-    // el jugador cruzó un checkpoint
-    // PARA MAS ADELANTE!
-    void on_checkpoint_crossed(uint8_t checkpoint_id);
-
-    // Notificación de colisión
-    // PARA MAS ADELANTE!
-    void on_collision(const CollisionData& collision);
-
-    // Un jugador murió
-    // PARA MAS ADELANTE!
-    void on_player_died(uint16_t player_id);
-
-    // Terminó la carrera, mostrar resultados
-    void on_race_end(const RaceResults& results);
-
-    // fase de modificación de auto
-    void on_modification_phase(const CarProperties& props);
-
-    // partida completa terminada, mostrar ganador
-    void on_game_end(const FinalResults& results);
-
-
-    // envía un input de movimiento al servidor
-    void send_movement(bool up, bool down, bool left, bool right);
-
-    // envía modificaciones del auto al servidor
-    void send_modifications(bool speed, bool health);
-
-    World& get_world() { return world; }
-    uint8_t get_player_id() const { return player_id; }
-
-    void send_cheat_inmortality();
-    void send_cheat_insta_win();
-    void send_cheat_insta_lose();
-
 
     ~GameHandler();
 };

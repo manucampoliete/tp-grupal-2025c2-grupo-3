@@ -26,6 +26,11 @@ void Client::run(int argc, char* argv[]) {
     lobby.show();
     app.exec();  // blocking hasta que se cierre el lobby
 
+    if (!lobby.shouldStartGame()) {
+        std::cout << "[CLIENT] Lobby closed, exiting client..." << std::endl;
+        return;
+    }
+
     std::cout << "[CLIENT] Lobby finished, starting game..." << std::endl;
 
     // FASE 2: game (SDL)

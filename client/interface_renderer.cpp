@@ -1,15 +1,23 @@
 #include "interface_renderer.h"
 
+#include <algorithm>
+#include <sstream>
 #include <string>
 
-UIRenderer::UIRenderer(Renderer& renderer, Font& font, Font& font_small, Texture& map_texture,
-                       World& world, uint8_t player_id):
+UIRenderer::UIRenderer(Renderer& renderer, Font& font, Font& font_small, Font& font_big,
+                       Texture& map_texture, World& world, uint8_t player_id,
+                       Texture& cheat_immortality_img, Texture& cheat_win_img,
+                       Texture& cheat_lose_img):
         renderer(renderer),
         font(font),
         font_small(font_small),
+        font_big(font_big),
         map_texture(map_texture),
         world(world),
-        player_id(player_id) {}
+        player_id(player_id),
+        cheat_immortality_img(cheat_immortality_img),
+        cheat_win_img(cheat_win_img),
+        cheat_lose_img(cheat_lose_img) {}
 
 
 void UIRenderer::update_layout(int window_width, int window_height) {
@@ -117,11 +125,7 @@ void UIRenderer::render_race_ui(uint32_t race_timer_ms, int current_race, int to
 }
 
 
-void UIRenderer::render_stats_popup(const RaceResults& current_results, uint32_t stats_timer_ms,
-                                    const Rect& dummy_rect) {
-    (void)dummy_rect;  // no se usa
-    // recalculo para hacer que el popup sea responsive
-
+void UIRenderer::render_stats_popup(const RaceResults& current_results, uint32_t stats_timer_ms) {
     // reseteo el escalado para la UI
     renderer.SetScale(1.0f, 1.0f);
 
@@ -263,10 +267,7 @@ void UIRenderer::render_stats_popup(const RaceResults& current_results, uint32_t
 
 
 void UIRenderer::render_modification_popup(bool speed_modified, bool health_modified, bool saved,
-                                           uint32_t mod_timer_ms, const Rect& dummy_rect) {
-    (void)dummy_rect;  // no se usa
-    // recalculo para hacer que el popup sea responsive
-
+                                           uint32_t mod_timer_ms, const CarProperties& props) {
     // reseteo el escalado para la UI
     renderer.SetScale(1.0f, 1.0f);
 
@@ -335,7 +336,9 @@ void UIRenderer::render_modification_popup(bool speed_modified, bool health_modi
     renderer.DrawRect(speed_btn);
 
     // texto del botón (centrado verticalmente)
-    Surface speed_surface = active_font.RenderText_Solid("Velocity +5%", {255, 255, 255, 255});
+    std::string speed_text =
+            "Velocity: " + std::to_string(props.speed) + " → " + std::to_string(props.speed + 5);
+    Surface speed_surface = active_font.RenderText_Solid(speed_text, {255, 255, 255, 255});
     Texture speed_texture(renderer, speed_surface);
     int speed_text_x = speed_btn.x + (speed_btn.w - speed_texture.GetWidth()) / 2;  // centrado
     int speed_text_y = speed_btn.y + 15;
@@ -363,7 +366,9 @@ void UIRenderer::render_modification_popup(bool speed_modified, bool health_modi
                           health_modified ? 100 : 120, 255);
     renderer.DrawRect(health_btn);
 
-    Surface health_surface = active_font.RenderText_Solid("Health +5%", {255, 255, 255, 255});
+    std::string health_text =
+            "Health: " + std::to_string(props.health) + " → " + std::to_string(props.health + 5);
+    Surface health_surface = active_font.RenderText_Solid(health_text, {255, 255, 255, 255});
     Texture health_texture(renderer, health_surface);
     int health_text_x = health_btn.x + (health_btn.w - health_texture.GetWidth()) / 2;  // centrado
     int health_text_y = health_btn.y + 15;
@@ -382,7 +387,7 @@ void UIRenderer::render_modification_popup(bool speed_modified, bool health_modi
 
     // BOTON GUARDAR
     renderer.SetDrawBlendMode(SDL_BLENDMODE_BLEND);
-    
+
     if (saved)
         // verde oscuro cuando ya se guardó (no se puede cambiar)
         renderer.SetDrawColor(30, 120, 30, 255);
@@ -390,13 +395,13 @@ void UIRenderer::render_modification_popup(bool speed_modified, bool health_modi
         // azul cuando no se guardó
         renderer.SetDrawColor(50, 150, 255, 255);
     renderer.FillRect(save_btn);
-    
+
     renderer.SetDrawBlendMode(SDL_BLENDMODE_NONE);
-    
+
     if (saved)
-        renderer.SetDrawColor(60, 200, 60, 255); // borde verde
+        renderer.SetDrawColor(60, 200, 60, 255);  // borde verde
     else
-        renderer.SetDrawColor(100, 200, 255, 255); // borde azul
+        renderer.SetDrawColor(100, 200, 255, 255);  // borde azul
     renderer.DrawRect(save_btn);
 
     std::string save_text = saved ? "SAVED!" : "SAVE AND CONTINUE";
@@ -454,7 +459,7 @@ void UIRenderer::render_minimap() {
         // TEMPORAL!!!
         // ahora que uso el id como indice de auto hago este punto de color hardcodeado.
         // despues habria que chequear por auto segun id
-        uint8_t car_type = car_state.type; 
+        uint8_t car_type = car_state.type;
         switch (car_type) {
             case 0:  // verde (CARS[0])
                 renderer.SetDrawColor(0, 255, 0, 255);
@@ -490,4 +495,323 @@ void UIRenderer::render_minimap() {
     renderer.SetDrawBlendMode(SDL_BLENDMODE_NONE);
     renderer.SetDrawColor(255, 255, 255, 255);
     renderer.DrawRect(minimap_rect);
+}
+
+
+void UIRenderer::render_cheat_notif(CheatType active_cheat_notification) {
+    renderer.SetScale(1.0f, 1.0f);
+
+    int w = renderer.GetOutputWidth();
+    int h = renderer.GetOutputHeight();
+
+    renderer.SetDrawBlendMode(SDL_BLENDMODE_BLEND);
+    renderer.SetDrawColor(0, 0, 0, 180);
+    renderer.FillRect(Rect(0, 0, w, h));
+
+    renderer.SetDrawBlendMode(SDL_BLENDMODE_NONE);
+
+    std::string title;
+    SDL_Color title_color;
+    Texture* cheat_img = nullptr;
+
+    switch (active_cheat_notification) {
+        case CheatType::INMORTALITY:
+            title = "IMMORTALITY ACTIVATED";
+            title_color = {255, 215, 0, 255};  // dorado
+            cheat_img = &cheat_immortality_img;
+            break;
+
+        case CheatType::INSTA_WIN:
+            title = "INSTANT WIN!";
+            title_color = {0, 255, 0, 255};  // verde
+            cheat_img = &cheat_win_img;
+            break;
+
+        case CheatType::INSTA_LOSE:
+            title = "INSTANT LOSE";
+            title_color = {255, 0, 0, 255};  // rojo
+            cheat_img = &cheat_lose_img;
+            break;
+
+        default:
+            return;
+    }
+
+    // renderizar png con transparencia
+    if (cheat_img) {
+        int img_w = std::min(cheat_img->GetWidth(), w / 2);
+        int img_h = (img_w * cheat_img->GetHeight()) / cheat_img->GetWidth();
+
+        int img_x = (w - img_w) / 2;
+        int img_y = (h - img_h) / 2 + 20;
+
+        renderer.Copy(*cheat_img, NullOpt, Rect(img_x, img_y, img_w, img_h));
+    }
+
+    // titulo abajo de la imagen
+    Surface title_surface = font_big.RenderText_Solid(title, title_color);
+    Texture title_texture(renderer, title_surface);
+
+    int title_x = (w - title_texture.GetWidth()) / 2;
+    int title_y = 100;
+
+    if (!cheat_img)
+        title_y = (h - title_texture.GetHeight()) / 2;
+
+    renderer.Copy(title_texture, NullOpt,
+                  Rect(title_x, title_y, title_texture.GetWidth(), title_texture.GetHeight()));
+}
+
+void UIRenderer::render_eliminated_popup() {
+    renderer.SetScale(1.0f, 1.0f);
+
+    int w = renderer.GetOutputWidth();
+    int h = renderer.GetOutputHeight();
+
+    renderer.SetDrawBlendMode(SDL_BLENDMODE_BLEND);
+    renderer.SetDrawColor(0, 0, 0, 180);
+    renderer.FillRect(Rect(0, 0, w, h));
+
+    renderer.SetDrawBlendMode(SDL_BLENDMODE_NONE);
+
+    std::string title = "YOU DIED!";
+    SDL_Color title_color = {255, 0, 0, 255};
+    Texture* img = &cheat_lose_img;
+
+    // renderizar png con transparencia
+    if (img) {
+        int img_w = std::min(img->GetWidth(), w / 2);
+        int img_h = (img_w * img->GetHeight()) / img->GetWidth();
+
+        int img_x = (w - img_w) / 2;
+        int img_y = (h - img_h) / 2 + 20;
+
+        renderer.Copy(*img, NullOpt, Rect(img_x, img_y, img_w, img_h));
+    }
+
+    // titulo abajo de la imagen
+    Surface title_surface = font_big.RenderText_Solid(title, title_color);
+    Texture title_texture(renderer, title_surface);
+
+    int title_x = (w - title_texture.GetWidth()) / 2;
+    int title_y = 100;
+
+    if (!img)
+        title_y = (h - title_texture.GetHeight()) / 2;
+
+    renderer.Copy(title_texture, NullOpt,
+                  Rect(title_x, title_y, title_texture.GetWidth(), title_texture.GetHeight()));
+}
+
+
+void UIRenderer::render_podium(const FinalResults& results) {
+    renderer.SetScale(1.0f, 1.0f);
+
+    int w = renderer.GetOutputWidth();
+    int h = renderer.GetOutputHeight();
+
+    // fondo oscuro
+    renderer.SetDrawBlendMode(SDL_BLENDMODE_BLEND);
+    renderer.SetDrawColor(0, 0, 0, 200);
+    renderer.FillRect(Rect(0, 0, w, h));
+
+    // fondo del popup
+    int popup_w = static_cast<int>(w * 0.85f);
+    int popup_h = static_cast<int>(h * 0.9f);
+    int popup_x = (w - popup_w) / 2;
+    int popup_y = (h - popup_h) / 2;
+
+    renderer.SetDrawColor(30, 30, 40, 255);
+    renderer.FillRect(Rect(popup_x, popup_y, popup_w, popup_h));
+
+    // borde
+    renderer.SetDrawBlendMode(SDL_BLENDMODE_NONE);
+    renderer.SetDrawColor(200, 200, 200, 255);
+    renderer.DrawRect(Rect(popup_x, popup_y, popup_w, popup_h));
+
+    // titulo
+    Surface title_s = font_big.RenderText_Solid("FINAL RESULTS", {255, 215, 0, 255});
+    Texture title_t(renderer, title_s);
+    int title_x = popup_x + (popup_w - title_t.GetWidth()) / 2;
+    int title_y = popup_y + 30;
+    renderer.Copy(title_t, NullOpt,
+                  Rect(title_x, title_y, title_t.GetWidth(), title_t.GetHeight()));
+
+
+    // PODIO
+    int podium_y = title_y + title_t.GetHeight() + 50;
+    int podium_base_y = podium_y + 200;
+    int box_width = 120;
+
+    // (2º - 1º - 3º)
+    int pos_1_x = popup_x + popup_w / 2 - box_width / 2;
+    int pos_2_x = pos_1_x - box_width - 40;
+    int pos_3_x = pos_1_x + box_width + 40;
+    int height_1 = 150;
+    int height_2 = 120;
+    int height_3 = 90;
+
+    if (results.standings.size() >= 1) {  // 1º
+        const auto& first = results.standings[0];
+        int box_y = podium_base_y - height_1;
+
+        renderer.SetDrawColor(255, 215, 0, 255);  // dorado
+        renderer.FillRect(Rect(pos_1_x, box_y, box_width, height_1));
+        renderer.SetDrawColor(200, 170, 0, 255);
+        renderer.DrawRect(Rect(pos_1_x, box_y, box_width, height_1));
+
+        Surface num_s = font_big.RenderText_Solid("1", {255, 255, 255, 255});
+        Texture num_t(renderer, num_s);
+        renderer.Copy(num_t, NullOpt,
+                      Rect(pos_1_x + (box_width - num_t.GetWidth()) / 2, box_y + 10,
+                           num_t.GetWidth(), num_t.GetHeight()));
+
+        // nombre
+        Surface name_s = font_small.RenderText_Solid(first.player_name, {255, 255, 255, 255});
+        Texture name_t(renderer, name_s);
+        renderer.Copy(name_t, NullOpt,
+                      Rect(pos_1_x + (box_width - name_t.GetWidth()) / 2, box_y + 70,
+                           name_t.GetWidth(), name_t.GetHeight()));
+
+        // tiempo final
+        int minutes = first.total_time_ms / 60000;
+        int seconds = (first.total_time_ms % 60000) / 1000;
+        int millis = first.total_time_ms % 1000;
+        char time_buf[32];
+        snprintf(time_buf, sizeof(time_buf), "%02d:%02d.%03d", minutes, seconds, millis);
+
+        Surface time_s = font_small.RenderText_Solid(time_buf, {255, 255, 255, 255});
+        Texture time_t(renderer, time_s);
+        renderer.Copy(time_t, NullOpt,
+                      Rect(pos_1_x + (box_width - time_t.GetWidth()) / 2, box_y + 100,
+                           time_t.GetWidth(), time_t.GetHeight()));
+    }
+
+    if (results.standings.size() >= 2) {  // 2º
+        const auto& second = results.standings[1];
+        int box_y = podium_base_y - height_2;
+
+        renderer.SetDrawColor(192, 192, 192, 255);  // plateado
+        renderer.FillRect(Rect(pos_2_x, box_y, box_width, height_2));
+        renderer.SetDrawColor(140, 140, 140, 255);
+        renderer.DrawRect(Rect(pos_2_x, box_y, box_width, height_2));
+
+        Surface num_s = font.RenderText_Solid("2", {255, 255, 255, 255});
+        Texture num_t(renderer, num_s);
+        renderer.Copy(num_t, NullOpt,
+                      Rect(pos_2_x + (box_width - num_t.GetWidth()) / 2, box_y + 10,
+                           num_t.GetWidth(), num_t.GetHeight()));
+
+        // nombre
+        Surface name_s = font_small.RenderText_Solid(second.player_name, {255, 255, 255, 255});
+        Texture name_t(renderer, name_s);
+        renderer.Copy(name_t, NullOpt,
+                      Rect(pos_2_x + (box_width - name_t.GetWidth()) / 2, box_y + 50,
+                           name_t.GetWidth(), name_t.GetHeight()));
+
+        // tiempo
+        int minutes = second.total_time_ms / 60000;
+        int seconds = (second.total_time_ms % 60000) / 1000;
+        int millis = second.total_time_ms % 1000;
+        char time_buf[32];
+        snprintf(time_buf, sizeof(time_buf), "%02d:%02d.%03d", minutes, seconds, millis);
+
+        Surface time_s = font_small.RenderText_Solid(time_buf, {255, 255, 255, 255});
+        Texture time_t(renderer, time_s);
+        renderer.Copy(time_t, NullOpt,
+                      Rect(pos_2_x + (box_width - time_t.GetWidth()) / 2, box_y + 75,
+                           time_t.GetWidth(), time_t.GetHeight()));
+    }
+
+    if (results.standings.size() >= 3) {  // 3º
+        const auto& third = results.standings[2];
+        int box_y = podium_base_y - height_3;
+
+        renderer.SetDrawColor(205, 127, 50, 255);  // bronce
+        renderer.FillRect(Rect(pos_3_x, box_y, box_width, height_3));
+        renderer.SetDrawColor(160, 100, 40, 255);
+        renderer.DrawRect(Rect(pos_3_x, box_y, box_width, height_3));
+
+        Surface num_s = font.RenderText_Solid("3", {255, 255, 255, 255});
+        Texture num_t(renderer, num_s);
+        renderer.Copy(num_t, NullOpt,
+                      Rect(pos_3_x + (box_width - num_t.GetWidth()) / 2, box_y + 10,
+                           num_t.GetWidth(), num_t.GetHeight()));
+
+        // nombre
+        Surface name_s = font_small.RenderText_Solid(third.player_name, {255, 255, 255, 255});
+        Texture name_t(renderer, name_s);
+        renderer.Copy(name_t, NullOpt,
+                      Rect(pos_3_x + (box_width - name_t.GetWidth()) / 2, box_y + 40,
+                           name_t.GetWidth(), name_t.GetHeight()));
+
+        // tiempo
+        int minutes = third.total_time_ms / 60000;
+        int seconds = (third.total_time_ms % 60000) / 1000;
+        int millis = third.total_time_ms % 1000;
+        char time_buf[32];
+        snprintf(time_buf, sizeof(time_buf), "%02d:%02d.%03d", minutes, seconds, millis);
+
+        Surface time_s = font_small.RenderText_Solid(time_buf, {255, 255, 255, 255});
+        Texture time_t(renderer, time_s);
+        renderer.Copy(time_t, NullOpt,
+                      Rect(pos_3_x + (box_width - time_t.GetWidth()) / 2, box_y + 60,
+                           time_t.GetWidth(), time_t.GetHeight()));
+    }
+
+    // TABLA DEL RESTO (4° en adelante)
+    if (results.standings.size() > 3) {
+        int table_y = podium_base_y + 50;
+        int row_height = 35;
+
+        Surface header_s = font_small.RenderText_Solid("Other Players:", {200, 200, 200, 255});
+        Texture header_t(renderer, header_s);
+        renderer.Copy(header_t, NullOpt,
+                      Rect(popup_x + 40, table_y, header_t.GetWidth(), header_t.GetHeight()));
+
+        table_y += header_t.GetHeight() + 10;
+        renderer.SetDrawColor(100, 100, 100, 255);
+        renderer.DrawLine(popup_x + 40, table_y, popup_x + popup_w - 40, table_y);
+
+        table_y += 10;
+
+        // players del 4° en adelante
+        for (size_t i = 3; i < results.standings.size() && i < 8; i++) {
+            const auto& player = results.standings[i];
+
+            // posicion
+            std::string pos_text = std::to_string(player.position) + "°";
+            Surface pos_s = font_small.RenderText_Solid(pos_text, {180, 180, 180, 255});
+            Texture pos_t(renderer, pos_s);
+            renderer.Copy(pos_t, NullOpt,
+                          Rect(popup_x + 60, table_y, pos_t.GetWidth(), pos_t.GetHeight()));
+
+            // nombre
+            Surface name_s = font_small.RenderText_Solid(player.player_name, {200, 200, 200, 255});
+            Texture name_t(renderer, name_s);
+            renderer.Copy(name_t, NullOpt,
+                          Rect(popup_x + 140, table_y, name_t.GetWidth(), name_t.GetHeight()));
+
+            // tiempo
+            int minutes = player.total_time_ms / 60000;
+            int seconds = (player.total_time_ms % 60000) / 1000;
+            int millis = player.total_time_ms % 1000;
+            char time_buf[32];
+            snprintf(time_buf, sizeof(time_buf), "%02d:%02d.%03d", minutes, seconds, millis);
+
+            Surface time_s = font_small.RenderText_Solid(time_buf, {180, 180, 180, 255});
+            Texture time_t(renderer, time_s);
+            renderer.Copy(
+                    time_t, NullOpt,
+                    Rect(popup_x + popup_w - 200, table_y, time_t.GetWidth(), time_t.GetHeight()));
+
+            table_y += row_height;
+        }
+    }
+
+    Surface close_s = font_small.RenderText_Solid("Press ESC to exit", {150, 150, 150, 255});
+    Texture close_t(renderer, close_s);
+    renderer.Copy(close_t, NullOpt,
+                  Rect(popup_x + (popup_w - close_t.GetWidth()) / 2, popup_y + popup_h - 40,
+                       close_t.GetWidth(), close_t.GetHeight()));
 }
