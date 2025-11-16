@@ -24,7 +24,7 @@ public:
      * HANDSHAKE
      * TODO: (Manu) Unificar ambos métodos en uno solo?
      */
-    ClientID recv_client_id();
+    ClientID recvClientId();
     std::vector<CarInfo> recv_initial_info();
 
 

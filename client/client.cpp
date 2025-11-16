@@ -10,7 +10,7 @@
 Client::Client(const std::string& hostname, const std::string& servname):
         socket(hostname.c_str(), servname.c_str()),
         protocol(socket),
-        clientId(protocol.recv_client_id()),
+        clientId(protocol.recvClientId()),
         lobbyFinished(false) {}
 
 

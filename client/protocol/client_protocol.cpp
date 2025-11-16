@@ -14,10 +14,9 @@ ClientProtocol::ClientProtocol(Socket& socket): SendProtocol(socket), RecvProtoc
 /**
  * HANDSHAKE
  */
-ClientID ClientProtocol::recv_client_id() {
-    uint8_t action_code = recvU8();
-    if (action_code != SEND_CLIENT_ID)
-        throw std::runtime_error("Expected initial info from server");
+ClientID ClientProtocol::recvClientId() {
+    if (recvU8() != SEND_CLIENT_ID)
+        throw std::runtime_error("Expected client ID from server");
     return recvU16();
 }
 
