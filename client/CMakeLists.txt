@@ -10,7 +10,7 @@ target_sources(taller_client
     interface_renderer.cpp
     world.cpp
     event_handler.cpp
-    game_handler.cpp
+    gameHandler.cpp
     sound_manager.cpp
     game_loop.cpp
     PUBLIC
@@ -23,7 +23,7 @@ target_sources(taller_client
     interface_renderer.h
     world.h
     event_handler.h
-    game_handler.h
+    gameHandler.h
     sound_manager.h
     game_loop.h
     )

@@ -17,34 +17,34 @@
 
 
 /**
- * GameHandler: coordinar la lógica del juego en el cliente
- * - Maneja el World (estado del juego)
- * - Maneja Sender, Receiver, GameLoop
- * - Procesa eventos del servidor
+ * GameHandler: coordinates the game logic on the client
+ * - Handles the World (game state)
+ * - Handles Sender, Receiver, and GameLoop
+ * - Process server events
  */
 class GameHandler {
 private:
     ClientProtocol& protocol;
-    uint8_t player_id;
+    ClientID clientId;
 
     World world;
 
-    Queue<ActiveDirections> client_requests_q;
-    Queue<Snapshot> server_snapshots_q;
+    Queue<ActiveDirections> clientRequestsQueue;
+    Queue<Snapshot> serverSnapshotsQueue;
 
     Sender sender;
     Receiver receiver;
-    GameLoop game_loop;
+    GameLoop gameLoop;
 
     std::atomic<bool> running;
 
 public:
-    GameHandler(ClientProtocol& protocol, uint8_t player_id);
+    GameHandler(ClientProtocol& protocol, ClientID clientId);
 
-    // ejecuta el juego completo: inicia los 3 hilos
+    // Runs the entire game: starts the 3 threads
     void run();
 
-    // detiene el juego y los hilos
+    // Stops the game and the threads
     void stop();
 
     ~GameHandler();

@@ -10,7 +10,7 @@
 #include "../common/socket/socket.h"
 #include "../protocol/client_protocol.h"
 
-#include "game_handler.h"
+#include "gameHandler.h"
 
 
 /**
