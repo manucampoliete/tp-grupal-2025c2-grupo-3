@@ -8,21 +8,21 @@
 
 
 /**
- * Sender: hilo que envía comandos del cliente al servidor
- * - Lee comandos de la cola client_requests_q
- * - Los serializa y envía usando ClientProtocol
+ * Sender: thread that sends client commands to the server
+ * - Pops commands from the clientRequestsQueue queue
+ * - Serializes and sends them using ClientProtocol
  */
 class Sender: public Thread {
 private:
     ClientProtocol& protocol;
-    Queue<ActiveDirections>& client_requests_q;
+    Queue<ActiveDirections>& clientRequestsQueue;
 
 public:
     /**
      * Constructor: initializes the Sender with the given parameters.
-     * client_requests_q: cola de comandos a enviar
+     * clientRequestsQueue: queue of commands to be sent to the server
      */
-    Sender(ClientProtocol& protocol, Queue<ActiveDirections>& client_requests_q);
+    Sender(ClientProtocol& protocol, Queue<ActiveDirections>& clientRequestsQueue);
 
     /**
      * TODO: add proper documentation
