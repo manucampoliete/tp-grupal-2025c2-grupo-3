@@ -25,10 +25,6 @@ using namespace SDL2pp;
 
 class GameLoop;
 
-
-enum class game_state { COUNTDOWN, RACING, ELIMINATED, SHOWING_STATS, MODIFYING_CAR, GAME_END };
-
-
 class Game {
 private:
     SDL2pp::SDL sdl;

@@ -23,7 +23,7 @@ Game::Game():
         clientCommandsQueue(),
         responseQueuesMonitor(),
         players(),
-        countdownDuration(3),
+        countdownDuration(10),
         raceDuration(10),
         statsDuration(5),
         upgradesDuration(10) {}
@@ -64,7 +64,7 @@ void Game::updatePlayerCars() {
 // TODO:
 // El broadcast tiene que mandar que estado de juego es (countdown, racing, etc)
 // El cliente tiene que saber interpretar estos estados
-void Game::broadcast() {
+/* void Game::broadcast() {
     auto remaining = getRemainingGameStateTime();
 
     std::vector<Snapshot::CarSnapshot> snapshots;
@@ -75,6 +75,41 @@ void Game::broadcast() {
 
     responseQueuesMonitor.broadcast(
             std::make_shared<Snapshot>(static_cast<uint32_t>(remaining.count()), snapshots));
+} */
+
+void Game::broadcastCountdown() {
+    auto remaining = getRemainingGameStateTime();
+    responseQueuesMonitor.broadcast(std::make_shared<Snapshot>(static_cast<uint32_t>(remaining.count())));
+}
+
+void Game::broadcastRacing() {
+    auto remaining = getRemainingGameStateTime();
+
+    std::vector<Snapshot::CarSnapshot> snapshots;
+    for (auto& [clientId, player]: players) {
+        Snapshot::CarSnapshot snp = player.buildCarSnapshot();
+        snapshots.emplace_back(snp);
+    }
+
+    responseQueuesMonitor.broadcast(std::make_shared<Snapshot>(static_cast<uint32_t>(remaining.count()), snapshots));
+}
+
+void Game::broadcast() {
+    switch (current_state) {
+        case game_state::COUNTDOWN:
+            broadcastCountdown();
+            break;
+        case game_state::RACING: {
+            broadcastRacing();
+            break;
+        }
+        case game_state::SHOWING_STATS:
+        case game_state::MODIFYING_CAR:
+        case game_state::ELIMINATED:
+        case game_state::GAME_END:
+            // no broadcast en estos estados por ahora
+            break;
+    }
 }
 
 void Game::broadcast_start_signal() {
@@ -176,15 +211,14 @@ void Game::handleGameState(float deltaTime) {
             // handleEliminatedState();
             break;
         case game_state::GAME_END:
-            handleGameEndState();
+            // handleGameEndState();
             break;
     }
 }
 
 void Game::handleCountdownState() {
-    // el countdown manda por protocolo 1 snapshot por segundo con el numero del countdown?
-    // el gameloop ya manda un snapshot por frame, se puede aprovechar eso.
-    // igualmente tener un tipo de broadcast para cada fase puede ser util (por ejemplo, en la parte de estadisticas no hay que mandar todo 60 veces por segundo a menos que se quiera tener un relojito)
+    // se manda un snapshot por gameloop
+    // se encarga broadcast, esta funcion no hace nada por ahora
 }
 
 void Game::handleRacingState(float deltaTime) {

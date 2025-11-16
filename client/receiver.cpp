@@ -26,7 +26,7 @@ void Receiver::run() {
             // solo la uso para lso snapshots de la carrera
 
             switch (msg_type) {
-                case SEND_SNAPSHOT: {
+                case SEND_RACE_SNAPSHOT: {
                     std::cout << "[RECEIVER] → Procesando SNAPSHOT" << std::endl;
                     Snapshot snapshot = protocol.recv_snapshot();
                     server_snapshots_q.push(snapshot);

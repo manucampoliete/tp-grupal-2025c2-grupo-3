@@ -17,6 +17,8 @@ public:
      * Sends a Snapshot message over the socket.
      */
     void sendSnapshot(std::shared_ptr<Snapshot> snapshot);
+
+    void sendRaceSnapshot(std::shared_ptr<Snapshot> snapshot);  
 };
 
 #endif  // SERVER_GAME_SEND_PROTOCOL_H

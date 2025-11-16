@@ -60,6 +60,13 @@ private:
      */
     void broadcast_start_signal();
 
+    void broadcastCountdown();
+    void broadcastRacing();
+    void broadcastShowingStats();
+    void broadcastModifyingCar();
+    // void broadcastEliminated(); // seguro no se va a usar
+    void broadcastGameEnd();
+
     void setGameState(game_state new_state);
 
     void updateGameState();

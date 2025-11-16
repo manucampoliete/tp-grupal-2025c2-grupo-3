@@ -12,10 +12,13 @@ Snapshot::CarSnapshot::CarSnapshot(const CarSnapshot& other):
         speed(other.speed),
         carId(other.carId) {}
 
-Snapshot::Snapshot(): countdown(0), cars(), type(SnapshotType::START_SIGNAL) {}
+Snapshot::Snapshot(): countdown(0), cars(), type(SEND_STARTED) {}
+
+Snapshot::Snapshot(uint32_t countdown):
+        countdown(countdown), cars(), type(MSG_COUNTDOWN) {}
 
 Snapshot::Snapshot(uint32_t countdown, const std::vector<CarSnapshot>& cars):
-        countdown(countdown), cars(cars), type(SnapshotType::CAR_SNAPSHOT) {}
+        countdown(countdown), cars(cars), type(SEND_RACE_SNAPSHOT) {}
 
 Snapshot::Snapshot(const Snapshot& other):
         countdown(other.countdown), cars(other.cars), type(other.type) {}
