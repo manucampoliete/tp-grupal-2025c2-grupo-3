@@ -10,21 +10,18 @@
 Client::Client(const std::string& hostname, const std::string& servname):
         socket(hostname.c_str(), servname.c_str()),
         protocol(socket),
-        player_id(protocol.recv_client_id()),
-        lobby_finished(false) {}
+        clientId(protocol.recv_client_id()),
+        lobbyFinished(false) {}
 
 
 void Client::run(int argc, char* argv[]) {
-    // FASE 1: lobby (qt)
+    // Phase 1: Lobby (Qt)
     QApplication app(argc, argv);
-
-    std::string ip = argv[1];
-    std::string port = argv[2];
 
     Lobby lobby(protocol);
 
     lobby.show();
-    app.exec();  // blocking hasta que se cierre el lobby
+    app.exec();  // Blocks until lobby is closed
 
     if (!lobby.shouldStartGame()) {
         std::cout << "[CLIENT] Lobby closed, exiting client..." << std::endl;
@@ -33,15 +30,15 @@ void Client::run(int argc, char* argv[]) {
 
     std::cout << "[CLIENT] Lobby finished, starting game..." << std::endl;
 
-    // FASE 2: game (SDL)
-    GameHandler game_handler(protocol, player_id);
-    game_handler.run();  // blocking hasta que se cierre el juego
+    // Phase 2: Game (SDL)
+    GameHandler gameHandler(protocol, clientId);
+    gameHandler.run();  // Blocks until game is closed
 
-    std::cout << "[CLIENT] Juego finished" << std::endl;
+    std::cout << "[CLIENT] Game finished" << std::endl;
 }
 
-void Client::on_lobby_finished() {
-    lobby_finished = true;
+void Client::onLobbyFinished() {
+    lobbyFinished = true;
     std::cout << "[CLIENT] Signal received: lobby finished." << std::endl;
 }
 
