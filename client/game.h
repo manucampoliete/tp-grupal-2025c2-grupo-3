@@ -11,19 +11,17 @@
 #include "../common/messages/game_data.h"
 #include "../common/messages/snapshot.h"
 
-#include "event_handler.h"
-#include "interface_renderer.h"
-#include "sound_manager.h"
+#include "eventHandler.h"
+#include "interfaceRenderer.h"
+#include "soundManager.h"
 #include "world.h"
-#include "world_renderer.h"
+#include "worldRenderer.h"
+#include "gameLoop.h"
 
 using namespace SDL2pp;  // NOLINT
 
 
-class GameLoop;
-
-
-enum class game_state { COUNTDOWN, RACING, ELIMINATED, SHOWING_STATS, MODIFYING_CAR, GAME_END };
+enum class GameState { COUNTDOWN, RACING, ELIMINATED, SHOWING_STATS, MODIFYING_CAR, GAME_END };
 
 
 class Game {
@@ -33,94 +31,96 @@ private:
     SDL2pp::Window window;
     SDL2pp::Renderer renderer;
     SDL2pp::Font font;
-    SDL2pp::Font font_small;
-    SDL2pp::Font font_big;
+    SDL2pp::Font fontSmall;
+    SDL2pp::Font fontBig;
 
-    SDL2pp::Texture map_texture;
-    SDL2pp::Texture car_sprites;
+    SDL2pp::Texture mapTexture;
+    SDL2pp::Texture carSprites;
 
-    SDL2pp::Texture cheat_inmortality_img;
-    SDL2pp::Texture cheat_win_img;
-    SDL2pp::Texture cheat_lose_img;
+    SDL2pp::Texture cheatInmortalityImg;
+    SDL2pp::Texture cheatWinImg;
+    SDL2pp::Texture cheatLoseImg;
 
     World& world;
-    GameLoop& game_loop;
-    uint8_t player_id;
+    GameLoop& gameLoop;
+    uint8_t playerId;
 
     bool quit = false;
 
-    EventHandler event_handler;
+    EventHandler eventHandler;
 
-    WorldRenderer world_renderer;
-    UIRenderer interface_renderer;
-    SoundManager sound_manager;
+    WorldRenderer worldRenderer;
+    UIRenderer interfaceRenderer;
+    SoundManager soundManager;
 
-    game_state current_state =
-            game_state::RACING;  // va COUNTDOWN pero hasta arreglarlo asi se ve la carrera
+    /**
+     * TODO: change to GameState::COUNTDOWN when the feature is implemented
+     */
+    GameState currentState = GameState::RACING;
 
-    // countdown
-    uint8_t countdown_number = 3;  // 3, 2, 1, 0=GO
-    float countdown_timer = 0.0f;  // timer interno para cambiar numeros
+    // Countdown
+    uint8_t countdownNumber = 3;  // 3, 2, 1, 0=GO
+    float countdownTimer = 0.0f;  // Internal timer to change countdown numbers
 
-    uint32_t race_timer_ms;
-    uint32_t stats_timer_ms;
-    uint32_t mod_timer_ms;
+    uint32_t raceTimerMs;
+    uint32_t statsTimerMs;
+    uint32_t modTimerMs;
 
-    RaceResults current_results;
-    CarProperties current_properties;
-    FinalResults final_results;
+    RaceResults currentResults;
+    CarProperties currentProperties;
+    FinalResults finalResults;
 
-    // número de carrera actual y total hardocdeado, esa info la envia el server
-    int current_race = 1;
-    int total_races = 6;
+    // Number of current race and total hardcoded (that info should be sent by the server)
+    int currentRace = 1;
+    int totalRaces = 6;
 
-    bool speed_modified = false;
-    bool health_modified = false;
+    bool speedModified = false;
+    bool healthModified = false;
     bool saved = false;
 
-    // efectos visuales
-    bool screen_flash_active = false;
-    float flash_timer = 0.0f;
+    // Visual effects
+    bool screenFlashActive = false;
+    float flashTimer = 0.0f;
 
-    CheatType active_cheat_notification = CheatType::NONE;
-    float cheat_notification_timer = 0.0f;
+    CheatType activeCheatNotification = CheatType::NONE;
+    float cheatNotificationTimer = 0.0f;
 
-    float eliminated_popup_delay_ms;
+    float eliminatedPopupDelayMs;
 
-    void process_input();
+    void processInput();
     void update(float dt);
     void render();
 
 public:
-    Game(World& world, GameLoop& game_loop, uint8_t player_id);
+    Game(World& world, GameLoop& gameLoop, uint8_t playerId);
 
-    /*
-     * procesa un frame completo (input, update, render)
-     * devuelve false si debe cerrar el juego
+    /**
+     * Processes a complete frame (input, update, render)
+     * Returns false if the game should be closed
      */
-    bool process_frame(float dt);
+    bool processFrame(float dt);
 
-    void start_race();
+    void startRace();
 
-    bool should_close() const { return quit; }
+    bool shouldClose() const { return quit; }
 
-    game_state get_current_state() const;
-    void update_ui_layout();
+    GameState getCurrentState() const;
+    void updateUILayout();
 
-    void set_race_timer(uint16_t time_ms);
-    void show_countdown(uint8_t number);
-    void show_stats(const RaceResults& results);
-    void show_modifications(const CarProperties& props);
-    void show_cheat_notification(CheatType cheat_type);
-    void show_final_results(const FinalResults& results);
+    void setRaceTimer(uint32_t timeMs);
+    void showCountdown(uint8_t number);
+    void showStats(const RaceResults& results);
+    void showModifications(const CarProperties& props);
+    void showCheatNotification(CheatType cheatType);
+    void showFinalResults(const FinalResults& results);
 
-    void on_player_died(uint16_t player_id);
-    void on_collision(float x, float y, float intensity);
-    void trigger_screen_flash();
+    void onPlayerDied(uint16_t playerId);
+    void onCollision(float x, float y, float intensity);
+    void triggerScreenFlash();
 
-    SoundManager& get_sound_manager() { return sound_manager; }
-    WorldRenderer& get_world_renderer() { return world_renderer; }
-    const CarProperties& get_current_properties() const { return current_properties; }
+    SoundManager& getSoundManager() { return soundManager; }
+    WorldRenderer& getWorldRenderer() { return worldRenderer; }
+    const CarProperties& getCurrentProperties() const { return currentProperties; }
 };
 
 #endif  // GAME_H

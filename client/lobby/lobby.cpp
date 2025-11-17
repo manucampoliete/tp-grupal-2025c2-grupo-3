@@ -41,7 +41,7 @@ Lobby::Lobby(ClientProtocol& protocol, QWidget* parent):
 
     this->move(newX, newY);
 
-    available_cars = protocol.recv_initial_info();
+    available_cars = protocol.recvInitialInfo();
 
     main_menu = new MainMenu(this);
     new_game = new NewGame(this, available_cars);
@@ -91,7 +91,7 @@ Lobby::Lobby(ClientProtocol& protocol, QWidget* parent):
 
 void Lobby::handleJoinGameRequest(const QString& username, const QString& gameId,
                                   const CarInfo& car) {
-    bool joined = protocol.send_join(static_cast<uint16_t>(gameId.toInt()), username.toStdString(), static_cast<uint8_t>(car.id));
+    bool joined = protocol.sendJoin(static_cast<uint16_t>(gameId.toInt()), username.toStdString(), static_cast<uint8_t>(car.id));
 
     if (!joined) {
         join_game->setJoinError();
@@ -103,7 +103,7 @@ void Lobby::handleJoinGameRequest(const QString& username, const QString& gameId
     guest_waiting->setMatchID(gameId);
     stackedWidget->setCurrentWidget(guest_waiting);
     std::thread([this]() {
-        protocol.recv_start_signal();
+        protocol.recvStartSignal();
         start_game = true;
         QMetaObject::invokeMethod(this, [this]() { this->close(); });
     }).detach();
@@ -111,7 +111,7 @@ void Lobby::handleJoinGameRequest(const QString& username, const QString& gameId
 
 void Lobby::handleNewGameRequest(const QString& username, const CarInfo& car)
 {
-    uint16_t match_id = protocol.send_create(username.toStdString(), static_cast<uint8_t>(car.id));
+    uint16_t match_id = protocol.sendCreate(username.toStdString(), static_cast<uint8_t>(car.id));
     car_id = static_cast<uint16_t>(car.id);
 
     host_waiting->setMatchID(QString::number(match_id));
@@ -119,10 +119,10 @@ void Lobby::handleNewGameRequest(const QString& username, const CarInfo& car)
 }
 
 void Lobby::startGame() {
-    protocol.send_start();
+    protocol.sendStart();
     
     std::thread([this]() {
-        protocol.recv_start_signal();
+        protocol.recvStartSignal();
         start_game = true;
 
         QMetaObject::invokeMethod(this, [this]() {

@@ -8,43 +8,43 @@
 #include "../common/messages/snapshot.h"
 #include "../common/queue/queue.h"
 #include "../common/utils/activeDirections.h"
-#include "../protocol/client_protocol.h"
+#include "../protocol/clientProtocol.h"
 
-#include "game_loop.h"
+#include "gameLoop.h"
 #include "receiver.h"
 #include "sender.h"
 #include "world.h"
 
 
 /**
- * GameHandler: coordinar la lógica del juego en el cliente
- * - Maneja el World (estado del juego)
- * - Maneja Sender, Receiver, GameLoop
- * - Procesa eventos del servidor
+ * GameHandler: coordinates the game logic on the client
+ * - Handles the World (game state)
+ * - Handles Sender, Receiver, and GameLoop
+ * - Process server events
  */
 class GameHandler {
 private:
     ClientProtocol& protocol;
-    uint8_t player_id;
+    ClientID clientId;
 
     World world;
 
-    Queue<ActiveDirections> client_requests_q;
-    Queue<Snapshot> server_snapshots_q;
+    Queue<ActiveDirections> clientRequestsQueue;
+    Queue<Snapshot> serverSnapshotsQueue;
 
     Sender sender;
     Receiver receiver;
-    GameLoop game_loop;
+    GameLoop gameLoop;
 
     std::atomic<bool> running;
 
 public:
-    GameHandler(ClientProtocol& protocol, uint8_t player_id);
+    GameHandler(ClientProtocol& protocol, ClientID clientId);
 
-    // ejecuta el juego completo: inicia los 3 hilos
+    // Runs the entire game: starts the 3 threads
     void run();
 
-    // detiene el juego y los hilos
+    // Stops the game and the threads
     void stop();
 
     ~GameHandler();
