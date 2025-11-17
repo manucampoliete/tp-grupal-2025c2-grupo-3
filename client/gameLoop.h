@@ -12,23 +12,22 @@
 
 #include "world.h"
 
-
 class Game;
 
 /**
- * GameLoop: Thread que ejecuta el loop principal del juego con SDL
- * - Procesa snapshots de la queue del Receiver
- * - Maneja input del usuario
- * - Pushea comandos a la queue del Sender
+ * GameLoop: thread that runs the main game loop with SDL
+ * - Processes snapshots from Receiver's queue
+ * - Handles user input
+ * - Pushes commands to the Sender's queue
  */
 class GameLoop: public Thread {
 private:
-    Queue<Snapshot>& server_snapshots_q;
-    Queue<ActiveDirections>& client_requests_q;
+    Queue<Snapshot>& serverSnapshotsQueue;
+    Queue<ActiveDirections>& clientRequestsQueue;
     ClientProtocol& protocol;
 
     World& world;
-    uint8_t player_id;
+    ClientID clientId;
 
     std::unique_ptr<Game> game;
 
@@ -36,34 +35,34 @@ public:
     /**
      * Constructor
      */
-    GameLoop(Queue<Snapshot>& server_snapshots_q, Queue<ActiveDirections>& client_requests_q,
-             ClientProtocol& protocol, World& world, uint8_t player_id);
+    GameLoop(Queue<Snapshot>& serverSnapshotsQueue, Queue<ActiveDirections>& clientRequestsQueue,
+             ClientProtocol& protocol, World& world, ClientID clientId);
 
     /**
-     * Loop principal que corre en el thread
+     * Main loop that runs in the thread
      */
     void run() override;
 
     /**
-     * Métodos para que otros threads notifiquen eventos
+     * Methods used by other threads to notify events
      */
     void onCountdown(uint8_t number);
     void onRaceStart();
     void onCheckpointCrossed(uint8_t checkpointId);
     void onCollision(const CollisionData& collision);
-    void onPlayerDied(uint16_t deadPlayerId);
+    void onPlayerDied(ClientID deadPlayerId);
     void onRaceEnd(const RaceResults& results);
     void onModificationPhase(const CarProperties& props);
     void onGameEnd(const FinalResults& results);
 
     /**
-     * Métodos para enviar comandos (llamados por Game)
+     * Methods to send commands (called by Game)
      */
-    void send_movement(bool up, bool down, bool left, bool right);
-    void send_modifications(bool speed, bool health);
-    void send_cheat_inmortality();
-    void send_cheat_insta_win();
-    void send_cheat_insta_lose();
+    void sendMovement(bool up, bool down, bool left, bool right);
+    void sendModifications(bool speed, bool health);
+    void sendCheatInmortality();
+    void sendCheatInstaWin();
+    void sendCheatInstaLose();
 
     ~GameLoop() override = default;
 };

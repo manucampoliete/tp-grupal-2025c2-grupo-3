@@ -10,7 +10,7 @@
 #include "../common/utils/activeDirections.h"
 #include "../protocol/clientProtocol.h"
 
-#include "game_loop.h"
+#include "gameLoop.h"
 #include "receiver.h"
 #include "sender.h"
 #include "world.h"

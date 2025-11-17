@@ -4,8 +4,6 @@
 
 #include <syslog.h>
 
-#include "game_loop.h"
-
 
 Receiver::Receiver(ClientProtocol& protocol, Queue<Snapshot>& serverSnapshotsQueue, GameLoop& gameLoop):
     protocol(protocol),

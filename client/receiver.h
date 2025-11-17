@@ -8,9 +8,7 @@
 #include "../common/types/types.h"
 #include "../common/utils/activeDirections.h"
 #include "../protocol/clientProtocol.h"
-
-
-class GameLoop;
+#include "gameLoop.h"
 
 /**
  * Receiver: thread that receives messages from the server

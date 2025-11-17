@@ -6,26 +6,26 @@ target_sources(taller_client
     receiver.cpp
     sender.cpp
     game.cpp
-    world_renderer.cpp
-    interface_renderer.cpp
+    worldRenderer.cpp
+    interfaceRenderer.cpp
     world.cpp
-    event_handler.cpp
+    eventHandler.cpp
     gameHandler.cpp
-    sound_manager.cpp
-    game_loop.cpp
+    soundManager.cpp
+    gameLoop.cpp
     PUBLIC
     # .h files
     client.h
     receiver.h
     sender.h
     game.h
-    world_renderer.h
-    interface_renderer.h
+    worldRenderer.h
+    interfaceRenderer.h
     world.h
-    event_handler.h
+    eventHandler.h
     gameHandler.h
-    sound_manager.h
-    game_loop.h
+    soundManager.h
+    gameLoop.h
     )
 
 add_subdirectory(protocol)

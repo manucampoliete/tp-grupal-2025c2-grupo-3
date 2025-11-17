@@ -34,13 +34,13 @@ void GameHandler::run() {
 
     // Waits for the gameLoop to finish (this happens when the user closes the window)
     gameLoop.join();
-    std::cout << "[GAME_HANDLER] GameLoop terminado, cerrando otros threads..." << std::endl;
+    std::cout << "[GAME_HANDLER] GameLoop finished, stopping other threads..." << std::endl;
 
     stop();
 }
 
 void GameHandler::stop() {
-    std::cout << "[GAME_HANDLER] Deteniendo..." << std::endl;
+    std::cout << "[GAME_HANDLER] Stopping..." << std::endl;
     running = false;
 
     clientRequestsQueue.close();

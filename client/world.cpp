@@ -1,13 +1,12 @@
 #include "world.h"
 
-
 void World::reset() {
     std::lock_guard<std::mutex> lock(mtx);
     cars.clear();
     countdown = 0;
 }
 
-// cada auto se actualiza según su id
+// Each car is updated according to its id
 void World::update(const BroadcastData& data) {
     std::lock_guard<std::mutex> lock(mtx);
     for (const auto& car: data.cars) cars[car.id] = car;

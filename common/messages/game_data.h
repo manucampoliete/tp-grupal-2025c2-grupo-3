@@ -15,15 +15,15 @@
 
 enum class CheatType { NONE, INMORTALITY, INSTA_WIN, INSTA_LOSE };
 
-// coordenadas (x, y, ancho, alto) para cada auto
+// Coordinates (x, y, width, height) in the sprite sheet for each car type
 const SDL2pp::Rect CARS[7] = {
-        {134, 34, 20, 27},   // auto 1
-        {170, 105, 20, 40},  // auto 2
-        {170, 186, 20, 38},  // auto 3
-        {170, 265, 20, 40},  // auto 4
-        {170, 344, 20, 40},  // auto 5
-        {170, 425, 20, 40},  // auto 6
-        {205, 515, 20, 45},  // auto 7
+        {134, 34, 20, 27},   // Car 0
+        {170, 105, 20, 40},  // Car 1
+        {170, 186, 20, 38},  // Car 2
+        {170, 265, 20, 40},  // Car 3
+        {170, 344, 20, 40},  // Car 4
+        {170, 425, 20, 40},  // Car 5
+        {205, 515, 20, 45},  // Car 6
 };
 
 
