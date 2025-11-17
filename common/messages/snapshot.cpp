@@ -14,6 +14,8 @@ Snapshot::CarSnapshot::CarSnapshot(const CarSnapshot& other):
 
 Snapshot::Snapshot(): countdown(0), cars(), type(SEND_STARTED) {}
 
+Snapshot::Snapshot(int type): countdown(0), cars(), type(static_cast<uint8_t>(type)) {} 
+
 Snapshot::Snapshot(uint32_t countdown):
         countdown(countdown), cars(), type(MSG_COUNTDOWN) {}
 

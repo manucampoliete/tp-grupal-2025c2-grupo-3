@@ -15,6 +15,7 @@
 #define FRAME_DURATION_MS (1000 / TARGET_FPS)
 #define PLAYER_SPEED 200.0f  // píxeles por segundo
 #define WORLD_HEIGHT 4672.0f
+#define TIME_STEP (1.0f / TARGET_FPS) // duracion del step que simula box2d cada frame
 
 Game::Game():
         world(new b2World(b2Vec2(0, 0))),
@@ -23,7 +24,7 @@ Game::Game():
         clientCommandsQueue(),
         responseQueuesMonitor(),
         players(),
-        countdownDuration(10),
+        countdownDuration(15),
         raceDuration(10),
         statsDuration(5),
         upgradesDuration(10) {}
@@ -61,22 +62,6 @@ void Game::updatePlayerCars() {
     }
 }
 
-// TODO:
-// El broadcast tiene que mandar que estado de juego es (countdown, racing, etc)
-// El cliente tiene que saber interpretar estos estados
-/* void Game::broadcast() {
-    auto remaining = getRemainingGameStateTime();
-
-    std::vector<Snapshot::CarSnapshot> snapshots;
-    for (auto& [clientId, player]: players) {
-        Snapshot::CarSnapshot snp = player.buildCarSnapshot();
-        snapshots.emplace_back(snp);
-    }
-
-    responseQueuesMonitor.broadcast(
-            std::make_shared<Snapshot>(static_cast<uint32_t>(remaining.count()), snapshots));
-} */
-
 void Game::broadcastCountdown() {
     auto remaining = getRemainingGameStateTime();
     responseQueuesMonitor.broadcast(std::make_shared<Snapshot>(static_cast<uint32_t>(remaining.count())));
@@ -107,7 +92,7 @@ void Game::broadcast() {
         case game_state::MODIFYING_CAR:
         case game_state::ELIMINATED:
         case game_state::GAME_END:
-            // no broadcast en estos estados por ahora
+            // implementar cuando haga falta
             break;
     }
 }
@@ -144,17 +129,28 @@ void Game::setGameState(game_state new_state) {
     current_state = new_state;
     gameStateStartTime = std::chrono::high_resolution_clock::now();
 
-    //mandar un snapshot de que cambio el estado?
-    //o el cliente simplemente recibe el primer snapshot del nuevo estado?
-
-    /* EJEMPLO: 
-    Snapshot snp;  
-    snp.phase = newPhase;  
-    snp.remaining_ms = getPhaseRemainingMs();
-
-    responseQueuesMonitor.broadcast(
-        std::make_shared<Snapshot>(snp)
-    ); */
+    // el cliente espera que le avisen cuando cambia el estado
+    switch (new_state) {
+        case game_state::COUNTDOWN:
+            std::cout << "[GAME] Estado cambiado a COUNTDOWN" << std::endl;
+            break;
+        case game_state::RACING:
+            std::cout << "[GAME] Estado cambiado a RACING" << std::endl;
+            responseQueuesMonitor.broadcast(std::make_shared<Snapshot>(MSG_RACE_START));
+            break;
+        case game_state::SHOWING_STATS:
+            std::cout << "[GAME] Estado cambiado a SHOWING_STATS" << std::endl;
+            break;
+        case game_state::MODIFYING_CAR:
+            std::cout << "[GAME] Estado cambiado a MODIFYING_CAR" << std::endl;
+            break;
+        case game_state::ELIMINATED:
+            std::cout << "[GAME] Estado cambiado a ELIMINATED" << std::endl;
+            break;
+        case game_state::GAME_END:
+            std::cout << "[GAME] Estado cambiado a GAME_END" << std::endl;
+            break;
+    }
 }
 
 void Game::updateGameState() {
@@ -193,13 +189,13 @@ void Game::updateGameState() {
     }
 }
 
-void Game::handleGameState(float deltaTime) {
+void Game::handleGameState() {
     switch (current_state) {
         case game_state::COUNTDOWN:
             handleCountdownState();
             break;
         case game_state::RACING:
-            handleRacingState(deltaTime);
+            handleRacingState();
             break;
         case game_state::SHOWING_STATS:
             handleShowingStatsState();
@@ -221,7 +217,7 @@ void Game::handleCountdownState() {
     // se encarga broadcast, esta funcion no hace nada por ahora
 }
 
-void Game::handleRacingState(float deltaTime) {
+void Game::handleRacingState() {
     // command pattern
     std::unique_ptr<Command> cmd;
     while (clientCommandsQueue.tryPop(cmd)) {
@@ -230,7 +226,7 @@ void Game::handleRacingState(float deltaTime) {
 
     updatePlayerCars();
 
-    world->Step(deltaTime, velocityIt, positionIt);
+    world->Step(TIME_STEP, velocityIt, positionIt);
 }
 
 void Game::handleShowingStatsState() {
@@ -248,9 +244,6 @@ void Game::handleModifyingCarState() {
     // hay que hacer un nuevo tipo de comando (ModifyCarCommand?) que modifique las propiedades del auto del jugador
 }
 
-/**
- * TODO: implement constant rate loop!
- */
 void Game::run() {
     broadcast_start_signal();
     setGameState(game_state::COUNTDOWN);
@@ -259,24 +252,30 @@ void Game::run() {
 
     using clock = std::chrono::high_resolution_clock;
     auto lastTime = clock::now();
+    float accumulatedTime = 0.0f;
 
     while (shouldKeepRunning()) {
         updateGameState();
 
         auto now = clock::now();
-        auto elapsed = now - lastTime;
-        float deltaTime = elapsed.count();  // segundos
+        float frameTime = std::chrono::duration<float>(now - lastTime).count();
         lastTime = now;
+
+        accumulatedTime += frameTime;
         
-        handleGameState(deltaTime);
-        
+        while (accumulatedTime >= TIME_STEP) {
+            handleGameState();
+            accumulatedTime -= TIME_STEP;
+        }
+
         broadcast();
 
-        // Mantener FPS constante
-        auto frameTime =
-                std::chrono::duration_cast<std::chrono::milliseconds>(clock::now() - lastTime).count();
-        if (frameTime < FRAME_DURATION_MS) {
-            std::this_thread::sleep_for(std::chrono::milliseconds(FRAME_DURATION_MS - frameTime));
+        // evita busy waiting
+        float remaining = TIME_STEP - accumulatedTime;
+        if (remaining > 0.0f) {
+            // convierto a microsegundos para mas precision, busca evitar el jitter
+            auto micros = std::chrono::microseconds(static_cast<int64_t>(remaining * 1'000'000));
+            std::this_thread::sleep_for(micros);
         }
     }
 }

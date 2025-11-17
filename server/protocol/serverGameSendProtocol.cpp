@@ -31,6 +31,9 @@ void ServerGameSendProtocol::sendSnapshot(std::shared_ptr<Snapshot> snapshot) {
         case SEND_STARTED:
             // nada
             break;
+        case MSG_RACE_START:
+            // nada
+            break;
         case MSG_COUNTDOWN:
             sendU8(static_cast<uint8_t>(snapshot->countdown));
             break;

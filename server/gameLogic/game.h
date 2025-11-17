@@ -73,10 +73,10 @@ private:
 
     std::chrono::seconds getRemainingGameStateTime();
 
-    void handleGameState(float deltaTime);
+    void handleGameState();
 
     void handleCountdownState();
-    void handleRacingState(float deltaTime);
+    void handleRacingState();
     void handleShowingStatsState();
     void handleModifyingCarState();
     // void handleEliminatedState();

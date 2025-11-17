@@ -44,6 +44,9 @@ struct Snapshot {
      */
     Snapshot();
 
+    // change state snapshot
+    Snapshot(int type);
+
     // countdown snapshot
     Snapshot(uint32_t countdown);
 
