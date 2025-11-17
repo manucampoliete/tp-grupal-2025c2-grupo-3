@@ -233,6 +233,9 @@ void Game::handleShowingStatsState() {
     // el handler de showing stats es el que tiene que checkear si
     // ya no quedan más carreras por correr 
     // (para mostrar un ganador y no mostrar la pantalla de mejoras)
+
+    // por el momento implementar logica de carrera terminada por tiempo cumplido
+    // cuando este la carrera hecha agregar la logica de tiempo de finalizacion
 }
 
 void Game::handleModifyingCarState() {
