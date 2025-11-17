@@ -1,0 +1,10 @@
+<RCC>
+    <qresource prefix="/">
+        <file>media/menu_background_blurred.jpg</file>
+        <file>media/orbitron.ttf</file>
+        <file>media/liberty.jpg</file>
+        <file>media/sanandreas.jpg</file>
+        <file>media/vicecity.jpg</file>
+        <file>media/custom.png</file>
+    </qresource>
+</RCC>
