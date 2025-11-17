@@ -22,5 +22,5 @@ void Sender::run() {
         }
     }
 
-    std::cout << "[SENDER] Hilo detenido." << std::endl;
+    std::cout << "[SENDER] Thread ended." << std::endl;
 }

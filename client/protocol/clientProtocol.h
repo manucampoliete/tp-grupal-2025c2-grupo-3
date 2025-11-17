@@ -28,42 +28,44 @@ public:
 
     /**
      * HANDSHAKE
-     * TODO: (Manu) Unificar ambos métodos en uno solo?
+     * TODO: (Manu) Unify both methods into a single one?
      */
     ClientID recvClientId();
-    std::vector<CarInfo> recv_initial_info();
+    std::vector<CarInfo> recvInitialInfo();
 
 
     /**
      * LOBBY
      */
-    uint16_t send_create(const std::string& username, uint8_t car_id);
-    bool send_join(uint16_t match_id, const std::string& username, uint8_t car_id);
-    void send_start();
-    void recv_start_signal();
+    uint16_t sendCreate(const std::string& username, CarID carId);
+    bool sendJoin(MatchID matchId, const std::string& username, CarID carId);
+    void sendStart();
+    void recvStartSignal();
 
 
     /**
      * GAME
      */
-    uint8_t recv_message_type();
+    uint8_t recvMessageType();
 
     void sendMove(const ActiveDirections& activeDirections);
-    void send_modifications(bool speed_mod, bool health_mod);
+    void sendModifications(bool speedMod, bool healthMod);
 
-    Snapshot recv_snapshot();
-    uint8_t recv_countdown();
-    uint8_t recv_checkpoint();
-    CollisionData recv_collision();
-    uint16_t recv_player_died();
-    RaceResults recv_race_results();
-    CarProperties recv_car_properties();
-    FinalResults recv_final_results();
+    Snapshot recvSnapshot();
+    uint8_t recvCountdown();
+    uint8_t recvCheckpoint();
+    CollisionData recvCollision();
+    uint16_t recvPlayerDied();
+    RaceResults recvRaceResults();
+    CarProperties recvCarProperties();
+    FinalResults recvFinalResults();
 
-    // CHEATS
-    void send_inmortality_request();
-    void send_insta_win_request();
-    void send_insta_lose_request();
+    /**
+     * CHEATS
+     */
+    void sendInmortalityRequest();
+    void sendInstaWinRequest();
+    void sendInstaLoseRequest();
 };
 
 #endif  // CLIENT_PROTOCOL_H

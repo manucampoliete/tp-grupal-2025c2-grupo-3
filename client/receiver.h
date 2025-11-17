@@ -13,26 +13,25 @@
 class GameLoop;
 
 /**
- * Receiver: hilo que recibe mensajes del servidor
- * - Lee mensajes del servidor usando ClientProtocol
- * - Pushea snapshots a la queue
- * - Notifica eventos al GameLoop
+ * Receiver: thread that receives messages from the server
+ * - Reads messages from the server using ClientProtocol
+ * - Pushes snapshots to the queue
+ * - Notifies events to the GameLoop
  */
 class Receiver: public Thread {
 private:
     ClientProtocol& protocol;
-    Queue<Snapshot>& server_snapshots_q;
-    GameLoop& game_loop;
-
-    uint8_t last_countdown_number = 255; // valor cualquiera para forzar el primer updte
+    Queue<Snapshot>& serverSnapshotsQueue;
+    GameLoop& gameLoop;
+    uint8_t lastCountdownNumber;
 
 public:
     /**
      * Constructor: initializes the Receiver with the given parameters.
-     * server_snapshots_q: cola de snapshots recibidos
-     * game_loop: referencia al GameLoop para notificar eventos
+     * serverSnapshotsQueue: received snapshots are pushed to this queue
+     * gameLoop: reference to the GameLoop to notify events
      */
-    Receiver(ClientProtocol& protocol, Queue<Snapshot>& server_snapshots_q, GameLoop& game_loop);
+    Receiver(ClientProtocol& protocol, Queue<Snapshot>& serverSnapshotsQueue, GameLoop& gameLoop);
 
     /**
      * TODO: Add proper documentation

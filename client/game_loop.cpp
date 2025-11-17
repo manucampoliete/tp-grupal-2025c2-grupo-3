@@ -82,20 +82,20 @@ void GameLoop::run() {
 }
 
 
-void GameLoop::on_countdown(uint8_t number) {
+void GameLoop::onCountdown(uint8_t number) {
     if (game)
         game->show_countdown(number);
 }
 
-void GameLoop::on_race_start() {
+void GameLoop::onRaceStart() {
     if (game)
         game->start_race();
 }
 
 
 // CORREGIR
-void GameLoop::on_checkpoint_crossed(uint8_t checkpoint_id) {
-    std::cout << "[GAME_HANDLER] Checkpoint " << (int)checkpoint_id << " crossed!" << std::endl;
+void GameLoop::onCheckpointCrossed(uint8_t checkpointId) {
+    std::cout << "[GAME_HANDLER] Checkpoint " << (int)checkpointId << " crossed!" << std::endl;
 
     // a chequear!
 
@@ -105,7 +105,7 @@ void GameLoop::on_checkpoint_crossed(uint8_t checkpoint_id) {
 }
 
 
-void GameLoop::on_collision(const CollisionData& collision) {
+void GameLoop::onCollision(const CollisionData& collision) {
     std::cout << "[GAME_LOOP] Colisión detectada, intensity: " << collision.intensity << std::endl;
     if (!game)
         return;
@@ -116,22 +116,22 @@ void GameLoop::on_collision(const CollisionData& collision) {
     game->on_collision(world_x, world_y, collision.intensity);
 }
 
-void GameLoop::on_player_died(uint16_t dead_player_id) {
+void GameLoop::onPlayerDied(uint16_t deadPlayerId) {
     if (game)
-        game->on_player_died(dead_player_id);
+        game->on_player_died(deadPlayerId);
 }
 
-void GameLoop::on_race_end(const RaceResults& results) {
+void GameLoop::onRaceEnd(const RaceResults& results) {
     if (game)
         game->show_stats(results);
 }
 
-void GameLoop::on_modification_phase(const CarProperties& props) {
+void GameLoop::onModificationPhase(const CarProperties& props) {
     if (game)
         game->show_modifications(props);
 }
 
-void GameLoop::on_game_end(const FinalResults& results) {
+void GameLoop::onGameEnd(const FinalResults& results) {
     if (game)
         game->show_final_results(results);
 }
@@ -145,23 +145,23 @@ void GameLoop::send_movement(bool up, bool down, bool left, bool right) {
 void GameLoop::send_modifications(bool speed, bool health) {
     std::cout << "[GAME_HANDLER] Modifications: speed=" << speed << ", health=" << health
               << std::endl;
-    protocol.send_modifications(speed, health);
+    protocol.sendModifications(speed, health);
 }
 
 void GameLoop::send_cheat_inmortality() {
-    protocol.send_inmortality_request();
+    protocol.sendInmortalityRequest();
     if (game)
         game->show_cheat_notification(CheatType::INMORTALITY);
 }
 
 void GameLoop::send_cheat_insta_win() {
-    protocol.send_insta_win_request();
+    protocol.sendInstaWinRequest();
     if (game)
         game->show_cheat_notification(CheatType::INSTA_WIN);
 }
 
 void GameLoop::send_cheat_insta_lose() {
-    protocol.send_insta_lose_request();
+    protocol.sendInstaLoseRequest();
     if (game)
         game->show_cheat_notification(CheatType::INSTA_LOSE);
 }

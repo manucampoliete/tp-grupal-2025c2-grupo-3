@@ -47,14 +47,14 @@ public:
     /**
      * Métodos para que otros threads notifiquen eventos
      */
-    void on_countdown(uint8_t number);
-    void on_race_start();
-    void on_checkpoint_crossed(uint8_t checkpoint_id);
-    void on_collision(const CollisionData& collision);
-    void on_player_died(uint16_t player_id);
-    void on_race_end(const RaceResults& results);
-    void on_modification_phase(const CarProperties& props);
-    void on_game_end(const FinalResults& results);
+    void onCountdown(uint8_t number);
+    void onRaceStart();
+    void onCheckpointCrossed(uint8_t checkpointId);
+    void onCollision(const CollisionData& collision);
+    void onPlayerDied(uint16_t deadPlayerId);
+    void onRaceEnd(const RaceResults& results);
+    void onModificationPhase(const CarProperties& props);
+    void onGameEnd(const FinalResults& results);
 
     /**
      * Métodos para enviar comandos (llamados por Game)
