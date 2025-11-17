@@ -4,58 +4,53 @@
 #include <functional>
 #include <thread>
 
-/**
- * OPCION 1
- */
+#define FPS 60
+#define RATE (1000.0 / FPS)
 
 class ConstantRateLoop {
+private:
+    double t1;
+    uint64_t it;
+
 public:
-    ConstantRateLoop() {}
+    /**
+     * Constructor
+     */
+    ConstantRateLoop();
 
-    void run(const std::function<bool(uint64_t)>& func, double rate = (1000.0 / 30)) {
-        double t1 = now();
-        uint64_t it = 0;
-        while (true) {
-            if (!func(it))
-                break;
+    /**
+     * Sleeps the necessary time to maintain a constant rate loop and calculates the current iteration.
+     */
+    uint64_t sleepAndCalcIt();
 
-            double t2 = now();
-            double rest = rate - (t2 - t1);
-            if (rest < 0) {
-                double behind = -rest;
-                rest = rate - std::fmod(behind, rate);
-                double lost = behind + rest;
-                t1 += lost;
-                it += static_cast<uint64_t>(lost / rate);
-            }
+    /**
+     * Gets the current time in milliseconds.
+     */
+    double now();
 
-            sleep(rest);
-            t1 += rate;
-            it++;
-        }
-    }
-
-    double now() {
-        using namespace std::chrono;
-        return duration_cast<duration<double, std::milli>>(steady_clock::now().time_since_epoch())
-                .count();
-    }
-
-    void sleep(double ms) {
-        if (ms <= 0.0)
-            return;
-        std::this_thread::sleep_for(std::chrono::duration<double, std::milli>(ms));
-    }
+    /**
+     * Sleeps for the specified number of milliseconds.
+     */
+    void sleep(double ms);
 };
 
-// #include <iostream>
+/**
+ * How to use it:
+ */
 
+// #include <iostream>
+//
 // bool foo(uint64_t it) {
 //     std::cout << "Iteration " << it << std::endl;
 //     return it < 300;
 // }
-
+//
 // int main() {
-//     ConstantRateLoop().run(foo);
+//     uint64_t it = 0;
+//     ConstantRateLoop constantRateLoop;
+//     while (true) {
+//         if (!foo(it)) break;
+//         it = constantRateLoop.sleepAndCalcIt();
+//     }
 //     return 0;
 // }
