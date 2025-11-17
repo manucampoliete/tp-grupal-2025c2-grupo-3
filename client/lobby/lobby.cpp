@@ -104,6 +104,7 @@ void Lobby::handleJoinGameRequest(const QString& username, const QString& gameId
     stackedWidget->setCurrentWidget(guest_waiting);
     std::thread([this]() {
         protocol.recvStartSignal();
+        start_game = true;
         QMetaObject::invokeMethod(this, [this]() { this->close(); });
     }).detach();
 }
