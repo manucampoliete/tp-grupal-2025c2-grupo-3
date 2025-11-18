@@ -15,6 +15,7 @@
 #define FRAME_DURATION_MS (1000 / TARGET_FPS)
 #define PLAYER_SPEED 200.0f  // píxeles por segundo
 #define WORLD_HEIGHT 4672.0f
+#define TIME_STEP (1.0f / TARGET_FPS) // duracion del step que simula box2d cada frame
 
 Game::Game():
         world(new b2World(b2Vec2(0, 0))),
@@ -23,7 +24,7 @@ Game::Game():
         clientCommandsQueue(),
         responseQueuesMonitor(),
         players(),
-        countdownDuration(3),
+        countdownDuration(15),
         raceDuration(10),
         statsDuration(5),
         upgradesDuration(10) {}
@@ -61,74 +62,223 @@ void Game::updatePlayerCars() {
     }
 }
 
-void Game::broadcast() {
-    std::cerr << "elapsed: " << elapsed.count() << " ms" << std::endl;
+void Game::broadcastCountdown() {
+    auto remaining = getRemainingGameStateTime();
+    responseQueuesMonitor.broadcast(std::make_shared<Snapshot>(static_cast<uint32_t>(remaining.count())));
+}
 
-    auto raceSeconds = std::chrono::duration_cast<std::chrono::seconds>(raceDuration);
-    auto elapsedSeconds = std::chrono::duration_cast<std::chrono::seconds>(elapsed);
-    int64_t remaining = raceSeconds.count() - elapsedSeconds.count();
-
-    std::cerr << "remaining: " << remaining << " ms" << std::endl;
+void Game::broadcastRacing() {
+    auto remaining = getRemainingGameStateTime();
 
     std::vector<Snapshot::CarSnapshot> snapshots;
     for (auto& [clientId, player]: players) {
         Snapshot::CarSnapshot snp = player.buildCarSnapshot();
         snapshots.emplace_back(snp);
     }
-    responseQueuesMonitor.broadcast(
-            std::make_shared<Snapshot>(static_cast<uint32_t>(remaining), snapshots));
+
+    responseQueuesMonitor.broadcast(std::make_shared<Snapshot>(static_cast<uint32_t>(remaining.count()), snapshots));
+}
+
+void Game::broadcast() {
+    switch (current_state) {
+        case game_state::COUNTDOWN:
+            broadcastCountdown();
+            break;
+        case game_state::RACING: {
+            broadcastRacing();
+            break;
+        }
+        case game_state::SHOWING_STATS:
+        case game_state::MODIFYING_CAR:
+        case game_state::ELIMINATED:
+        case game_state::GAME_END:
+            // implementar cuando haga falta
+            break;
+    }
 }
 
 void Game::broadcast_start_signal() {
     responseQueuesMonitor.broadcast(std::make_shared<Snapshot>());  // dummy timestamp for now
 }
 
-/**
- * TODO: implement constant rate loop!
- */
+std::chrono::seconds Game::getRemainingGameStateTime() {
+    auto now = std::chrono::high_resolution_clock::now();
+    auto gameStateElapsed = now - gameStateStartTime;
+
+    switch (current_state) {
+        case game_state::COUNTDOWN:
+            return std::chrono::duration_cast<std::chrono::seconds>(
+                    countdownDuration - gameStateElapsed);
+        case game_state::RACING:
+            return std::chrono::duration_cast<std::chrono::seconds>(
+                    raceDuration - gameStateElapsed);
+        case game_state::SHOWING_STATS:
+            return std::chrono::duration_cast<std::chrono::seconds>(
+                    statsDuration - gameStateElapsed);
+        case game_state::MODIFYING_CAR:
+            return std::chrono::duration_cast<std::chrono::seconds>(
+                    upgradesDuration - gameStateElapsed);
+        case game_state::ELIMINATED:
+        case game_state::GAME_END:
+            return std::chrono::seconds(0);
+    }
+    return std::chrono::seconds(0);  // para evitar warning
+}
+
+void Game::setGameState(game_state new_state) {
+    current_state = new_state;
+    gameStateStartTime = std::chrono::high_resolution_clock::now();
+
+    // el cliente espera que le avisen cuando cambia el estado
+    switch (new_state) {
+        case game_state::COUNTDOWN:
+            std::cout << "[GAME] Estado cambiado a COUNTDOWN" << std::endl;
+            break;
+        case game_state::RACING:
+            std::cout << "[GAME] Estado cambiado a RACING" << std::endl;
+            responseQueuesMonitor.broadcast(std::make_shared<Snapshot>(MSG_RACE_START));
+            break;
+        case game_state::SHOWING_STATS:
+            std::cout << "[GAME] Estado cambiado a SHOWING_STATS" << std::endl;
+            break;
+        case game_state::MODIFYING_CAR:
+            std::cout << "[GAME] Estado cambiado a MODIFYING_CAR" << std::endl;
+            break;
+        case game_state::ELIMINATED:
+            std::cout << "[GAME] Estado cambiado a ELIMINATED" << std::endl;
+            break;
+        case game_state::GAME_END:
+            std::cout << "[GAME] Estado cambiado a GAME_END" << std::endl;
+            break;
+    }
+}
+
+void Game::updateGameState() {
+    auto now = std::chrono::high_resolution_clock::now();
+    auto gameStateElapsed = now - gameStateStartTime;
+
+    switch (current_state) {
+        case game_state::COUNTDOWN:
+            if (gameStateElapsed >= countdownDuration) {
+                setGameState(game_state::RACING);
+            }
+            break;
+        case game_state::RACING:
+            if (gameStateElapsed >= raceDuration) {
+                setGameState(game_state::SHOWING_STATS);
+            }
+            break;
+        case game_state::SHOWING_STATS:
+            if (gameStateElapsed >= statsDuration) {
+                setGameState(game_state::MODIFYING_CAR);
+            }
+            break;
+        case game_state::MODIFYING_CAR:
+            if (gameStateElapsed >= upgradesDuration) {
+                setGameState(game_state::COUNTDOWN);
+            }
+            break;
+        case game_state::ELIMINATED: 
+        // eliminated le sirve solo al cliente?
+        // si un usuario muere el server le va a estar mandando snapshots de carrera
+        // pero tambien manda la vida del auto
+        // si el cliente checkea que su vida es 0, pasa a eliminated en vez de racing
+        case game_state::GAME_END:
+            // ?
+            break;
+    }
+}
+
+void Game::handleGameState() {
+    switch (current_state) {
+        case game_state::COUNTDOWN:
+            handleCountdownState();
+            break;
+        case game_state::RACING:
+            handleRacingState();
+            break;
+        case game_state::SHOWING_STATS:
+            handleShowingStatsState();
+            break;
+        case game_state::MODIFYING_CAR:
+            handleModifyingCarState();
+            break;
+        case game_state::ELIMINATED:
+            // handleEliminatedState();
+            break;
+        case game_state::GAME_END:
+            // handleGameEndState();
+            break;
+    }
+}
+
+void Game::handleCountdownState() {
+    // se manda un snapshot por gameloop
+    // se encarga broadcast, esta funcion no hace nada por ahora
+}
+
+void Game::handleRacingState() {
+    // command pattern
+    std::unique_ptr<Command> cmd;
+    while (clientCommandsQueue.tryPop(cmd)) {
+        cmd->execute(*this);
+    }
+
+    updatePlayerCars();
+
+    world->Step(TIME_STEP, velocityIt, positionIt);
+}
+
+void Game::handleShowingStatsState() {
+    // el handler de showing stats es el que tiene que checkear si
+    // ya no quedan más carreras por correr 
+    // (para mostrar un ganador y no mostrar la pantalla de mejoras)
+
+    // por el momento implementar logica de carrera terminada por tiempo cumplido
+    // cuando este la carrera hecha agregar la logica de tiempo de finalizacion
+}
+
+void Game::handleModifyingCarState() {
+    // mandar al cliente las modificaciones disponibles/su magnitud?
+    // recibir las modificaciones de los clientes (patron comando de nuevo?)
+    /* while (clientCommandsQueue.tryPop(cmd)) {
+        cmd->execute(*this);
+    } */
+    // hay que hacer un nuevo tipo de comando (ModifyCarCommand?) que modifique las propiedades del auto del jugador
+}
+
 void Game::run() {
     broadcast_start_signal();
+    setGameState(game_state::COUNTDOWN);
 
-    auto collisionBodies = CollisionLoader::LoadCollisions("server/gameLogic/collisions.yaml", world, 1.0f, WORLD_HEIGHT);
-    std::cerr << "Total de cuerpos de colisión: " << collisionBodies.size() << std::endl;
-
-    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+    /* auto collisionBodies =  */CollisionLoader::LoadCollisions("server/gameLogic/collisions.yaml", world, 1.0f, WORLD_HEIGHT);
 
     using clock = std::chrono::high_resolution_clock;
     auto lastTime = clock::now();
-    auto startTime = lastTime;
+    float accumulatedTime = 0.0f;
 
     while (shouldKeepRunning()) {
+        updateGameState();
+
         auto now = clock::now();
-        elapsed = now - lastTime;
-        float deltaTime = elapsed.count();  // segundos
+        float frameTime = std::chrono::duration<float>(now - lastTime).count();
         lastTime = now;
 
-        /**
-         * Command pattern!
-         */
-        std::unique_ptr<Command> cmd;
-        while (clientCommandsQueue.tryPop(cmd)) {
-            cmd->execute(*this);
+        accumulatedTime += frameTime;
+        
+        while (accumulatedTime >= TIME_STEP) {
+            handleGameState();
+            accumulatedTime -= TIME_STEP;
         }
-
-        updatePlayerCars();
-
-        world->Step(deltaTime, velocityIt, positionIt);
-
-        elapsed = std::chrono::duration_cast<std::chrono::duration<float>>(now - startTime);
 
         broadcast();
 
-        /* std::cerr << "Tiempo de carrera: "
-                  << std::chrono::duration_cast<std::chrono::seconds>(now - startTime).count()
-                  << " segundos." << std::endl; */
-
-        // Mantener FPS constante
-        auto frameTime =
-                std::chrono::duration_cast<std::chrono::milliseconds>(clock::now() - now).count();
-        if (frameTime < FRAME_DURATION_MS) {
-            std::this_thread::sleep_for(std::chrono::milliseconds(FRAME_DURATION_MS - frameTime));
+        // evita busy waiting
+        float remaining = TIME_STEP - accumulatedTime;
+        if (remaining > 0.0f) {
+            // convierto a microsegundos para mas precision, busca evitar el jitter
+            auto micros = std::chrono::microseconds(static_cast<int64_t>(remaining * 1'000'000));
+            std::this_thread::sleep_for(micros);
         }
     }
 }

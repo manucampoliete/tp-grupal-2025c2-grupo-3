@@ -13,7 +13,7 @@
 #define SEND_START 0x07
 #define SEND_STARTED 0x08
 #define SEND_MOVE_STATE 0x09
-#define SEND_SNAPSHOT 0x0A
+#define SEND_RACE_SNAPSHOT 0x0A
 
 /**
  * Bitmask constants for encoding/decoding active directions

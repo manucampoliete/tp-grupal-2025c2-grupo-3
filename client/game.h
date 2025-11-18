@@ -18,11 +18,12 @@
 #include "worldRenderer.h"
 #include "gameLoop.h"
 
-using namespace SDL2pp;  // NOLINT
+#include "../common/utils/gameState.h"
+
+using namespace SDL2pp;
 
 
-enum class GameState { COUNTDOWN, RACING, ELIMINATED, SHOWING_STATS, MODIFYING_CAR, GAME_END };
-
+class GameLoop;
 
 class Game {
 private:

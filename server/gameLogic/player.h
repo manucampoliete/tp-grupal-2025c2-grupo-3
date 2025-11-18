@@ -6,7 +6,7 @@
 #include <utility>
 
 #include "../../common/messages/snapshot.h"
-#include "cars/car.h"
+#include "car.h"
 
 class Player {
 private:

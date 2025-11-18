@@ -31,7 +31,7 @@ void Receiver::run() {
              */
 
             switch (msgType) {
-                case SEND_SNAPSHOT: {
+                case SEND_RACE_SNAPSHOT: {
                     std::cout << "[RECEIVER] → Processing SNAPSHOT" << std::endl;
                     serverSnapshotsQueue.push(protocol.recvSnapshot());
                     break;

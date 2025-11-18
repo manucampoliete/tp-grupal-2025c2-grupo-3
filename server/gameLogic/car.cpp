@@ -12,7 +12,7 @@ void Car::updatePhysics() {
     // manejo del giro
     b2Vec2 vel = body->GetLinearVelocity();
     float speed = vel.Length();
-    float turnFactor = speed > turnFactorThreshold ? 1 : speed / turnFactorThreshold;
+    float turnFactor = speed > turnFactorThreshold ? 1 : speed / MAX_SPEED; // cambiar para que sea mas realista
 
     if (currentActiveDirections.left)
         body->SetAngularVelocity(angularSpeed * turnFactor);

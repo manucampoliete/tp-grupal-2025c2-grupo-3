@@ -5,8 +5,9 @@
 #include <vector>
 
 #include "../types/types.h"
+#include "../protocol/protocolConstants.h"
 
-enum class SnapshotType : uint8_t { START_SIGNAL = 0, CAR_SNAPSHOT = 1 };
+enum class SnapshotType : uint8_t { START_SIGNAL = 0, GAME_SNAPSHOT = 1 };
 
 struct Snapshot {
     struct CarSnapshot {
@@ -33,13 +34,23 @@ struct Snapshot {
 
     uint32_t countdown;  // remaining race time in milliseconds
     std::vector<CarSnapshot> cars;
-    SnapshotType type;
+    
+    // SnapshotType type;
+    uint8_t type;  // using uint8_t for easier serialization
+
 
     /**
      * Constructor for Snapshot
      */
     Snapshot();
 
+    // change state snapshot
+    Snapshot(int type);
+
+    // countdown snapshot
+    Snapshot(uint32_t countdown);
+
+    // racing snapshot
     Snapshot(uint32_t countdown, const std::vector<CarSnapshot>& cars);
 
     /**
