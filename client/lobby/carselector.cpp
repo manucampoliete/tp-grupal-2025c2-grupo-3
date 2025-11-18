@@ -61,7 +61,6 @@ void CarSelector::on_nextButton_clicked() {
 
 CarInfo CarSelector::getSelectedCar() const {
     int index = carStack->currentIndex();
-    std::cerr << "index: " << index << std::endl;
     if (index >= 0 && index < static_cast<int>(car_list.size()))
         return car_list[index];
 

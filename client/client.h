@@ -8,44 +8,42 @@
 
 #include "../common/messages/snapshot.h"
 #include "../common/socket/socket.h"
-#include "../protocol/client_protocol.h"
+#include "../protocol/clientProtocol.h"
 
-#include "game_handler.h"
+#include "gameHandler.h"
 
 
 /**
- * Client: conectar con el servidor y coordinar Lobby → Game
- * - Dueño del socket y protocol
- * - Lanza el lobby (Qt)
- * - Cuando el lobby termina, lanza el GameHandler (SDL)
+ * Client: connect to the server and coordinate Lobby → Game
+ * - Owner of the socket and protocol
+ * - Launches the lobby (Qt)
+ * - When the lobby ends, launches the GameHandler (SDL)
  */
 class Client {
 private:
     Socket socket;
     ClientProtocol protocol;
-    uint8_t player_id;
-
-    bool lobby_finished;
+    ClientID clientId;
+    bool lobbyFinished;
 
 public:
     /**
      * Constructor
-     * hostname: IP o hostname del servidor
-     * servname: Puerto del servidor
-     * player_id: ID del jugador (temporal, hardcodeado)
+     * hostname: server IP/hostname
+     * servname: server port
      */
     Client(const std::string& hostname, const std::string& servname);
 
     /**
-     * ejecuta el flujo completo: lanza el lobby (Qt), espera a que termine y lanza el GameHandler
+     * Executes the complete flow: launches the lobby (Qt), waits for it to finish, and then launches the GameHandler
      * (SDL)
      */
     void run(int argc, char* argv[]);
 
     /**
-     * llamado cuando el lobby termina
+     * Called when lobby finishes
      */
-    void on_lobby_finished();
+    void onLobbyFinished();
 
     ~Client();
 };

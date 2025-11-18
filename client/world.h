@@ -9,26 +9,25 @@
 #include "../common/messages/game_data.h"
 
 
-// mantiene el estado del mundo local de cada cliente
-// cada cliente tiene su propio World que refleja lo que el servidor le envía en los broadcasts
-
+// Maintains the local world state for each client
+// Each client has its own World that reflects what the server sends in the broadcasts
 class World {
 private:
-    std::map<uint8_t, BroadcastData::CarState> cars;  // estado de cada auto
-    uint32_t countdown = 0;                           // cuenta regresiva
-    mutable std::mutex mtx;                           // para poder bloquear en métodos const
+    std::map<uint8_t, BroadcastData::CarState> cars;  // Each car state
+    uint32_t countdown = 0;                           // Countdown
+    mutable std::mutex mtx;                           // To allow blocking in const methods
 
 public:
-    // limpia el estado del mundo (por ejemplo, al iniciar una nueva carrera)
+    // Cleans world state (for example, when new race is initiated)
     void reset();
 
-    // actualiza el estado con un nuevo broadcast recibido del servidor
+    // Updates world state with a new broadcast received from server
     void update(const BroadcastData& data);
 
-    // obtiene una copia del estado de todos los autos
+    // Obtains a copy of the state of all cars
     std::map<uint8_t, BroadcastData::CarState> getCars() const;
-
-    // obtiene el tiempo restante
+    
+    // Obtains the remaining time
     uint32_t getCountdown() const;
 };
 

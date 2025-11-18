@@ -5,19 +5,22 @@
 #include <syslog.h>
 
 
-Sender::Sender(ClientProtocol& protocol, Queue<ActiveDirections>& client_requests_q):
-        protocol(protocol), client_requests_q(client_requests_q) {}
+Sender::Sender(ClientProtocol& protocol, Queue<ActiveDirections>& clientRequestsQueue):
+        protocol(protocol), clientRequestsQueue(clientRequestsQueue) {}
 
 void Sender::run() {
     while (shouldKeepRunning()) {
         try {
-            ActiveDirections req = client_requests_q.pop();
-            protocol.send_move(req);
+            /**
+             * TODO: (Manu) Moving is not the only action the client can send!
+             * We need to handle other actions as well (e.g., modifications, cheats, etc.)
+             */ 
+            protocol.sendMove(clientRequestsQueue.pop());
         } catch (const std::exception& err) {
             syslog(LOG_INFO, "[Info] Sender: %s", err.what());
             break;
         }
     }
 
-    std::cout << "[SENDER] Hilo detenido." << std::endl;
+    std::cout << "[SENDER] Thread ended." << std::endl;
 }
