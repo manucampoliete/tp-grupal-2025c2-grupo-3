@@ -24,10 +24,10 @@ Game::Game():
         clientCommandsQueue(),
         responseQueuesMonitor(),
         players(),
-        countdownDuration(15),
-        raceDuration(10),
+        countdownDuration(10),
+        raceDuration(5),
         statsDuration(5),
-        upgradesDuration(10) {}
+        upgradesDuration(5) {}
 
 b2Body* Game::createNewCarBody() {
     b2BodyDef body_def;
@@ -80,18 +80,18 @@ void Game::broadcastRacing() {
 }
 
 void Game::broadcast() {
-    switch (current_state) {
-        case game_state::COUNTDOWN:
+    switch (currentState) {
+        case GameState::COUNTDOWN:
             broadcastCountdown();
             break;
-        case game_state::RACING: {
+        case GameState::RACING: {
             broadcastRacing();
             break;
         }
-        case game_state::SHOWING_STATS:
-        case game_state::MODIFYING_CAR:
-        case game_state::ELIMINATED:
-        case game_state::GAME_END:
+        case GameState::SHOWING_STATS:
+        case GameState::MODIFYING_CAR:
+        case GameState::ELIMINATED:
+        case GameState::GAME_END:
             // implementar cuando haga falta
             break;
     }
@@ -105,108 +105,125 @@ std::chrono::seconds Game::getRemainingGameStateTime() {
     auto now = std::chrono::high_resolution_clock::now();
     auto gameStateElapsed = now - gameStateStartTime;
 
-    switch (current_state) {
-        case game_state::COUNTDOWN:
+    switch (currentState) {
+        case GameState::COUNTDOWN:
             return std::chrono::duration_cast<std::chrono::seconds>(
                     countdownDuration - gameStateElapsed);
-        case game_state::RACING:
+        case GameState::RACING:
             return std::chrono::duration_cast<std::chrono::seconds>(
                     raceDuration - gameStateElapsed);
-        case game_state::SHOWING_STATS:
+        case GameState::SHOWING_STATS:
             return std::chrono::duration_cast<std::chrono::seconds>(
                     statsDuration - gameStateElapsed);
-        case game_state::MODIFYING_CAR:
+        case GameState::MODIFYING_CAR:
             return std::chrono::duration_cast<std::chrono::seconds>(
                     upgradesDuration - gameStateElapsed);
-        case game_state::ELIMINATED:
-        case game_state::GAME_END:
+        case GameState::ELIMINATED:
+        case GameState::GAME_END:
             return std::chrono::seconds(0);
     }
     return std::chrono::seconds(0);  // para evitar warning
 }
 
-void Game::setGameState(game_state new_state) {
-    current_state = new_state;
+// cambia el estado y manda el broadcast de que se empezó la carrera
+void Game::setRacingState() {
+    setGameState(GameState::RACING);
+
+    responseQueuesMonitor.broadcast(std::make_shared<Snapshot>(MSG_RACE_START));
+}
+
+void Game::setShowingStatsState() {
+    setGameState(GameState::SHOWING_STATS);
+
+    //broadcast de estadisticas de carrera
+    responseQueuesMonitor.broadcast(std::make_shared<Snapshot>(MSG_RACE_END));
+    
+}
+
+// solo cambia al estado de juego dado
+void Game::setGameState(GameState newState) {
+    currentState = newState;
     gameStateStartTime = std::chrono::high_resolution_clock::now();
 
     // el cliente espera que le avisen cuando cambia el estado
-    switch (new_state) {
-        case game_state::COUNTDOWN:
+    /* switch (newState) {
+        case GameState::COUNTDOWN:
             std::cout << "[GAME] Estado cambiado a COUNTDOWN" << std::endl;
             break;
-        case game_state::RACING:
+        case GameState::RACING:
             std::cout << "[GAME] Estado cambiado a RACING" << std::endl;
             responseQueuesMonitor.broadcast(std::make_shared<Snapshot>(MSG_RACE_START));
             break;
-        case game_state::SHOWING_STATS:
+        case GameState::SHOWING_STATS:
             std::cout << "[GAME] Estado cambiado a SHOWING_STATS" << std::endl;
+            responseQueuesMonitor.broadcast(std::make_shared<Snapshot>(MSG_RACE_END));
             break;
-        case game_state::MODIFYING_CAR:
+        case GameState::MODIFYING_CAR:
             std::cout << "[GAME] Estado cambiado a MODIFYING_CAR" << std::endl;
             break;
-        case game_state::ELIMINATED:
+        case GameState::ELIMINATED:
             std::cout << "[GAME] Estado cambiado a ELIMINATED" << std::endl;
             break;
-        case game_state::GAME_END:
+        case GameState::GAME_END:
             std::cout << "[GAME] Estado cambiado a GAME_END" << std::endl;
             break;
-    }
+    } */
 }
 
 void Game::updateGameState() {
     auto now = std::chrono::high_resolution_clock::now();
     auto gameStateElapsed = now - gameStateStartTime;
 
-    switch (current_state) {
-        case game_state::COUNTDOWN:
+    switch (currentState) {
+        case GameState::COUNTDOWN:
             if (gameStateElapsed >= countdownDuration) {
-                setGameState(game_state::RACING);
+                setGameState(GameState::COUNTDOWN);
             }
             break;
-        case game_state::RACING:
+        case GameState::RACING:
             if (gameStateElapsed >= raceDuration) {
-                setGameState(game_state::SHOWING_STATS);
+                setRacingState();
             }
             break;
-        case game_state::SHOWING_STATS:
+        case GameState::SHOWING_STATS:
             if (gameStateElapsed >= statsDuration) {
-                setGameState(game_state::MODIFYING_CAR);
+                setShowingStatsState();
             }
             break;
-        case game_state::MODIFYING_CAR:
+        case GameState::MODIFYING_CAR:
             if (gameStateElapsed >= upgradesDuration) {
-                setGameState(game_state::COUNTDOWN);
+                setModifyingCarState();
             }
             break;
-        case game_state::ELIMINATED: 
+        case GameState::ELIMINATED: 
         // eliminated le sirve solo al cliente?
         // si un usuario muere el server le va a estar mandando snapshots de carrera
         // pero tambien manda la vida del auto
         // si el cliente checkea que su vida es 0, pasa a eliminated en vez de racing
-        case game_state::GAME_END:
+        case GameState::GAME_END:
             // ?
             break;
     }
 }
 
 void Game::handleGameState() {
-    switch (current_state) {
-        case game_state::COUNTDOWN:
+    switch (currentState) {
+        case GameState::COUNTDOWN:
             handleCountdownState();
             break;
-        case game_state::RACING:
+        case GameState::RACING:
             handleRacingState();
             break;
-        case game_state::SHOWING_STATS:
+        case GameState::SHOWING_STATS:
             handleShowingStatsState();
             break;
-        case game_state::MODIFYING_CAR:
+        case GameState::MODIFYING_CAR:
             handleModifyingCarState();
             break;
-        case game_state::ELIMINATED:
+        case GameState::ELIMINATED:
             // handleEliminatedState();
             break;
-        case game_state::GAME_END:
+        case GameState::GAME_END:
             // handleGameEndState();
             break;
     }
@@ -249,7 +266,7 @@ void Game::handleModifyingCarState() {
 
 void Game::run() {
     broadcast_start_signal();
-    setGameState(game_state::COUNTDOWN);
+    setGameState(GameState::COUNTDOWN);
 
     /* auto collisionBodies =  */CollisionLoader::LoadCollisions("server/gameLogic/collisions.yaml", world, 1.0f, WORLD_HEIGHT);
 
