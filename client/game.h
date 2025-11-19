@@ -71,6 +71,9 @@ private:
     CarProperties currentProperties;
     FinalResults finalResults;
 
+    int lastWindowWidth = 0;
+    int lastWindowHeight = 0;
+
     // Number of current race and total hardcoded (that info should be sent by the server)
     int currentRace = 1;
     int totalRaces = 6;
@@ -107,6 +110,8 @@ public:
 
     GameState getCurrentState() const;
     void updateUILayout();
+
+    void checkWindowResize();
 
     void setRaceTimer(uint32_t timeMs);
     void showCountdown(uint8_t number);

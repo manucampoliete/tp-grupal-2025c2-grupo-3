@@ -159,6 +159,8 @@ void Game::processInput() {
 GameState Game::getCurrentState() const { return currentState; }
 
 void Game::update(float dt) {
+    checkWindowResize();
+
     worldRenderer.updateEffects(dt / 1000.0f);
 
     auto carStates = world.getCars();
@@ -182,6 +184,18 @@ void Game::update(float dt) {
     }
 }
 
+void Game::checkWindowResize() {
+    int currentWidth = window.GetWidth();
+    int currentHeight = window.GetHeight();
+    
+    // Si cambió el tamaño, actualizar layout
+    if (currentWidth != lastWindowWidth || currentHeight != lastWindowHeight) {
+        std::cout << "[GAME] Window size changed: " << currentWidth << "x" << currentHeight << std::endl;
+        updateUILayout();
+        lastWindowWidth = currentWidth;
+        lastWindowHeight = currentHeight;
+    }
+}
 
 void Game::startRace() {
     currentState = GameState::RACING;
