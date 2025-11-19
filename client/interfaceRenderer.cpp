@@ -67,7 +67,10 @@ void UIRenderer::renderCountdown(uint8_t countdownNumber) {
     std::string text;
     SDL_Color color;
 
-    if (countdownNumber == 3) {
+    if (countdownNumber > 3) {
+        text = "READY";
+        color = {255, 255, 255, 255};  // White
+    } else if (countdownNumber == 3) {
         text = "3";
         color = {255, 0, 0, 255};    // Red
     } else if (countdownNumber == 2) {

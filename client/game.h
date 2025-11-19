@@ -57,10 +57,10 @@ private:
     /**
      * TODO: change to GameState::COUNTDOWN when the feature is implemented
      */
-    game_state currentState = game_state::RACING;
+    game_state currentState;
 
     // Countdown
-    uint8_t countdownNumber = 3;  // 3, 2, 1, 0=GO
+    uint8_t countdownNumber = 100;  // 3, 2, 1, 0=GO
     float countdownTimer = 0.0f;  // Internal timer to change countdown numbers
 
     uint32_t raceTimerMs;
