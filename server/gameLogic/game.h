@@ -37,7 +37,7 @@ private:
     std::chrono::seconds upgradesDuration;
     // std::chrono::duration<float> elapsed;
 
-    game_state current_state;
+    GameState current_state;
     std::chrono::high_resolution_clock::time_point gameStateStartTime;
 
     /**
@@ -67,7 +67,7 @@ private:
     // void broadcastEliminated(); // seguro no se va a usar
     void broadcastGameEnd();
 
-    void setGameState(game_state new_state);
+    void setGameState(GameState new_state);
 
     void updateGameState();
 

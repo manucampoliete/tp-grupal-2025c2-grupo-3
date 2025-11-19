@@ -68,14 +68,9 @@ Game::Game(World& world, GameLoop& gameLoop, uint8_t playerId):
         soundManager.loadSound("engine", "client/assets/sounds/engine.wav");
         soundManager.loadSound("confirm", "client/assets/sounds/confirm.wav");
         soundManager.loadSound("victory", "client/assets/sounds/victory.wav");
+        soundManager.loadSound("race_start", "client/assets/sounds/race_start.wav");
 
         std::cout << "[GAME] All sounds loaded successfully" << std::endl;
-
-        /**
-         * TODO: check this when the complete flow is ready
-         * This maybe shouldn't be here when the countdown is implemented
-         */
-        soundManager.playMusic();
 
     } catch (const std::exception& e) {
         std::cerr << "[GAME] Error loading sounds: " << e.what() << std::endl;
@@ -164,6 +159,8 @@ void Game::processInput() {
 GameState Game::getCurrentState() const { return currentState; }
 
 void Game::update(float dt) {
+    checkWindowResize();
+
     worldRenderer.updateEffects(dt / 1000.0f);
 
     auto carStates = world.getCars();
@@ -187,11 +184,22 @@ void Game::update(float dt) {
     }
 }
 
+void Game::checkWindowResize() {
+    int currentWidth = window.GetWidth();
+    int currentHeight = window.GetHeight();
+    
+    // Si cambió el tamaño, actualizar layout
+    if (currentWidth != lastWindowWidth || currentHeight != lastWindowHeight) {
+        std::cout << "[GAME] Window size changed: " << currentWidth << "x" << currentHeight << std::endl;
+        updateUILayout();
+        lastWindowWidth = currentWidth;
+        lastWindowHeight = currentHeight;
+    }
+}
 
 void Game::startRace() {
     currentState = GameState::RACING;
-    // Start sound (different from countdown)
-    // soundManager.playSound("race_start");
+    soundManager.playMusic();
 }
 
 void Game::setRaceTimer(uint32_t timeMs) { this->raceTimerMs = timeMs; }
@@ -199,10 +207,11 @@ void Game::setRaceTimer(uint32_t timeMs) { this->raceTimerMs = timeMs; }
 void Game::showCountdown(uint8_t number) {
     currentState = GameState::COUNTDOWN;
     countdownNumber = number;
-    countdownTimer = 0.0f;
-    if (number <= 3)
+    
+    if (number >= 1 && number <= 3)
         soundManager.playSound("countdown");
-    // In GO! Later I see if I use game_start or directly the music
+    else if (number == 0)
+        soundManager.playSound("race_start");
 }
 
 void Game::showStats(const RaceResults& results) {

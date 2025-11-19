@@ -6,9 +6,8 @@
 #include "../common/queue/queue.h"
 #include "../common/thread/thread.h"
 #include "../common/types/types.h"
-#include "../common/utils/activeDirections.h"
 #include "../protocol/clientProtocol.h"
-#include "gameLoop.h"
+#include "serverMessage.h"
 
 /**
  * Receiver: thread that receives messages from the server
@@ -19,17 +18,14 @@
 class Receiver: public Thread {
 private:
     ClientProtocol& protocol;
-    Queue<Snapshot>& serverSnapshotsQueue;
-    GameLoop& gameLoop;
-    uint8_t lastCountdownNumber;
+    Queue<ServerMessage>& serverMessagesQueue;
 
 public:
     /**
      * Constructor: initializes the Receiver with the given parameters.
-     * serverSnapshotsQueue: received snapshots are pushed to this queue
-     * gameLoop: reference to the GameLoop to notify events
+     * serverMessagesQueue: received messages are pushed to this queue
      */
-    Receiver(ClientProtocol& protocol, Queue<Snapshot>& serverSnapshotsQueue, GameLoop& gameLoop);
+    Receiver(ClientProtocol& protocol, Queue<ServerMessage>& serverMessagesQueue);
 
     /**
      * TODO: Add proper documentation

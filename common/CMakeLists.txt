@@ -16,3 +16,4 @@ add_subdirectory(thread)
 add_subdirectory(types)
 add_subdirectory(utils)
 
+add_subdirectory(constantRateLoop)

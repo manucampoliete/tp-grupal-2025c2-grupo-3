@@ -25,6 +25,8 @@ bool EventHandler::handleEvents() {
                 case SDL_WINDOWEVENT_SIZE_CHANGED:
                 case SDL_WINDOWEVENT_MAXIMIZED:
                 case SDL_WINDOWEVENT_RESTORED:
+                case SDL_WINDOWEVENT_SHOWN:           
+                case SDL_WINDOWEVENT_EXPOSED: 
                     game.updateUILayout();
                     break;
             }
