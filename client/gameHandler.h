@@ -5,7 +5,6 @@
 #include <memory>
 
 #include "../common/messages/game_data.h"
-#include "../common/messages/snapshot.h"
 #include "../common/queue/queue.h"
 #include "../common/utils/activeDirections.h"
 #include "../protocol/clientProtocol.h"
@@ -14,6 +13,7 @@
 #include "receiver.h"
 #include "sender.h"
 #include "world.h"
+#include "serverMessage.h"
 
 
 /**
@@ -30,7 +30,7 @@ private:
     World world;
 
     Queue<ActiveDirections> clientRequestsQueue;
-    Queue<Snapshot> serverSnapshotsQueue;
+    Queue<ServerMessage> serverMessagesQueue;
 
     Sender sender;
     Receiver receiver;
