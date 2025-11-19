@@ -83,7 +83,7 @@ Game::Game(World& world, GameLoop& gameLoop, uint8_t playerId):
 
 bool Game::processFrame(float dt) {
     // Process input
-    if (currentState == game_state::RACING) {
+    if (currentState == GameState::RACING) {
         if (!eventHandler.handleEvents())
             return false;  // Window was closed
     } else {
@@ -120,10 +120,10 @@ void Game::processInput() {
             return;
         }
 
-        if (currentState == game_state::COUNTDOWN)
+        if (currentState == GameState::COUNTDOWN)
             continue;
 
-        if (currentState == game_state::MODIFYING_CAR && event.type == SDL_MOUSEBUTTONDOWN) {
+        if (currentState == GameState::MODIFYING_CAR && event.type == SDL_MOUSEBUTTONDOWN) {
             int x = event.button.x;
             int y = event.button.y;
 
@@ -156,7 +156,7 @@ void Game::processInput() {
     }
 }
 
-game_state Game::getCurrentState() const { return currentState; }
+GameState Game::getCurrentState() const { return currentState; }
 
 void Game::update(float dt) {
     worldRenderer.updateEffects(dt / 1000.0f);
@@ -184,14 +184,14 @@ void Game::update(float dt) {
 
 
 void Game::startRace() {
-    currentState = game_state::RACING;
+    currentState = GameState::RACING;
     soundManager.playMusic();
 }
 
 void Game::setRaceTimer(uint32_t timeMs) { this->raceTimerMs = timeMs; }
 
 void Game::showCountdown(uint8_t number) {
-    currentState = game_state::COUNTDOWN;
+    currentState = GameState::COUNTDOWN;
     countdownNumber = number;
     
     if (number >= 1 && number <= 3)
@@ -201,7 +201,7 @@ void Game::showCountdown(uint8_t number) {
 }
 
 void Game::showStats(const RaceResults& results) {
-    currentState = game_state::SHOWING_STATS;
+    currentState = GameState::SHOWING_STATS;
     currentResults = results;
     statsTimerMs = results.countdown_ms;
 
@@ -210,7 +210,7 @@ void Game::showStats(const RaceResults& results) {
 }
 
 void Game::showModifications(const CarProperties& props) {
-    currentState = game_state::MODIFYING_CAR;
+    currentState = GameState::MODIFYING_CAR;
     currentProperties = props;
     modTimerMs = props.countdown_ms;
     speedModified = false;
@@ -224,7 +224,7 @@ void Game::showCheatNotification(CheatType cheatType) {
 }
 
 void Game::showFinalResults(const FinalResults& results) {
-    currentState = game_state::GAME_END;
+    currentState = GameState::GAME_END;
     finalResults = results;
 
     soundManager.stopMusic();
@@ -258,7 +258,7 @@ void Game::onPlayerDied(uint16_t deadPlayerId) {
 
     // For the player who died
     if (deadPlayerId == playerId) {
-        currentState = game_state::ELIMINATED;
+        currentState = GameState::ELIMINATED;
         soundManager.pauseMusic();
         eliminatedPopupDelayMs = 1500.0f;
     }
@@ -289,30 +289,30 @@ void Game::render() {
     }
 
     switch (currentState) {
-        case game_state::COUNTDOWN:
+        case GameState::COUNTDOWN:
             interfaceRenderer.renderCountdown(countdownNumber);
             break;
-        case game_state::RACING:
+        case GameState::RACING:
             interfaceRenderer.renderRaceUI(raceTimerMs, currentRace, totalRaces,
                                               window.GetWidth());
             break;
-        case game_state::ELIMINATED:
+        case GameState::ELIMINATED:
             if (eliminatedPopupDelayMs <= 0)
                 interfaceRenderer.renderEliminatedPopup();
             break;
-        case game_state::SHOWING_STATS:
+        case GameState::SHOWING_STATS:
             interfaceRenderer.renderStatsPopup(currentResults, statsTimerMs);
             break;
-        case game_state::MODIFYING_CAR:
+        case GameState::MODIFYING_CAR:
             interfaceRenderer.renderModificationPopup(speedModified, healthModified, saved,
                                                          modTimerMs, currentProperties);
             break;
-        case game_state::GAME_END:
+        case GameState::GAME_END:
             interfaceRenderer.renderPodium(finalResults);
             break;
     }
 
-    if (currentState == game_state::RACING)
+    if (currentState == GameState::RACING)
         interfaceRenderer.renderMinimap();
 
     if (activeCheatNotification != CheatType::NONE)

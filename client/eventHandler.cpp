@@ -105,7 +105,7 @@ bool EventHandler::handleEvents() {
     }
 
     // MOVEMENT
-    if (game.getCurrentState() == game_state::RACING) {
+    if (game.getCurrentState() == GameState::RACING) {
         bool up = state[SDL_SCANCODE_W] || state[SDL_SCANCODE_UP];
         bool down = state[SDL_SCANCODE_S] || state[SDL_SCANCODE_DOWN];
         bool left = state[SDL_SCANCODE_A] || state[SDL_SCANCODE_LEFT];

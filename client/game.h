@@ -57,7 +57,7 @@ private:
     /**
      * TODO: change to GameState::COUNTDOWN when the feature is implemented
      */
-    game_state currentState;
+    GameState currentState;
 
     // Countdown
     uint8_t countdownNumber = 100;  // 3, 2, 1, 0=GO
@@ -105,7 +105,7 @@ public:
 
     bool shouldClose() const { return quit; }
 
-    game_state getCurrentState() const;
+    GameState getCurrentState() const;
     void updateUILayout();
 
     void setRaceTimer(uint32_t timeMs);
