@@ -27,7 +27,8 @@ Game::Game():
         countdownDuration(15),
         raceDuration(10),
         statsDuration(5),
-        upgradesDuration(10) {}
+        upgradesDuration(10),
+        started(false) {}
 
 b2Body* Game::createNewCarBody() {
     b2BodyDef body_def;
@@ -248,6 +249,8 @@ void Game::handleModifyingCarState() {
 }
 
 void Game::run() {
+    started = true;
+    
     broadcast_start_signal();
     setGameState(GameState::COUNTDOWN);
 
@@ -289,7 +292,11 @@ void Game::stop() {
     responseQueuesMonitor.closeAll();  // Senders cannot pop, game cannot tryPush when broadcasting
 }
 
-bool Game::isDead() { return !isAlive(); }
+bool Game::isAlive() const {
+    return !started or (started and Thread::isAlive());
+}
+
+bool Game::isDead() { return not isAlive(); }
 
 Queue<std::unique_ptr<Command>>& Game::getClientCommandsQueue() { return clientCommandsQueue; }
 

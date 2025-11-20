@@ -40,6 +40,8 @@ private:
     GameState current_state;
     std::chrono::high_resolution_clock::time_point gameStateStartTime;
 
+    std::atomic<bool> started;
+
     /**
      * Creates and returns a new b2Body for a car.
      */
@@ -104,6 +106,11 @@ public:
      * - calls ResponseQueuesMonitor::closeAll()
      */
     void stop() override;
+    
+    /**
+     * Returns true if the game thread is still running, false otherwise.
+     */
+    bool isAlive() const override;
 
     /**
      * Returns true if the game thread has ended, false otherwise.
