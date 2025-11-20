@@ -6,7 +6,7 @@
 #include "ui_joingame.h"
 
 JoinGame::JoinGame(QWidget* parent, const std::vector<CarInfo>& cars):
-        QWidget(parent), ui(new Ui::JoinGame), available_cars(cars) {
+        QWidget(parent), ui(new Ui::JoinGame), availableCars(cars) {
     ui->setupUi(this);
 
     errorLabel = new QLabel(this);
@@ -20,8 +20,8 @@ JoinGame::JoinGame(QWidget* parent, const std::vector<CarInfo>& cars):
 
     QFontDatabase::addApplicationFont(":/media/orbitron.ttf");
 
-    carSelector = new CarSelector(this, available_cars);
-    carSelector->setupCars(available_cars);
+    carSelector = new CarSelector(this, availableCars);
+    carSelector->setupCars(availableCars);
     ui->mainLayout->addWidget(carSelector);
 
     ui->buttonJoin->setFixedWidth(200);
@@ -30,11 +30,11 @@ JoinGame::JoinGame(QWidget* parent, const std::vector<CarInfo>& cars):
 void JoinGame::on_buttonReturn_clicked() { emit returnToMenuClicked(); }
 
 void JoinGame::on_buttonJoin_clicked() {
-    QString player_name = ui->lineEdit->text();
-    QString game_id = ui->lineEdit_2->text();
+    QString playerName = ui->lineEdit->text();
+    QString gameId = ui->lineEdit_2->text();
     CarInfo selected = carSelector->getSelectedCar();
 
-    emit joinGameRequested(player_name, game_id, selected);
+    emit joinGameRequested(playerName, gameId, selected);
 }
 
 void JoinGame::setJoinError() {
