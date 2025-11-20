@@ -7,7 +7,7 @@
 #include <iostream>
 
 CarSelector::CarSelector(QWidget* parent, const std::vector<CarInfo>& cars):
-        QWidget(parent), car_list(cars) {
+        QWidget(parent), carList(cars) {
     this->setObjectName("CarSelector");
 
     carStack = new QStackedWidget(this);
@@ -27,10 +27,10 @@ CarSelector::CarSelector(QWidget* parent, const std::vector<CarInfo>& cars):
     int topMargin = 30;
     int generalMargin = 5;
 
-    this->layout()->setContentsMargins(generalMargin,   // izquierdo
-                                       topMargin,       // superior
-                                       generalMargin,   // inferior
-                                       generalMargin);  // derecho
+    this->layout()->setContentsMargins(generalMargin,   // Left
+                                       topMargin,       // Top
+                                       generalMargin,   // Bottom
+                                       generalMargin);  // Right
 }
 
 void CarSelector::setupCars(const std::vector<CarInfo>& cars) {
@@ -61,8 +61,8 @@ void CarSelector::on_nextButton_clicked() {
 
 CarInfo CarSelector::getSelectedCar() const {
     int index = carStack->currentIndex();
-    if (index >= 0 && index < static_cast<int>(car_list.size()))
-        return car_list[index];
+    if (index >= 0 && index < static_cast<int>(carList.size()))
+        return carList[index];
 
     return {0, "Unknown", 0, 0};
 }

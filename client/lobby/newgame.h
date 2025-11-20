@@ -29,7 +29,7 @@ private slots:
 private:
     Ui::NewGame* ui;
     CarSelector* carSelector;
-    std::vector<CarInfo> available_cars;
+    std::vector<CarInfo> availableCars;
 };
 
 #endif  // NEWGAME_H

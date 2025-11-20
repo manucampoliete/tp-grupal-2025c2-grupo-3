@@ -28,7 +28,7 @@ private:
     QStackedWidget* carStack;
     QPushButton* prevButton;
     QPushButton* nextButton;
-    std::vector<CarInfo> car_list;
+    std::vector<CarInfo> carList;
 };
 
 #endif  // CARSELECTOR_H
