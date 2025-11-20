@@ -11,7 +11,7 @@
 
 GameLoop::GameLoop(Queue<ServerMessage>& serverMessagesQueue, 
                    Queue<ActiveDirections>& clientRequestsQueue,
-                   ClientProtocol& protocol, World& world, ClientID clientId):
+                   ClientGameProtocol& protocol, World& world, ClientID clientId):
         serverMessagesQueue(serverMessagesQueue),
         clientRequestsQueue(clientRequestsQueue),
         protocol(protocol),

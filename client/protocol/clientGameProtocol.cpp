@@ -1,4 +1,4 @@
-#include "clientProtocol.h"
+#include "clientGameProtocol.h"
 
 #include <iostream>
 #include <stdexcept>
@@ -7,7 +7,7 @@
 
 #include "../../common/protocol/protocolConstants.h"
 
-uint8_t ClientProtocol::encodeMoveState(const ActiveDirections& activeDirections) {
+uint8_t ClientGameProtocol::encodeMoveState(const ActiveDirections& activeDirections) {
     uint8_t moveState = 0;
     if (activeDirections.up)
         moveState |= UP_MASK;
@@ -20,94 +20,22 @@ uint8_t ClientProtocol::encodeMoveState(const ActiveDirections& activeDirections
     return moveState;
 }
 
+ClientGameProtocol::ClientGameProtocol(Socket& socket): SendProtocol(socket), RecvProtocol(socket) {}
 
-ClientProtocol::ClientProtocol(Socket& socket): SendProtocol(socket), RecvProtocol(socket) {}
+uint8_t ClientGameProtocol::recvMessageType() { return recvU8(); }
 
-
-/**
- * HANDSHAKE
- */
-ClientID ClientProtocol::recvClientId() {
-    if (recvU8() != SEND_CLIENT_ID)
-        throw std::runtime_error("Expected SEND_CLIENT_ID response from server");
-    return recvU16();  // client ID
-}
-
-std::vector<CarInfo> ClientProtocol::recvInitialInfo() {
-    sendU8(SEND_INITIAL_INFO);
-    if (recvU8() != SEND_INITIAL_INFO) {
-        throw std::runtime_error("Expected SEND_INITIAL_INFO response from server");
-    }
-
-    std::vector<CarInfo> infos;
-    uint16_t size = recvU16();
-    for (int i = 0; i < size; i++) {
-        CarInfo info;
-        info.id = recvU8();
-        info.name = recvString();
-        info.speed = recvU16();
-        info.health = recvU16();
-
-        infos.emplace_back(info);
-    }
-    return infos;
-}
-
-
-/**
- * LOBBY
- */
-uint16_t ClientProtocol::sendCreate(const std::string& username, CarID carId) {
-    sendU8(SEND_CREATE);
-    sendString(username);
-    sendU8(carId);
-
-    if (recvU8() != SEND_CREATED) {
-        throw std::runtime_error("Expected SEND_CREATED response from server");
-    }
-    return recvU16();  // match ID
-}
-
-bool ClientProtocol::sendJoin(MatchID matchId, const std::string& username, CarID carId) {
-    sendU8(SEND_JOIN);
-    sendU16(matchId);
-    sendString(username);
-    sendU8(carId);
-
-    if (recvU8() != SEND_JOINED) {
-        throw std::runtime_error("Expected SEND_JOINED response from server");
-    }
-    return recvU8() == 0x00;  // 0x00 for success, 0x01 for failure
-}
-
-void ClientProtocol::sendStart() {
-    sendU8(SEND_START);
-}
-
-void ClientProtocol::recvStartSignal() {
-    if (recvU8() != SEND_STARTED) {
-        throw std::runtime_error("Expected SEND_STARTED signal from server");
-    }
-}
-
-
-/**
- * GAME
- */
-uint8_t ClientProtocol::recvMessageType() { return recvU8(); }
-
-void ClientProtocol::sendMove(const ActiveDirections& activeDirections) {
+void ClientGameProtocol::sendMove(const ActiveDirections& activeDirections) {
     sendU8(SEND_MOVE_STATE);
     sendU8(encodeMoveState(activeDirections));
 }
 
-void ClientProtocol::sendModifications(bool speedMod, bool healthMod) {
+void ClientGameProtocol::sendModifications(bool speedMod, bool healthMod) {
     sendU8(MSG_MODIFY_CAR);
     sendU8(speedMod ? 0x01 : 0x00);
     sendU8(healthMod ? 0x01 : 0x00);
 }
 
-Snapshot ClientProtocol::recvSnapshot() {
+Snapshot ClientGameProtocol::recvSnapshot() {
     uint32_t countdown = recvU32();
     uint8_t numCars = recvU8();
 
@@ -133,11 +61,11 @@ Snapshot ClientProtocol::recvSnapshot() {
     return Snapshot(countdown, cars);
 }
 
-uint8_t ClientProtocol::recvCountdown() { return recvU8(); }
+uint8_t ClientGameProtocol::recvCountdown() { return recvU8(); }
 
-uint8_t ClientProtocol::recvCheckpoint() { return recvU8(); }
+uint8_t ClientGameProtocol::recvCheckpoint() { return recvU8(); }
 
-CollisionData ClientProtocol::recvCollision() {
+CollisionData ClientGameProtocol::recvCollision() {
     CollisionData collision;
     collision.playerId = recvU16();
     
@@ -151,9 +79,9 @@ CollisionData ClientProtocol::recvCollision() {
     return collision;
 }
 
-uint16_t ClientProtocol::recvPlayerDied() { return recvU16(); }
+uint16_t ClientGameProtocol::recvPlayerDied() { return recvU16(); }
 
-RaceResults ClientProtocol::recvRaceResults() {
+RaceResults ClientGameProtocol::recvRaceResults() {
     RaceResults results;
     results.countdownMs = recvU32();
     uint16_t numPlayers = recvU16();
@@ -170,7 +98,7 @@ RaceResults ClientProtocol::recvRaceResults() {
     return results;
 }
 
-CarProperties ClientProtocol::recvCarProperties() {
+CarProperties ClientGameProtocol::recvCarProperties() {
     CarProperties props;
 
     props.speed = recvU16();
@@ -180,7 +108,7 @@ CarProperties ClientProtocol::recvCarProperties() {
     return props;
 }
 
-FinalResults ClientProtocol::recvFinalResults() {
+FinalResults ClientGameProtocol::recvFinalResults() {
     FinalResults results;
     uint16_t numStandings = recvU16();
 
@@ -204,8 +132,8 @@ FinalResults ClientProtocol::recvFinalResults() {
 /**
  * CHEATS
  */
-void ClientProtocol::sendInmortalityRequest() { sendU8(SEND_INMORTALITY); }
+void ClientGameProtocol::sendInmortalityRequest() { sendU8(SEND_INMORTALITY); }
 
-void ClientProtocol::sendInstaWinRequest() { sendU8(SEND_INSTA_WIN); }
+void ClientGameProtocol::sendInstaWinRequest() { sendU8(SEND_INSTA_WIN); }
 
-void ClientProtocol::sendInstaLoseRequest() { sendU8(SEND_INSTA_LOSE); }
+void ClientGameProtocol::sendInstaLoseRequest() { sendU8(SEND_INSTA_LOSE); }

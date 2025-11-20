@@ -5,7 +5,7 @@
 #include <syslog.h>
 
 
-Receiver::Receiver(ClientProtocol& protocol, Queue<ServerMessage>& serverMessagesQueue):
+Receiver::Receiver(ClientGameProtocol& protocol, Queue<ServerMessage>& serverMessagesQueue):
     protocol(protocol),
     serverMessagesQueue(serverMessagesQueue) {}
 

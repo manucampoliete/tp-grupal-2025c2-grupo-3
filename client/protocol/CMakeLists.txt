@@ -1,8 +1,10 @@
 target_sources(taller_client
     PRIVATE
     # .cpp files
-    clientProtocol.cpp
+    clientHandshakeProtocol.cpp
+    clientGameProtocol.cpp
     PUBLIC
     # .h files
-    clientProtocol.h
+    clientHandshakeProtocol.h
+    clientGameProtocol.h
     )

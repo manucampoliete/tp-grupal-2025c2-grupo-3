@@ -7,7 +7,7 @@
 #include "../common/messages/gameData.h"
 #include "../common/queue/queue.h"
 #include "../common/utils/activeDirections.h"
-#include "../protocol/clientProtocol.h"
+#include "../protocol/clientGameProtocol.h"
 
 #include "gameLoop.h"
 #include "receiver.h"
@@ -24,7 +24,7 @@
  */
 class GameHandler {
 private:
-    ClientProtocol& protocol;
+    ClientGameProtocol protocol;
     ClientID clientId;
 
     World world;
@@ -39,7 +39,7 @@ private:
     std::atomic<bool> running;
 
 public:
-    GameHandler(ClientProtocol& protocol, ClientID clientId);
+    GameHandler(Socket& skt, ClientID clientId);
 
     // Runs the entire game: starts the 3 threads
     void run();

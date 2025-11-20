@@ -6,18 +6,18 @@
 #include "../common/queue/queue.h"
 #include "../common/thread/thread.h"
 #include "../common/types/types.h"
-#include "../protocol/clientProtocol.h"
+#include "../protocol/clientGameProtocol.h"
 #include "serverMessage.h"
 
 /**
  * Receiver: thread that receives messages from the server
- * - Reads messages from the server using ClientProtocol
+ * - Reads messages from the server using ClientGameProtocol
  * - Pushes snapshots to the queue
  * - Notifies events to the GameLoop
  */
 class Receiver: public Thread {
 private:
-    ClientProtocol& protocol;
+    ClientGameProtocol& protocol;
     Queue<ServerMessage>& serverMessagesQueue;
 
 public:
@@ -25,7 +25,7 @@ public:
      * Constructor: initializes the Receiver with the given parameters.
      * serverMessagesQueue: received messages are pushed to this queue
      */
-    Receiver(ClientProtocol& protocol, Queue<ServerMessage>& serverMessagesQueue);
+    Receiver(ClientGameProtocol& protocol, Queue<ServerMessage>& serverMessagesQueue);
 
     /**
      * TODO: Add proper documentation

@@ -5,7 +5,7 @@
 #include <syslog.h>
 
 
-Sender::Sender(ClientProtocol& protocol, Queue<ActiveDirections>& clientRequestsQueue):
+Sender::Sender(ClientGameProtocol& protocol, Queue<ActiveDirections>& clientRequestsQueue):
         protocol(protocol), clientRequestsQueue(clientRequestsQueue) {}
 
 void Sender::run() {

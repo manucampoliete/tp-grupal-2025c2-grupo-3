@@ -6,8 +6,8 @@
 #include "game.h"
 
 
-GameHandler::GameHandler(ClientProtocol& protocol, ClientID clientId):
-    protocol(protocol),
+GameHandler::GameHandler(Socket& skt, ClientID clientId):
+    protocol(skt),
     clientId(clientId),
     world(),
     clientRequestsQueue(),

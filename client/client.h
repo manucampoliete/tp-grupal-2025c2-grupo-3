@@ -8,7 +8,6 @@
 
 #include "../common/messages/snapshot.h"
 #include "../common/socket/socket.h"
-#include "../protocol/clientProtocol.h"
 
 #include "gameHandler.h"
 
@@ -21,8 +20,7 @@
  */
 class Client {
 private:
-    Socket socket;
-    ClientProtocol protocol;
+    Socket skt;
     ClientID clientId;
     bool lobbyFinished;
 

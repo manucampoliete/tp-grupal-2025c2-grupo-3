@@ -21,8 +21,8 @@
 #include "mainmenu.h"
 #include "newgame.h"
 
-Lobby::Lobby(ClientProtocol& protocol, QWidget* parent):
-        QMainWindow(parent), ui(new Ui::Lobby), protocol(protocol) {
+Lobby::Lobby(Socket& skt, QWidget* parent):
+        QMainWindow(parent), ui(new Ui::Lobby), protocol(skt) {
     ui->setupUi(this);
 
     this->setWindowTitle("Need For Speed");

@@ -15,7 +15,7 @@
 #include "../../common/utils/carinfo.h"
 
 
-class ClientProtocol: public SendProtocol, public RecvProtocol {
+class ClientGameProtocol: public SendProtocol, public RecvProtocol {
 private:
     /**
      * Packs an ActiveDirections object into a byte.
@@ -23,29 +23,8 @@ private:
     uint8_t encodeMoveState(const ActiveDirections& activeDirections);
 
 public:
-    explicit ClientProtocol(Socket& socket);
-
-
-    /**
-     * HANDSHAKE
-     * TODO: (Manu) Unify both methods into a single one?
-     */
-    ClientID recvClientId();
-    std::vector<CarInfo> recvInitialInfo();
-
-
-    /**
-     * LOBBY
-     */
-    uint16_t sendCreate(const std::string& username, CarID carId);
-    bool sendJoin(MatchID matchId, const std::string& username, CarID carId);
-    void sendStart();
-    void recvStartSignal();
-
-
-    /**
-     * GAME
-     */
+    explicit ClientGameProtocol(Socket& socket);
+    
     uint8_t recvMessageType();
 
     void sendMove(const ActiveDirections& activeDirections);

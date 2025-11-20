@@ -7,7 +7,7 @@
 #include "../common/queue/queue.h"
 #include "../common/thread/thread.h"
 #include "../common/utils/activeDirections.h"
-#include "protocol/clientProtocol.h"
+#include "protocol/clientGameProtocol.h"
 
 #include "serverMessage.h"
 #include "world.h"
@@ -25,7 +25,7 @@ class GameLoop: public Thread {
 private:
     Queue<ServerMessage>& serverMessagesQueue;
     Queue<ActiveDirections>& clientRequestsQueue;
-    ClientProtocol& protocol;
+    ClientGameProtocol& protocol;
 
     World& world;
     ClientID clientId;
@@ -51,7 +51,7 @@ public:
      */
     GameLoop(Queue<ServerMessage>& serverMessagesQueue, 
              Queue<ActiveDirections>& clientRequestsQueue,
-             ClientProtocol& protocol, World& world, ClientID clientId);
+             ClientGameProtocol& protocol, World& world, ClientID clientId);
 
     /**
      * Main loop that runs in the thread
