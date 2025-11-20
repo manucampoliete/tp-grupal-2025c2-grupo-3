@@ -26,8 +26,10 @@ private:
     b2World* world;
     int32 velocityIt;
     int32 positionIt;
+
     Queue<std::unique_ptr<Command>> clientCommandsQueue;
     ResponseQueuesMonitor responseQueuesMonitor;
+
     std::map<ClientID, Player> players;
 
     //tiempos
@@ -37,7 +39,7 @@ private:
     std::chrono::seconds upgradesDuration;
     // std::chrono::duration<float> elapsed;
 
-    game_state current_state;
+    GameState current_state;
     std::chrono::high_resolution_clock::time_point gameStateStartTime;
 
     /**
@@ -67,7 +69,7 @@ private:
     // void broadcastEliminated(); // seguro no se va a usar
     void broadcastGameEnd();
 
-    void setGameState(game_state new_state);
+    void setGameState(GameState newState);
 
     void updateGameState();
 
