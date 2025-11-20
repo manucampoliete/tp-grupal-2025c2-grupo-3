@@ -46,26 +46,26 @@ struct BroadcastData {
 
 struct RaceResults {
     struct PlayerResult {
-        std::string player_name;
-        uint32_t race_time_ms;
-        uint32_t total_time_ms;
+        std::string playerName;
+        uint32_t raceTimeMs;
+        uint32_t totalTimeMs;
     };
 
     std::vector<PlayerResult> players;
-    uint32_t countdown_ms;
+    uint32_t countdownMs;
 };
 
 struct FinalResults {
     struct FinalStanding {
-        uint16_t player_id;
-        std::string player_name;
-        uint32_t total_time_ms;
+        uint16_t playerId;
+        std::string playerName;
+        uint32_t totalTimeMs;
         uint8_t position;  // 1, 2, 3 etc
     };
 
     std::vector<FinalStanding> standings;
-    uint16_t winner_id;
-    std::string winner_name;
+    uint16_t winnerId;
+    std::string winnerName;
 };
 
 
@@ -73,13 +73,13 @@ struct FinalResults {
 struct CarProperties {
     uint16_t speed;
     uint16_t health;
-    uint16_t countdown_ms;  // timer para la pantalla de mods
+    uint16_t countdownMs;  // timer para la pantalla de mods
 };
 
 // datos de colisión
 // a chequear desp
 struct CollisionData {
-    uint16_t player_id;  // quién chocó
+    uint16_t playerId;  // quién chocó
     float intensity;     // 0.0 (leve) a 1.0 (fuerte)
     uint32_t x;          // coordenada x del choque * 1000
     uint32_t y;          // coordenada y del choque * 1000
@@ -89,15 +89,15 @@ struct CollisionData {
 // Efecto de colisión (flash temporal)
 struct CollisionEffect {
     float x, y;
-    float time_alive;
+    float timeAlive;
     float intensity;  // 0-1
     
     CollisionEffect(float x, float y, float intensity)
-        : x(x), y(y), time_alive(0), intensity(intensity) {}
+        : x(x), y(y), timeAlive(0), intensity(intensity) {}
     
-    void update(float dt) { time_alive += dt; }
+    void update(float dt) { timeAlive += dt; }
     
-    bool is_finished() const { return time_alive > 0.3f; }
+    bool isFinished() const { return timeAlive > 0.3f; }
 };
 
 // particula para explosiones
@@ -119,15 +119,15 @@ struct Particle {
         if (life < 0) life = 0;
     }
     
-    bool is_alive() const { return life > 0; }
+    bool isAlive() const { return life > 0; }
 };
 
 // explosión (conjunto de partículas)
 struct Explosion {
     std::vector<Particle> particles;
-    float time_alive;
+    float timeAlive;
     
-    Explosion(float x, float y, int particle_count = 30) : time_alive(0) {
+    Explosion(float x, float y, int particle_count = 30) : timeAlive(0) {
         for (int i = 0; i < particle_count; i++) {
             float angle = (rand() % 360) * 3.14159f / 180.0f;
             float speed = 100.0f + (rand() % 200);
@@ -147,14 +147,14 @@ struct Explosion {
     }
     
     void update(float dt) {
-        time_alive += dt;
+        timeAlive += dt;
         for (auto& p : particles)
             p.update(dt);
     }
     
-    bool is_finished() const {
-        return time_alive > 2.0f || std::all_of(particles.begin(), particles.end(),
-                                                  [](const Particle& p) { return !p.is_alive(); });
+    bool isFinished() const {
+        return timeAlive > 2.0f || std::all_of(particles.begin(), particles.end(),
+                                                  [](const Particle& p) { return !p.isAlive(); });
     }
 };
 

@@ -3,7 +3,7 @@
 
 #include <memory>
 
-#include "../common/messages/game_data.h"
+#include "../common/messages/gameData.h"
 #include "../common/queue/queue.h"
 #include "../common/thread/thread.h"
 #include "../common/utils/activeDirections.h"

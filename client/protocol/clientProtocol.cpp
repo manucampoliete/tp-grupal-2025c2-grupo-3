@@ -139,7 +139,7 @@ uint8_t ClientProtocol::recvCheckpoint() { return recvU8(); }
 
 CollisionData ClientProtocol::recvCollision() {
     CollisionData collision;
-    collision.player_id = recvU16();
+    collision.playerId = recvU16();
     
     // Receive intensity as uint8_t (0-255) and convert to float (0.0-1.0)
     uint8_t intensityByte = recvU8();
@@ -155,14 +155,14 @@ uint16_t ClientProtocol::recvPlayerDied() { return recvU16(); }
 
 RaceResults ClientProtocol::recvRaceResults() {
     RaceResults results;
-    results.countdown_ms = recvU32();
+    results.countdownMs = recvU32();
     uint16_t numPlayers = recvU16();
 
     for (uint16_t i = 0; i < numPlayers; ++i) {
         RaceResults::PlayerResult player;
-        player.player_name = recvString();
-        player.race_time_ms = recvU32();
-        player.total_time_ms = recvU32();
+        player.playerName = recvString();
+        player.raceTimeMs = recvU32();
+        player.totalTimeMs = recvU32();
 
         results.players.push_back(player);
     }
@@ -175,7 +175,7 @@ CarProperties ClientProtocol::recvCarProperties() {
 
     props.speed = recvU16();
     props.health = recvU16();
-    props.countdown_ms = recvU32();
+    props.countdownMs = recvU32();
 
     return props;
 }
@@ -186,16 +186,16 @@ FinalResults ClientProtocol::recvFinalResults() {
 
     for (uint16_t i = 0; i < numStandings; ++i) {
         FinalResults::FinalStanding standing;
-        standing.player_id = recvU16();
-        standing.player_name = recvString();
-        standing.total_time_ms = recvU32();
+        standing.playerId = recvU16();
+        standing.playerName = recvString();
+        standing.totalTimeMs = recvU32();
         standing.position = recvU8();
 
         results.standings.push_back(standing);
     }
 
-    results.winner_id = recvU16();
-    results.winner_name = recvString();
+    results.winnerId = recvU16();
+    results.winnerName = recvString();
 
     return results;
 }

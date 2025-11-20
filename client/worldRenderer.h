@@ -10,7 +10,7 @@
 #include <SDL2pp/Renderer.hh>
 #include <SDL2pp/Texture.hh>
 
-#include "../common/messages/game_data.h"
+#include "../common/messages/gameData.h"
 
 #include "world.h"
 

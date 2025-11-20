@@ -4,7 +4,7 @@
 #include <cstdint>
 #include <variant>
 
-#include "../common/messages/game_data.h"
+#include "../common/messages/gameData.h"
 #include "../common/messages/snapshot.h"
 
 

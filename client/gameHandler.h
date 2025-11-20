@@ -4,7 +4,7 @@
 #include <atomic>
 #include <memory>
 
-#include "../common/messages/game_data.h"
+#include "../common/messages/gameData.h"
 #include "../common/queue/queue.h"
 #include "../common/utils/activeDirections.h"
 #include "../protocol/clientProtocol.h"

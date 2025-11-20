@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 
-#include "../../common/messages/game_data.h"
+#include "../../common/messages/gameData.h"
 #include "../../common/messages/snapshot.h"
 #include "../../common/protocol/recvProtocol.h"
 #include "../../common/protocol/sendProtocol.h"

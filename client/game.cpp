@@ -217,7 +217,7 @@ void Game::showCountdown(uint8_t number) {
 void Game::showStats(const RaceResults& results) {
     currentState = GameState::SHOWING_STATS;
     currentResults = results;
-    statsTimerMs = results.countdown_ms;
+    statsTimerMs = results.countdownMs;
 
     soundManager.stopMusic();
     soundManager.playSound("race_end");
@@ -226,7 +226,7 @@ void Game::showStats(const RaceResults& results) {
 void Game::showModifications(const CarProperties& props) {
     currentState = GameState::MODIFYING_CAR;
     currentProperties = props;
-    modTimerMs = props.countdown_ms;
+    modTimerMs = props.countdownMs;
     speedModified = false;
     healthModified = false;
     saved = false;
@@ -242,7 +242,7 @@ void Game::showFinalResults(const FinalResults& results) {
     finalResults = results;
 
     soundManager.stopMusic();
-    if (results.winner_id == playerId)
+    if (results.winnerId == playerId)
         soundManager.playSound("victory");
 }
 
