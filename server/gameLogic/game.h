@@ -145,6 +145,11 @@ public:
     void makeInstaLose(ClientID clientId);
 
     /**
+     * Improves the car properties of the player with the given clientId.
+     */
+    void improveCarProperties(ClientID clientId, bool improveVelocity, bool improveHealth);
+
+    /**
      * Destructor
      * Nothing special to do
      */

@@ -325,22 +325,38 @@ void Game::movePlayer(ClientID clientId, ActiveDirections activeDirections) {
 void Game::makeInmortal(ClientID clientId) {
     std::cout << "Making player " << clientId << " inmortal!" << std::endl;
     /**
-     * TODO: implementar
+     * TODO: implement this method
      */
 }
 
 void Game::makeInstaWin(ClientID clientId) {
     std::cout << "Making player " << clientId << " insta win!" << std::endl;
     /**
-     * TODO: implementar
+     * TODO: implement this method
      */
 }
 
 void Game::makeInstaLose(ClientID clientId) {
     std::cout << "Making player " << clientId << " insta lose!" << std::endl;
     /**
-     * TODO: implementar
+     * TODO: implement this method
      */
+}
+
+void Game::improveCarProperties(ClientID clientId, bool improveVelocity, bool improveHealth) {
+    std::cout << "Improving car properties for player " << clientId << ": "
+              << (improveVelocity ? "velocity " : "") << (improveHealth ? "health" : "") << std::endl;
+
+    /**
+     * TODO: implement this method
+     * REMEMBER: Each improvement has a cost that is computed as a penalty to the arrival time
+     * 
+     * Could be something like:
+     */
+
+    // auto& player = players.at(clientId);
+    // if (improveVelocity) player.improveCarVelocity();
+    // if (improveHealth) player.improveCarHealth();
 }
 
 Game::~Game() {}

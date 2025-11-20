@@ -8,8 +8,7 @@ ActiveDirections ServerGameRecvProtocol::decodeMoveState(uint8_t moveState) {
 }
 
 void ServerGameRecvProtocol::recvMoveState(GameResolver& gameResolver) {
-    uint8_t moveState = recvU8();
-    gameResolver.handleMove(decodeMoveState(moveState));
+    gameResolver.handleMove(decodeMoveState(recvU8()));
 }
 
 void ServerGameRecvProtocol::recvInmortality(GameResolver& gameResolver) {
@@ -22,6 +21,10 @@ void ServerGameRecvProtocol::recvInstaWin(GameResolver& gameResolver) {
 
 void ServerGameRecvProtocol::recvInstaLose(GameResolver& gameResolver) {
     gameResolver.handleInstaLose();
+}
+
+void ServerGameRecvProtocol::recvModifyCar(GameResolver& gameResolver) {
+    gameResolver.handleModifyCar(recvU8() == 0x01, recvU8() == 0x01);
 }
 
 ServerGameRecvProtocol::ServerGameRecvProtocol(Socket& skt): RecvProtocol(skt) {}
@@ -42,6 +45,10 @@ void ServerGameRecvProtocol::consumeOne(GameResolver& gameResolver) {
         }
         case SEND_INSTA_LOSE: {
             recvInstaLose(gameResolver);
+            break;
+        }
+        case MSG_MODIFY_CAR: {
+            recvModifyCar(gameResolver);
             break;
         }
         default:
