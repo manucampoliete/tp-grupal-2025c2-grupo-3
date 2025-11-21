@@ -18,7 +18,7 @@
 #define TIME_STEP (1.0f / TARGET_FPS) // duracion del step que simula box2d cada frame
 
 Game::Game():
-        world(new b2World(b2Vec2(0, 0))),
+        world(std::make_unique<b2World>(b2Vec2(0, 0))),
         velocityIt(8),
         positionIt(3),
         clientCommandsQueue(),

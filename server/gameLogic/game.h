@@ -23,7 +23,7 @@ class Command;
 
 class Game: public Thread {
 private:
-    b2World* world;
+    std::unique_ptr<b2World> world;
     int32 velocityIt;
     int32 positionIt;
     Queue<std::unique_ptr<Command>> clientCommandsQueue;
