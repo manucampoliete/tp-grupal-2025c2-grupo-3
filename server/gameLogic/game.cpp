@@ -17,6 +17,8 @@
 #define WORLD_HEIGHT 4672.0f
 #define TIME_STEP (1.0f / TARGET_FPS) // duracion del step que simula box2d cada frame
 
+#define MAX_PLAYERS 8
+
 Game::Game():
         world(std::make_unique<b2World>(b2Vec2(0, 0))),
         velocityIt(8),
@@ -304,18 +306,17 @@ Queue<std::shared_ptr<Snapshot>>& Game::getResponsesQueue(ClientID clientId) {
     return responseQueuesMonitor.getQueue(clientId);
 }
 
-void Game::addPlayer(ClientID clientId, const std::string& username, CarID carId) {
+bool Game::addPlayer(ClientID clientId, const std::string& username, CarID carId) {
+    if (players.size() >= MAX_PLAYERS)
+        return false;
+
     if (players.find(clientId) == players.end()) {
-        b2Body* newCarBody = createNewCarBody();
-        try {
-            players.emplace(clientId, Player(clientId, username, newCarBody, carId));
-        } catch (std::exception& e) {
-            std::cerr << "Error en addPlayer: " << e.what() << std::endl;
-        } catch (...) {
-            std::cerr << "Error en addPlayer: no se" << std::endl;
-        }
+        players.emplace(clientId, Player(clientId, username, createNewCarBody(), carId));
+        responseQueuesMonitor.addQueue(clientId);
+        return true;
     }
-    responseQueuesMonitor.addQueue(clientId);
+
+    return false;
 }
 
 void Game::movePlayer(ClientID clientId, ActiveDirections activeDirections) {
@@ -326,6 +327,7 @@ void Game::makeInmortal(ClientID clientId) {
     std::cout << "Making player " << clientId << " inmortal!" << std::endl;
     /**
      * TODO: implement this method
+     * NOTE: we can set the player's car health to a very high value
      */
 }
 
@@ -333,6 +335,7 @@ void Game::makeInstaWin(ClientID clientId) {
     std::cout << "Making player " << clientId << " insta win!" << std::endl;
     /**
      * TODO: implement this method
+     * NOTE: we can set the player's car position to the finish line
      */
 }
 
@@ -340,6 +343,7 @@ void Game::makeInstaLose(ClientID clientId) {
     std::cout << "Making player " << clientId << " insta lose!" << std::endl;
     /**
      * TODO: implement this method
+     * NOTE: we can set the player's car health to 0
      */
 }
 

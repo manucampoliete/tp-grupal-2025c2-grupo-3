@@ -128,9 +128,10 @@ public:
     Queue<std::shared_ptr<Snapshot>>& getResponsesQueue(ClientID clientId);
 
     /**
-     * Adds a new player to the game with the given parameters.
+     * Adds a new player to the game with the given parameters. 
+     * Returns true if the player was successfully added, false otherwise.
      */
-    void addPlayer(ClientID clientId, const std::string& username, CarID carId);
+    bool addPlayer(ClientID clientId, const std::string& username, CarID carId);
 
     /**
      * Moves the player with the given clientId according to the given activeDirections.
