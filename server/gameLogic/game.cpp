@@ -83,7 +83,7 @@ void Game::broadcastRacing() {
 }
 
 void Game::broadcast() {
-    switch (current_state) {
+    switch (currentState) {
         case GameState::COUNTDOWN:
             broadcastCountdown();
             break;
@@ -100,7 +100,7 @@ void Game::broadcast() {
     }
 }
 
-void Game::broadcast_start_signal() {
+void Game::broadcastStartSignal() {
     responseQueuesMonitor.broadcast(std::make_shared<Snapshot>());  // dummy timestamp for now
 }
 
@@ -108,7 +108,7 @@ std::chrono::seconds Game::getRemainingGameStateTime() {
     auto now = std::chrono::high_resolution_clock::now();
     auto gameStateElapsed = now - gameStateStartTime;
 
-    switch (current_state) {
+    switch (currentState) {
         case GameState::COUNTDOWN:
             return std::chrono::duration_cast<std::chrono::seconds>(
                     countdownDuration - gameStateElapsed);
@@ -128,12 +128,12 @@ std::chrono::seconds Game::getRemainingGameStateTime() {
     return std::chrono::seconds(0);  // para evitar warning
 }
 
-void Game::setGameState(GameState new_state) {
-    current_state = new_state;
+void Game::setGameState(GameState newState) {
+    currentState = newState;
     gameStateStartTime = std::chrono::high_resolution_clock::now();
 
     // el cliente espera que le avisen cuando cambia el estado
-    switch (new_state) {
+    switch (newState) {
         case GameState::COUNTDOWN:
             std::cout << "[GAME] Estado cambiado a COUNTDOWN" << std::endl;
             break;
@@ -160,7 +160,7 @@ void Game::updateGameState() {
     auto now = std::chrono::high_resolution_clock::now();
     auto gameStateElapsed = now - gameStateStartTime;
 
-    switch (current_state) {
+    switch (currentState) {
         case GameState::COUNTDOWN:
             if (gameStateElapsed >= countdownDuration) {
                 setGameState(GameState::RACING);
@@ -193,7 +193,7 @@ void Game::updateGameState() {
 }
 
 void Game::handleGameState() {
-    switch (current_state) {
+    switch (currentState) {
         case GameState::COUNTDOWN:
             handleCountdownState();
             break;
@@ -253,7 +253,7 @@ void Game::handleModifyingCarState() {
 void Game::run() {
     started = true;
     
-    broadcast_start_signal();
+    broadcastStartSignal();
     setGameState(GameState::COUNTDOWN);
 
     /* auto collisionBodies =  */CollisionLoader::LoadCollisions("server/gameLogic/collisions.yaml", world, 1.0f, WORLD_HEIGHT);
