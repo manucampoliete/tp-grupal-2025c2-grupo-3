@@ -25,7 +25,7 @@ Game::Game():
         clientCommandsQueue(),
         responseQueuesMonitor(),
         players(),
-        countdownDuration(15),
+        countdownDuration(3),
         raceDuration(10),
         statsDuration(5),
         upgradesDuration(10),
@@ -51,6 +51,7 @@ b2Body* Game::createNewCarBody() {
     boxFixtureDef.shape = &boxShape;
     boxFixtureDef.density = 1;
     // boxFixtureDef.friction = 0.3f;
+    boxFixtureDef.restitution = 0.1f;  // poco rebote
     car->CreateFixture(&boxFixtureDef);
 
     car->SetLinearDamping(0.5f);  // para que se frene con el tiempo
@@ -82,7 +83,7 @@ void Game::broadcastRacing() {
 }
 
 void Game::broadcast() {
-    switch (current_state) {
+    switch (currentState) {
         case GameState::COUNTDOWN:
             broadcastCountdown();
             break;
@@ -107,7 +108,7 @@ std::chrono::seconds Game::getRemainingGameStateTime() {
     auto now = std::chrono::high_resolution_clock::now();
     auto gameStateElapsed = now - gameStateStartTime;
 
-    switch (current_state) {
+    switch (currentState) {
         case GameState::COUNTDOWN:
             return std::chrono::duration_cast<std::chrono::seconds>(
                     countdownDuration - gameStateElapsed);
@@ -127,12 +128,12 @@ std::chrono::seconds Game::getRemainingGameStateTime() {
     return std::chrono::seconds(0);  // para evitar warning
 }
 
-void Game::setGameState(GameState new_state) {
-    current_state = new_state;
+void Game::setGameState(GameState newState) {
+    currentState = newState;
     gameStateStartTime = std::chrono::high_resolution_clock::now();
 
     // el cliente espera que le avisen cuando cambia el estado
-    switch (new_state) {
+    switch (newState) {
         case GameState::COUNTDOWN:
             std::cout << "[GAME] Estado cambiado a COUNTDOWN" << std::endl;
             break;
@@ -159,7 +160,7 @@ void Game::updateGameState() {
     auto now = std::chrono::high_resolution_clock::now();
     auto gameStateElapsed = now - gameStateStartTime;
 
-    switch (current_state) {
+    switch (currentState) {
         case GameState::COUNTDOWN:
             if (gameStateElapsed >= countdownDuration) {
                 setGameState(GameState::RACING);
@@ -192,7 +193,7 @@ void Game::updateGameState() {
 }
 
 void Game::handleGameState() {
-    switch (current_state) {
+    switch (currentState) {
         case GameState::COUNTDOWN:
             handleCountdownState();
             break;
@@ -249,6 +250,14 @@ void Game::handleModifyingCarState() {
     // hay que hacer un nuevo tipo de comando (ModifyCarCommand?) que modifique las propiedades del auto del jugador
 }
 
+// Posible problema: si se hace broadcast de los 2 choques entonces el cliente va a reproducir el sonido del choque 2 veces!!
+// Checkear si la posición del choque es la misma para ambos players (o muy cercana) asi el cliente sabe que es el mismo choque
+void Game::handleCollision(Player* player, float impact) {
+    if (!player) return;
+    Snapshot::CollisionData collisionData = player->buildCollisionSnapshot(impact);
+    responseQueuesMonitor.broadcast(std::make_shared<Snapshot>(collisionData));
+}
+
 void Game::run() {
     started = true;
     
@@ -258,7 +267,8 @@ void Game::run() {
     /* auto collisionBodies =  */CollisionLoader::LoadCollisions("server/gameLogic/collisions.yaml", world, 1.0f, WORLD_HEIGHT);
     
     // contact listener para manejar choques
-    ContactListener contactListener;
+    // se le pasa un puntero a Game para que pueda llamar a handleCollision
+    ContactListener contactListener(this);
     world->SetContactListener(&contactListener);
 
     using clock = std::chrono::high_resolution_clock;

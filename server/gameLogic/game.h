@@ -39,7 +39,7 @@ private:
     std::chrono::seconds upgradesDuration;
     // std::chrono::duration<float> elapsed;
 
-    GameState current_state;
+    GameState currentState;
     std::chrono::high_resolution_clock::time_point gameStateStartTime;
 
     std::atomic<bool> started;
@@ -138,6 +138,8 @@ public:
      * Moves the player with the given clientId according to the given activeDirections.
      */
     void movePlayer(ClientID clientId, ActiveDirections activeDirections);
+
+    void handleCollision(Player* player, float impact);
 
     /**
      * Cheats!

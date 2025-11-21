@@ -14,7 +14,6 @@ private:
     std::string username;
     Car car;
 
-
 public:
     /**
      * Constructor
@@ -35,6 +34,8 @@ public:
      * Builds and returns a CarSnapshot representing the player's car.
      */
     Snapshot::CarSnapshot buildCarSnapshot();
+
+    Snapshot::CollisionData buildCollisionSnapshot(float impact);
 };
 
 #endif

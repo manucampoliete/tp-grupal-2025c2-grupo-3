@@ -25,6 +25,9 @@ Snapshot::Snapshot(uint32_t countdown, const std::vector<CarSnapshot>& cars):
 Snapshot::Snapshot(const Snapshot& other):
         countdown(other.countdown), cars(other.cars), type(other.type) {}
 
+Snapshot::Snapshot(const CollisionData& collision):
+        countdown(0), collisionData(collision), type(MSG_COLLISION) {}
+
 
 
 Snapshot::CarSnapshot& Snapshot::CarSnapshot::operator=(const CarSnapshot& other) {

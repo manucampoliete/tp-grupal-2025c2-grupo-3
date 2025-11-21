@@ -1,4 +1,5 @@
 #include "contact_listener.h"
+#include "game.h"
 
 #include <iostream>
 
@@ -23,24 +24,41 @@ void ContactListener::EndContact(b2Contact* contact) {
     b2Body* bodyA = contact->GetFixtureA()->GetBody();
     b2Body* bodyB = contact->GetFixtureB()->GetBody();
 
-    // Ejemplo: imprimir las posiciones de los cuerpos al finalizar la colisión
-    b2Vec2 positionA = bodyA->GetPosition();
-    b2Vec2 positionB = bodyB->GetPosition();
-
-    (void)positionA;
-    (void)positionB;
-    // std::cout << "End Contact between Body A at (" << positionA.x << ", " << positionA.y
-    //           << ") and Body B at (" << positionB.x << ", " << positionB.y << ")\n";
+    BodyPair pair{std::min(bodyA, bodyB), std::max(bodyA, bodyB)};
+    alreadyHit.erase(pair);
 }
 
 void ContactListener::PostSolve(b2Contact* contact, const b2ContactImpulse* impulse) {
     // Aquí puedes manejar la resolución de una colisión, por ejemplo, para obtener la fuerza del impacto
     b2Body* bodyA = contact->GetFixtureA()->GetBody();
     b2Body* bodyB = contact->GetFixtureB()->GetBody();
-    (void)bodyA;
-    (void)bodyB;
+    
+    // En cada frame de una "raspadura" se llama varias veces a PostSolve
+    // Box2D puede llegar a interpretar el mismo choque como (body1, body2) y (body2, body1) en frames contiguos 
+    // Esto nos asegura de que va a interpretar el choque siempre de la misma forma
+    BodyPair pair{std::min(bodyA, bodyB), std::max(bodyA, bodyB)};
 
-    // Ejemplo: imprimir la fuerza del impacto
-    float force = impulse->normalImpulses[0];
-    std::cout << "Furza de impacto entre Body A y Body B: " << force << "\n";
+    float impact = impulse->normalImpulses[0];
+
+    if (impact > IMPACT_THRESHOLD && !alreadyHit.count(pair)) {
+        alreadyHit.insert(pair);
+        std::cout << "Impact: " << impact << "\n";
+        //applyDamage(bodyA, bodyB, impact);
+        // en realidad no va a ser un applyDamage sino mas bien un handle collision
+        // que ademas de aplicar el daño va a hacer un broadcast de la colisión
+        
+        auto* dataA = reinterpret_cast<BodyData*>(bodyA->GetUserData().pointer);
+        auto* dataB = reinterpret_cast<BodyData*>(bodyB->GetUserData().pointer);
+
+        // alguno de los involucrados puede no ser un player (auto contra pared)
+        if(dataA && dataA->player) {
+            Player* playerA = dataA->player;
+            game->handleCollision(playerA, impact);
+        }
+
+        if(dataB && dataB->player) {
+            Player* playerB = dataB->player;
+            game->handleCollision(playerB, impact);
+        }
+    }
 }
