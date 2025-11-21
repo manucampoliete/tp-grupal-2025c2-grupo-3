@@ -23,7 +23,7 @@ class Command;
 
 class Game: public Thread {
 private:
-    b2World* world;
+    std::unique_ptr<b2World> world;
     int32 velocityIt;
     int32 positionIt;
 
@@ -41,6 +41,8 @@ private:
 
     GameState current_state;
     std::chrono::high_resolution_clock::time_point gameStateStartTime;
+
+    std::atomic<bool> started;
 
     /**
      * Creates and returns a new b2Body for a car.
@@ -69,7 +71,7 @@ private:
     // void broadcastEliminated(); // seguro no se va a usar
     void broadcastGameEnd();
 
-    void setGameState(GameState newState);
+    void setGameState(GameState new_state);
 
     void updateGameState();
 
@@ -106,6 +108,11 @@ public:
      * - calls ResponseQueuesMonitor::closeAll()
      */
     void stop() override;
+    
+    /**
+     * Returns true if the game thread is still running, false otherwise.
+     */
+    bool isAlive() const override;
 
     /**
      * Returns true if the game thread has ended, false otherwise.
@@ -138,6 +145,11 @@ public:
     void makeInmortal(ClientID clientId);
     void makeInstaWin(ClientID clientId);
     void makeInstaLose(ClientID clientId);
+
+    /**
+     * Improves the car properties of the player with the given clientId.
+     */
+    void improveCarProperties(ClientID clientId, bool improveVelocity, bool improveHealth);
 
     /**
      * Destructor

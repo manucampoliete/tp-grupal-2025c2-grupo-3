@@ -5,7 +5,7 @@
 #include <QMovie>
 #include <QTimer>
 
-guestWaiting::guestWaiting(QWidget* parent): QWidget(parent), ui(new Ui::guestWaiting) {
+GuestWaiting::GuestWaiting(QWidget* parent): QWidget(parent), ui(new Ui::GuestWaiting) {
     ui->setupUi(this);
 
     static const QString baseText = "Waiting for game to start";
@@ -21,11 +21,11 @@ guestWaiting::guestWaiting(QWidget* parent): QWidget(parent), ui(new Ui::guestWa
     timer->start(500);
 }
 
-void guestWaiting::setMatchID(QString match_id) {
-    this->match_id = match_id;
+void GuestWaiting::setMatchID(QString matchId) {
+    this->matchId = matchId;
     QString currentText = ui->idLabel->text();
-    ui->idLabel->setText(currentText + "     " + match_id);
+    ui->idLabel->setText(currentText + "     " + matchId);
     ui->idLabel->adjustSize();
 }
 
-guestWaiting::~guestWaiting() { delete ui; }
+GuestWaiting::~GuestWaiting() { delete ui; }

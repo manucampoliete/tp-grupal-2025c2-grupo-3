@@ -6,7 +6,7 @@
 #include <SDL2pp/SDL.hh>
 
 #include "game.h"
-#include "gameLoop.h"
+#include "../threads/gameLoop.h"
 
 EventHandler::EventHandler(GameLoop& gameLoop, Game& game): gameLoop(gameLoop), game(game) {}
 
@@ -25,6 +25,8 @@ bool EventHandler::handleEvents() {
                 case SDL_WINDOWEVENT_SIZE_CHANGED:
                 case SDL_WINDOWEVENT_MAXIMIZED:
                 case SDL_WINDOWEVENT_RESTORED:
+                case SDL_WINDOWEVENT_SHOWN:           
+                case SDL_WINDOWEVENT_EXPOSED: 
                     game.updateUILayout();
                     break;
             }

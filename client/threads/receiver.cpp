@@ -5,12 +5,9 @@
 #include <syslog.h>
 
 
-Receiver::Receiver(ClientProtocol& protocol, Queue<Snapshot>& serverSnapshotsQueue, GameLoop& gameLoop):
+Receiver::Receiver(ClientGameProtocol& protocol, Queue<ServerMessage>& serverMessagesQueue):
     protocol(protocol),
-    serverSnapshotsQueue(serverSnapshotsQueue),
-    gameLoop(gameLoop),
-    lastCountdownNumber(UINT8_MAX)  // Dummy value to force the first update
-    {}
+    serverMessagesQueue(serverMessagesQueue) {}
 
 
 void Receiver::run() {
@@ -23,71 +20,73 @@ void Receiver::run() {
             std::cout << "[RECEIVER] Message received: 0x" << std::hex << (int)msgType << std::dec
                       << " (" << (int)msgType << ")" << std::endl;
 
-            // We don't use the queue for specific events
-            // We just use it for race snapshots
-
-            /**
-             * TODO: (Manu) We'll probably have to use the queue all the time, even for 'specific' events
-             */
-
+            // Cada tipo de mensaje se empaqueta en su struct y se pushea a la queue
             switch (msgType) {
                 case SEND_RACE_SNAPSHOT: {
                     std::cout << "[RECEIVER] → Processing SNAPSHOT" << std::endl;
-                    serverSnapshotsQueue.push(protocol.recvSnapshot());
+                    serverMessagesQueue.push(protocol.recvSnapshot());
                     break;
                 }
 
                 case MSG_COUNTDOWN: {
                     std::cout << "[RECEIVER] → Processing COUNTDOWN" << std::endl;
-                    uint8_t number = protocol.recvCountdown();
-                    if (number != lastCountdownNumber) {
-                        std::cout << "[RECEIVER] → Countdown changed: " << (int)number << std::endl;
-                        gameLoop.onCountdown(number);
-                        lastCountdownNumber = number;
-                    }
-                    // If it's the same number, ignore it
+                    CountdownMessage msg;
+                    msg.number = protocol.recvCountdown();
+                    serverMessagesQueue.push(msg);
                     break;
                 }
 
                 case MSG_RACE_START: {
                     std::cout << "[RECEIVER] → Processing RACE_START" << std::endl;
-                    gameLoop.onRaceStart();
+                    serverMessagesQueue.push(RaceStartMessage{});
                     break;
                 }
 
                 case MSG_RACE_END: {
                     std::cout << "[RECEIVER] → Processing RACE_END" << std::endl;
-                    gameLoop.onRaceEnd(protocol.recvRaceResults());
+                    RaceEndMessage msg;
+                    msg.results = protocol.recvRaceResults();
+                    serverMessagesQueue.push(msg);
                     break;
                 }
 
                 case MSG_MOD_PHASE: {
                     std::cout << "[RECEIVER] → Processing MOD_PHASE" << std::endl;
-                    gameLoop.onModificationPhase(protocol.recvCarProperties());
+                    ModificationPhaseMessage msg;
+                    msg.properties = protocol.recvCarProperties();
+                    serverMessagesQueue.push(msg);
                     break;
                 }
 
                 case MSG_GAME_END: {
                     std::cout << "[RECEIVER] → Processing GAME_END" << std::endl;
-                    gameLoop.onGameEnd(protocol.recvFinalResults());
+                    GameEndMessage msg;
+                    msg.results = protocol.recvFinalResults();
+                    serverMessagesQueue.push(msg);
                     break;
                 }
 
                 case MSG_COLLISION: {
                     std::cout << "[RECEIVER] → Processing COLLISION" << std::endl;
-                    gameLoop.onCollision(protocol.recvCollision());
+                    CollisionMessage msg;
+                    msg.data = protocol.recvCollision();
+                    serverMessagesQueue.push(msg);
                     break;
                 }
 
                 case MSG_PLAYER_DIED: {
                     std::cout << "[RECEIVER] → Processing PLAYER_DIED" << std::endl;
-                    gameLoop.onPlayerDied(protocol.recvPlayerDied());
+                    PlayerDiedMessage msg;
+                    msg.playerId = protocol.recvPlayerDied();
+                    serverMessagesQueue.push(msg);
                     break;
                 }
 
                 case MSG_CHECKPOINT: {
                     std::cout << "[RECEIVER] → Processing CHECKPOINT" << std::endl;
-                    gameLoop.onCheckpointCrossed(protocol.recvCheckpoint());
+                    CheckpointMessage msg;
+                    msg.checkpointId = protocol.recvCheckpoint();
+                    serverMessagesQueue.push(msg);
                     break;
                 }
 

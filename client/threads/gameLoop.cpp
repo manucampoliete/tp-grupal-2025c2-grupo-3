@@ -3,45 +3,80 @@
 #include <iostream>
 #include <utility>
 
-#include "game.h"
+#include "../../common/constantRateLoop/constantRateLoop.h"
+#include "../gameHandling/game.h"
 
 #define WORLD_HEIGHT 4672.0f
 
 
-GameLoop::GameLoop(Queue<Snapshot>& serverSnapshotsQueue, Queue<ActiveDirections>& clientRequestsQueue,
-                   ClientProtocol& protocol, World& world, ClientID clientId):
-        serverSnapshotsQueue(serverSnapshotsQueue),
+GameLoop::GameLoop(Queue<ServerMessage>& serverMessagesQueue, 
+                   Queue<ActiveDirections>& clientRequestsQueue,
+                   ClientGameProtocol& protocol, World& world, ClientID clientId):
+        serverMessagesQueue(serverMessagesQueue),
         clientRequestsQueue(clientRequestsQueue),
         protocol(protocol),
         world(world),
         clientId(clientId),
-        game(nullptr) {}
+        game(nullptr),
+        lastCountdownNumber(UINT8_MAX) {}
+
 
 void GameLoop::run() {
     game = std::make_unique<Game>(world, *this, clientId);
 
     std::cout << "[GAME_LOOP] Initiating SDL game loop..." << std::endl;
 
-    const int FRAME_RATE = 60;
-    const float FRAME_TIME_MS = 1000.0f / FRAME_RATE;
-
-    float t1 = SDL_GetTicks();
+    ConstantRateLoop constantRateLoop;
     bool isRunning = true;
+    Snapshot latestSnapshot;
+    bool hasSnapshot = false;
 
     while (isRunning && shouldKeepRunning()) {
-        // Consume all snapshots but apply only the latest one
-        Snapshot latestSnapshot;
-        bool hasSnapshot = false;
-
-        {
-            Snapshot temp;
-            while (serverSnapshotsQueue.tryPop(temp)) {
-                latestSnapshot = std::move(temp);
-                hasSnapshot = true;
-            }
+        // Process all the messages from the queue
+        ServerMessage msg;
+        while (serverMessagesQueue.tryPop(msg)) {
+            // Visitor pattern to process every message type
+            std::visit([this, &latestSnapshot, &hasSnapshot](auto&& message) {
+                using T = std::decay_t<decltype(message)>;
+                
+                if constexpr (std::is_same_v<T, Snapshot>) {
+                    // Only for snapshots, we save the last one
+                    latestSnapshot = message;
+                    hasSnapshot = true;
+                    
+                } else if constexpr (std::is_same_v<T, CountdownMessage>) {
+                    // For countdown we only process if it changed
+                    if (message.number != lastCountdownNumber) {
+                        std::cout << "[GAME_LOOP] Countdown changed: " << (int)message.number << std::endl;
+                        onCountdown(message.number);
+                        lastCountdownNumber = message.number;
+                    }
+                    
+                } else if constexpr (std::is_same_v<T, RaceStartMessage>) {
+                    onRaceStart();
+                    
+                } else if constexpr (std::is_same_v<T, CheckpointMessage>) {
+                    onCheckpointCrossed(message.checkpointId);
+                    
+                } else if constexpr (std::is_same_v<T, CollisionMessage>) {
+                    onCollision(message.data);
+                    
+                } else if constexpr (std::is_same_v<T, PlayerDiedMessage>) {
+                    onPlayerDied(message.playerId);
+                    
+                } else if constexpr (std::is_same_v<T, RaceEndMessage>) {
+                    onRaceEnd(message.results);
+                    
+                } else if constexpr (std::is_same_v<T, ModificationPhaseMessage>) {
+                    onModificationPhase(message.properties);
+                    
+                } else if constexpr (std::is_same_v<T, GameEndMessage>) {
+                    onGameEnd(message.results);
+                }
+            }, msg);
         }
         
-        // Only apply the latest received snapshot
+        // We aplly only the last snapshot received
         if (hasSnapshot) {
             BroadcastData data;
 
@@ -58,29 +93,18 @@ void GameLoop::run() {
 
             data.countdown = latestSnapshot.countdown;
             world.update(data);
+            hasSnapshot = false;
         }
 
         // Process frame (input + update + render)
-        isRunning = game->processFrame(FRAME_TIME_MS);
+        isRunning = game->processFrame(RATE);  // RATE from constantRateLoop.h
 
         // Synchronize with frame rate
-        float t2 = SDL_GetTicks();
-        float rest = FRAME_TIME_MS - (t2 - t1);
-
-        if (rest < 0) {
-            float behind = -rest;
-            rest = FRAME_TIME_MS - fmod(behind, FRAME_TIME_MS);
-            float lost = behind + rest;
-            t1 += lost;
-        }
-
-        SDL_Delay(static_cast<Uint32>(rest));
-        t1 += FRAME_TIME_MS;
+        constantRateLoop.sleepAndCalcIt();
     }
 
     std::cout << "[GAME_LOOP] Thread ended." << std::endl;
 }
-
 
 void GameLoop::onCountdown(uint8_t number) {
     if (game)
@@ -95,7 +119,7 @@ void GameLoop::onRaceStart() {
 
 // CORREGIR!
 void GameLoop::onCheckpointCrossed(uint8_t checkpointId) {
-    std::cout << "[GAME_HANDLER] Checkpoint " << (int)checkpointId << " crossed!" << std::endl;
+    std::cout << "[GAME_LOOP] Checkpoint " << (int)checkpointId << " crossed!" << std::endl;
 
     // A chequear
     

@@ -2,6 +2,7 @@ target_sources(taller_server
     PRIVATE
     # .cpp files
     command.cpp
+    improvementsCommand.cpp
     inmortalityCommand.cpp
     instaLoseCommand.cpp
     instaWinCommand.cpp
@@ -9,6 +10,7 @@ target_sources(taller_server
     PUBLIC
     # .h files
     command.h
+    improvementsCommand.h
     inmortalityCommand.h
     instaLoseCommand.h
     instaWinCommand.h

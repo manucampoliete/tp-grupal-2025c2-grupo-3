@@ -36,6 +36,12 @@ private:
      */
     void recvInstaLose(GameResolver& gameResolver);
 
+    /**
+     * Receives a ModifyCar message from the socket and
+     * processes it using the provided GameResolver.
+     */
+    void recvModifyCar(GameResolver& gameResolver);
+
 public:
     /**
      * Constructor that takes a reference to a Socket object.

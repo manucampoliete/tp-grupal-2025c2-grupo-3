@@ -1,22 +1,17 @@
 #include "gameHandler.h"
+#include "game.h"
 
 #include <iostream>
 
-#include "client.h"
-#include "game.h"
-
-#define WORLD_HEIGHT 4672.0f  // Manu's note: used?
-
-
-GameHandler::GameHandler(ClientProtocol& protocol, ClientID clientId):
-    protocol(protocol),
+GameHandler::GameHandler(Socket& skt, ClientID clientId):
+    protocol(skt),
     clientId(clientId),
     world(),
     clientRequestsQueue(),
-    serverSnapshotsQueue(),
+    serverMessagesQueue(),
     sender(protocol, clientRequestsQueue),
-    receiver(protocol, serverSnapshotsQueue, gameLoop),  // Manu's note: why gameLoop? Receiver should only interact with the queue
-    gameLoop(serverSnapshotsQueue, clientRequestsQueue, protocol, world, clientId),
+    receiver(protocol, serverMessagesQueue),
+    gameLoop(serverMessagesQueue, clientRequestsQueue, protocol, world, clientId),
     running(false) {}
 
 
@@ -44,7 +39,7 @@ void GameHandler::stop() {
     running = false;
 
     clientRequestsQueue.close();
-    serverSnapshotsQueue.close();
+    serverMessagesQueue.close();
 
     sender.stop();
     receiver.stop();

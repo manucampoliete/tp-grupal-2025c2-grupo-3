@@ -1,10 +1,8 @@
 target_sources(taller_common
     PRIVATE
     # .cpp files
-    snapshot.cpp
+    constantRateLoop.cpp
     PUBLIC
     # .h files
-    serverMessage.h
-    snapshot.h
-    gameData.h
+    constantRateLoop.h
     )

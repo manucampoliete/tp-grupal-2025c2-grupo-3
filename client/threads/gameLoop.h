@@ -3,14 +3,15 @@
 
 #include <memory>
 
-#include "../common/messages/game_data.h"
-#include "../common/messages/snapshot.h"
-#include "../common/queue/queue.h"
-#include "../common/thread/thread.h"
-#include "../common/utils/activeDirections.h"
-#include "protocol/clientProtocol.h"
+#include "../../common/messages/gameData.h"
+#include "../../common/queue/queue.h"
+#include "../../common/thread/thread.h"
+#include "../../common/utils/activeDirections.h"
+#include "../protocol/clientGameProtocol.h"
 
-#include "world.h"
+#include "../../common/messages/serverMessage.h"
+#include "../gameHandling/world.h"
+
 
 class Game;
 
@@ -22,27 +23,16 @@ class Game;
  */
 class GameLoop: public Thread {
 private:
-    Queue<Snapshot>& serverSnapshotsQueue;
+    Queue<ServerMessage>& serverMessagesQueue;
     Queue<ActiveDirections>& clientRequestsQueue;
-    ClientProtocol& protocol;
+    ClientGameProtocol& protocol;
 
     World& world;
     ClientID clientId;
 
     std::unique_ptr<Game> game;
-
-public:
-    /**
-     * Constructor
-     */
-    GameLoop(Queue<Snapshot>& serverSnapshotsQueue, Queue<ActiveDirections>& clientRequestsQueue,
-             ClientProtocol& protocol, World& world, ClientID clientId);
-
-    /**
-     * Main loop that runs in the thread
-     */
-    void run() override;
-
+    uint8_t lastCountdownNumber;
+    
     /**
      * Methods used by other threads to notify events
      */
@@ -54,6 +44,19 @@ public:
     void onRaceEnd(const RaceResults& results);
     void onModificationPhase(const CarProperties& props);
     void onGameEnd(const FinalResults& results);
+
+public:
+    /**
+     * Constructor
+     */
+    GameLoop(Queue<ServerMessage>& serverMessagesQueue, 
+             Queue<ActiveDirections>& clientRequestsQueue,
+             ClientGameProtocol& protocol, World& world, ClientID clientId);
+
+    /**
+     * Main loop that runs in the thread
+     */
+    void run() override;
 
     /**
      * Methods to send commands (called by Game)

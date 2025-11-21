@@ -19,7 +19,7 @@
 #define TIME_STEP (1.0f / TARGET_FPS) // duracion del step que simula box2d cada frame
 
 Game::Game():
-        world(new b2World(b2Vec2(0, 0))),
+        world(std::make_unique<b2World>(b2Vec2(0, 0))),
         velocityIt(8),
         positionIt(3),
         clientCommandsQueue(),
@@ -28,7 +28,8 @@ Game::Game():
         countdownDuration(15),
         raceDuration(10),
         statsDuration(5),
-        upgradesDuration(10) {}
+        upgradesDuration(10),
+        started(false) {}
 
 b2Body* Game::createNewCarBody() {
     b2BodyDef body_def;
@@ -249,6 +250,8 @@ void Game::handleModifyingCarState() {
 }
 
 void Game::run() {
+    started = true;
+    
     broadcast_start_signal();
     setGameState(GameState::COUNTDOWN);
 
@@ -294,7 +297,11 @@ void Game::stop() {
     responseQueuesMonitor.closeAll();  // Senders cannot pop, game cannot tryPush when broadcasting
 }
 
-bool Game::isDead() { return !isAlive(); }
+bool Game::isAlive() const {
+    return !started or (started and Thread::isAlive());
+}
+
+bool Game::isDead() { return not isAlive(); }
 
 Queue<std::unique_ptr<Command>>& Game::getClientCommandsQueue() { return clientCommandsQueue; }
 
@@ -323,22 +330,38 @@ void Game::movePlayer(ClientID clientId, ActiveDirections activeDirections) {
 void Game::makeInmortal(ClientID clientId) {
     std::cout << "Making player " << clientId << " inmortal!" << std::endl;
     /**
-     * TODO: implementar
+     * TODO: implement this method
      */
 }
 
 void Game::makeInstaWin(ClientID clientId) {
     std::cout << "Making player " << clientId << " insta win!" << std::endl;
     /**
-     * TODO: implementar
+     * TODO: implement this method
      */
 }
 
 void Game::makeInstaLose(ClientID clientId) {
     std::cout << "Making player " << clientId << " insta lose!" << std::endl;
     /**
-     * TODO: implementar
+     * TODO: implement this method
      */
+}
+
+void Game::improveCarProperties(ClientID clientId, bool improveVelocity, bool improveHealth) {
+    std::cout << "Improving car properties for player " << clientId << ": "
+              << (improveVelocity ? "velocity " : "") << (improveHealth ? "health" : "") << std::endl;
+
+    /**
+     * TODO: implement this method
+     * REMEMBER: Each improvement has a cost that is computed as a penalty to the arrival time
+     * 
+     * Could be something like:
+     */
+
+    // auto& player = players.at(clientId);
+    // if (improveVelocity) player.improveCarVelocity();
+    // if (improveHealth) player.improveCarHealth();
 }
 
 Game::~Game() {}

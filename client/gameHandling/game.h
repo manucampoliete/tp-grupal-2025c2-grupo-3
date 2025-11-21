@@ -8,17 +8,17 @@
 #include <SDL2pp/Texture.hh>
 #include <SDL2pp/Window.hh>
 
-#include "../common/messages/game_data.h"
-#include "../common/messages/snapshot.h"
+#include "../../common/messages/gameData.h"
+#include "../../common/messages/snapshot.h"
 
 #include "eventHandler.h"
-#include "interfaceRenderer.h"
-#include "soundManager.h"
+#include "../rendering/interfaceRenderer.h"
+#include "../audio/soundManager.h"
 #include "world.h"
-#include "worldRenderer.h"
-#include "gameLoop.h"
+#include "../rendering/worldRenderer.h"
+#include "../threads/gameLoop.h"
 
-#include "../common/utils/gameState.h"
+#include "../../common/utils/gameState.h"
 
 using namespace SDL2pp;
 
@@ -57,10 +57,10 @@ private:
     /**
      * TODO: change to GameState::COUNTDOWN when the feature is implemented
      */
-    GameState currentState = GameState::RACING;
+    GameState currentState;
 
     // Countdown
-    uint8_t countdownNumber = 3;  // 3, 2, 1, 0=GO
+    uint8_t countdownNumber = 100;  // 3, 2, 1, 0=GO
     float countdownTimer = 0.0f;  // Internal timer to change countdown numbers
 
     uint32_t raceTimerMs;
@@ -70,6 +70,9 @@ private:
     RaceResults currentResults;
     CarProperties currentProperties;
     FinalResults finalResults;
+
+    int lastWindowWidth = 0;
+    int lastWindowHeight = 0;
 
     // Number of current race and total hardcoded (that info should be sent by the server)
     int currentRace = 1;
@@ -107,6 +110,8 @@ public:
 
     GameState getCurrentState() const;
     void updateUILayout();
+
+    void checkWindowResize();
 
     void setRaceTimer(uint32_t timeMs);
     void showCountdown(uint8_t number);

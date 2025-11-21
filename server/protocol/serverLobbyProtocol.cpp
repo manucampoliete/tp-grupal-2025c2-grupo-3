@@ -8,6 +8,11 @@
 #include "../../common/protocol/protocolConstants.h"
 #include "../../common/utils/carinfo.h"
 
+void ServerLobbyProtocol::sendClientID(ClientID clientId) {
+    sendU8(SEND_CLIENT_ID);
+    sendU16(clientId);
+}
+
 void ServerLobbyProtocol::sendInitialInfo() {
     YAML::Node config = YAML::LoadFile("config.yaml");
 
@@ -60,8 +65,7 @@ void ServerLobbyProtocol::recvStartMatch(LobbyResolver& lobbyResolver) {
 
 ServerLobbyProtocol::ServerLobbyProtocol(Socket& socket, ClientID clientId):
         RecvProtocol(socket), SendProtocol(socket) {
-    sendU8(SEND_CLIENT_ID);
-    sendU16(clientId);
+    sendClientID(clientId);
 }
 
 void ServerLobbyProtocol::consumeOne(LobbyResolver& lobbyResolver) {

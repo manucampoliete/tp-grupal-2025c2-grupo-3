@@ -4,16 +4,16 @@
 #include <atomic>
 #include <memory>
 
-#include "../common/messages/game_data.h"
-#include "../common/messages/snapshot.h"
-#include "../common/queue/queue.h"
-#include "../common/utils/activeDirections.h"
-#include "../protocol/clientProtocol.h"
+#include "../../common/messages/gameData.h"
+#include "../../common/queue/queue.h"
+#include "../../common/utils/activeDirections.h"
+#include "../protocol/clientGameProtocol.h"
 
-#include "gameLoop.h"
-#include "receiver.h"
-#include "sender.h"
+#include "../threads/gameLoop.h"
+#include "../threads/receiver.h"
+#include "../threads/sender.h"
 #include "world.h"
+#include "../../common/messages/serverMessage.h"
 
 
 /**
@@ -24,13 +24,13 @@
  */
 class GameHandler {
 private:
-    ClientProtocol& protocol;
+    ClientGameProtocol protocol;
     ClientID clientId;
 
     World world;
 
     Queue<ActiveDirections> clientRequestsQueue;
-    Queue<Snapshot> serverSnapshotsQueue;
+    Queue<ServerMessage> serverMessagesQueue;
 
     Sender sender;
     Receiver receiver;
@@ -39,7 +39,7 @@ private:
     std::atomic<bool> running;
 
 public:
-    GameHandler(ClientProtocol& protocol, ClientID clientId);
+    GameHandler(Socket& skt, ClientID clientId);
 
     // Runs the entire game: starts the 3 threads
     void run();

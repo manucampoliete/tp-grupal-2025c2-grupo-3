@@ -6,7 +6,7 @@
 #include <mutex>
 #include <vector>
 
-#include "../common/messages/game_data.h"
+#include "../../common/messages/gameData.h"
 
 
 // Maintains the local world state for each client

@@ -10,6 +10,14 @@ class LobbyResolver;
 
 class ServerLobbyProtocol: public RecvProtocol, public SendProtocol {
 private:
+    /**
+     * Sends a SEND_CLIENT_ID message with the given clientId.
+     */
+    void sendClientID(ClientID clientId);
+
+    /**
+     * Sends the initial information to the client.
+     */
     void sendInitialInfo();
 
     /**

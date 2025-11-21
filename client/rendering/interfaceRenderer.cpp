@@ -67,7 +67,10 @@ void UIRenderer::renderCountdown(uint8_t countdownNumber) {
     std::string text;
     SDL_Color color;
 
-    if (countdownNumber == 3) {
+    if (countdownNumber > 3) {
+        text = "READY";
+        color = {255, 255, 255, 255};  // White
+    } else if (countdownNumber == 3) {
         text = "3";
         color = {255, 0, 0, 255};    // Red
     } else if (countdownNumber == 2) {
@@ -219,15 +222,15 @@ void UIRenderer::renderStatsPopup(const RaceResults& currentResults, uint32_t st
         renderer.Copy(posT, NullOpt, Rect(colPosX, rowY, posT.GetWidth(), posT.GetHeight()));
 
         // Name
-        Surface nameS = activeFont.RenderText_Solid(player.player_name, rowColor);
+        Surface nameS = activeFont.RenderText_Solid(player.playerName, rowColor);
         Texture nameT(renderer, nameS);
         renderer.Copy(nameT, NullOpt,
                       Rect(colNameX, rowY, nameT.GetWidth(), nameT.GetHeight()));
 
         // Race time
-        int raceMinutes = player.race_time_ms / 60000;
-        int raceSeconds = (player.race_time_ms % 60000) / 1000;
-        int raceMillis = player.race_time_ms % 1000;
+        int raceMinutes = player.raceTimeMs / 60000;
+        int raceSeconds = (player.raceTimeMs % 60000) / 1000;
+        int raceMillis = player.raceTimeMs % 1000;
         char raceTimeBuf[32];
         snprintf(raceTimeBuf, sizeof(raceTimeBuf), "%02d:%02d.%03d", raceMinutes, raceSeconds,
                  raceMillis);
@@ -238,9 +241,9 @@ void UIRenderer::renderStatsPopup(const RaceResults& currentResults, uint32_t st
                       Rect(colRaceX, rowY, raceT.GetWidth(), raceT.GetHeight()));
         
         // Total time
-        int totalMinutes = player.total_time_ms / 60000;
-        int totalSeconds = (player.total_time_ms % 60000) / 1000;
-        int totalMillis = player.total_time_ms % 1000;
+        int totalMinutes = player.totalTimeMs / 60000;
+        int totalSeconds = (player.totalTimeMs % 60000) / 1000;
+        int totalMillis = player.totalTimeMs % 1000;
         char totalTimeBuf[32];
         snprintf(totalTimeBuf, sizeof(totalTimeBuf), "%02d:%02d.%03d", totalMinutes,
                  totalSeconds, totalMillis);
@@ -668,16 +671,16 @@ void UIRenderer::renderPodium(const FinalResults& results) {
                            numT.GetWidth(), numT.GetHeight()));
 
         // Name
-        Surface nameS = fontSmall.RenderText_Solid(first.player_name, {255, 255, 255, 255});
+        Surface nameS = fontSmall.RenderText_Solid(first.playerName, {255, 255, 255, 255});
         Texture nameT(renderer, nameS);
         renderer.Copy(nameT, NullOpt,
                       Rect(pos1X + (boxWidth - nameT.GetWidth()) / 2, boxY + 70,
                            nameT.GetWidth(), nameT.GetHeight()));
 
         // Final time
-        int minutes = first.total_time_ms / 60000;
-        int seconds = (first.total_time_ms % 60000) / 1000;
-        int millis = first.total_time_ms % 1000;
+        int minutes = first.totalTimeMs / 60000;
+        int seconds = (first.totalTimeMs % 60000) / 1000;
+        int millis = first.totalTimeMs % 1000;
         char timeBuf[32];
         snprintf(timeBuf, sizeof(timeBuf), "%02d:%02d.%03d", minutes, seconds, millis);
 
@@ -704,16 +707,16 @@ void UIRenderer::renderPodium(const FinalResults& results) {
                            numT.GetWidth(), numT.GetHeight()));
 
         // Name
-        Surface nameS = fontSmall.RenderText_Solid(second.player_name, {255, 255, 255, 255});
+        Surface nameS = fontSmall.RenderText_Solid(second.playerName, {255, 255, 255, 255});
         Texture nameT(renderer, nameS);
         renderer.Copy(nameT, NullOpt,
                       Rect(pos2X + (boxWidth - nameT.GetWidth()) / 2, boxY + 50,
                            nameT.GetWidth(), nameT.GetHeight()));
 
         // Final time
-        int minutes = second.total_time_ms / 60000;
-        int seconds = (second.total_time_ms % 60000) / 1000;
-        int millis = second.total_time_ms % 1000;
+        int minutes = second.totalTimeMs / 60000;
+        int seconds = (second.totalTimeMs % 60000) / 1000;
+        int millis = second.totalTimeMs % 1000;
         char timeBuf[32];
         snprintf(timeBuf, sizeof(timeBuf), "%02d:%02d.%03d", minutes, seconds, millis);
 
@@ -740,16 +743,16 @@ void UIRenderer::renderPodium(const FinalResults& results) {
                            numT.GetWidth(), numT.GetHeight()));
 
         // Name
-        Surface nameS = fontSmall.RenderText_Solid(third.player_name, {255, 255, 255, 255});
+        Surface nameS = fontSmall.RenderText_Solid(third.playerName, {255, 255, 255, 255});
         Texture nameT(renderer, nameS);
         renderer.Copy(nameT, NullOpt,
                       Rect(pos3X + (boxWidth - nameT.GetWidth()) / 2, boxY + 40,
                            nameT.GetWidth(), nameT.GetHeight()));
 
         // Final time
-        int minutes = third.total_time_ms / 60000;
-        int seconds = (third.total_time_ms % 60000) / 1000;
-        int millis = third.total_time_ms % 1000;
+        int minutes = third.totalTimeMs / 60000;
+        int seconds = (third.totalTimeMs % 60000) / 1000;
+        int millis = third.totalTimeMs % 1000;
         char timeBuf[32];
         snprintf(timeBuf, sizeof(timeBuf), "%02d:%02d.%03d", minutes, seconds, millis);
 
@@ -788,15 +791,15 @@ void UIRenderer::renderPodium(const FinalResults& results) {
                           Rect(popupX + 60, tableY, posT.GetWidth(), posT.GetHeight()));
 
             // Name
-            Surface nameS = fontSmall.RenderText_Solid(player.player_name, {200, 200, 200, 255});
+            Surface nameS = fontSmall.RenderText_Solid(player.playerName, {200, 200, 200, 255});
             Texture nameT(renderer, nameS);
             renderer.Copy(nameT, NullOpt,
                           Rect(popupX + 140, tableY, nameT.GetWidth(), nameT.GetHeight()));
 
             // Final time
-            int minutes = player.total_time_ms / 60000;
-            int seconds = (player.total_time_ms % 60000) / 1000;
-            int millis = player.total_time_ms % 1000;
+            int minutes = player.totalTimeMs / 60000;
+            int seconds = (player.totalTimeMs % 60000) / 1000;
+            int millis = player.totalTimeMs % 1000;
             char timeBuf[32];
             snprintf(timeBuf, sizeof(timeBuf), "%02d:%02d.%03d", minutes, seconds, millis);
 

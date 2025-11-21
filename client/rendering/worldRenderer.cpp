@@ -44,7 +44,7 @@ void WorldRenderer::updateEffects(float dt) {
     for (auto& explosion: explosions) explosion.update(dt);
 
     explosions.erase(std::remove_if(explosions.begin(), explosions.end(),
-                                    [](const Explosion& e) { return e.is_finished(); }),
+                                    [](const Explosion& e) { return e.isFinished(); }),
                      explosions.end());
 
     // Update collisions
@@ -52,7 +52,7 @@ void WorldRenderer::updateEffects(float dt) {
 
     collisionEffects.erase(
             std::remove_if(collisionEffects.begin(), collisionEffects.end(),
-                           [](const CollisionEffect& c) { return c.is_finished(); }),
+                           [](const CollisionEffect& c) { return c.isFinished(); }),
             collisionEffects.end());
 }
 
@@ -96,7 +96,7 @@ void WorldRenderer::renderExplosions() {
 
     for (const auto& explosion: explosions) {
         for (const auto& particle: explosion.particles) {
-            if (!particle.is_alive())
+            if (!particle.isAlive())
                 continue;
 
             float screenX = particle.x - camera.x;
@@ -131,11 +131,11 @@ void WorldRenderer::renderCollisionEffects() {
         float screenY = collision.y - camera.y;
 
         // White flash that fades out
-        float alpha = (1.0f - collision.time_alive / 0.3f) * collision.intensity;
+        float alpha = (1.0f - collision.timeAlive / 0.3f) * collision.intensity;
         Uint8 alphaByte = static_cast<Uint8>(alpha * 255);
 
         renderer.SetDrawColor(255, 255, 255, alphaByte);
-        int radius = static_cast<int>(collision.time_alive * 100 * collision.intensity);
+        int radius = static_cast<int>(collision.timeAlive * 100 * collision.intensity);
 
         // Draw simple circle (lines)
         for (int angle = 0; angle < 360; angle += 10) {
