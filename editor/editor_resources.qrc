@@ -6,5 +6,8 @@
         <file>media/sanandreas.jpg</file>
         <file>media/vicecity.jpg</file>
         <file>media/custom.png</file>
+        <file>media/arrow.png</file>
+        <file>media/asset_vicecity.png</file>
+        <file>media/mask_vicecity.jpeg</file>
     </qresource>
 </RCC>

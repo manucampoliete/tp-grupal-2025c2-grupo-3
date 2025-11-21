@@ -21,6 +21,8 @@ set(PROJECT_SOURCES
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     find_package(Qt6 REQUIRED COMPONENTS Core Widgets)
+find_package(Qt6 REQUIRED COMPONENTS Core Widgets)
+find_package(Qt6 REQUIRED COMPONENTS Core Widgets)
 
     qt_add_executable(editor
         MANUAL_FINALIZATION
@@ -31,6 +33,9 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         main.cpp
         editor_resources.qrc
         mapoption.h mapoption.cpp
+        mapeditor.h mapeditor.cpp
+        mapview.h mapview.cpp
+        arrowitem.h arrowitem.cpp
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET editor APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
@@ -51,6 +56,8 @@ else()
 endif()
 
 target_link_libraries(editor PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
+target_link_libraries(editor PRIVATE Qt6::Core Qt6::Widgets)
+target_link_libraries(editor PRIVATE Qt6::Core Qt6::Widgets)
 target_link_libraries(editor PRIVATE Qt6::Core Qt6::Widgets)
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.

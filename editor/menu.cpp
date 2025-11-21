@@ -1,5 +1,6 @@
 #include "menu.h"
 #include <iostream>
+#include "mapeditor.h"
 #include "ui_menu.h"
 
 Menu::Menu(QWidget* parent): QWidget(parent), ui(new Ui::Menu) {
@@ -38,8 +39,8 @@ void Menu::onOptionClicked(MapOption* opt) {
 }
 
 void Menu::onOptionDoubleClicked(MapOption* opt) {
-    onOptionClicked(opt);  // seleccionar
-    onSelectButtonPressed();  // avanzar
+    onOptionClicked(opt);
+    onSelectButtonPressed();
 }
 
 void Menu::onSelectButtonPressed() {
@@ -48,7 +49,15 @@ void Menu::onSelectButtonPressed() {
         return;
     }
 
-    //abrir editor
+    //QString mapPath = ":/media/asset_vicecity.png";
+    //QString maskPath = ":/media/mask_vicecity.jpeg";
+
+    MapEditor* editor = new MapEditor(1, nullptr);
+
+    editor->setAttribute(Qt::WA_DeleteOnClose);
+    editor->show();
+
+    this->hide();
 }
 
 Menu::~Menu() { delete ui; }
