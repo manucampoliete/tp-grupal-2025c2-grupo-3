@@ -7,6 +7,11 @@ MapView::MapView(QGraphicsScene* scene, QWidget* parent)
     setDragMode(QGraphicsView::ScrollHandDrag);  // arrastrar mapa con mouse
 }
 
+QSize MapView::sizeHint() const
+{
+    return QSize(1000, 700);
+}
+
 void MapView::wheelEvent(QWheelEvent* event)
 {
     const double scaleFactor = 1.15;

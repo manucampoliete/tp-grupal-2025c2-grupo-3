@@ -10,6 +10,8 @@ class MapView : public QGraphicsView {
 public:
     explicit MapView(QGraphicsScene* scene, QWidget* parent = nullptr);
 
+    QSize sizeHint() const override;
+
 protected:
     void wheelEvent(QWheelEvent* event) override;
     //void dragEnterEvent(QDragEnterEvent* event) override; // Nuevo

@@ -19,6 +19,9 @@ public:
     Editor(QWidget* parent = nullptr);
     ~Editor();
 
+private slots:
+    void launchMapEditor(int cityId);
+
 private:
     Ui::Editor* ui;
     Menu* menu;

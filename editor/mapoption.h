@@ -18,11 +18,9 @@ public:
 
 signals:
     void clicked(MapOption* self);
-    void doubleClicked(MapOption* self);
 
 protected:
     void mousePressEvent(QMouseEvent* event) override;
-    void mouseDoubleClickEvent(QMouseEvent* event) override;
 
 private:
     bool selected;

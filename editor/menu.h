@@ -17,11 +17,11 @@ public:
 
 signals:
     void exitClicked();
+    void mapSelected(int cityId);
 
 private slots:
     void on_buttonExit_clicked();
     void onOptionClicked(MapOption* opt);
-    void onOptionDoubleClicked(MapOption* opt);
     void onSelectButtonPressed();
 
 private:

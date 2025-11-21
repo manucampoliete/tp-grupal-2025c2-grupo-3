@@ -18,8 +18,6 @@ Menu::Menu(QWidget* parent): QWidget(parent), ui(new Ui::Menu) {
         box->addWidget(options[i]);
         connect(options[i], &MapOption::clicked,
                 this, &Menu::onOptionClicked);
-        connect(options[i], &MapOption::doubleClicked,
-                this, &Menu::onOptionDoubleClicked);
     }
 
     ui->optionsContainer->setLayout(box);
@@ -38,26 +36,15 @@ void Menu::onOptionClicked(MapOption* opt) {
     current->setSelected(true);
 }
 
-void Menu::onOptionDoubleClicked(MapOption* opt) {
-    onOptionClicked(opt);
-    onSelectButtonPressed();
-}
-
 void Menu::onSelectButtonPressed() {
     if (!current) {
-        std::cout << "Error, Please select a map.";
+        std::cout << "Error, Please select a map." << std::endl;
         return;
     }
 
-    //QString mapPath = ":/media/asset_vicecity.png";
-    //QString maskPath = ":/media/mask_vicecity.jpeg";
+    int selectedCityId = 1;
 
-    MapEditor* editor = new MapEditor(1, nullptr);
-
-    editor->setAttribute(Qt::WA_DeleteOnClose);
-    editor->show();
-
-    this->hide();
+    emit mapSelected(selectedCityId);
 }
 
 Menu::~Menu() { delete ui; }

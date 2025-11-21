@@ -53,8 +53,3 @@ void MapOption::mousePressEvent(QMouseEvent* event) {
     emit clicked(this);
     QFrame::mousePressEvent(event);
 }
-
-void MapOption::mouseDoubleClickEvent(QMouseEvent* event) {
-    emit doubleClicked(this);
-    QFrame::mouseDoubleClickEvent(event);
-}
