@@ -3,8 +3,8 @@
 #include <iostream>
 #include <utility>
 
-#include "../common/constantRateLoop/constantRateLoop.h"
-#include "game.h"
+#include "../../common/constantRateLoop/constantRateLoop.h"
+#include "../gameHandling/game.h"
 
 #define WORLD_HEIGHT 4672.0f
 

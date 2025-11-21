@@ -6,7 +6,7 @@
 #include <SDL2pp/SDL.hh>
 
 #include "game.h"
-#include "gameLoop.h"
+#include "../threads/gameLoop.h"
 
 EventHandler::EventHandler(GameLoop& gameLoop, Game& game): gameLoop(gameLoop), game(game) {}
 

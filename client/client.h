@@ -9,7 +9,7 @@
 #include "../common/messages/snapshot.h"
 #include "../common/socket/socket.h"
 
-#include "gameHandler.h"
+#include "gameHandling/gameHandler.h"
 
 
 /**

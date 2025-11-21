@@ -1,13 +1,13 @@
 #ifndef RECEIVER_H
 #define RECEIVER_H
 
-#include "../common/messages/snapshot.h"
-#include "../common/protocol/protocolConstants.h"
-#include "../common/queue/queue.h"
-#include "../common/thread/thread.h"
-#include "../common/types/types.h"
+#include "../../common/messages/snapshot.h"
+#include "../../common/protocol/protocolConstants.h"
+#include "../../common/queue/queue.h"
+#include "../../common/thread/thread.h"
+#include "../../common/types/types.h"
 #include "../protocol/clientGameProtocol.h"
-#include "serverMessage.h"
+#include "../../common/messages/serverMessage.h"
 
 /**
  * Receiver: thread that receives messages from the server

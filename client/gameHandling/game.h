@@ -8,17 +8,17 @@
 #include <SDL2pp/Texture.hh>
 #include <SDL2pp/Window.hh>
 
-#include "../common/messages/gameData.h"
-#include "../common/messages/snapshot.h"
+#include "../../common/messages/gameData.h"
+#include "../../common/messages/snapshot.h"
 
 #include "eventHandler.h"
-#include "interfaceRenderer.h"
-#include "soundManager.h"
+#include "../rendering/interfaceRenderer.h"
+#include "../audio/soundManager.h"
 #include "world.h"
-#include "worldRenderer.h"
-#include "gameLoop.h"
+#include "../rendering/worldRenderer.h"
+#include "../threads/gameLoop.h"
 
-#include "../common/utils/gameState.h"
+#include "../../common/utils/gameState.h"
 
 using namespace SDL2pp;
 

@@ -1,10 +1,7 @@
 #include "gameHandler.h"
-
-#include <iostream>
-
-#include "client.h"
 #include "game.h"
 
+#include <iostream>
 
 GameHandler::GameHandler(Socket& skt, ClientID clientId):
     protocol(skt),

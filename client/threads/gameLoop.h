@@ -3,14 +3,14 @@
 
 #include <memory>
 
-#include "../common/messages/gameData.h"
-#include "../common/queue/queue.h"
-#include "../common/thread/thread.h"
-#include "../common/utils/activeDirections.h"
-#include "protocol/clientGameProtocol.h"
+#include "../../common/messages/gameData.h"
+#include "../../common/queue/queue.h"
+#include "../../common/thread/thread.h"
+#include "../../common/utils/activeDirections.h"
+#include "../protocol/clientGameProtocol.h"
 
-#include "serverMessage.h"
-#include "world.h"
+#include "../../common/messages/serverMessage.h"
+#include "../gameHandling/world.h"
 
 
 class Game;

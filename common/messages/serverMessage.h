@@ -4,8 +4,8 @@
 #include <cstdint>
 #include <variant>
 
-#include "../common/messages/gameData.h"
-#include "../common/messages/snapshot.h"
+#include "gameData.h"
+#include "snapshot.h"
 
 
 struct CountdownMessage {

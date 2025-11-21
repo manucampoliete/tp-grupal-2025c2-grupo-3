@@ -1,9 +1,9 @@
 #ifndef SENDER_H
 #define SENDER_H
 
-#include "../common/queue/queue.h"
-#include "../common/thread/thread.h"
-#include "../common/utils/activeDirections.h"
+#include "../../common/queue/queue.h"
+#include "../../common/thread/thread.h"
+#include "../../common/utils/activeDirections.h"
 #include "../protocol/clientGameProtocol.h"
 
 
