@@ -487,10 +487,10 @@ void UIRenderer::renderMinimap() {
 
         // Draw player point a bit bigger
         if (id == playerId) {
-            Rect carDotRect(minimapCarX - 2, minimapCarY - 2, 5, 5);  // 5x5
+            Rect carDotRect(minimapCarX - 2, minimapCarY - 2, 8, 8);  // 5x5
             renderer.FillRect(carDotRect);
         } else {
-            Rect carDotRect(minimapCarX - 1, minimapCarY - 1, 3, 3);  // 3x3
+            Rect carDotRect(minimapCarX - 1, minimapCarY - 1, 5, 5);  // 3x3
             renderer.FillRect(carDotRect);
         }
     }
