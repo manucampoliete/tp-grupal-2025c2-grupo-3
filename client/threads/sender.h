@@ -3,7 +3,7 @@
 
 #include "../../common/queue/queue.h"
 #include "../../common/thread/thread.h"
-#include "../../common/messages/clientMessage.h"
+#include "../utils/clientMessage.h"
 #include "../protocol/clientGameProtocol.h"
 
 

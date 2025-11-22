@@ -3,13 +3,13 @@
 
 #include <memory>
 
-#include "../../common/messages/gameData.h"
+#include "../utils/gameData.h"
 #include "../../common/queue/queue.h"
 #include "../../common/thread/thread.h"
 #include "../protocol/clientGameProtocol.h"
 
-#include "../../common/messages/serverMessage.h"
-#include "../../common/messages/clientMessage.h"
+#include "../utils/serverMessage.h"
+#include "../utils/clientMessage.h"
 #include "../gameHandling/world.h"
 
 

@@ -9,7 +9,7 @@
 #include <SDL2pp/Renderer.hh>
 #include <SDL2pp/Texture.hh>
 
-#include "../../common/messages/gameData.h"
+#include "../utils/gameData.h"
 
 #include "../gameHandling/world.h"
 

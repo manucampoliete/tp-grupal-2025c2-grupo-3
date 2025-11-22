@@ -4,16 +4,16 @@
 #include <atomic>
 #include <memory>
 
-#include "../../common/messages/gameData.h"
 #include "../../common/queue/queue.h"
+#include "../utils/gameData.h"
 #include "../protocol/clientGameProtocol.h"
 
 #include "../threads/gameLoop.h"
 #include "../threads/receiver.h"
 #include "../threads/sender.h"
 #include "world.h"
-#include "../../common/messages/serverMessage.h"
-#include "../../common/messages/clientMessage.h"
+#include "../utils/serverMessage.h"
+#include "../utils/clientMessage.h"
 
 
 /**

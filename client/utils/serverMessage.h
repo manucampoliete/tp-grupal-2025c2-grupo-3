@@ -5,7 +5,7 @@
 #include <variant>
 
 #include "gameData.h"
-#include "snapshot.h"
+#include "../../common/messages/snapshot.h"
 
 
 struct CountdownMessage {

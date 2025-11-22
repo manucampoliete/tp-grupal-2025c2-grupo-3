@@ -3,7 +3,7 @@
 
 #include <variant>
 
-#include "../utils/activeDirections.h"
+#include "../../common/utils/activeDirections.h"
 
 
 struct MoveCommand {

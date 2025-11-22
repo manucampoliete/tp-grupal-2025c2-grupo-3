@@ -8,7 +8,7 @@
 #include <SDL2pp/Texture.hh>
 #include <SDL2pp/Window.hh>
 
-#include "../../common/messages/gameData.h"
+#include "../utils/gameData.h"
 #include "../../common/messages/snapshot.h"
 
 #include "eventHandler.h"

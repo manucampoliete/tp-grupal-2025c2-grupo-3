@@ -7,7 +7,8 @@
 #include "../../common/thread/thread.h"
 #include "../../common/types/types.h"
 #include "../protocol/clientGameProtocol.h"
-#include "../../common/messages/serverMessage.h"
+#include "../utils/serverMessage.h"
+
 
 /**
  * Receiver: thread that receives messages from the server
