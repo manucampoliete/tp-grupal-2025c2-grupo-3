@@ -30,8 +30,8 @@ public:
     Server& operator=(Server&&) = default;
 
     /**
-     * Runs the server: starts acceptor thread, waits for the
-     * termination key, and then stops it.
+     * Runs the server: waits for the
+     * termination key to shut it down.
      * Returns EXIT_SUCCESS if everything went fine.
      */
     int run();
