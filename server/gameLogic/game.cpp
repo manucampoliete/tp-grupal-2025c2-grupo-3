@@ -9,7 +9,7 @@
 
 #include <iostream>
 
-#include "collision_loader.h"
+#include "collisionLoader.h"
 #include "../../common/constantRateLoop/constantRateLoop.h"
 
 #define TARGET_FPS 60
