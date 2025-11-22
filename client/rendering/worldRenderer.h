@@ -32,6 +32,16 @@ private:
     std::vector<Explosion> explosions;
     std::vector<CollisionEffect> collisionEffects;
 
+    SmokeCloud smokeCloud;
+    std::vector<BrakeTrail> brakeTrails;
+    BrakeTrail* currentBrakeTrail = nullptr;
+    
+    bool isAccelerating = false;
+    bool isBraking = false;
+    
+    void renderSmoke();
+    void renderBrakeTrails();
+
     void renderMapCamera();
     void renderAllCars();
     void renderExplosions();
@@ -52,6 +62,10 @@ public:
 
     void addExplosion(float x, float y, int particleCount = 30);
     void addCollisionEffect(float x, float y, float intensity);
+
+    void setAccelerating(bool accelerating);
+    void setBraking(bool braking);
+    void addExplosionSmoke(float x, float y);
 };
 
 #endif  // WORLD_RENDERER_H

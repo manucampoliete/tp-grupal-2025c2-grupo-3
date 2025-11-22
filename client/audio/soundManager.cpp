@@ -3,16 +3,14 @@
 #include <algorithm>
 #include <iostream>
 
+
 SoundManager::SoundManager(): backgroundMusic(nullptr) {
     // Initialize SDL_mixer
-    if (Mix_OpenAudio(48000, MIX_DEFAULT_FORMAT, 2, 4096) < 0) {
-        std::cerr << "[SOUND] Error initializing SDL_mixer: " << Mix_GetError() << std::endl;
+    if (Mix_OpenAudio(48000, MIX_DEFAULT_FORMAT, 2, 4096) < 0) 
         throw std::runtime_error("Failed to initialize SDL_mixer");
-    }
 
     // 16 channels for sound effects
     Mix_AllocateChannels(16);
-    std::cout << "[SOUND] Mixer initialized successfully" << std::endl;
 }
 
 SoundManager::~SoundManager() {
@@ -38,9 +36,6 @@ void SoundManager::loadMusic(const std::string& path) {
         Mix_FreeMusic(backgroundMusic);
 
     backgroundMusic = Mix_LoadMUS(path.c_str());
-    if (!backgroundMusic)
-        std::cerr << "[SOUND] Error loading music: " << path << " - " << Mix_GetError()
-                  << std::endl;
 }
 
 void SoundManager::playMusic(int loops) {
@@ -73,13 +68,10 @@ void SoundManager::setMusicVolume(int volume) {
 // SOUND EFFECTS
 void SoundManager::loadSound(const std::string& name, const std::string& path) {
     Mix_Chunk* chunk = Mix_LoadWAV(path.c_str());
-    if (!chunk) {
-        std::cerr << "[SOUND] Error loading sound '" << name << "': " << path << " - "
-                  << Mix_GetError() << std::endl;
+    if (!chunk) 
         return;
-    }
+
     soundEffects[name] = chunk;
-    std::cout << "[SOUND] Sound loaded: " << name << " (" << path << ")" << std::endl;
 }
 
 void SoundManager::playSound(const std::string& name, int volume) {
@@ -98,8 +90,6 @@ void SoundManager::playSound(const std::string& name, int volume) {
         int channel = Mix_PlayChannel(-1, it->second, 0);  // -1 = first free channel
         if (channel == -1)
             std::cerr << "[SOUND] No free channels to play: " << name << std::endl;
-    } else {
-        std::cerr << "[SOUND] Sound not found: " << name << std::endl;
     }
 }
 
@@ -126,19 +116,14 @@ void SoundManager::setSfxVolume(int volume) {
 // CONTROL
 void SoundManager::toggleMusic() {
     musicEnabled = !musicEnabled;
-    if (!musicEnabled) {
+    if (!musicEnabled) 
         pauseMusic();
-        std::cout << "[SOUND] Music disabled" << std::endl;
-    } else {
+    else 
         resumeMusic();
-        std::cout << "[SOUND]Music enabled" << std::endl;
-    }
 }
 
 void SoundManager::toggleSfx() {
     sfxEnabled = !sfxEnabled;
-    std::cout << "[SOUND] " << (sfxEnabled ? "🔊" : "🔇") << " Sound effects "
-              << (sfxEnabled ? "enabled" : "disabled") << std::endl;
 }
 
 
@@ -158,4 +143,32 @@ bool SoundManager::canPlaySound(const std::string& name) {
     }
 
     return false;
+}
+
+
+void SoundManager::playEngineLoop() {
+    if (!sfxEnabled || enginePlaying)
+        return;
+    
+    auto it = soundEffects.find("engine");
+    if (it != soundEffects.end()) {
+        // Loop infinito en un canal específico
+        engineChannel = Mix_PlayChannel(-1, it->second, -1);  // -1 = loop infinito
+        if (engineChannel != -1) {
+            Mix_Volume(engineChannel, sfxVolume);
+            enginePlaying = true;
+        }
+    }
+}
+
+void SoundManager::stopEngineLoop() {
+    if (engineChannel != -1 && enginePlaying) {
+        Mix_HaltChannel(engineChannel);
+        enginePlaying = false;
+        engineChannel = -1;
+    }
+}
+
+void SoundManager::playBrakeSound() {  
+    playSound("brake", sfxVolume * 2);
 }

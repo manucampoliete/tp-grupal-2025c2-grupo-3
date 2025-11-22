@@ -123,6 +123,27 @@ bool EventHandler::handleEvents() {
             lastLeft = left;
             lastRight = right;
         }
+
+        if (up && !down) {
+            game.getWorldRenderer().setAccelerating(true);
+            game.getSoundManager().playEngineLoop();
+        } else {
+            game.getWorldRenderer().setAccelerating(false);
+            game.getSoundManager().stopEngineLoop();
+        }
+
+        if (down && !up) {
+            game.getWorldRenderer().setBraking(true);
+            game.getSoundManager().playBrakeSound();
+        } else {
+            game.getWorldRenderer().setBraking(false);
+        }
+
+    } else {
+        // If not RACING, effects are shut down
+        game.getWorldRenderer().setAccelerating(false);
+        game.getWorldRenderer().setBraking(false);
+        game.getSoundManager().stopEngineLoop();
     }
 
     return true;

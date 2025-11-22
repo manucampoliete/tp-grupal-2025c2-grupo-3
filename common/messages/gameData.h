@@ -8,11 +8,6 @@
 #include <SDL2pp/Rect.hh>
 
 
-/*
- * estructuras de datos para el protocolo
- * a chequear segun implementacion
- */
-
 enum class CheatType { NONE, INMORTALITY, INSTA_WIN, INSTA_LOSE };
 
 // Coordinates (x, y, width, height) in the sprite sheet for each car type
@@ -26,21 +21,19 @@ const SDL2pp::Rect CARS[7] = {
         {205, 515, 20, 45},  // Car 6
 };
 
-
-// la información que llega del servidor
-// - posición, rotación y tipo de auto de cada jugador
-// - tiempo restante de la carrera
+// agregar checkppoint y hints
+// agregar health del auto para imprimirlo en la pantalla
 struct BroadcastData {
     struct CarState {
-        uint8_t id;    // id del jugador
-        float x;       // posición x
-        float y;       // posición y
-        float angle;   // ángulo en grados
-        uint8_t type;  // tipo de auto
+        uint8_t id; 
+        float x;
+        float y; 
+        float angle;
+        uint8_t type;
     };
 
     std::vector<CarState> cars;
-    uint32_t countdown;  // tiempo restante de la carrera en milisegundos
+    uint32_t countdown; 
 };
 
 
@@ -59,7 +52,7 @@ struct FinalResults {
         uint16_t playerId;
         std::string playerName;
         uint32_t totalTimeMs;
-        uint8_t position;  // 1, 2, 3 etc
+        uint8_t position; 
     };
 
     std::vector<FinalStanding> standings;
@@ -68,7 +61,6 @@ struct FinalResults {
 };
 
 
-// para la fase de modificación
 struct CarProperties {
     uint16_t speed;
     uint16_t health;
@@ -85,7 +77,7 @@ struct CollisionData {
 };
 
 
-// Efecto de colisión (flash temporal)
+// Collision effects (flash)
 struct CollisionEffect {
     float x, y;
     float timeAlive;
@@ -99,11 +91,11 @@ struct CollisionEffect {
     bool isFinished() const { return timeAlive > 0.3f; }
 };
 
-// particula para explosiones
+// explotion particles
 struct Particle {
-    float x, y; // posición
-    float vx, vy; // velocidad
-    float life; // vida restante (0-1)
+    float x, y;   // position
+    float vx, vy; // velocity
+    float life;   // remaining life
     SDL_Color color;
     float size;
     
@@ -113,15 +105,15 @@ struct Particle {
     void update(float dt) {
         x += vx * dt;
         y += vy * dt;
-        vy += 300.0f * dt;  // gravedad
-        life -= dt * 1.5f;  // se desvanecen en ~0.66 segundos
+        vy += 300.0f * dt;  // gravity
+        life -= dt * 1.5f;  // they disappear in ~0.66 seconds
         if (life < 0) life = 0;
     }
     
     bool isAlive() const { return life > 0; }
 };
 
-// explosión (conjunto de partículas)
+// explotion (a lot of particles)
 struct Explosion {
     std::vector<Particle> particles;
     float timeAlive;
@@ -132,12 +124,11 @@ struct Explosion {
             float speed = 100.0f + (rand() % 200);
             float vx = cos(angle) * speed;
             float vy = sin(angle) * speed;
-            
-            // Colores de fuego: rojo, naranja, amarillo
+
             SDL_Color const colors[] = {
-                {255, 0, 0, 255}, // rojo
-                {255, 128, 0, 255}, // naranja
-                {255, 255, 0, 255} // amarillo
+                {255, 0, 0, 255},   // red
+                {255, 128, 0, 255}, // orange
+                {255, 255, 0, 255}  // yellow
             };
             SDL_Color color = colors[rand() % 3];
             
@@ -155,6 +146,93 @@ struct Explosion {
         return timeAlive > 2.0f || std::all_of(particles.begin(), particles.end(),
                                                   [](const Particle& p) { return !p.isAlive(); });
     }
+};
+
+// Smoke particle (for accelerating and post explotion)
+struct SmokeParticle {
+    float x, y;
+    float vx, vy;
+    float life;
+    float size;
+    uint8_t alpha;
+    
+    SmokeParticle(float x, float y, float vx, float vy, float size = 8.0f)
+        : x(x), y(y), vx(vx), vy(vy), life(1.0f), size(size), alpha(180) {}
+    
+    void update(float dt) {
+        x += vx * dt;
+        y += vy * dt;
+        vy -= 20.0f * dt;  // goes slowly up
+        vx *= 0.95f;       // stops horizontally
+        life -= dt * 0.8f;
+        size += dt * 15.0f;  // it expands
+        alpha = static_cast<uint8_t>(life * 150);
+    }
+    
+    bool is_alive() const { return life > 0; }
+};
+
+// Smoke cloud
+struct SmokeCloud {
+    std::vector<SmokeParticle> particles;
+    
+    // Smoke behind the car when accelerating
+    void addAccelerationSmoke(float x, float y, float carAngle) {
+        // Opposite direction 
+        float rad = (carAngle - 90) * 3.14159f / 180.0f;
+        float backX = x - cos(rad) * 15;
+        float backY = y - sin(rad) * 15;
+        
+        for (int i = 0; i < 2; i++) {
+            float spreadX = (rand() % 10 - 5) * 0.5f;
+            float spreadY = (rand() % 10 - 5) * 0.5f;
+            float vx = -cos(rad) * 30 + spreadX; 
+            float vy = -sin(rad) * 30 + spreadY;
+            particles.emplace_back(backX, backY, vx, vy, 4.0f);
+        }
+    }
+    
+    // Smoke post explotion (goes up)
+    void addExplosionSmoke(float x, float y) {
+        for (int i = 0; i < 25; i++) {
+            float offsetX = (rand() % 60 - 30);
+            float offsetY = (rand() % 60 - 30);
+            float vx = (rand() % 20 - 10);
+            float vy = -(rand() % 30 + 20);
+            particles.emplace_back(x + offsetX, y + offsetY, vx, vy, 10.0f + rand() % 10);
+        }
+    }
+    
+    void update(float dt) {
+        for (auto& p : particles) p.update(dt);
+        
+        particles.erase(std::remove_if(particles.begin(), particles.end(),
+                      [](const SmokeParticle& p) { return !p.is_alive(); }),
+            particles.end());
+    }
+};
+
+// Brake trail 
+struct BrakeTrail {
+    float x1, y1;  // Start
+    float x2, y2;  // End
+    float life;
+    float alpha;
+    
+    BrakeTrail(float x, float y) 
+        : x1(x), y1(y), x2(x), y2(y), life(3.0f), alpha(200) {}
+    
+    void extend(float newX, float newY) {
+        x2 = newX;
+        y2 = newY;
+    }
+    
+    void update(float dt) {
+        life -= dt * 0.3f;  // lasts ~3 seconds
+        alpha = static_cast<uint8_t>(std::min(life / 3.0f, 1.0f) * 200);
+    }
+    
+    bool is_alive() const { return life > 0; }
 };
 
 

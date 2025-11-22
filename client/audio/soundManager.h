@@ -22,6 +22,11 @@ private:
     std::map<std::string, std::chrono::steady_clock::time_point> lastPlayTime;
     const int THROTTLE_MS = 100;
 
+    int engineChannel = -1;
+    bool enginePlaying = false;
+
+    bool canPlaySound(const std::string& name);
+
 public:
     SoundManager();
     ~SoundManager();
@@ -47,8 +52,10 @@ public:
     bool isMusicEnabled() const { return musicEnabled; }
     bool isSfxEnabled() const { return sfxEnabled; }
 
-private:
-    bool canPlaySound(const std::string& name);
+    void playEngineLoop();
+    void stopEngineLoop();
+    void playBrakeSound();
+
 };
 
 #endif  // SOUND_MANAGER_H

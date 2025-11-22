@@ -7,7 +7,7 @@ WorldRenderer::WorldRenderer(Renderer& renderer, Texture& mapTexture, Texture& c
         mapTexture(mapTexture),
         carSprites(carSprites),
         world(world),
-        playerId(playerId),  // Manu's note: not used
+        playerId(playerId),
         camera(0, 0, 800, 600),
         scaleFactor(1.0f) {}
 
@@ -42,24 +42,52 @@ void WorldRenderer::updateCamera(float playerX, float playerY) {
 void WorldRenderer::updateEffects(float dt) {
     // Update explosions
     for (auto& explosion: explosions) explosion.update(dt);
-
     explosions.erase(std::remove_if(explosions.begin(), explosions.end(),
                                     [](const Explosion& e) { return e.isFinished(); }),
                      explosions.end());
 
     // Update collisions
     for (auto& collision: collisionEffects) collision.update(dt);
-
     collisionEffects.erase(
             std::remove_if(collisionEffects.begin(), collisionEffects.end(),
                            [](const CollisionEffect& c) { return c.isFinished(); }),
             collisionEffects.end());
+
+    smokeCloud.update(dt);
+
+    // Update brake trails
+    for (auto& trail : brakeTrails) trail.update(dt);
+    brakeTrails.erase(
+            std::remove_if(brakeTrails.begin(), brakeTrails.end(),
+                            [](const BrakeTrail& t) { return !t.is_alive(); }),
+            brakeTrails.end());
+
+    // Add smoke is accelerating
+    if (isAccelerating) {
+        auto cars = world.getCars();
+        if (cars.count(playerId)) {
+            const auto& myCar = cars.at(playerId);
+            smokeCloud.addAccelerationSmoke(myCar.x, myCar.y, myCar.angle);
+        }
+    }
+
+    // Extend trail if breaking
+    if (isBraking && currentBrakeTrail) {
+        auto cars = world.getCars();
+        if (cars.count(playerId)) {
+            const auto& myCar = cars.at(playerId);
+            currentBrakeTrail->extend(myCar.x, myCar.y);
+        }
+    }
+
 }
 
 
 void WorldRenderer::render() {
     renderMapCamera();
+    renderBrakeTrails();
     renderAllCars();
+    renderSmoke(); 
     renderCollisionEffects();
     renderExplosions();
 }
@@ -78,11 +106,6 @@ void WorldRenderer::renderAllCars() {
 
         float screenX = car_state.x - camera.x - src.GetW() / 2.0f;
         float screenY = car_state.y - camera.y - src.GetH() / 2.0f;
-
-        std::cout << "  Car id=" << (int)id << ", type=" << (int)car_state.type << ", worldPos=("
-                  << car_state.x << "," << car_state.y << ")"
-                  << ", screenPos=(" << screenX << "," << screenY << ")"
-                  << ", angle=" << car_state.angle << std::endl;
 
         Rect dest(screenX, screenY, src.GetW(), src.GetH());
         SDL_Point center = {src.GetW() / 2, src.GetH() / 2};
@@ -158,4 +181,78 @@ void WorldRenderer::addExplosion(float x, float y, int particleCount) {
 
 void WorldRenderer::addCollisionEffect(float x, float y, float intensity) {
     collisionEffects.emplace_back(x, y, intensity);
+}
+
+void WorldRenderer::setAccelerating(bool accelerating) {
+    isAccelerating = accelerating;
+}
+
+void WorldRenderer::setBraking(bool braking) {
+    // new trail when the car starts breaking
+    if (braking && !isBraking) {
+        auto cars = world.getCars();
+        if (cars.count(playerId)) {
+            const auto& myCar = cars.at(playerId);
+            brakeTrails.emplace_back(myCar.x, myCar.y);
+            currentBrakeTrail = &brakeTrails.back();
+        }
+    }
+
+    if (!braking && isBraking) 
+        currentBrakeTrail = nullptr;
+
+    isBraking = braking;
+}
+
+void WorldRenderer::addExplosionSmoke(float x, float y) {
+    smokeCloud.addExplosionSmoke(x, y);
+}
+
+void WorldRenderer::renderSmoke() {
+    renderer.SetDrawBlendMode(SDL_BLENDMODE_BLEND);
+    
+    for (const auto& particle : smokeCloud.particles) {
+        if (!particle.is_alive())
+            continue;
+        
+        float screenX = particle.x - camera.x;
+        float screenY = particle.y - camera.y;
+        renderer.SetDrawColor(100, 100, 100, particle.alpha);
+        
+        int size = static_cast<int>(particle.size);
+        SDL_Rect rect = {
+            static_cast<int>(screenX - size / 2),
+            static_cast<int>(screenY - size / 2),
+            size, size
+        };
+        renderer.FillRect(rect);
+    }
+    
+    renderer.SetDrawBlendMode(SDL_BLENDMODE_NONE);
+}
+
+void WorldRenderer::renderBrakeTrails() {
+    renderer.SetDrawBlendMode(SDL_BLENDMODE_BLEND);
+    
+    for (const auto& trail : brakeTrails) {
+        if (!trail.is_alive())
+            continue;
+        
+        float screenX1 = trail.x1 - camera.x;
+        float screenY1 = trail.y1 - camera.y;
+        float screenX2 = trail.x2 - camera.x;
+        float screenY2 = trail.y2 - camera.y;
+        renderer.SetDrawColor(30, 30, 30, trail.alpha);
+        
+        for (int offset = -2; offset <= 2; offset++) {
+            renderer.DrawLine(
+                static_cast<int>(screenX1) + offset,
+                static_cast<int>(screenY1),
+                static_cast<int>(screenX2) + offset,
+                static_cast<int>(screenY2)
+            );
+        }
+    }
+    
+    renderer.SetDrawBlendMode(SDL_BLENDMODE_NONE);
 }
