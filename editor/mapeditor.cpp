@@ -6,6 +6,7 @@
 #include <QPixmap>
 #include <QGraphicsScene>
 #include <iostream>
+#include "toolbox.h"
 
 MapEditor::MapEditor(int cityId, QWidget* parent)
         : QWidget(parent),
@@ -71,16 +72,27 @@ MapEditor::MapEditor(int cityId, QWidget* parent)
     arrow->setFlag(QGraphicsItem::ItemIsSelectable, true);
     arrow->setZValue(10);
 
-    scene->addItem(arrow);
+    //scene->addItem(arrow);
 
-    QVBoxLayout* layout = new QVBoxLayout(this);
+    view->setMaskAndPixmap(collisionMask, scaledArrowPixmap);
 
-    layout->setContentsMargins(0, 0, 0, 0);
+    Toolbox* toolbox = new Toolbox(this);
+    toolbox->setFixedWidth(150); // Darle un ancho fijo a la barra lateral
 
-    layout->setSpacing(0);
+            // Usamos QHBoxLayout para poner la barra lateral y el mapa lado a lado
+    QHBoxLayout* mainLayout = new QHBoxLayout(this);
 
-    layout->addWidget(view);
-    setLayout(layout);
+    // Conservamos el fix de márgenes y espaciado
+    mainLayout->setContentsMargins(0, 0, 0, 0);
+    mainLayout->setSpacing(0);
+
+            // Añadir la barra lateral a la izquierda o derecha
+    mainLayout->addWidget(toolbox);
+
+    // Añadir el MapView (el área principal del editor)
+    mainLayout->addWidget(view);
+
+    setLayout(mainLayout);
 
     view->fitInView(mapItem, Qt::KeepAspectRatio);
 
