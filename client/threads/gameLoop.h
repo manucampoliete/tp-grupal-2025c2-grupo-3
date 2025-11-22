@@ -25,9 +25,8 @@ class GameLoop: public Thread {
 private:
     Queue<ServerMessage>& serverMessagesQueue;
     Queue<ClientMessage>& clientCommandQueue;
-    ClientGameProtocol& protocol;
 
-    World& world;
+    World world;
     ClientID clientId;
 
     std::unique_ptr<Game> game;
@@ -35,6 +34,9 @@ private:
     uint8_t lastCountdownNumber = UINT8_MAX;
     uint8_t lastStatsCountdown = UINT8_MAX;
     uint8_t lastModCountdown = UINT8_MAX;
+
+    void processServerMessages();
+    void applySnapshot(const Snapshot& snapshot);
     
     /**
      * Methods used by other threads to notify events
@@ -56,7 +58,7 @@ public:
      */
     GameLoop(Queue<ServerMessage>& serverMessagesQueue, 
              Queue<ClientMessage>& clientCommandQueue,
-             ClientGameProtocol& protocol, World& world, ClientID clientId);
+             ClientID clientId);
 
     /**
      * Main loop that runs in the thread

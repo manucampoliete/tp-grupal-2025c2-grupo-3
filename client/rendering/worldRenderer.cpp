@@ -64,20 +64,18 @@ void WorldRenderer::updateEffects(float dt) {
 
     // Add smoke is accelerating
     if (isAccelerating) {
-        auto cars = world.getCars();
-        if (cars.count(playerId)) {
-            const auto& myCar = cars.at(playerId);
-            smokeCloud.addAccelerationSmoke(myCar.x, myCar.y, myCar.angle);
-        }
+        const auto& cars = world.getCars();
+        auto it = cars.find(playerId);
+        if (it != cars.end()) 
+            smokeCloud.addAccelerationSmoke(it->second.x, it->second.y, it->second.angle);
     }
 
     // Extend trail if breaking
     if (isBraking && currentBrakeTrail) {
-        auto cars = world.getCars();
-        if (cars.count(playerId)) {
-            const auto& myCar = cars.at(playerId);
-            currentBrakeTrail->extend(myCar.x, myCar.y);
-        }
+        const auto& cars = world.getCars();
+        auto it = cars.find(playerId);
+        if (it != cars.end()) 
+            currentBrakeTrail->extend(it->second.x, it->second.y);
     }
 
 }
@@ -100,7 +98,7 @@ void WorldRenderer::renderMapCamera() {
 
 
 void WorldRenderer::renderAllCars() {
-    auto cars = world.getCars();
+    const auto& cars = world.getCars();
     for (const auto& [id, car_state]: cars) {
         const Rect& src = CARS[car_state.type];
 
@@ -190,10 +188,10 @@ void WorldRenderer::setAccelerating(bool accelerating) {
 void WorldRenderer::setBraking(bool braking) {
     // new trail when the car starts breaking
     if (braking && !isBraking) {
-        auto cars = world.getCars();
-        if (cars.count(playerId)) {
-            const auto& myCar = cars.at(playerId);
-            brakeTrails.emplace_back(myCar.x, myCar.y);
+        const auto& cars = world.getCars();
+        auto it = cars.find(playerId);
+        if (it != cars.end()) {
+            brakeTrails.emplace_back(it->second.x, it->second.y);
             currentBrakeTrail = &brakeTrails.back();
         }
     }

@@ -11,7 +11,6 @@
 #include "../threads/gameLoop.h"
 #include "../threads/receiver.h"
 #include "../threads/sender.h"
-#include "world.h"
 #include "../utils/serverMessage.h"
 #include "../utils/clientMessage.h"
 
@@ -26,8 +25,6 @@ class GameHandler {
 private:
     ClientGameProtocol protocol;
     ClientID clientId;
-
-    World world;
 
     Queue<ClientMessage> clientCommandQueue;
     Queue<ServerMessage> serverMessagesQueue;

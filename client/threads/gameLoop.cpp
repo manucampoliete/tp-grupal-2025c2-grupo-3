@@ -11,11 +11,9 @@
 
 GameLoop::GameLoop(Queue<ServerMessage>& serverMessagesQueue, 
                    Queue<ClientMessage>& clientCommandQueue,
-                   ClientGameProtocol& protocol, World& world, ClientID clientId):
+                   ClientID clientId):
         serverMessagesQueue(serverMessagesQueue),
         clientCommandQueue(clientCommandQueue),
-        protocol(protocol),
-        world(world),
         clientId(clientId),
         game(nullptr) {}
 
@@ -23,101 +21,102 @@ GameLoop::GameLoop(Queue<ServerMessage>& serverMessagesQueue,
 void GameLoop::run() {
     game = std::make_unique<Game>(world, *this, clientId);
 
-    std::cout << "[GAME_LOOP] Initiating SDL game loop..." << std::endl;
-
     ConstantRateLoop constantRateLoop;
     bool isRunning = true;
-    Snapshot latestSnapshot;
-    bool hasSnapshot = false;
 
     while (isRunning && shouldKeepRunning()) {
-        // Process all the messages from the queue
-        ServerMessage msg;
-        while (serverMessagesQueue.tryPop(msg)) {
-            // Visitor pattern to process every message type
-            std::visit([this, &latestSnapshot, &hasSnapshot](auto&& message) {
-                using T = std::decay_t<decltype(message)>;
-                
-                if constexpr (std::is_same_v<T, Snapshot>) {
-                    // Only for snapshots, we save the last one
-                    latestSnapshot = message;
-                    hasSnapshot = true;
-                    
-                } else if constexpr (std::is_same_v<T, CountdownMessage>) {
-                    onCountdown(message.number);
-
-                } else if constexpr (std::is_same_v<T, RaceStartMessage>) {
-                    onRaceStart();
-                    
-                } else if constexpr (std::is_same_v<T, CheckpointMessage>) {
-                    onCheckpointCrossed(message.checkpointId);
-                    
-                } else if constexpr (std::is_same_v<T, CollisionMessage>) {
-                    onCollision(message.data);
-                    
-                } else if constexpr (std::is_same_v<T, PlayerDiedMessage>) {
-                    onPlayerDied(message.playerId);
-                    
-                } else if constexpr (std::is_same_v<T, RaceEndMessage>) {
-                    onRaceEnd(message.results);
-
-                } else if constexpr (std::is_same_v<T, StatsCountdownMessage>) {
-                    onStatsCountdown(message.number);
-
-                } else if constexpr (std::is_same_v<T, ModificationPhaseMessage>) {
-                    onModificationPhase(message.properties);
-                
-                } else if constexpr (std::is_same_v<T, ModCountdownMessage>) {
-                    onModCountdown(message.number);
-                    
-                } else if constexpr (std::is_same_v<T, GameEndMessage>) {
-                    onGameEnd(message.results);
-                }
-            }, msg);
-        }
+        processServerMessages();
         
-        // We aplly only the last snapshot received
-        if (hasSnapshot) {
-            BroadcastData data;
-
-            for (const auto& carSnap: latestSnapshot.cars) {
-                BroadcastData::CarState carState;
-                carState.id = carSnap.id;
-                carState.x = carSnap.x / 1000.0f;
-                carState.y = WORLD_HEIGHT - carSnap.y / 1000.0f;
-                carState.angle = carSnap.angle + 90.0f;
-                carState.type = carSnap.carId;
-
-                data.cars.push_back(carState);
-            }
-
-            data.countdown = latestSnapshot.countdown;
-            world.update(data);
-            hasSnapshot = false;
-        }
-
         // Process frame (input + update + render)
         isRunning = game->processFrame(RATE);  // RATE from constantRateLoop.h
 
         // Synchronize with frame rate
         constantRateLoop.sleepAndCalcIt();
     }
+}
 
-    std::cout << "[GAME_LOOP] Thread ended." << std::endl;
+void GameLoop::processServerMessages() {
+    ServerMessage msg;
+    Snapshot latestSnapshot;
+    bool hasSnapshot = false;
+
+    // Process all the messages from the queue
+    while (serverMessagesQueue.tryPop(msg)) {
+        // Visitor pattern to process every message type
+        std::visit([this, &latestSnapshot, &hasSnapshot](auto&& message) {
+            using T = std::decay_t<decltype(message)>;
+            
+            if constexpr (std::is_same_v<T, Snapshot>) {
+                // Only for snapshots, we save the last one
+                latestSnapshot = message;
+                hasSnapshot = true;
+                
+            } else if constexpr (std::is_same_v<T, CountdownMessage>) {
+                onCountdown(message.number);
+
+            } else if constexpr (std::is_same_v<T, RaceStartMessage>) {
+                onRaceStart();
+                
+            } else if constexpr (std::is_same_v<T, CheckpointMessage>) {
+                onCheckpointCrossed(message.checkpointId);
+                
+            } else if constexpr (std::is_same_v<T, CollisionMessage>) {
+                onCollision(message.data);
+                
+            } else if constexpr (std::is_same_v<T, PlayerDiedMessage>) {
+                onPlayerDied(message.playerId);
+                
+            } else if constexpr (std::is_same_v<T, RaceEndMessage>) {
+                onRaceEnd(message.results);
+
+            } else if constexpr (std::is_same_v<T, StatsCountdownMessage>) {
+                onStatsCountdown(message.number);
+
+            } else if constexpr (std::is_same_v<T, ModificationPhaseMessage>) {
+                onModificationPhase(message.properties);
+            
+            } else if constexpr (std::is_same_v<T, ModCountdownMessage>) {
+                onModCountdown(message.number);
+                
+            } else if constexpr (std::is_same_v<T, GameEndMessage>) {
+                onGameEnd(message.results);
+            }
+        }, msg);
+    }
+    
+    // We aplly only the last snapshot received
+    if (hasSnapshot) 
+        applySnapshot(latestSnapshot);
+}
+
+void GameLoop::applySnapshot(const Snapshot& snapshot) {
+    BroadcastData data;
+
+    for (const auto& carSnap: snapshot.cars) {
+        BroadcastData::CarState carState;
+        carState.id = carSnap.id;
+        carState.x = carSnap.x / 1000.0f;
+        carState.y = WORLD_HEIGHT - carSnap.y / 1000.0f;
+        carState.angle = carSnap.angle + 90.0f;
+        carState.type = carSnap.carId;
+
+        data.cars.push_back(carState);
+    }
+
+    data.countdown = snapshot.countdown;
+    world.update(data);
 }
 
 
 void GameLoop::onCountdown(uint8_t number) {
     if (number != lastCountdownNumber) {
         lastCountdownNumber = number;
-        if (game)
-            game->showCountdown(number);
+        if (game) game->showCountdown(number);
     }
 }
 
 void GameLoop::onRaceStart() {
-    if (game)
-        game->startRace();
+    if (game) game->startRace();
 }
 
 
@@ -131,15 +130,13 @@ void GameLoop::onCheckpointCrossed(uint8_t checkpointId) {
      * TODO: add visual effect
      */
 
-    if (game)
-        game->getSoundManager().playSound("checkpoint");
+    // if (game) game->getSoundManager().playSound("checkpoint");
 }
 
 
 void GameLoop::onCollision(const CollisionData& collision) {
     std::cout << "[GAME_LOOP] Collision detected, intensity: " << collision.intensity << std::endl;
-    if (!game)
-        return;
+    if (!game) return;
 
     // Coordinates from server in mm to meters
     float worldX = collision.x / 1000.0f;
@@ -148,39 +145,33 @@ void GameLoop::onCollision(const CollisionData& collision) {
 }
 
 void GameLoop::onPlayerDied(ClientID deadPlayerId) {
-    if (game)
-        game->onPlayerDied(deadPlayerId);
+    if (game) game->onPlayerDied(deadPlayerId);
 }
 
 void GameLoop::onRaceEnd(const RaceResults& results) {
-    if (game)
-        game->showStats(results);
+    if (game) game->showStats(results);
 }
 
 void GameLoop::onStatsCountdown(uint8_t number) {
     if (number != lastStatsCountdown) {
         lastStatsCountdown = number;
-        if (game)
-            game->setStatsCountdown(number);
+        if (game) game->setStatsCountdown(number);
     }
 }
 
 void GameLoop::onModificationPhase(const CarProperties& props) {
-    if (game)
-        game->showModifications(props);
+    if (game) game->showModifications(props);
 }
 
 void GameLoop::onModCountdown(uint8_t number) {
     if (number != lastModCountdown) {
         lastModCountdown = number;
-        if (game)
-            game->setModCountdown(number);
+        if (game) game->setModCountdown(number);
     }
 }
 
 void GameLoop::onGameEnd(const FinalResults& results) {
-    if (game)
-        game->showFinalResults(results);
+    if (game) game->showFinalResults(results);
 }
 
 
@@ -198,18 +189,15 @@ void GameLoop::sendModifications(bool speed, bool health) {
 
 void GameLoop::sendCheatInmortality() {
     clientCommandQueue.tryPush(CheatInmortalityCommand{});
-    if (game)
-        game->showCheatNotification(CheatType::INMORTALITY);
+    if (game) game->showCheatNotification(CheatType::INMORTALITY);
 }
 
 void GameLoop::sendCheatInstaWin() {
     clientCommandQueue.tryPush(CheatInstaWinCommand{});
-    if (game)
-        game->showCheatNotification(CheatType::INSTA_WIN);
+    if (game) game->showCheatNotification(CheatType::INSTA_WIN);
 }
 
 void GameLoop::sendCheatInstaLose() {
     clientCommandQueue.tryPush(CheatInstaLoseCommand{});
-    if (game)
-        game->showCheatNotification(CheatType::INSTA_LOSE);
+    if (game) game->showCheatNotification(CheatType::INSTA_LOSE);
 }

@@ -6,12 +6,11 @@
 GameHandler::GameHandler(Socket& skt, ClientID clientId):
     protocol(skt),
     clientId(clientId),
-    world(),
     clientCommandQueue(),
     serverMessagesQueue(),
     sender(protocol, clientCommandQueue),
     receiver(protocol, serverMessagesQueue),
-    gameLoop(serverMessagesQueue, clientCommandQueue, protocol, world, clientId),
+    gameLoop(serverMessagesQueue, clientCommandQueue, clientId),
     running(false) {}
 
 
@@ -43,7 +42,6 @@ void GameHandler::stop() {
 
     sender.stop();
     receiver.stop();
-    gameLoop.stop();  // Manu's note: the thread has been already joined so there's no need to stop it
 
     sender.join();
     receiver.join();
@@ -53,6 +51,5 @@ void GameHandler::stop() {
 
 
 GameHandler::~GameHandler() {
-    if (running)
-        stop();
+    if (running) stop();
 }

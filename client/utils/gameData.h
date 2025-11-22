@@ -90,7 +90,7 @@ struct CollisionEffect {
     bool isFinished() const { return timeAlive > 0.3f; }
 };
 
-// explotion particles
+// esplosion particles
 struct Particle {
     float x, y;   // position
     float vx, vy; // velocity
@@ -112,7 +112,7 @@ struct Particle {
     bool isAlive() const { return life > 0; }
 };
 
-// explotion (a lot of particles)
+// esplosion (a lot of particles)
 struct Explosion {
     std::vector<Particle> particles;
     float timeAlive;
@@ -147,7 +147,7 @@ struct Explosion {
     }
 };
 
-// Smoke particle (for accelerating and post explotion)
+// Smoke particle (for accelerating and post esplosion)
 struct SmokeParticle {
     float x, y;
     float vx, vy;
@@ -191,7 +191,7 @@ struct SmokeCloud {
         }
     }
     
-    // Smoke post explotion (goes up)
+    // Smoke post esplosion (goes up)
     void addExplosionSmoke(float x, float y) {
         for (int i = 0; i < 25; i++) {
             float offsetX = (rand() % 60 - 30);

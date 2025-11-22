@@ -449,7 +449,7 @@ void UIRenderer::renderMinimap() {
     renderer.Copy(mapTexture, NullOpt, minimapRect);
 
     // Cars as points for the minimap
-    auto cars = world.getCars();
+    const auto& cars = world.getCars();
     float mapW = (float)mapTexture.GetWidth();
     float mapH = (float)mapTexture.GetHeight();
 
@@ -460,9 +460,6 @@ void UIRenderer::renderMinimap() {
         int minimapCarX = minimapRect.x + static_cast<int>(ratioX * minimapRect.w);
         int minimapCarY = minimapRect.y + static_cast<int>(ratioY * minimapRect.h);
         
-        // TEMPORARY!!!
-        // Now that I use the id as car index I do this hardcoded color point.
-        // Later we should check for each car according to id
         uint8_t carType = carState.type;
         switch (carType) {
             case 0:  // Green (CARS[0])

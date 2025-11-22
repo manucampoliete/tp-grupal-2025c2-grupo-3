@@ -15,7 +15,6 @@ class World {
 private:
     std::map<uint8_t, BroadcastData::CarState> cars;  // Each car state
     uint32_t countdown = 0;                           // Countdown
-    mutable std::mutex mtx;                           // To allow blocking in const methods
 
 public:
     // Cleans world state (for example, when new race is initiated)
@@ -25,10 +24,10 @@ public:
     void update(const BroadcastData& data);
 
     // Obtains a copy of the state of all cars
-    std::map<uint8_t, BroadcastData::CarState> getCars() const;
+    std::map<uint8_t, BroadcastData::CarState> getCars() const { return cars; }
     
     // Obtains the remaining time
-    uint32_t getCountdown() const;
+    uint32_t getCountdown() const { return countdown; }
 };
 
 #endif  // WORLD_H

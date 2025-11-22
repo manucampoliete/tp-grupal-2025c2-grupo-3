@@ -9,33 +9,16 @@ Game::Game(World& world, GameLoop& gameLoop, uint8_t playerId):
         window("Need For Speed", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 800, 600,
                SDL_WINDOW_RESIZABLE),
         renderer(window, -1, SDL_RENDERER_ACCELERATED),
-        
 
-        /**
-         * FONTS
-         */
         font("client/assets/fonts/VCR_OSD_MONO.ttf", 24),
         fontSmall("client/assets/fonts/VCR_OSD_MONO.ttf", 18),
         fontBig("client/assets/fonts/VCR_OSD_MONO.ttf", 30),
-        
 
-        /**
-         * TEXTURES
-         */
-        /**
-         * Upload map texture from a file
-         * For now, harcoded
-         * TODO: change when the editor is ready
-         */
         mapTexture(renderer, "client/assets/cities/Game Boy _ GBC - Grand Theft Auto - "
                               "Backgrounds - Vice City.png"),
-
-        // Upload car sprites texture
-        carSprites(
-                renderer,
+        carSprites(renderer,
                 SDL2pp::Surface(
-                        "client/assets/cars/Mobile - Grand Theft Auto 4 - Miscellaneous - Cars.png")
-                        .SetColorKey(true, 0xa3a30d)),
+                        "client/assets/cars/Mobile - Grand Theft Auto 4 - Miscellaneous - Cars.png")),
         
         cheatInmortalityImg(renderer, "client/assets/cheats/inmortality.png"),
         cheatWinImg(renderer, "client/assets/cheats/win.png"),
@@ -163,13 +146,12 @@ void Game::update(float dt) {
 
     worldRenderer.updateEffects(dt / 1000.0f);
 
-    auto carStates = world.getCars();
+    const auto& carStates = world.getCars();
     raceTimerMs = world.getCountdown();
 
-    if (carStates.count(playerId)) {
-        const auto& myCarState = carStates.at(playerId);
-        worldRenderer.updateCamera(myCarState.x, myCarState.y);
-    }
+    auto it = carStates.find(playerId);
+    if (it != carStates.end())
+        worldRenderer.updateCamera(it->second.x, it->second.y);
 
     if (activeCheatNotification != CheatType::NONE) {
         cheatNotificationTimer -= dt;
@@ -267,9 +249,11 @@ void Game::onCollision(float x, float y, float intensity) {
 }
 
 void Game::onPlayerDied(uint16_t deadPlayerId) {
-    auto cars = world.getCars();
-    if (cars.count(deadPlayerId)) {
-        const auto& deadCar = cars.at(deadPlayerId);
+    const auto& cars = world.getCars();
+    
+    auto it = cars.find(deadPlayerId);
+    if (it != cars.end()) {
+        const auto& deadCar = it->second;
 
         // Explosion with 50 particles
         worldRenderer.addExplosion(deadCar.x, deadCar.y, 50);
