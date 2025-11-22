@@ -30,16 +30,6 @@ void ClientHandler::handleLobbyPhase() {
     }
 }
 
-void ClientHandler::launchSenderThread() {
-    sender.emplace(peer, lobbyResolver.getResponsesQueue());
-    sender->start();
-}
-
-void ClientHandler::fakeLaunchReceiverThread() {
-    receiver.emplace(peer, lobbyResolver.getClientCommandsQueue(), clientId);
-    receiver->run();  // Executes here in this thread until it is stopped
-}
-
 ClientHandler::ClientHandler(Socket&& peer, MatchesMapMonitor& matchesMapMonitor,
                              ClientID clientId):
         peer(std::move(peer)),
@@ -66,9 +56,8 @@ void ClientHandler::run() {
     if (!shouldKeepRunning()) {
         return;
     }
-    launchSenderThread();
-    fakeLaunchReceiverThread();
+    sender.emplace(peer, lobbyResolver.getResponsesQueue());
+    receiver.emplace(peer, lobbyResolver.getClientCommandsQueue(), clientId);
 }
-
 
 ClientHandler::~ClientHandler() {}
