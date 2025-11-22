@@ -32,9 +32,8 @@ public:
     /**
      * Runs the server: waits for the
      * termination key to shut it down.
-     * Returns EXIT_SUCCESS if everything went fine.
      */
-    int run();
+    void run();
 
     /**
      * Destructor: joins the acceptor thread.

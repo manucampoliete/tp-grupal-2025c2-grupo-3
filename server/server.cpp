@@ -7,10 +7,9 @@
 Server::Server(const std::string& servname):
         matchesMapMonitor(), acceptor(servname, matchesMapMonitor) {}
 
-int Server::run() {
+void Server::run() {
     while (std::cin.get() != END_SERVER_KEY) {}
     matchesMapMonitor.stopAllMatches();
-    return EXIT_SUCCESS;
 }
 
 Server::~Server() {
