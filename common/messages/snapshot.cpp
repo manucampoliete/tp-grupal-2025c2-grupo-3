@@ -28,6 +28,8 @@ Snapshot::Snapshot(const Snapshot& other):
 Snapshot::Snapshot(const CollisionData& collision):
         countdown(0), collisionData(collision), type(MSG_COLLISION) {}
 
+Snapshot::Snapshot(ClientID clientId): 
+        clientId(clientId), type(MSG_PLAYER_DIED) {}
 
 
 Snapshot::CarSnapshot& Snapshot::CarSnapshot::operator=(const CarSnapshot& other) {

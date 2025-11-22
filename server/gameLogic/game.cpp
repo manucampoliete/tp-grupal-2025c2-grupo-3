@@ -268,6 +268,10 @@ void Game::handleCollision(Player* player, float impact) {
     player->applyCollisionDamage(impact);
     Snapshot::CollisionData collisionData = player->buildCollisionSnapshot(impact);
     responseQueuesMonitor.broadcast(std::make_shared<Snapshot>(collisionData));
+
+    if(!player->isAlive()) {
+        responseQueuesMonitor.broadcast(std::make_shared<Snapshot>(player->getClientId()));
+    }
 }
 
 void Game::run() {

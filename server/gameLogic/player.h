@@ -38,6 +38,9 @@ public:
     Snapshot::CarSnapshot buildCarSnapshot();
 
     Snapshot::CollisionData buildCollisionSnapshot(float impact);
+
+    ClientID getClientId() const { return clientId; }
+    bool isAlive() { return car.getHealth() > 0.0f; }
 };
 
 #endif

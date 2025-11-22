@@ -44,6 +44,7 @@ struct Snapshot {
     std::vector<CarSnapshot> cars;
 
     CollisionData collisionData;
+    ClientID clientId; // for dead player snapshot
     
     // SnapshotType type;
     uint8_t type;  // using uint8_t for easier serialization
@@ -65,6 +66,9 @@ struct Snapshot {
 
     // collision snapshot
     Snapshot(const CollisionData& collision);
+
+    // dead player snapshot
+    Snapshot(ClientID clientId);
 
     /**
      * Copy constructor for Snapshot

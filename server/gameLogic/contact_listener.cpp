@@ -30,46 +30,13 @@ void ContactListener::EndContact(b2Contact* contact) {
     alreadyHit.erase(pair);
 }
 
-/* void ContactListener::PostSolve(b2Contact* contact, const b2ContactImpulse* impulse) {
-    // Aquí puedes manejar la resolución de una colisión, por ejemplo, para obtener la fuerza del impacto
-    b2Body* bodyA = contact->GetFixtureA()->GetBody();
-    b2Body* bodyB = contact->GetFixtureB()->GetBody();
-    
-    // En cada frame de una "raspadura" se llama varias veces a PostSolve
-    // Box2D puede llegar a interpretar el mismo choque como (body1, body2) y (body2, body1) en frames contiguos 
-    // Esto nos asegura de que va a interpretar el choque siempre de la misma forma
-    BodyPair pair{std::min(bodyA, bodyB), std::max(bodyA, bodyB)};
-
-    float impact = impulse->normalImpulses[0];
-
-    if (impact > IMPACT_THRESHOLD && !alreadyHit.count(pair)) {
-        alreadyHit.insert(pair);
-        std::cout << "Impact: " << impact << "\n";
-        //applyDamage(bodyA, bodyB, impact);
-        // en realidad no va a ser un applyDamage sino mas bien un handle collision
-        // que ademas de aplicar el daño va a hacer un broadcast de la colisión
-        
-        auto* dataA = reinterpret_cast<BodyData*>(bodyA->GetUserData().pointer);
-        auto* dataB = reinterpret_cast<BodyData*>(bodyB->GetUserData().pointer);
-
-        // alguno de los involucrados puede no ser un player (auto contra pared)
-        if(dataA && dataA->player) {
-            Player* playerA = dataA->player;
-            game->handleCollision(playerA, impact);
-        }
-
-        if(dataB && dataB->player) {
-            Player* playerB = dataB->player;
-            game->handleCollision(playerB, impact);
-        }
-    }
-} */
-
 void ContactListener::PostSolve(b2Contact* contact, const b2ContactImpulse* impulse) {
 
     // Impulso normal del solver (primer punto de contacto)
     float rawImpulse = impulse->normalImpulses[0];
 
+    // Umbrales de impulso para normalizar el impacto
+    // Acelerar contra una pared constantemente llega a poco menos de 16k, asi que se usa como referencia para evitar daño por raspaduras triviales
     const float MIN_IMPULSE = 16000.0f;
     const float MAX_IMPULSE = 40000.0f;
 
