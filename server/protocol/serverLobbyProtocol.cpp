@@ -46,44 +46,44 @@ void ServerLobbyProtocol::sendInitialInfo() {
     }
 }
 
-void ServerLobbyProtocol::recvCreateMatch(LobbyResolver& lobbyResolver) {
+void ServerLobbyProtocol::recvCreateMatch() {
     std::string username = recvString();
     CarID carId = recvU8();
     lobbyResolver.handleCreateMatch(username, carId, *this);
 }
 
-void ServerLobbyProtocol::recvJoinMatch(LobbyResolver& lobbyResolver) {
+void ServerLobbyProtocol::recvJoinMatch() {
     MatchID matchId = recvU16();
     std::string username = recvString();
     CarID carId = recvU8();
     lobbyResolver.handleJoinMatch(matchId, username, carId, *this);
 }
 
-void ServerLobbyProtocol::recvStartMatch(LobbyResolver& lobbyResolver) {
+void ServerLobbyProtocol::recvStartMatch() {
     lobbyResolver.handleStartMatch(*this);
 }
 
-ServerLobbyProtocol::ServerLobbyProtocol(Socket& socket, ClientID clientId):
-        RecvProtocol(socket), SendProtocol(socket) {
+ServerLobbyProtocol::ServerLobbyProtocol(Socket& socket, LobbyResolver& lobbyResolver, ClientID clientId):
+        RecvProtocol(socket), SendProtocol(socket), lobbyResolver(lobbyResolver) {
     sendClientID(clientId);
 }
 
-void ServerLobbyProtocol::consumeOne(LobbyResolver& lobbyResolver) {
+void ServerLobbyProtocol::consumeOne() {
     switch (recvU8()) {
         case SEND_INITIAL_INFO: {
             sendInitialInfo();
             break;
         }
         case SEND_CREATE: {
-            recvCreateMatch(lobbyResolver);
+            recvCreateMatch();
             break;
         }
         case SEND_JOIN: {
-            recvJoinMatch(lobbyResolver);
+            recvJoinMatch();
             break;
         }
         case SEND_START: {
-            recvStartMatch(lobbyResolver);
+            recvStartMatch();
             break;
         }
         default:

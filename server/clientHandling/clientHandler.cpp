@@ -24,9 +24,9 @@ void ClientHandler::hardKill() {
 }
 
 void ClientHandler::handleLobbyPhase() {
-    ServerLobbyProtocol serverLobbyProtocol(peer, clientId);
+    ServerLobbyProtocol serverLobbyProtocol(peer, lobbyResolver, clientId);
     while (shouldKeepRunning() and lobbyResolver.isInLobbyPhase()) {
-        serverLobbyProtocol.consumeOne(lobbyResolver);
+        serverLobbyProtocol.consumeOne();
     }
 }
 
