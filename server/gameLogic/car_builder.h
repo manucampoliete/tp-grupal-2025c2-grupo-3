@@ -10,6 +10,8 @@
 
 #include "car.h"
 
+#include <iostream>
+
 class CarBuilder {
 public:
     static Car createCar(b2Body* body, CarID carId) {

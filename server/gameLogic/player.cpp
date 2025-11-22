@@ -5,6 +5,8 @@
 
 #include "bodyData.h"
 
+#include <iostream>
+
 
 #define RADTODEG 57.295779513082320876f
 
@@ -42,17 +44,12 @@ Snapshot::CarSnapshot Player::buildCarSnapshot() {
     return Snapshot::CarSnapshot(clientId, x, y, angle, speed, car.getId());
 }
 
-Snapshot::CollisionData Player::buildCollisionSnapshot(float impact) {
+// espera un impacto normalizado
+Snapshot::CollisionData Player::buildCollisionSnapshot(float normalizedImpact) {
     Snapshot::CollisionData collision;
     collision.playerId = clientId;
 
-    // clamp impact between 0.0 and 1.0
-    if (impact < 0.0f)
-        impact = 0.0f;
-    else if (impact > 1.0f)
-        impact = 1.0f;
-
-    collision.intensity = impact;
+    collision.intensity = normalizedImpact;
 
     uint32 x = static_cast<uint32_t>(std::round(car.getPosition().x * 1000));
     uint32 y = static_cast<uint32_t>(std::round(car.getPosition().y * 1000));

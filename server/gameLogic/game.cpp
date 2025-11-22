@@ -6,6 +6,7 @@
 #include <thread>
 #include <utility>
 #include <vector>
+#include <tuple>
 
 #include <iostream>
 
@@ -51,7 +52,7 @@ b2Body* Game::createNewCarBody() {
     boxFixtureDef.shape = &boxShape;
     boxFixtureDef.density = 1;
     // boxFixtureDef.friction = 0.3f;
-    boxFixtureDef.restitution = 0.1f;  // poco rebote
+    boxFixtureDef.restitution = 0.0f;  // poco rebote
     car->CreateFixture(&boxFixtureDef);
 
     car->SetLinearDamping(0.5f);  // para que se frene con el tiempo
@@ -253,7 +254,18 @@ void Game::handleModifyingCarState() {
 // Posible problema: si se hace broadcast de los 2 choques entonces el cliente va a reproducir el sonido del choque 2 veces!!
 // Checkear si la posición del choque es la misma para ambos players (o muy cercana) asi el cliente sabe que es el mismo choque
 void Game::handleCollision(Player* player, float impact) {
-    if (!player) return;
+    if (!player) {
+        std::cerr << "[GAME] handleCollision: player is null!" << std::endl;
+        return;
+    }
+
+    const float IMPACT_DAMAGE_THRESHOLD = 0.2f; // umbral minimo para aplicar daño
+
+    if (impact < IMPACT_DAMAGE_THRESHOLD) {
+        return; // no aplicar daño ni notificar si el impacto es muy bajo
+    }
+
+    player->applyCollisionDamage(impact);
     Snapshot::CollisionData collisionData = player->buildCollisionSnapshot(impact);
     responseQueuesMonitor.broadcast(std::make_shared<Snapshot>(collisionData));
 }
@@ -323,7 +335,11 @@ void Game::addPlayer(ClientID clientId, const std::string& username, CarID carId
     if (players.find(clientId) == players.end()) {
         b2Body* newCarBody = createNewCarBody();
         try {
-            players.emplace(clientId, Player(clientId, username, newCarBody, carId));
+            // players.emplace(clientId, Player(clientId, username, newCarBody, carId)); //dentro de Player se hace data->player = this (que apunta al temporal), cuando se llama data->player->applyDamage health toma valores basura
+            // construir player in-place para evitar el problema anterior
+            players.emplace(std::piecewise_construct,
+                            std::forward_as_tuple(clientId),
+                            std::forward_as_tuple(clientId, username, newCarBody, carId));
         } catch (std::exception& e) {
             std::cerr << "Error en addPlayer: " << e.what() << std::endl;
         } catch (...) {

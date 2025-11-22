@@ -30,6 +30,8 @@ public:
      */
     void updateCarPhysics();
 
+    void applyCollisionDamage(float impact) { car.applyDamage(impact); }
+
     /**
      * Builds and returns a CarSnapshot representing the player's car.
      */

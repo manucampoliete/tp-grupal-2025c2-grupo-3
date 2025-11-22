@@ -10,6 +10,7 @@ target_sources(taller_server
     game.h
     player.h
     car.h
+    collision_loader.h
     car_builder.h
     contact_listener.h
     bodyData.h

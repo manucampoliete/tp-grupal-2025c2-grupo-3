@@ -44,7 +44,7 @@ static std::vector<b2Body*> LoadCollisions(const std::string& yamlPath, std::uni
             fixtureDef.shape = &box;
             fixtureDef.density = 0.0f;      // esto no importa
             fixtureDef.friction = 0.3f;     // para que se frene un poco si se arrastra contra la pared
-            fixtureDef.restitution = 0.1f;  // para rebotar un poco contra las paredes
+            fixtureDef.restitution = 0.0f;  // rebote
             
             body->CreateFixture(&fixtureDef);
             

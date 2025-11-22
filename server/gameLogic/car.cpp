@@ -1,6 +1,9 @@
 #include "car.h"
 
 #include <utility>
+#include <iostream>
+
+#define DAMAGE_SCALE 50.0f
 
 // Para facilitar la lectura del codigo recordar que "velocity" es un vector y "speed" es una
 // magnitud
@@ -9,6 +12,13 @@
  * TODO: modularizar
  */
 void Car::updatePhysics() {
+    if(health <= 0.0f) {
+        // el auto esta destruido, se frena rapido y no se puede mover
+        body->SetLinearDamping(2.5f);
+        body->SetAngularDamping(5.0f);
+        return;
+    }
+
     // manejo del giro
     b2Vec2 vel = body->GetLinearVelocity();
     float speed = vel.Length();
@@ -76,6 +86,17 @@ void Car::updateActiveDirections(ActiveDirections activeDirections) {
     currentActiveDirections = activeDirections;
 }
 
+void Car::applyDamage(float impact) {
+    // el impacto ya viene normalizado
+    std::cout << "///////////////////////" << std::endl;
+    std::cout << "[CAR] Starting health: " << health << std::endl;
+    health -= impact * DAMAGE_SCALE; 
+    if (health < 0.0f)
+        health = 0.0f;
+    std::cout << "[CAR] Applied damage: " << impact * DAMAGE_SCALE << std::endl;
+    std::cout << "[CAR] Remaining health: " << health << std::endl;
+}
+
 b2Vec2 Car::getPosition() { return body->GetPosition(); }
 
 float Car::getAngle() { return body->GetAngle(); }
@@ -83,3 +104,5 @@ float Car::getAngle() { return body->GetAngle(); }
 float Car::getSpeed() { return body->GetLinearVelocity().Length(); }
 
 CarID Car::getId() { return carId; }
+
+float Car::getHealth() { return health; }

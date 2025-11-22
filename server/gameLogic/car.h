@@ -75,6 +75,8 @@ public:
      */
     void updateActiveDirections(ActiveDirections activeDirections);
 
+    void applyDamage(float impact);
+
     /**
      * Returns the position of the car.
      */
@@ -88,6 +90,8 @@ public:
     float getSpeed();
 
     CarID getId();
+
+    float getHealth();
 };
 
 #endif
