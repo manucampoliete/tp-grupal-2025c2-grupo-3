@@ -3,75 +3,63 @@
 #include <algorithm>
 #include <iostream>
 
-
-SoundManager::SoundManager(): backgroundMusic(nullptr) {
-    // Initialize SDL_mixer
-    if (Mix_OpenAudio(48000, MIX_DEFAULT_FORMAT, 2, 4096) < 0) 
-        throw std::runtime_error("Failed to initialize SDL_mixer");
+SoundManager::SoundManager(): 
+    mixer(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, MIX_DEFAULT_CHANNELS, 4096),
+    backgroundMusic(nullptr),
+    engineChannel(-1),
+    enginePlaying(false) {
 
     // 16 channels for sound effects
-    Mix_AllocateChannels(16);
-}
-
-SoundManager::~SoundManager() {
-    stopMusic();
-
-    if (backgroundMusic) {
-        Mix_FreeMusic(backgroundMusic);
-        backgroundMusic = nullptr;
-    }
-
-    for (auto& [name, chunk]: soundEffects) Mix_FreeChunk(chunk);
-
-    soundEffects.clear();
-
-    Mix_CloseAudio();
-    std::cout << "[SOUND] Mixer closed" << std::endl;
+    mixer.AllocateChannels(16);
 }
 
 
 // BACKGROUND MUSIC FOR RACING
 void SoundManager::loadMusic(const std::string& path) {
-    if (backgroundMusic)
-        Mix_FreeMusic(backgroundMusic);
-
-    backgroundMusic = Mix_LoadMUS(path.c_str());
+    try {
+        backgroundMusic = std::make_unique<SDL2pp::Music>(path);
+    } catch (const SDL2pp::Exception& e) {
+        std::cerr << "[SOUND] Error loading music: " << path << " - " << e.what() << std::endl;
+        backgroundMusic = nullptr;
+    }
 }
 
 void SoundManager::playMusic(int loops) {
     if (backgroundMusic && musicEnabled) {
-        if (Mix_PlayMusic(backgroundMusic, loops) == -1)
-            std::cerr << "[SOUND] Error playing music: " << Mix_GetError() << std::endl;
-        else
-            Mix_VolumeMusic(musicVolume);
+        try {
+            mixer.SetMusicVolume(musicVolume);
+            mixer.PlayMusic(*backgroundMusic, loops);
+        } catch (const SDL2pp::Exception& e) {
+            std::cerr << "[SOUND] Error playing music: " << e.what() << std::endl;
+        }
     }
 }
 
-void SoundManager::stopMusic() { Mix_HaltMusic(); }
+void SoundManager::stopMusic() { mixer.HaltMusic(); }
 
 void SoundManager::pauseMusic() {
     if (Mix_PlayingMusic())
-        Mix_PauseMusic();
+        mixer.PauseMusic();
 }
 
 void SoundManager::resumeMusic() {
     if (Mix_PausedMusic())
-        Mix_ResumeMusic();
+        mixer.ResumeMusic();
 }
 
 void SoundManager::setMusicVolume(int volume) {
     musicVolume = std::clamp(volume, 0, MIX_MAX_VOLUME);
-    Mix_VolumeMusic(musicVolume);
+    mixer.SetMusicVolume(musicVolume);
 }
 
 
 // SOUND EFFECTS
 void SoundManager::loadSound(const std::string& name, const std::string& path) {
-    Mix_Chunk* chunk = Mix_LoadWAV(path.c_str());
-    if (!chunk) 
-        return;
-
-    soundEffects[name] = chunk;
+    try {
+        soundEffects[name] = std::make_unique<SDL2pp::Chunk>(path);
+    } catch (const SDL2pp::Exception& e) {
+        std::cerr << "[SOUND] Error loading sound '" << name << "': " << e.what() << std::endl;
+    }
 }
 
 void SoundManager::playSound(const std::string& name, int volume) {
@@ -83,13 +71,15 @@ void SoundManager::playSound(const std::string& name, int volume) {
         return;
 
     auto it = soundEffects.find(name);
-    if (it != soundEffects.end()) {
+    if (it != soundEffects.end() && it->second) {
         int vol = (volume == -1) ? sfxVolume : std::clamp(volume, 0, MIX_MAX_VOLUME);
-        Mix_VolumeChunk(it->second, vol);
+        it->second->SetVolume(vol);
 
-        int channel = Mix_PlayChannel(-1, it->second, 0);  // -1 = first free channel
-        if (channel == -1)
+        try {
+            mixer.PlayChannel(-1, *it->second);  // -1 = primer canal libre
+        } catch (const SDL2pp::Exception& e) {
             std::cerr << "[SOUND] No free channels to play: " << name << std::endl;
+        }
     }
 }
 
@@ -124,6 +114,8 @@ void SoundManager::toggleMusic() {
 
 void SoundManager::toggleSfx() {
     sfxEnabled = !sfxEnabled;
+    if (!sfxEnabled && enginePlaying)
+        stopEngineLoop();
 }
 
 
@@ -146,24 +138,26 @@ bool SoundManager::canPlaySound(const std::string& name) {
 }
 
 
+// SPECIAL SOUND EFFECTS
 void SoundManager::playEngineLoop() {
     if (!sfxEnabled || enginePlaying)
         return;
     
     auto it = soundEffects.find("engine");
-    if (it != soundEffects.end()) {
-        // Loop infinito en un canal específico
-        engineChannel = Mix_PlayChannel(-1, it->second, -1);  // -1 = loop infinito
-        if (engineChannel != -1) {
-            Mix_Volume(engineChannel, sfxVolume);
+    if (it != soundEffects.end() && it->second) {
+        try {
+            it->second->SetVolume(sfxVolume);
+            engineChannel = mixer.PlayChannel(-1, *it->second, -1);  // -1 = loop infinito
             enginePlaying = true;
+        } catch (const SDL2pp::Exception& e) {
+            std::cerr << "[SOUND] Error playing engine loop: " << e.what() << std::endl;
         }
     }
 }
 
 void SoundManager::stopEngineLoop() {
     if (engineChannel != -1 && enginePlaying) {
-        Mix_HaltChannel(engineChannel);
+        mixer.HaltChannel(engineChannel);
         enginePlaying = false;
         engineChannel = -1;
     }
