@@ -234,7 +234,7 @@ void Game::showModifications(const CarProperties& props) {
 
 void Game::showCheatNotification(CheatType cheatType) {
     activeCheatNotification = cheatType;
-    cheatNotificationTimer = 300.0f;
+    cheatNotificationTimer = 400.0f;
 }
 
 void Game::showFinalResults(const FinalResults& results) {

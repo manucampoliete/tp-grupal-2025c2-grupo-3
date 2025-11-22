@@ -10,10 +10,10 @@
 
 
 GameLoop::GameLoop(Queue<ServerMessage>& serverMessagesQueue, 
-                   Queue<ActiveDirections>& clientRequestsQueue,
+                   Queue<ClientMessage>& clientCommandQueue,
                    ClientGameProtocol& protocol, World& world, ClientID clientId):
         serverMessagesQueue(serverMessagesQueue),
-        clientRequestsQueue(clientRequestsQueue),
+        clientCommandQueue(clientCommandQueue),
         protocol(protocol),
         world(world),
         clientId(clientId),
@@ -106,6 +106,7 @@ void GameLoop::run() {
     std::cout << "[GAME_LOOP] Thread ended." << std::endl;
 }
 
+
 void GameLoop::onCountdown(uint8_t number) {
     if (game)
         game->showCountdown(number);
@@ -165,29 +166,31 @@ void GameLoop::onGameEnd(const FinalResults& results) {
 
 
 void GameLoop::sendMovement(bool up, bool down, bool left, bool right) {
-    clientRequestsQueue.tryPush(ActiveDirections(up, down, left, right));
+    MoveCommand cmd(ActiveDirections(up, down, left, right));
+    clientCommandQueue.tryPush(cmd);
 }
 
 void GameLoop::sendModifications(bool speed, bool health) {
     std::cout << "[GAME_HANDLER] Modifications: speed=" << speed << ", health=" << health
               << std::endl;
-    protocol.sendModifications(speed, health);
+    ModifyCarCommand cmd(speed, health);
+    clientCommandQueue.tryPush(cmd);
 }
 
 void GameLoop::sendCheatInmortality() {
-    protocol.sendInmortalityRequest();
+    clientCommandQueue.tryPush(CheatInmortalityCommand{});
     if (game)
         game->showCheatNotification(CheatType::INMORTALITY);
 }
 
 void GameLoop::sendCheatInstaWin() {
-    protocol.sendInstaWinRequest();
+    clientCommandQueue.tryPush(CheatInstaWinCommand{});
     if (game)
         game->showCheatNotification(CheatType::INSTA_WIN);
 }
 
 void GameLoop::sendCheatInstaLose() {
-    protocol.sendInstaLoseRequest();
+    clientCommandQueue.tryPush(CheatInstaLoseCommand{});
     if (game)
         game->showCheatNotification(CheatType::INSTA_LOSE);
 }

@@ -7,11 +7,11 @@ GameHandler::GameHandler(Socket& skt, ClientID clientId):
     protocol(skt),
     clientId(clientId),
     world(),
-    clientRequestsQueue(),
+    clientCommandQueue(),
     serverMessagesQueue(),
-    sender(protocol, clientRequestsQueue),
+    sender(protocol, clientCommandQueue),
     receiver(protocol, serverMessagesQueue),
-    gameLoop(serverMessagesQueue, clientRequestsQueue, protocol, world, clientId),
+    gameLoop(serverMessagesQueue, clientCommandQueue, protocol, world, clientId),
     running(false) {}
 
 
@@ -38,7 +38,7 @@ void GameHandler::stop() {
     std::cout << "[GAME_HANDLER] Stopping..." << std::endl;
     running = false;
 
-    clientRequestsQueue.close();
+    clientCommandQueue.close();
     serverMessagesQueue.close();
 
     sender.stop();

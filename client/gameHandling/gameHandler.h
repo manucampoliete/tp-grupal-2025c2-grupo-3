@@ -6,7 +6,6 @@
 
 #include "../../common/messages/gameData.h"
 #include "../../common/queue/queue.h"
-#include "../../common/utils/activeDirections.h"
 #include "../protocol/clientGameProtocol.h"
 
 #include "../threads/gameLoop.h"
@@ -14,6 +13,7 @@
 #include "../threads/sender.h"
 #include "world.h"
 #include "../../common/messages/serverMessage.h"
+#include "../../common/messages/clientMessage.h"
 
 
 /**
@@ -29,7 +29,7 @@ private:
 
     World world;
 
-    Queue<ActiveDirections> clientRequestsQueue;
+    Queue<ClientMessage> clientCommandQueue;
     Queue<ServerMessage> serverMessagesQueue;
 
     Sender sender;
