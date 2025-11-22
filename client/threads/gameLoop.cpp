@@ -17,8 +17,7 @@ GameLoop::GameLoop(Queue<ServerMessage>& serverMessagesQueue,
         protocol(protocol),
         world(world),
         clientId(clientId),
-        game(nullptr),
-        lastCountdownNumber(UINT8_MAX) {}
+        game(nullptr) {}
 
 
 void GameLoop::run() {
@@ -45,13 +44,8 @@ void GameLoop::run() {
                     hasSnapshot = true;
                     
                 } else if constexpr (std::is_same_v<T, CountdownMessage>) {
-                    // For countdown we only process if it changed
-                    if (message.number != lastCountdownNumber) {
-                        std::cout << "[GAME_LOOP] Countdown changed: " << (int)message.number << std::endl;
-                        onCountdown(message.number);
-                        lastCountdownNumber = message.number;
-                    }
-                    
+                    onCountdown(message.number);
+
                 } else if constexpr (std::is_same_v<T, RaceStartMessage>) {
                     onRaceStart();
                     
@@ -66,7 +60,10 @@ void GameLoop::run() {
                     
                 } else if constexpr (std::is_same_v<T, RaceEndMessage>) {
                     onRaceEnd(message.results);
-                    
+
+                } else if constexpr (std::is_same_v<T, StatsCountdownMessage>) {
+                    onStatsCountdown(message.number);
+
                 } else if constexpr (std::is_same_v<T, ModificationPhaseMessage>) {
                     onModificationPhase(message.properties);
                     
@@ -108,8 +105,11 @@ void GameLoop::run() {
 
 
 void GameLoop::onCountdown(uint8_t number) {
-    if (game)
-        game->showCountdown(number);
+    if (number != lastCountdownNumber) {
+        lastCountdownNumber = number;
+        if (game)
+            game->showCountdown(number);
+    }
 }
 
 void GameLoop::onRaceStart() {
@@ -152,6 +152,14 @@ void GameLoop::onPlayerDied(ClientID deadPlayerId) {
 void GameLoop::onRaceEnd(const RaceResults& results) {
     if (game)
         game->showStats(results);
+}
+
+void GameLoop::onStatsCountdown(uint8_t number) {
+    if (number != lastStatsCountdown) {
+        lastStatsCountdown = number;
+        if (game)
+            game->setStatsCountdown(number);
+    }
 }
 
 void GameLoop::onModificationPhase(const CarProperties& props) {

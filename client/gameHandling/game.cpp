@@ -217,11 +217,16 @@ void Game::showCountdown(uint8_t number) {
 void Game::showStats(const RaceResults& results) {
     currentState = GameState::SHOWING_STATS;
     currentResults = results;
-    statsTimerMs = results.countdownMs;
+    statsTimerMs = 10000; // default 10 sec
 
     soundManager.stopMusic();
     soundManager.playSound("race_end");
 }
+
+void Game::setStatsCountdown(uint8_t number) {
+    statsTimerMs = number * 1000;
+}
+
 
 void Game::showModifications(const CarProperties& props) {
     currentState = GameState::MODIFYING_CAR;

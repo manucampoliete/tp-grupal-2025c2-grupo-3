@@ -31,7 +31,9 @@ private:
     ClientID clientId;
 
     std::unique_ptr<Game> game;
-    uint8_t lastCountdownNumber;
+
+    uint8_t lastCountdownNumber = UINT8_MAX;
+    uint8_t lastStatsCountdown = UINT8_MAX;
     
     /**
      * Methods used by other threads to notify events
@@ -42,6 +44,7 @@ private:
     void onCollision(const CollisionData& collision);
     void onPlayerDied(ClientID deadPlayerId);
     void onRaceEnd(const RaceResults& results);
+    void onStatsCountdown(uint8_t number);
     void onModificationPhase(const CarProperties& props);
     void onGameEnd(const FinalResults& results);
 

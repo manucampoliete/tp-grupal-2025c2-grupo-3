@@ -52,7 +52,6 @@ struct RaceResults {
     };
 
     std::vector<PlayerResult> players;
-    uint32_t countdownMs;
 };
 
 struct FinalResults {

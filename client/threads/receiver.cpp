@@ -50,6 +50,14 @@ void Receiver::run() {
                     break;
                 }
 
+                case MSG_STATS_COUNTDOWN: {
+                    std::cout << "[RECEIVER] → Processing STATS_COUNTDOWN" << std::endl;
+                    StatsCountdownMessage msg;
+                    msg.number = protocol.recvStatsCountdown();
+                    serverMessagesQueue.push(msg);
+                    break;
+                }
+
                 case MSG_MOD_PHASE: {
                     std::cout << "[RECEIVER] → Processing MOD_PHASE" << std::endl;
                     ModificationPhaseMessage msg;

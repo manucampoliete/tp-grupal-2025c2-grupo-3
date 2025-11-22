@@ -83,7 +83,6 @@ uint16_t ClientGameProtocol::recvPlayerDied() { return recvU16(); }
 
 RaceResults ClientGameProtocol::recvRaceResults() {
     RaceResults results;
-    results.countdownMs = recvU32();
     uint16_t numPlayers = recvU16();
 
     for (uint16_t i = 0; i < numPlayers; ++i) {
@@ -96,6 +95,10 @@ RaceResults ClientGameProtocol::recvRaceResults() {
     }
 
     return results;
+}
+
+uint8_t ClientGameProtocol::recvStatsCountdown() {
+    return recvU8();
 }
 
 CarProperties ClientGameProtocol::recvCarProperties() {

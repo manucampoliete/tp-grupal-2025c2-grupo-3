@@ -36,6 +36,7 @@ public:
     CollisionData recvCollision();
     uint16_t recvPlayerDied();
     RaceResults recvRaceResults();
+    uint8_t recvStatsCountdown();
     CarProperties recvCarProperties();
     FinalResults recvFinalResults();
 
