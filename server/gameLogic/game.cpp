@@ -10,6 +10,7 @@
 #include <iostream>
 
 #include "collision_loader.h"
+#include "../../common/constantRateLoop/constantRateLoop.h"
 
 #define TARGET_FPS 60
 #define FRAME_DURATION_MS (1000 / TARGET_FPS)
@@ -221,7 +222,7 @@ void Game::handleCountdownState() {
 }
 
 void Game::handleRacingState() {
-    // command pattern
+    // Command Pattern
     std::unique_ptr<Command> cmd;
     while (clientCommandsQueue.tryPop(cmd)) {
         cmd->execute(*this);
@@ -258,33 +259,20 @@ void Game::run() {
 
     /* auto collisionBodies =  */CollisionLoader::LoadCollisions("server/gameLogic/collisions.yaml", world, 1.0f, WORLD_HEIGHT);
 
-    using clock = std::chrono::high_resolution_clock;
-    auto lastTime = clock::now();
-    float accumulatedTime = 0.0f;
-
+    uint64_t lastIt = 0;
+    uint64_t it = 0;
+    ConstantRateLoop crl;
     while (shouldKeepRunning()) {
+        // Do some stuff
         updateGameState();
-
-        auto now = clock::now();
-        float frameTime = std::chrono::duration<float>(now - lastTime).count();
-        lastTime = now;
-
-        accumulatedTime += frameTime;
-        
-        while (accumulatedTime >= TIME_STEP) {
+        uint64_t deltaIt = it - lastIt;
+        while (deltaIt-- > 0)
             handleGameState();
-            accumulatedTime -= TIME_STEP;
-        }
-
         broadcast();
+        lastIt = it;
 
-        // evita busy waiting
-        float remaining = TIME_STEP - accumulatedTime;
-        if (remaining > 0.0f) {
-            // convierto a microsegundos para mas precision, busca evitar el jitter
-            auto micros = std::chrono::microseconds(static_cast<int64_t>(remaining * 1'000'000));
-            std::this_thread::sleep_for(micros);
-        }
+        // CRL algorithm
+        it = crl.sleepAndCalcIt();
     }
 }
 
