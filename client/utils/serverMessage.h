@@ -38,6 +38,10 @@ struct ModificationPhaseMessage {
     CarProperties properties;
 };
 
+struct ModCountdownMessage {
+    uint8_t number;
+};
+
 struct GameEndMessage {
     FinalResults results;
 };
@@ -52,6 +56,7 @@ using ServerMessage = std::variant<
     RaceEndMessage,
     StatsCountdownMessage,
     ModificationPhaseMessage,
+    ModCountdownMessage,
     GameEndMessage
 >;
 

@@ -34,6 +34,7 @@ private:
 
     uint8_t lastCountdownNumber = UINT8_MAX;
     uint8_t lastStatsCountdown = UINT8_MAX;
+    uint8_t lastModCountdown = UINT8_MAX;
     
     /**
      * Methods used by other threads to notify events
@@ -46,6 +47,7 @@ private:
     void onRaceEnd(const RaceResults& results);
     void onStatsCountdown(uint8_t number);
     void onModificationPhase(const CarProperties& props);
+    void onModCountdown(uint8_t number);
     void onGameEnd(const FinalResults& results);
 
 public:

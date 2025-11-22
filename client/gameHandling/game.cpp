@@ -231,10 +231,13 @@ void Game::setStatsCountdown(uint8_t number) {
 void Game::showModifications(const CarProperties& props) {
     currentState = GameState::MODIFYING_CAR;
     currentProperties = props;
-    modTimerMs = props.countdownMs;
     speedModified = false;
     healthModified = false;
     saved = false;
+}
+
+void Game::setModCountdown(uint8_t number) {
+    modTimerMs = number * 1000;
 }
 
 void Game::showCheatNotification(CheatType cheatType) {

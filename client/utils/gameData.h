@@ -64,7 +64,6 @@ struct FinalResults {
 struct CarProperties {
     uint16_t speed;
     uint16_t health;
-    uint16_t countdownMs;  // timer para la pantalla de mods
 };
 
 // datos de colisión

@@ -118,6 +118,7 @@ public:
     void showStats(const RaceResults& results);
     void setStatsCountdown(uint8_t number);
     void showModifications(const CarProperties& props);
+    void setModCountdown(uint8_t number);
     void showCheatNotification(CheatType cheatType);
     void showFinalResults(const FinalResults& results);
 

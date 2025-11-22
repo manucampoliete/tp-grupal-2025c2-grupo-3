@@ -66,6 +66,9 @@ void GameLoop::run() {
 
                 } else if constexpr (std::is_same_v<T, ModificationPhaseMessage>) {
                     onModificationPhase(message.properties);
+                
+                } else if constexpr (std::is_same_v<T, ModCountdownMessage>) {
+                    onModCountdown(message.number);
                     
                 } else if constexpr (std::is_same_v<T, GameEndMessage>) {
                     onGameEnd(message.results);
@@ -165,6 +168,14 @@ void GameLoop::onStatsCountdown(uint8_t number) {
 void GameLoop::onModificationPhase(const CarProperties& props) {
     if (game)
         game->showModifications(props);
+}
+
+void GameLoop::onModCountdown(uint8_t number) {
+    if (number != lastModCountdown) {
+        lastModCountdown = number;
+        if (game)
+            game->setModCountdown(number);
+    }
 }
 
 void GameLoop::onGameEnd(const FinalResults& results) {

@@ -44,6 +44,7 @@
 #define MSG_RACE_END 0x17     // terminó la carrera (tabla stats)
 #define MSG_STATS_COUNTDOWN 0x1A  
 #define MSG_MOD_PHASE 0x18    // fase de modificación de auto
+#define MSG_MOD_COUNTDOWN 0x1B  
 #define MSG_GAME_END 0x19     // partida completa terminada (ganador)
 
 

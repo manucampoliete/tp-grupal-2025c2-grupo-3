@@ -66,6 +66,14 @@ void Receiver::run() {
                     break;
                 }
 
+                case MSG_MOD_COUNTDOWN: {
+                    std::cout << "[RECEIVER] → Processing MOD_COUNTDOWN" << std::endl;
+                    ModCountdownMessage msg;
+                    msg.number = protocol.recvModCountdown();
+                    serverMessagesQueue.push(msg);
+                    break;
+                }
+
                 case MSG_GAME_END: {
                     std::cout << "[RECEIVER] → Processing GAME_END" << std::endl;
                     GameEndMessage msg;

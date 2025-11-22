@@ -106,9 +106,12 @@ CarProperties ClientGameProtocol::recvCarProperties() {
 
     props.speed = recvU16();
     props.health = recvU16();
-    props.countdownMs = recvU32();
 
     return props;
+}
+
+uint8_t ClientGameProtocol::recvModCountdown() {
+    return recvU8();
 }
 
 FinalResults ClientGameProtocol::recvFinalResults() {

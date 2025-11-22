@@ -38,6 +38,7 @@ public:
     RaceResults recvRaceResults();
     uint8_t recvStatsCountdown();
     CarProperties recvCarProperties();
+    uint8_t recvModCountdown();
     FinalResults recvFinalResults();
 
     /**
