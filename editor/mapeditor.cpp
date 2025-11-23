@@ -1,5 +1,5 @@
 #include "mapeditor.h"
-#include "arrowitem.h"
+#include "mapelement.h"
 #include <QVBoxLayout>
 #include <QGraphicsPixmapItem>
 #include <QDebug>
@@ -42,7 +42,7 @@ MapEditor::MapEditor(int cityId, QWidget* parent)
         QSize targetSize = mapPixmap.size();
 
         collisionMask = collisionMask.scaled(
-                targetSize,
+                targetSize, // Target: 4640x4672
                 Qt::IgnoreAspectRatio,
                 Qt::SmoothTransformation
                 );
@@ -56,40 +56,17 @@ MapEditor::MapEditor(int cityId, QWidget* parent)
         }
     }
 
-    QPixmap arrowPixmap(":/media/arrow.png");
-
-    const int desiredSize = 50;
-    QPixmap scaledArrowPixmap = arrowPixmap.scaled(
-            desiredSize, desiredSize,
-            Qt::KeepAspectRatio,
-            Qt::SmoothTransformation
-            );
-
-    ArrowItem* arrow = new ArrowItem(scaledArrowPixmap, collisionMask);
-
-    arrow->setPos(mapPixmap.width() / 2, mapPixmap.height() / 2);
-    arrow->setFlag(QGraphicsItem::ItemIsMovable, true);
-    arrow->setFlag(QGraphicsItem::ItemIsSelectable, true);
-    arrow->setZValue(10);
-
-    //scene->addItem(arrow);
-
-    view->setMaskAndPixmap(collisionMask, scaledArrowPixmap);
+    view->setResources(collisionMask);
 
     Toolbox* toolbox = new Toolbox(this);
-    toolbox->setFixedWidth(150); // Darle un ancho fijo a la barra lateral
+    toolbox->setFixedWidth(150);
 
-            // Usamos QHBoxLayout para poner la barra lateral y el mapa lado a lado
     QHBoxLayout* mainLayout = new QHBoxLayout(this);
 
-    // Conservamos el fix de márgenes y espaciado
     mainLayout->setContentsMargins(0, 0, 0, 0);
     mainLayout->setSpacing(0);
 
-            // Añadir la barra lateral a la izquierda o derecha
     mainLayout->addWidget(toolbox);
-
-    // Añadir el MapView (el área principal del editor)
     mainLayout->addWidget(view);
 
     setLayout(mainLayout);

@@ -1,4 +1,5 @@
 #include "toolbox.h"
+#include "elementicon.h"
 #include <QDrag>
 #include <QMimeData>
 #include <QVBoxLayout>
@@ -6,35 +7,53 @@
 
 Toolbox::Toolbox(QWidget* parent) : QWidget(parent)
 {
-    // Solo para visualizar la flecha
-    QLabel* arrowIcon = new QLabel(this);
-    arrowIcon->setPixmap(QPixmap(":/media/arrow.png").scaled(40, 40));
-    arrowIcon->setProperty("assetType", "arrow_hint"); // Propiedad para identificar el asset
+    QVBoxLayout* mainLayout = new QVBoxLayout(this);
+    mainLayout->setAlignment(Qt::AlignTop); // Alineación para que la lista empiece arriba
 
-    QVBoxLayout* layout = new QVBoxLayout(this);
-    layout->addWidget(arrowIcon, 0, Qt::AlignTop);
-    layout->addStretch(); // Empuja el icono hacia arriba
-    setLayout(layout);
-}
+    // Título de la sección
+    QLabel* title = new QLabel("Elementos de Carrera");
+    title->setAlignment(Qt::AlignCenter);
+    mainLayout->addWidget(title);
 
-void Toolbox::mousePressEvent(QMouseEvent* event)
-{
-    if (event->button() == Qt::LeftButton) {
+            // --- SECCIÓN HINTS ---
+    QLabel* hintLabel = new QLabel("Hints (12 Direcciones)");
+    mainLayout->addWidget(hintLabel);
 
-        // 1. Identificar si el clic fue en un ícono arrastrable
-        // (Simplificamos asumiendo que el clic en el ToolboxWidget siempre inicia el drag)
+    QGridLayout* hintGrid = new QGridLayout;
 
-        QDrag* drag = new QDrag(this);
-        QMimeData* mimeData = new QMimeData;
+    // ----------------------------------------------------
+    // ORGANIZACIÓN DE LOS 12 HINTS EN UNA REJILLA 4x3
+    // ----------------------------------------------------
 
-        // CRÍTICO: Usamos un tipo MIME simple para identificar qué estamos arrastrando
-        mimeData->setText("asset/hint_arrow");
+            // Fila 0: UP y curvas superiores
+    hintGrid->addWidget(new ElementIcon(TYPE_HINT, DIR_UP,                this), 0, 1); // UP (0)
+    hintGrid->addWidget(new ElementIcon(TYPE_HINT, DIR_CURVE_UP_LEFT,     this), 0, 0); // UL (4)
+    hintGrid->addWidget(new ElementIcon(TYPE_HINT, DIR_CURVE_UP_RIGHT,    this), 0, 2); // UR (5)
 
-        // Opcional: Icono visual para el drag
-        drag->setPixmap(QPixmap(":/media/arrow.png").scaled(40, 40));
-        drag->setMimeData(mimeData);
+    // Fila 1: Direcciones laterales
+    hintGrid->addWidget(new ElementIcon(TYPE_HINT, DIR_LEFT,              this), 1, 0); // LEFT (1)
+    hintGrid->addWidget(new ElementIcon(TYPE_HINT, DIR_RIGHT,             this), 1, 2); // RIGHT (2)
 
-        // Iniciar la operación de drag
-        drag->exec(Qt::CopyAction);
-    }
+    // Fila 2: DOWN y curvas inferiores
+    hintGrid->addWidget(new ElementIcon(TYPE_HINT, DIR_DOWN,              this), 2, 1); // DOWN (3)
+    hintGrid->addWidget(new ElementIcon(TYPE_HINT, DIR_CURVE_DOWN_LEFT,   this), 2, 0); // DL (6)
+    hintGrid->addWidget(new ElementIcon(TYPE_HINT, DIR_CURVE_DOWN_RIGHT,  this), 2, 2); // DR (7)
+
+            // Fila 3: Las 4 curvas restantes (secuencias de giro)
+    hintGrid->addWidget(new ElementIcon(TYPE_HINT, DIR_CURVE_LEFT_UP,     this), 3, 0); // L-UP (8)
+    hintGrid->addWidget(new ElementIcon(TYPE_HINT, DIR_CURVE_LEFT_DOWN,   this), 3, 1); // L-DOWN (9)
+    hintGrid->addWidget(new ElementIcon(TYPE_HINT, DIR_CURVE_RIGHT_UP,    this), 3, 2); // R-UP (10)
+    hintGrid->addWidget(new ElementIcon(TYPE_HINT, DIR_CURVE_RIGHT_DOWN,  this), 4, 1); // R-DOWN (11) - Nota: en la fila 4
+
+
+    // Ajustar el espaciado
+    hintGrid->setHorizontalSpacing(5);
+    hintGrid->setVerticalSpacing(5);
+
+    mainLayout->addLayout(hintGrid);
+
+    // --- ESPACIO PARA CHECKPOINTS/START/FINISH (futuro) ---
+    mainLayout->addStretch();
+
+    setLayout(mainLayout);
 }

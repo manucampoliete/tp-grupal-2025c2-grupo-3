@@ -11,7 +11,7 @@ public:
     explicit MapView(QGraphicsScene* scene, QWidget* parent = nullptr);
 
     QSize sizeHint() const override;
-    void setMaskAndPixmap(const QImage& mask, const QPixmap& arrowPixmap);
+    void setResources(const QImage& mask);
 
 protected:
     void wheelEvent(QWheelEvent* event) override;
@@ -21,7 +21,7 @@ protected:
 
 private:
     QImage collisionMask;
-    QPixmap arrowPixmap;
+    QPixmap tempPixmap;
 };
 
 #endif

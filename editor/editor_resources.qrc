@@ -6,8 +6,19 @@
         <file>media/sanandreas.jpg</file>
         <file>media/vicecity.jpg</file>
         <file>media/custom.png</file>
-        <file>media/arrow.png</file>
         <file>media/asset_vicecity.png</file>
         <file>media/mask_vicecity.jpeg</file>
+        <file>media/assets/arrow_down.png</file>
+        <file>media/assets/arrow_left.png</file>
+        <file>media/assets/arrow_right.png</file>
+        <file>media/assets/arrow_up.png</file>
+        <file>media/assets/curve_down_left.png</file>
+        <file>media/assets/curve_down_right.png</file>
+        <file>media/assets/curve_left_down.png</file>
+        <file>media/assets/curve_left_up.png</file>
+        <file>media/assets/curve_right_down.png</file>
+        <file>media/assets/curve_right_up.png</file>
+        <file>media/assets/curve_up_left.png</file>
+        <file>media/assets/curve_up_right.png</file>
     </qresource>
 </RCC>

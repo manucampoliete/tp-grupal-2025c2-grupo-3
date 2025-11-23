@@ -6,7 +6,7 @@
 #include <QImage>
 
 #include "mapview.h"
-#include "arrowitem.h"
+#include "mapelement.h"
 
 class MapEditor : public QWidget {
     Q_OBJECT
