@@ -23,7 +23,7 @@ class Command;
 
 class Game: public Thread {
 private:
-    b2World* world;
+    std::unique_ptr<b2World> world;
     int32 velocityIt;
     int32 positionIt;
     Queue<std::unique_ptr<Command>> clientCommandsQueue;
@@ -40,6 +40,8 @@ private:
 
     GameState currentState;
     std::chrono::high_resolution_clock::time_point gameStateStartTime;
+
+    std::atomic<bool> started;
 
     /**
      * Creates and returns a new b2Body for a car.
@@ -59,7 +61,7 @@ private:
     /**
      * Broadcasts a start signal to all players.
      */
-    void broadcast_start_signal();
+    void broadcastStartSignal();
 
     void broadcastCountdown();
     void broadcastRacing();
@@ -111,6 +113,11 @@ public:
      * - calls ResponseQueuesMonitor::closeAll()
      */
     void stop() override;
+    
+    /**
+     * Returns true if the game thread is still running, false otherwise.
+     */
+    bool isAlive() const override;
 
     /**
      * Returns true if the game thread has ended, false otherwise.
@@ -128,9 +135,10 @@ public:
     Queue<std::shared_ptr<Snapshot>>& getResponsesQueue(ClientID clientId);
 
     /**
-     * Adds a new player to the game with the given parameters.
+     * Adds a new player to the game with the given parameters. 
+     * Returns true if the player was successfully added, false otherwise.
      */
-    void addPlayer(ClientID clientId, const std::string& username, CarID carId);
+    bool addPlayer(ClientID clientId, const std::string& username, CarID carId);
 
     /**
      * Moves the player with the given clientId according to the given activeDirections.
@@ -143,6 +151,11 @@ public:
     void makeInmortal(ClientID clientId);
     void makeInstaWin(ClientID clientId);
     void makeInstaLose(ClientID clientId);
+
+    /**
+     * Improves the car properties of the player with the given clientId.
+     */
+    void improveCarProperties(ClientID clientId, bool improveVelocity, bool improveHealth);
 
     /**
      * Destructor

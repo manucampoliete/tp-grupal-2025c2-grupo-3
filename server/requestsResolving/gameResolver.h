@@ -38,6 +38,11 @@ public:
      * Handles an INSTA_LOSE request from the client.
      */
     void handleInstaLose();
+
+    /**
+     * Handles a MODIFY_CAR request from the client.
+     */
+    void handleModifyCar(bool improveVelocity, bool improveHealth);
 };
 
 #endif  // GAME_RESOLVER_H

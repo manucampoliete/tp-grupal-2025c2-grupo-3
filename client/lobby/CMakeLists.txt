@@ -36,3 +36,5 @@ target_sources(taller_client
 )
 
 target_include_directories(taller_client PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+
+add_subdirectory(protocol)

@@ -4,12 +4,12 @@
 #include <iostream>
 
 #include "lobby/lobby.h"
+#include "../protocol/clientHandshakeProtocol.h"
 
 
 Client::Client(const std::string& hostname, const std::string& servname):
-        socket(hostname.c_str(), servname.c_str()),
-        protocol(socket),
-        clientId(protocol.recvClientId()),
+        skt(hostname.c_str(), servname.c_str()),
+        clientId(ClientHandshakeProtocol(skt).recvClientId()),
         lobbyFinished(false) {}
 
 
@@ -17,7 +17,7 @@ void Client::run(int argc, char* argv[]) {
     // Phase 1: Lobby (Qt)
     QApplication app(argc, argv);
 
-    Lobby lobby(protocol);
+    Lobby lobby(skt);
 
     lobby.show();
     app.exec();  // Blocks until lobby is closed
@@ -30,7 +30,7 @@ void Client::run(int argc, char* argv[]) {
     std::cout << "[CLIENT] Lobby finished, starting game..." << std::endl;
 
     // Phase 2: Game (SDL)
-    GameHandler gameHandler(protocol, clientId);
+    GameHandler gameHandler(skt, clientId);
     gameHandler.run();  // Blocks until game is closed
 
     std::cout << "[CLIENT] Game finished" << std::endl;
@@ -42,6 +42,6 @@ void Client::onLobbyFinished() {
 }
 
 Client::~Client() {
-    socket.shutdown(SHUT_RDWR);
-    socket.close();
+    skt.shutdown(SHUT_RDWR);
+    skt.close();
 }

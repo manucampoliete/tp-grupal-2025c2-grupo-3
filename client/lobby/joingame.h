@@ -33,7 +33,7 @@ private slots:
 private:
     Ui::JoinGame* ui;
     CarSelector* carSelector;
-    std::vector<CarInfo> available_cars;
+    std::vector<CarInfo> availableCars;
     QLabel* errorLabel;
 };
 

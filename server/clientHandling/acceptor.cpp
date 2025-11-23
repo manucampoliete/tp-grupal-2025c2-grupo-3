@@ -35,10 +35,12 @@ void Acceptor::clear() {
 }
 
 Acceptor::Acceptor(const std::string& servname, MatchesMapMonitor& matchesMapMonitor):
-        acceptor(servname.c_str()),
-        matchesMapMonitor(matchesMapMonitor),
-        clients(),
-        nextClientId(FIRST_CLIENT_ID) {}
+    acceptor(servname.c_str()),
+    matchesMapMonitor(matchesMapMonitor),
+    clients(),
+    nextClientId(FIRST_CLIENT_ID) {
+    start();
+}
 
 void Acceptor::run() {
     while (shouldKeepRunning()) {
@@ -63,4 +65,7 @@ void Acceptor::stop() {
     acceptor.close();
 }
 
-Acceptor::~Acceptor() {}
+Acceptor::~Acceptor() {
+    stop();
+    join();
+}

@@ -17,12 +17,14 @@ struct Snapshot {
         uint16_t angle;  // angle in degrees
         uint16_t speed;  // speed (units?)
         CarID carId;     // car type (needed?)
+        uint8_t health;
+        bool onBridge;
 
         /**
          * Constructor for CarSnapshot
          */
         CarSnapshot(ClientID id, uint32_t x, uint32_t y, uint16_t angle, uint16_t speed,
-                    CarID carId);
+                    CarID carId, uint8_t health, bool onBridge);
 
         /**
          * Copy constructor for CarSnapshot

@@ -6,7 +6,7 @@
 #include <vector>
 
 #include "../../common/utils/carinfo.h"
-#include "../protocol/clientProtocol.h"
+#include "protocol/clientLobbyProtocol.h"
 
 #include "guestwaiting.h"
 #include "hostwaiting.h"
@@ -14,7 +14,7 @@
 #include "mainmenu.h"
 #include "newgame.h"
 
-class ClientProtocol;
+class ClientGameProtocol;
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -26,24 +26,24 @@ class Lobby: public QMainWindow {
     Q_OBJECT
 
 public:
-    explicit Lobby(ClientProtocol& protocol, QWidget* parent = nullptr);
+    explicit Lobby(Socket& skt, QWidget* parent = nullptr);
     ~Lobby();
     void startGame();
-    uint16_t getCarID() const { return car_id; }
-    bool shouldStartGame() const { return start_game; }
+    uint16_t getCarID() const { return carId; }
+    bool shouldStartGame() const { return _startGame; }
 
 private:
     Ui::Lobby* ui;
     QStackedWidget* stackedWidget;
-    MainMenu* main_menu;
-    NewGame* new_game;
-    JoinGame* join_game;
-    guestWaiting* guest_waiting;
-    HostWaiting* host_waiting;
-    ClientProtocol& protocol;
-    std::vector<CarInfo> available_cars;
-    uint16_t car_id;
-    bool start_game = false;
+    MainMenu* mainMenu;
+    NewGame* newGame;
+    JoinGame* joinGame;
+    GuestWaiting* guestWaiting;
+    HostWaiting* hostWaiting;
+    ClientLobbyProtocol protocol;  // Lobby has its own protocol
+    std::vector<CarInfo> availableCars;
+    uint16_t carId;
+    bool _startGame = false;
 
     void handleJoinGameRequest(const QString& username, const QString& gameId, const CarInfo& car);
     void handleNewGameRequest(const QString& username, const CarInfo& car);

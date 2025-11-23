@@ -14,7 +14,7 @@ public:
     explicit HostWaiting(QWidget* parent = nullptr);
     ~HostWaiting();
 
-    void setMatchID(QString match_id);
+    void setMatchID(QString matchId);
 
 signals:
     void startClicked();
@@ -24,7 +24,7 @@ private slots:
 
 private:
     Ui::HostWaiting* ui;
-    QString match_id;
+    QString matchId;
 };
 
 #endif  // HOSTWAITING_H

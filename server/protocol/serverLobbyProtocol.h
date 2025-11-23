@@ -10,33 +10,43 @@ class LobbyResolver;
 
 class ServerLobbyProtocol: public RecvProtocol, public SendProtocol {
 private:
+    LobbyResolver& lobbyResolver;
+
+    /**
+     * Sends a SEND_CLIENT_ID message with the given clientId.
+     */
+    void sendClientID(ClientID clientId);
+
+    /**
+     * Sends the initial information to the client.
+     */
     void sendInitialInfo();
 
     /**
      * Receives a SEND_CREATE message and processes it using the given LobbyResolver.
      */
-    void recvCreateMatch(LobbyResolver& lobbyResolver);
+    void recvCreateMatch();
 
     /**
      * Receives a SEND_JOIN message and processes it using the given LobbyResolver.
      */
-    void recvJoinMatch(LobbyResolver& lobbyResolver);
+    void recvJoinMatch();
 
     /**
      * Receives a SEND_START message and processes it using the given LobbyResolver.
      */
-    void recvStartMatch(LobbyResolver& lobbyResolver);
+    void recvStartMatch();
 
 public:
     /**
      * Constructor that takes a reference to a Socket object.
      */
-    ServerLobbyProtocol(Socket& skt, ClientID clientId);
+    ServerLobbyProtocol(Socket& skt, LobbyResolver& lobbyResolver, ClientID clientId);
 
     /**
      * Consumes one message from the socket and processes it using the given LobbyResolver.
      */
-    void consumeOne(LobbyResolver& lobbyResolver);
+    void consumeOne();
 
     /**
      * Sends a SEND_CREATED message with the given matchId.

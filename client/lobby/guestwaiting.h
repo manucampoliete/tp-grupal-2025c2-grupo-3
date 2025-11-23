@@ -4,21 +4,21 @@
 #include <QWidget>
 
 namespace Ui {
-class guestWaiting;
+class GuestWaiting;
 }
 
-class guestWaiting: public QWidget {
+class GuestWaiting: public QWidget {
     Q_OBJECT
 
 public:
-    explicit guestWaiting(QWidget* parent = nullptr);
-    ~guestWaiting();
+    explicit GuestWaiting(QWidget* parent = nullptr);
+    ~GuestWaiting();
 
-    void setMatchID(QString match_id);
+    void setMatchID(QString matchId);
 
 private:
-    Ui::guestWaiting* ui;
-    QString match_id;
+    Ui::GuestWaiting* ui;
+    QString matchId;
 };
 
 #endif  // GUESTWAITING_H

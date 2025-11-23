@@ -19,8 +19,7 @@ bool MatchesMapMonitor::joinMatch(ClientID clientId, MatchID matchId, const std:
     if (it == matchMap.end()) {
         return false;
     }
-    it->second->addPlayer(clientId, username, carId);
-    return true;
+    return it->second->addPlayer(clientId, username, carId);
 }
 
 bool MatchesMapMonitor::startMatch(MatchID matchId) {
