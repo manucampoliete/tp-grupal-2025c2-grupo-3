@@ -21,6 +21,8 @@ public:
     void sendRaceSnapshot(std::shared_ptr<Snapshot> snapshot);
 
     void sendRaceResultsSnapshot(std::shared_ptr<Snapshot> snapshot);
+
+    void sendModificationSnapshot(std::shared_ptr<Snapshot> snapshot);
 };
 
 #endif  // SERVER_GAME_SEND_PROTOCOL_H

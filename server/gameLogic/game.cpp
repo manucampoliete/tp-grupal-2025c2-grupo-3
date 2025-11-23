@@ -186,7 +186,16 @@ void Game::setShowingStatsState() {
 void Game::setModifyingCarState() {
     setGameState(GameState::MODIFYING_CAR);
 
-    // broadcast de modificaciones disponibles?
+    std::vector<Snapshot::CarProperties> carProps;
+    for (auto& [id, player]: players) {
+        Snapshot::CarProperties prop;
+        prop.playerId = id;
+        prop.speed = player.getCarSpeed();
+        prop.health = player.getCarHealth();
+        carProps.push_back(prop);
+    }
+
+    responseQueuesMonitor.broadcast(std::make_shared<Snapshot>(carProps));
 }
 
 // solo cambia al estado de juego dado
@@ -218,7 +227,9 @@ void Game::updateGameState() {
             break;
         case GameState::MODIFYING_CAR:
             if (gameStateElapsed >= upgradesDuration) {
-                // setModifyingCarState();
+                // aumentar numero de carrera en 1
+                // pasar a countdown
+                setGameState(GameState::COUNTDOWN);
             }
             break;
         case GameState::ELIMINATED: 

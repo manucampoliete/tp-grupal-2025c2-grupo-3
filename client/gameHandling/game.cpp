@@ -197,8 +197,13 @@ void Game::showStats(const RaceResults& results) {
     soundManager.playSound("race_end");
 }
 
-void Game::showModifications(const CarProperties& props) {
-    stateManager.showModifications(props);
+void Game::showModifications(const std::vector<CarProperties>& props) {
+    for (const auto& prop : props) {
+        if (prop.playerId == playerId) {
+            stateManager.showModifications(prop);
+        }
+        break;
+    }
 }
 
 void Game::setModCountdown(uint8_t number) {

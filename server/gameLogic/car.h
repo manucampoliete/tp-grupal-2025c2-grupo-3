@@ -85,9 +85,11 @@ public:
      */
     float getAngle();
 
-    float getSpeed();
+    float getSpeed() const;
 
     CarID getId();
+
+    float getHealth() const;
 };
 
 #endif

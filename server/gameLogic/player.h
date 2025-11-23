@@ -41,6 +41,8 @@ public:
     std::string getUsername() const { return username; }
     uint32 getCurrentRaceTime() const { return currentRaceTime; }
     uint32 getTotalRaceTime() const { return totalRaceTime; }
+    uint16 getCarSpeed() const { return car.getSpeed(); }
+    uint8 getCarHealth() const { return car.getHealth(); }
 
     /**
      * Builds and returns a CarSnapshot representing the player's car.

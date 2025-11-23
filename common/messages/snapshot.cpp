@@ -29,6 +29,8 @@ Snapshot::Snapshot(const Snapshot& other):
 
 Snapshot::Snapshot(RaceResults results): results(results), type(MSG_RACE_END) {}
 
+Snapshot::Snapshot(const std::vector<CarProperties>& carProperties): carProperties(carProperties), type(MSG_MOD_PHASE) {}
+
 
 
 Snapshot::CarSnapshot& Snapshot::CarSnapshot::operator=(const CarSnapshot& other) {

@@ -78,9 +78,9 @@ uint16_t ClientGameProtocol::recvPlayerDied() { return recvU16(); }
 
 RaceResults ClientGameProtocol::recvRaceResults() {
     RaceResults results;
-    uint16_t numPlayers = recvU16();
+    uint8_t numPlayers = recvU8();
 
-    for (uint16_t i = 0; i < numPlayers; ++i) {
+    for (uint8_t i = 0; i < numPlayers; ++i) {
         RaceResults::PlayerResult player;
         player.playerName = recvString();
         player.raceTimeMs = recvU32();
@@ -96,11 +96,19 @@ uint8_t ClientGameProtocol::recvStatsCountdown() {
     return recvU8();
 }
 
-CarProperties ClientGameProtocol::recvCarProperties() {
-    CarProperties props;
+std::vector<CarProperties> ClientGameProtocol::recvCarProperties() {
+    uint8_t numCars = recvU8();
 
-    props.speed = recvU16();
-    props.health = recvU16();
+    std::vector<CarProperties> props;
+    for (uint8_t i = 0; i < numCars; ++i) {
+        CarProperties prop;
+        prop.playerId = recvU16();
+        prop.speed = recvU16();
+        prop.health = recvU16();
+
+        props.push_back(prop);
+    }
+    
 
     return props;
 }

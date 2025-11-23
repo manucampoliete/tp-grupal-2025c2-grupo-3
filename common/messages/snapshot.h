@@ -45,10 +45,18 @@ struct Snapshot {
         std::vector<PlayerResult> players;
     };
 
+    struct CarProperties {
+        ClientID playerId;
+        uint16_t speed;
+        uint16_t health;
+    };
+
     uint32_t countdown;  // remaining race time in milliseconds
     std::vector<CarSnapshot> cars;
 
     RaceResults results;
+
+    std::vector<CarProperties> carProperties;
     
     // SnapshotType type;
     uint8_t type;  // using uint8_t for easier serialization
@@ -70,6 +78,9 @@ struct Snapshot {
 
     // stats snapshot
     Snapshot(RaceResults results);
+
+    // mod snapshot
+    Snapshot(const std::vector<Snapshot::CarProperties>& carProperties);
 
     /**
      * Copy constructor for Snapshot

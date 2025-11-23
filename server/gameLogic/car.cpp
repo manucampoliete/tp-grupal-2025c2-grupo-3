@@ -80,6 +80,8 @@ b2Vec2 Car::getPosition() { return body->GetPosition(); }
 
 float Car::getAngle() { return body->GetAngle(); }
 
-float Car::getSpeed() { return body->GetLinearVelocity().Length(); }
+float Car::getSpeed() const { return body->GetLinearVelocity().Length(); }
 
 CarID Car::getId() { return carId; }
+
+float Car::getHealth() const { return health; }

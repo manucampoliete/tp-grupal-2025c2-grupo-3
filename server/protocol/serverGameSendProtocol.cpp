@@ -28,13 +28,24 @@ void ServerGameSendProtocol::sendRaceSnapshot(std::shared_ptr<Snapshot> snapshot
 }
 
 void ServerGameSendProtocol::sendRaceResultsSnapshot(std::shared_ptr<Snapshot> snapshot) {
-    uint16_t numPlayers = static_cast<uint16_t>(snapshot->results.players.size());
-    sendU16(numPlayers);
+    uint8_t numPlayers = static_cast<uint8_t>(snapshot->results.players.size());
+    sendU8(numPlayers);
 
     for (const auto& player: snapshot->results.players) {
         sendString(player.playerName);
         sendU32(player.raceTimeMs);
         sendU32(player.totalTimeMs);
+    }
+}
+
+void ServerGameSendProtocol::sendModificationSnapshot(std::shared_ptr<Snapshot> snapshot) {
+    uint8_t numPlayers = static_cast<uint8_t>(snapshot->carProperties.size());
+    sendU8(numPlayers);
+
+    for (const auto& prop: snapshot->carProperties) {
+        sendU16(prop.playerId);
+        sendU16(prop.speed);
+        sendU16(prop.health);
     }
 }
 
@@ -57,6 +68,7 @@ void ServerGameSendProtocol::sendSnapshot(std::shared_ptr<Snapshot> snapshot) {
             sendRaceResultsSnapshot(snapshot);
             break;
         case MSG_MOD_PHASE:
+            sendModificationSnapshot(snapshot);
             break;
         case MSG_STATS_COUNTDOWN:
         case MSG_MOD_COUNTDOWN:
