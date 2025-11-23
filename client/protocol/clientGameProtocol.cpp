@@ -39,9 +39,6 @@ Snapshot ClientGameProtocol::recvSnapshot() {
     uint32_t countdown = recvU32();
     uint8_t numCars = recvU8();
 
-    std::cout << "[PROTOCOL] Snapshot received: countdown=" << countdown
-              << "ms, numCars=" << numCars << std::endl;
-
     std::vector<Snapshot::CarSnapshot> cars;
     for (uint8_t i = 0; i < numCars; ++i) {
         ClientID clientId = recvU16();
@@ -50,12 +47,10 @@ Snapshot ClientGameProtocol::recvSnapshot() {
         uint16_t angle = recvU16();
         uint16_t speed = recvU16();
         CarID carId = recvU8();
+        uint8_t health = 100; // deshardcodear desp
+        bool onBridge = false; // deshardcodear desp
 
-        std::cout << "  [Car " << i << "] clientId=" << clientId << ", pos=(" << x << "," << y << ")"
-                  << ", angle=" << angle << ", speed=" << speed << ", carId=" << (int)carId
-                  << std::endl;
-
-        cars.emplace_back(clientId, x, y, angle, speed, carId);
+        cars.emplace_back(clientId, x, y, angle, speed, carId, health, onBridge);
     }
 
     return Snapshot(countdown, cars);
@@ -83,7 +78,6 @@ uint16_t ClientGameProtocol::recvPlayerDied() { return recvU16(); }
 
 RaceResults ClientGameProtocol::recvRaceResults() {
     RaceResults results;
-    results.countdownMs = recvU32();
     uint16_t numPlayers = recvU16();
 
     for (uint16_t i = 0; i < numPlayers; ++i) {
@@ -98,14 +92,21 @@ RaceResults ClientGameProtocol::recvRaceResults() {
     return results;
 }
 
+uint8_t ClientGameProtocol::recvStatsCountdown() {
+    return recvU8();
+}
+
 CarProperties ClientGameProtocol::recvCarProperties() {
     CarProperties props;
 
     props.speed = recvU16();
     props.health = recvU16();
-    props.countdownMs = recvU32();
 
     return props;
+}
+
+uint8_t ClientGameProtocol::recvModCountdown() {
+    return recvU8();
 }
 
 FinalResults ClientGameProtocol::recvFinalResults() {

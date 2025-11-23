@@ -449,7 +449,7 @@ void UIRenderer::renderMinimap() {
     renderer.Copy(mapTexture, NullOpt, minimapRect);
 
     // Cars as points for the minimap
-    auto cars = world.getCars();
+    const auto& cars = world.getCars();
     float mapW = (float)mapTexture.GetWidth();
     float mapH = (float)mapTexture.GetHeight();
 
@@ -460,9 +460,6 @@ void UIRenderer::renderMinimap() {
         int minimapCarX = minimapRect.x + static_cast<int>(ratioX * minimapRect.w);
         int minimapCarY = minimapRect.y + static_cast<int>(ratioY * minimapRect.h);
         
-        // TEMPORARY!!!
-        // Now that I use the id as car index I do this hardcoded color point.
-        // Later we should check for each car according to id
         uint8_t carType = carState.type;
         switch (carType) {
             case 0:  // Green (CARS[0])
@@ -487,10 +484,10 @@ void UIRenderer::renderMinimap() {
 
         // Draw player point a bit bigger
         if (id == playerId) {
-            Rect carDotRect(minimapCarX - 2, minimapCarY - 2, 5, 5);  // 5x5
+            Rect carDotRect(minimapCarX - 2, minimapCarY - 2, 8, 8);  // 5x5
             renderer.FillRect(carDotRect);
         } else {
-            Rect carDotRect(minimapCarX - 1, minimapCarY - 1, 3, 3);  // 3x3
+            Rect carDotRect(minimapCarX - 1, minimapCarY - 1, 5, 5);  // 3x3
             renderer.FillRect(carDotRect);
         }
     }
@@ -818,4 +815,47 @@ void UIRenderer::renderPodium(const FinalResults& results) {
     renderer.Copy(closeT, NullOpt,
                   Rect(popupX + (popupW - closeT.GetWidth()) / 2, popupY + popupH - 40,
                        closeT.GetWidth(), closeT.GetHeight()));
+}
+
+
+void UIRenderer::renderHealthBar(uint8_t health, int windowWidth) {
+    renderer.SetScale(1.0f, 1.0f);
+    
+    int barWidth = 150;
+    int barHeight = 20;
+    int barX = (windowWidth - barWidth) / 2; 
+    int barY = 10;  // same Y as timer
+    
+    renderer.SetDrawBlendMode(SDL_BLENDMODE_BLEND);
+    renderer.SetDrawColor(50, 50, 50, 200);
+    renderer.FillRect(Rect(barX, barY, barWidth, barHeight));
+    
+    // width of the filled part of the bar
+    int filledWidth = (health * barWidth) / 100;
+    
+    SDL_Color healthColor;
+    if (health > 60)
+        healthColor = {0, 200, 0, 255}; // Green
+    else if (health > 30)
+        healthColor = {255, 165, 0, 255}; // Orange
+    else
+        healthColor = {255, 0, 0, 255}; // Red
+    
+    // filled part of the bar
+    if (filledWidth > 0) {
+        renderer.SetDrawColor(healthColor.r, healthColor.g, healthColor.b, healthColor.a);
+        renderer.FillRect(Rect(barX, barY, filledWidth, barHeight));
+    }
+    
+    renderer.SetDrawBlendMode(SDL_BLENDMODE_NONE);
+    renderer.SetDrawColor(255, 255, 255, 255);
+    renderer.DrawRect(Rect(barX, barY, barWidth, barHeight));
+    
+    std::string healthText = std::to_string(health) + "%";
+    Surface healthSurface = fontSmall.RenderText_Solid(healthText, {255, 255, 255, 255});
+    Texture healthTexture(renderer, healthSurface);
+    
+    int textX = barX + (barWidth - healthTexture.GetWidth()) / 2;
+    int textY = barY + (barHeight - healthTexture.GetHeight()) / 2;
+    renderer.Copy(healthTexture, NullOpt, Rect(textX, textY, healthTexture.GetWidth(), healthTexture.GetHeight()));
 }

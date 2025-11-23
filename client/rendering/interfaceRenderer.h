@@ -9,7 +9,7 @@
 #include <SDL2pp/Renderer.hh>
 #include <SDL2pp/Texture.hh>
 
-#include "../../common/messages/gameData.h"
+#include "../utils/gameData.h"
 
 #include "../gameHandling/world.h"
 
@@ -62,6 +62,8 @@ public:
     void renderPodium(const FinalResults& results);
 
     void renderMinimap();
+
+    void renderHealthBar(uint8_t health, int windowWidth);
     
     // To recalculate all the UI
     void updateLayout(int windowWidth, int windowHeight);
