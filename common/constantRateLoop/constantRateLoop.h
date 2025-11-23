@@ -10,7 +10,7 @@
 class ConstantRateLoop {
 private:
     double t1;
-    uint64_t it;
+    uint64_t it;  // 9749040289.25 years are needed to overflow it. Super safe
 
 public:
     /**

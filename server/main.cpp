@@ -24,7 +24,8 @@ int main(int argc, char* argv[]) {
             return EXIT_FAILURE;
         }
 
-        return Server(std::string(SERVNAME)).run();
+        Server(std::string(SERVNAME)).run();
+        return EXIT_SUCCESS;
 
     } catch (const std::exception& err) {
 

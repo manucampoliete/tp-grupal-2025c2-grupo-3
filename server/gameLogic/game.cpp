@@ -19,6 +19,8 @@
 #define WORLD_HEIGHT 4672.0f
 #define TIME_STEP (1.0f / TARGET_FPS) // duracion del step que simula box2d cada frame
 
+#define MAX_PLAYERS 8
+
 Game::Game():
         world(std::make_unique<b2World>(b2Vec2(0, 0))),
         velocityIt(8),
@@ -85,6 +87,7 @@ void Game::broadcastRacing() {
 
 void Game::broadcast() {
     switch (currentState) {
+    switch (currentState) {
         case GameState::COUNTDOWN:
             broadcastCountdown();
             break;
@@ -101,7 +104,7 @@ void Game::broadcast() {
     }
 }
 
-void Game::broadcast_start_signal() {
+void Game::broadcastStartSignal() {
     responseQueuesMonitor.broadcast(std::make_shared<Snapshot>());  // dummy timestamp for now
 }
 
@@ -109,6 +112,7 @@ std::chrono::seconds Game::getRemainingGameStateTime() {
     auto now = std::chrono::high_resolution_clock::now();
     auto gameStateElapsed = now - gameStateStartTime;
 
+    switch (currentState) {
     switch (currentState) {
         case GameState::COUNTDOWN:
             return std::chrono::duration_cast<std::chrono::seconds>(
@@ -131,9 +135,12 @@ std::chrono::seconds Game::getRemainingGameStateTime() {
 
 void Game::setGameState(GameState newState) {
     currentState = newState;
+void Game::setGameState(GameState newState) {
+    currentState = newState;
     gameStateStartTime = std::chrono::high_resolution_clock::now();
 
     // el cliente espera que le avisen cuando cambia el estado
+    switch (newState) {
     switch (newState) {
         case GameState::COUNTDOWN:
             std::cout << "[GAME] Estado cambiado a COUNTDOWN" << std::endl;
@@ -161,6 +168,7 @@ void Game::updateGameState() {
     auto now = std::chrono::high_resolution_clock::now();
     auto gameStateElapsed = now - gameStateStartTime;
 
+    switch (currentState) {
     switch (currentState) {
         case GameState::COUNTDOWN:
             if (gameStateElapsed >= countdownDuration) {
@@ -195,6 +203,7 @@ void Game::updateGameState() {
 
 void Game::handleGameState() {
     switch (currentState) {
+    switch (currentState) {
         case GameState::COUNTDOWN:
             handleCountdownState();
             break;
@@ -222,7 +231,7 @@ void Game::handleCountdownState() {
 }
 
 void Game::handleRacingState() {
-    // command pattern
+    // Command Pattern
     std::unique_ptr<Command> cmd;
     while (clientCommandsQueue.tryPop(cmd)) {
         cmd->execute(*this);
@@ -277,7 +286,7 @@ void Game::handleCollision(Player* player, float impact) {
 void Game::run() {
     started = true;
     
-    broadcast_start_signal();
+    broadcastStartSignal();
     setGameState(GameState::COUNTDOWN);
 
     /* auto collisionBodies =  */CollisionLoader::LoadCollisions("server/gameLogic/collisions.yaml", world, 1.0f, WORLD_HEIGHT);
@@ -292,28 +301,16 @@ void Game::run() {
     float accumulatedTime = 0.0f;
 
     while (shouldKeepRunning()) {
+        // Do some stuff
         updateGameState();
-
-        auto now = clock::now();
-        float frameTime = std::chrono::duration<float>(now - lastTime).count();
-        lastTime = now;
-
-        accumulatedTime += frameTime;
-        
-        while (accumulatedTime >= TIME_STEP) {
+        uint64_t deltaIt = it - lastIt;
+        while (deltaIt-- > 0)
             handleGameState();
-            accumulatedTime -= TIME_STEP;
-        }
-
         broadcast();
+        lastIt = it;
 
-        // evita busy waiting
-        float remaining = TIME_STEP - accumulatedTime;
-        if (remaining > 0.0f) {
-            // convierto a microsegundos para mas precision, busca evitar el jitter
-            auto micros = std::chrono::microseconds(static_cast<int64_t>(remaining * 1'000'000));
-            std::this_thread::sleep_for(micros);
-        }
+        // CRL algorithm
+        it = crl.sleepAndCalcIt();
     }
 }
 
@@ -335,7 +332,10 @@ Queue<std::shared_ptr<Snapshot>>& Game::getResponsesQueue(ClientID clientId) {
     return responseQueuesMonitor.getQueue(clientId);
 }
 
-void Game::addPlayer(ClientID clientId, const std::string& username, CarID carId) {
+bool Game::addPlayer(ClientID clientId, const std::string& username, CarID carId) {
+    if (players.size() >= MAX_PLAYERS)
+        return false;
+
     if (players.find(clientId) == players.end()) {
         b2Body* newCarBody = createNewCarBody();
         try {
@@ -361,6 +361,7 @@ void Game::makeInmortal(ClientID clientId) {
     std::cout << "Making player " << clientId << " inmortal!" << std::endl;
     /**
      * TODO: implement this method
+     * NOTE: we can set the player's car health to a very high value
      */
 }
 
@@ -368,6 +369,7 @@ void Game::makeInstaWin(ClientID clientId) {
     std::cout << "Making player " << clientId << " insta win!" << std::endl;
     /**
      * TODO: implement this method
+     * NOTE: we can set the player's car position to the finish line
      */
 }
 
@@ -375,6 +377,7 @@ void Game::makeInstaLose(ClientID clientId) {
     std::cout << "Making player " << clientId << " insta lose!" << std::endl;
     /**
      * TODO: implement this method
+     * NOTE: we can set the player's car health to 0
      */
 }
 

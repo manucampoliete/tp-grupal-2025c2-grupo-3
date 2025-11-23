@@ -42,16 +42,6 @@ private:
      */
     void handleLobbyPhase();
 
-    /**
-     * Launches the Sender thread.
-     */
-    void launchSenderThread();
-
-    /**
-     * "Launches the Receiver thread" (fake start: calls run() directly).
-     */
-    void fakeLaunchReceiverThread();
-
 public:
     /**
      * Constructor: initializes the ClientHandler with the given parameters.

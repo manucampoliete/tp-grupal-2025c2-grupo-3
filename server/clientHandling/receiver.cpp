@@ -4,7 +4,9 @@
 
 Receiver::Receiver(Socket& skt, Queue<std::unique_ptr<Command>>& clientCommandsQueue,
                    ClientID clientId):
-        protocol(skt), gameResolver(clientId, clientCommandsQueue), _keepRunning(true) {}
+    protocol(skt), gameResolver(clientId, clientCommandsQueue), _keepRunning(true) {
+    run();
+}
 
 void Receiver::stop() { _keepRunning = false; }
 
