@@ -337,20 +337,15 @@ bool Game::addPlayer(ClientID clientId, const std::string& username, CarID carId
         return false;
 
     if (players.find(clientId) == players.end()) {
-        b2Body* newCarBody = createNewCarBody();
-        try {
-            // players.emplace(clientId, Player(clientId, username, newCarBody, carId)); //dentro de Player se hace data->player = this (que apunta al temporal), cuando se llama data->player->applyDamage health toma valores basura
-            // construir player in-place para evitar el problema anterior
-            players.emplace(std::piecewise_construct,
-                            std::forward_as_tuple(clientId),
-                            std::forward_as_tuple(clientId, username, newCarBody, carId));
-        } catch (std::exception& e) {
-            std::cerr << "Error en addPlayer: " << e.what() << std::endl;
-        } catch (...) {
-            std::cerr << "Error en addPlayer: no se" << std::endl;
-        }
+        // players.emplace(clientId, Player(clientId, username, newCarBody, carId)); //dentro de Player se hace data->player = this (que apunta al temporal), cuando se llama data->player->applyDamage health toma valores basura
+        // construir player in-place para evitar el problema anterior
+        players.emplace(std::piecewise_construct,
+                        std::forward_as_tuple(clientId),
+                        std::forward_as_tuple(clientId, username, createNewCarBody(), carId));
+        responseQueuesMonitor.addQueue(clientId);
+        return true;
     }
-    responseQueuesMonitor.addQueue(clientId);
+    return false;
 }
 
 void Game::movePlayer(ClientID clientId, ActiveDirections activeDirections) {
