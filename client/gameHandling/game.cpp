@@ -188,7 +188,7 @@ void Game::startRace() {
 }
 
 void Game::setStatsCountdown(uint8_t number) {
-    stateManager.setStatsTimer(number * 1000);
+    stateManager.setStatsTimer(number);
 }
 
 void Game::showStats(const RaceResults& results) {

@@ -11,6 +11,7 @@
 
 #include "collisionLoader.h"
 #include "../../common/constantRateLoop/constantRateLoop.h"
+#include "../../common/messages/snapshot.h"
 
 #define TARGET_FPS 60
 #define FRAME_DURATION_MS (1000 / TARGET_FPS)
@@ -19,6 +20,7 @@
 #define TIME_STEP (1.0f / TARGET_FPS) // duracion del step que simula box2d cada frame
 
 #define MAX_PLAYERS 8
+#define RACE_DURATION 5
 
 Game::Game():
         world(std::make_unique<b2World>(b2Vec2(0, 0))),
@@ -27,8 +29,8 @@ Game::Game():
         clientCommandsQueue(),
         responseQueuesMonitor(),
         players(),
-        countdownDuration(10),
-        raceDuration(5),
+        countdownDuration(6),
+        raceDuration(RACE_DURATION),
         statsDuration(5),
         upgradesDuration(5),
         started(false) {}
@@ -68,7 +70,7 @@ void Game::updatePlayerCars() {
 
 void Game::broadcastCountdown() {
     auto remaining = getRemainingGameStateTime();
-    responseQueuesMonitor.broadcast(std::make_shared<Snapshot>(static_cast<uint32_t>(remaining.count())));
+    responseQueuesMonitor.broadcast(std::make_shared<Snapshot>(static_cast<uint32_t>(remaining.count()), MSG_COUNTDOWN));
 }
 
 void Game::broadcastRacing() {
@@ -83,6 +85,16 @@ void Game::broadcastRacing() {
     responseQueuesMonitor.broadcast(std::make_shared<Snapshot>(static_cast<uint32_t>(remaining.count()), snapshots));
 }
 
+void Game::broadcastShowingStats() {
+    auto remaining = getRemainingGameStateTime();
+    responseQueuesMonitor.broadcast(std::make_shared<Snapshot>(static_cast<uint32_t>(remaining.count()), MSG_STATS_COUNTDOWN));
+}
+
+void Game::broadcastModifyingCar() {
+    auto remaining = getRemainingGameStateTime();
+    responseQueuesMonitor.broadcast(std::make_shared<Snapshot>(static_cast<uint32_t>(remaining.count()), MSG_MOD_COUNTDOWN));
+}
+
 void Game::broadcast() {
     switch (currentState) {
         case GameState::COUNTDOWN:
@@ -93,7 +105,11 @@ void Game::broadcast() {
             break;
         }
         case GameState::SHOWING_STATS:
+            broadcastShowingStats();
+            break;
         case GameState::MODIFYING_CAR:
+            broadcastModifyingCar();
+            break;
         case GameState::ELIMINATED:
         case GameState::GAME_END:
             // implementar cuando haga falta
@@ -137,41 +153,47 @@ void Game::setRacingState() {
 }
 
 void Game::setShowingStatsState() {
-    setGameState(GameState::SHOWING_STATS);
+    // a los jugadores que no terminaron la carrera se les asigna un tiempo de llegada maximo
+    auto now = std::chrono::high_resolution_clock::now();
+    auto gameStateElapsed = now - gameStateStartTime;
+    std::chrono::seconds raceTimeSecs = std::chrono::duration_cast<std::chrono::seconds>(gameStateElapsed);
+    for (auto& [id, player]: players) {
+        if (!player.hasFinished()) {
+            player.setArrivalTime(raceTimeSecs.count());
+        }
+    }
 
-    //broadcast de estadisticas de carrera
-    responseQueuesMonitor.broadcast(std::make_shared<Snapshot>(MSG_RACE_END));
+    setGameState(GameState::SHOWING_STATS);
+    // broadcast de estadisticas de carrera
+    Snapshot::RaceResults results;
+    for (auto& [id, player]: players) {
+        Snapshot::RaceResults::PlayerResult pr;
+        pr.playerName = player.getUsername();
+        pr.raceTimeMs = player.getCurrentRaceTime();
+        pr.totalTimeMs = player.getTotalRaceTime();
+        results.players.push_back(pr);
+    }
+
+    std::sort(results.players.begin(), results.players.end(),
+              [](const Snapshot::RaceResults::PlayerResult& a, const Snapshot::RaceResults::PlayerResult& b) {
+                  return a.raceTimeMs < b.raceTimeMs;
+              });
     
+    responseQueuesMonitor.broadcast(std::make_shared<Snapshot>(results));
+    
+}
+
+void Game::setModifyingCarState() {
+    setGameState(GameState::MODIFYING_CAR);
+
+    // broadcast de modificaciones disponibles?
 }
 
 // solo cambia al estado de juego dado
 void Game::setGameState(GameState newState) {
     currentState = newState;
     gameStateStartTime = std::chrono::high_resolution_clock::now();
-
-    // el cliente espera que le avisen cuando cambia el estado
-    /* switch (newState) {
-        case GameState::COUNTDOWN:
-            std::cout << "[GAME] Estado cambiado a COUNTDOWN" << std::endl;
-            break;
-        case GameState::RACING:
-            std::cout << "[GAME] Estado cambiado a RACING" << std::endl;
-            responseQueuesMonitor.broadcast(std::make_shared<Snapshot>(MSG_RACE_START));
-            break;
-        case GameState::SHOWING_STATS:
-            std::cout << "[GAME] Estado cambiado a SHOWING_STATS" << std::endl;
-            responseQueuesMonitor.broadcast(std::make_shared<Snapshot>(MSG_RACE_END));
-            break;
-        case GameState::MODIFYING_CAR:
-            std::cout << "[GAME] Estado cambiado a MODIFYING_CAR" << std::endl;
-            break;
-        case GameState::ELIMINATED:
-            std::cout << "[GAME] Estado cambiado a ELIMINATED" << std::endl;
-            break;
-        case GameState::GAME_END:
-            std::cout << "[GAME] Estado cambiado a GAME_END" << std::endl;
-            break;
-    } */
+    std::cout << "Game state changed to " << static_cast<int>(newState) << std::endl;
 }
 
 void Game::updateGameState() {
@@ -181,22 +203,22 @@ void Game::updateGameState() {
     switch (currentState) {
         case GameState::COUNTDOWN:
             if (gameStateElapsed >= countdownDuration) {
-                setGameState(GameState::COUNTDOWN);
+                setRacingState();
             }
             break;
         case GameState::RACING:
             if (gameStateElapsed >= raceDuration) {
-                setRacingState();
+                setShowingStatsState();
             }
             break;
         case GameState::SHOWING_STATS:
             if (gameStateElapsed >= statsDuration) {
-                setShowingStatsState();
+                setModifyingCarState();
             }
             break;
         case GameState::MODIFYING_CAR:
             if (gameStateElapsed >= upgradesDuration) {
-                setModifyingCarState();
+                // setModifyingCarState();
             }
             break;
         case GameState::ELIMINATED: 

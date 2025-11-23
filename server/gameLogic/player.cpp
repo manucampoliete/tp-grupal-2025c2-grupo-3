@@ -6,13 +6,23 @@
 #define RADTODEG 57.295779513082320876f
 
 Player::Player(ClientID clientId, const std::string& username, b2Body* body, CarID carId):
-        clientId(clientId), username(username), car(CarFactory::createCar(body, carId)) {}
+        clientId(clientId), username(username), car(CarFactory::createCar(body, carId)), totalRaceTime(0) {}
 
 void Player::move(ActiveDirections activeDirections) {
     car.updateActiveDirections(activeDirections);
 }
 
 void Player::updateCarPhysics() { car.updatePhysics(); }
+
+bool Player::hasFinished() { return finished; }
+
+void Player::setArrivalTime(float arrivalTime) {
+    if (!finished) {
+        finished = true;
+        currentRaceTime = static_cast<uint32_t>(std::round(arrivalTime * 1000));
+        totalRaceTime += currentRaceTime;
+    }
+}
 
 Snapshot::CarSnapshot Player::buildCarSnapshot() {
     uint32 x = static_cast<uint32_t>(std::round(car.getPosition().x * 1000));

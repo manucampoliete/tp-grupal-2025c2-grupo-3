@@ -27,6 +27,17 @@ void ServerGameSendProtocol::sendRaceSnapshot(std::shared_ptr<Snapshot> snapshot
     // logica para mandar autos que murieron
 }
 
+void ServerGameSendProtocol::sendRaceResultsSnapshot(std::shared_ptr<Snapshot> snapshot) {
+    uint16_t numPlayers = static_cast<uint16_t>(snapshot->results.players.size());
+    sendU16(numPlayers);
+
+    for (const auto& player: snapshot->results.players) {
+        sendString(player.playerName);
+        sendU32(player.raceTimeMs);
+        sendU32(player.totalTimeMs);
+    }
+}
+
 void ServerGameSendProtocol::sendSnapshot(std::shared_ptr<Snapshot> snapshot) {
     sendU8(snapshot->type);
     switch (snapshot->type) {
@@ -43,7 +54,14 @@ void ServerGameSendProtocol::sendSnapshot(std::shared_ptr<Snapshot> snapshot) {
             sendRaceSnapshot(snapshot);
             break;
         case MSG_RACE_END:  // estoy seria para mostrar las estadisticas
+            sendRaceResultsSnapshot(snapshot);
+            break;
         case MSG_MOD_PHASE:
+            break;
+        case MSG_STATS_COUNTDOWN:
+        case MSG_MOD_COUNTDOWN:
+            sendU8(static_cast<uint8_t>(snapshot->countdown));
+            break;
         case MSG_GAME_END:
             // no implementado
             break;
