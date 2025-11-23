@@ -816,3 +816,46 @@ void UIRenderer::renderPodium(const FinalResults& results) {
                   Rect(popupX + (popupW - closeT.GetWidth()) / 2, popupY + popupH - 40,
                        closeT.GetWidth(), closeT.GetHeight()));
 }
+
+
+void UIRenderer::renderHealthBar(uint8_t health, int windowWidth) {
+    renderer.SetScale(1.0f, 1.0f);
+    
+    int barWidth = 150;
+    int barHeight = 20;
+    int barX = (windowWidth - barWidth) / 2; 
+    int barY = 10;  // same Y as timer
+    
+    renderer.SetDrawBlendMode(SDL_BLENDMODE_BLEND);
+    renderer.SetDrawColor(50, 50, 50, 200);
+    renderer.FillRect(Rect(barX, barY, barWidth, barHeight));
+    
+    // width of the filled part of the bar
+    int filledWidth = (health * barWidth) / 100;
+    
+    SDL_Color healthColor;
+    if (health > 60)
+        healthColor = {0, 200, 0, 255}; // Green
+    else if (health > 30)
+        healthColor = {255, 165, 0, 255}; // Orange
+    else
+        healthColor = {255, 0, 0, 255}; // Red
+    
+    // filled part of the bar
+    if (filledWidth > 0) {
+        renderer.SetDrawColor(healthColor.r, healthColor.g, healthColor.b, healthColor.a);
+        renderer.FillRect(Rect(barX, barY, filledWidth, barHeight));
+    }
+    
+    renderer.SetDrawBlendMode(SDL_BLENDMODE_NONE);
+    renderer.SetDrawColor(255, 255, 255, 255);
+    renderer.DrawRect(Rect(barX, barY, barWidth, barHeight));
+    
+    std::string healthText = std::to_string(health) + "%";
+    Surface healthSurface = fontSmall.RenderText_Solid(healthText, {255, 255, 255, 255});
+    Texture healthTexture(renderer, healthSurface);
+    
+    int textX = barX + (barWidth - healthTexture.GetWidth()) / 2;
+    int textY = barY + (barHeight - healthTexture.GetHeight()) / 2;
+    renderer.Copy(healthTexture, NullOpt, Rect(textX, textY, healthTexture.GetWidth(), healthTexture.GetHeight()));
+}

@@ -46,6 +46,7 @@ Game::Game(World& world, GameLoop& gameLoop, uint8_t playerId)
     SDL_SetWindowMinimumSize(window.Get(), 800, 600);
 
     loadSounds();
+    loadBridges();
     updateUILayout();
 }
 
@@ -68,6 +69,12 @@ void Game::loadSounds() {
     }
 }
 
+void Game::loadBridges() {
+    // por ahora hardcodeado para Vice City
+    // TODO: recibir qué mapa se está usando
+    std::string bridgePath = "client/assets/cities/Vice City-Bridges.png";
+    worldRenderer.loadBridgeTexture(bridgePath);
+}
 
 void Game::updateUILayout() {
     int w = window.GetWidth();
@@ -132,11 +139,13 @@ void Game::render() {
             uiRenderer.renderCountdown(stateManager.getCountdownNumber());
             break;
 
-        case GameState::RACING:
+        case GameState::RACING: {
             uiRenderer.renderRaceUI(stateManager.getRaceTimerMs(), stateManager.getCurrentRace(), stateManager.getTotalRaces(), window.GetWidth());
+            uint8_t playerHealth = world.getPlayerHealth(playerId);
+            uiRenderer.renderHealthBar(playerHealth, window.GetWidth());
             uiRenderer.renderMinimap();
             break;
-
+        }
         case GameState::ELIMINATED:
             if (stateManager.getEliminatedPopupDelayMs() <= 0)
                 uiRenderer.renderEliminatedPopup();

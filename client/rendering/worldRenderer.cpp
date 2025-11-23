@@ -1,4 +1,6 @@
 #include "worldRenderer.h"
+#include <iostream>
+#include <cmath>
 
 
 WorldRenderer::WorldRenderer(Renderer& renderer, Texture& mapTexture, Texture& carSprites,
@@ -6,11 +8,27 @@ WorldRenderer::WorldRenderer(Renderer& renderer, Texture& mapTexture, Texture& c
         renderer(renderer),
         mapTexture(mapTexture),
         carSprites(carSprites),
+        bridgeTexture(nullptr),
+        bridgeRenderer(nullptr),
         world(world),
         playerId(playerId),
         camera(0, 0, 800, 600),
         scaleFactor(1.0f) {}
 
+
+void WorldRenderer::loadBridgeTexture(const std::string& path) {
+    try {
+        SDL2pp::Surface surface(path);
+        bridgeTexture = std::make_unique<Texture>(renderer, surface);
+        bridgeTexture->SetBlendMode(SDL_BLENDMODE_BLEND);
+        
+        bridgeRenderer = std::make_unique<BridgeRenderer>(renderer, *bridgeTexture);
+    } catch (const std::exception& e) {
+        std::cerr << "[WORLD_RENDERER] Error loading bridge texture: " << e.what() << std::endl;
+        bridgeTexture = nullptr;
+        bridgeRenderer = nullptr;
+    }
+}
 
 void WorldRenderer::updateLayout(int windowWidth, int windowHeight) {
     // Update scale factor
@@ -28,10 +46,8 @@ void WorldRenderer::updateCamera(float playerX, float playerY) {
     camera.y = static_cast<int>(playerY - (camera.h / 2));
 
     // Avoid camera going out of map bounds
-    if (camera.x < 0)
-        camera.x = 0;
-    if (camera.y < 0)
-        camera.y = 0;
+    if (camera.x < 0) camera.x = 0;
+    if (camera.y < 0) camera.y = 0;
     if (camera.x > mapTexture.GetWidth() - camera.w)
         camera.x = mapTexture.GetWidth() - camera.w;
     if (camera.y > mapTexture.GetHeight() - camera.h)
@@ -83,9 +99,14 @@ void WorldRenderer::updateEffects(float dt) {
 
 void WorldRenderer::render() {
     renderMapCamera();
+
     renderBrakeTrails();
-    renderAllCars();
+    renderCarsUnderBridge();
     renderSmoke(); 
+
+    renderBridges();
+    renderCarsOnBridge();
+    
     renderCollisionEffects();
     renderExplosions();
 }
@@ -96,19 +117,37 @@ void WorldRenderer::renderMapCamera() {
     renderer.Copy(mapTexture, camera, NullOpt);
 }
 
-
-void WorldRenderer::renderAllCars() {
+void WorldRenderer::renderCarsUnderBridge() {
     const auto& cars = world.getCars();
-    for (const auto& [id, car_state]: cars) {
-        const Rect& src = CARS[car_state.type];
-
-        float screenX = car_state.x - camera.x - src.GetW() / 2.0f;
-        float screenY = car_state.y - camera.y - src.GetH() / 2.0f;
-
-        Rect dest(screenX, screenY, src.GetW(), src.GetH());
-        SDL_Point center = {src.GetW() / 2, src.GetH() / 2};
-        renderer.Copy(carSprites, src, dest, car_state.angle, center, SDL_FLIP_NONE);
+    for (const auto& [id, carState] : cars) {
+        if (!carState.onBridge) renderCar(carState);
     }
+}
+
+
+void WorldRenderer::renderBridges() {
+    if (bridgeRenderer)
+        bridgeRenderer->render(camera, scaleFactor);
+}
+
+
+void WorldRenderer::renderCarsOnBridge() {
+    const auto& cars = world.getCars();
+    for (const auto& [id, carState] : cars) {
+        if (carState.onBridge) renderCar(carState);
+    }
+}
+
+void WorldRenderer::renderCar(const BroadcastData::CarState& carState) {
+    const Rect& src = CARS[carState.type];
+
+    float screenX = carState.x - camera.x - src.GetW() / 2.0f;
+    float screenY = carState.y - camera.y - src.GetH() / 2.0f;
+
+    Rect dest(screenX, screenY, src.GetW(), src.GetH());
+    SDL_Point center = {src.GetW() / 2, src.GetH() / 2};
+    
+    renderer.Copy(carSprites, src, dest, carState.angle, center, SDL_FLIP_NONE);
 }
 
 

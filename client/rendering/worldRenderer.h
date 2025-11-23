@@ -4,15 +4,17 @@
 #include <cstdint>
 #include <map>
 #include <vector>
+#include <memory>
 
 #include <SDL.h>
+#include <SDL2pp/SDL2pp.hh>
 #include <SDL2pp/Rect.hh>
 #include <SDL2pp/Renderer.hh>
 #include <SDL2pp/Texture.hh>
 
 #include "../utils/gameData.h"
-
 #include "../gameHandling/world.h"
+#include "bridgeRenderer.h"
 
 using namespace SDL2pp;  // NOLINT
 
@@ -22,6 +24,10 @@ private:
     Renderer& renderer;
     Texture& mapTexture;
     Texture& carSprites;
+
+    std::unique_ptr<Texture> bridgeTexture;
+    std::unique_ptr<BridgeRenderer> bridgeRenderer;
+
     World& world;
     uint8_t playerId;
 
@@ -31,7 +37,6 @@ private:
 
     std::vector<Explosion> explosions;
     std::vector<CollisionEffect> collisionEffects;
-
     SmokeCloud smokeCloud;
     std::vector<BrakeTrail> brakeTrails;
     BrakeTrail* currentBrakeTrail = nullptr;
@@ -39,17 +44,26 @@ private:
     bool isAccelerating = false;
     bool isBraking = false;
     
+    void renderMapCamera();
+    void renderCarsUnderBridge();
+    void renderBridges();
+    void renderCarsOnBridge();
+    void renderCar(const BroadcastData::CarState& carState);
+
     void renderSmoke();
     void renderBrakeTrails();
-
-    void renderMapCamera();
-    void renderAllCars();
     void renderExplosions();
     void renderCollisionEffects();
 
 public:
     WorldRenderer(Renderer& renderer, Texture& mapTexture, Texture& carSprites, World& world,
                   uint8_t playerId);
+    
+    // Load bridge texture for current map
+    void loadBridgeTexture(const std::string& path);
+    
+    // Check if bridges are loaded for current map
+    bool hasBridges() const { return bridgeRenderer != nullptr; }
     
     // Render the world (map + cars) with camera and scaling
     void render();

@@ -28,6 +28,8 @@ public:
     
     // Obtains the remaining time
     uint32_t getCountdown() const { return countdown; }
+
+    uint8_t getPlayerHealth(uint8_t playerId) const;
 };
 
 #endif  // WORLD_H

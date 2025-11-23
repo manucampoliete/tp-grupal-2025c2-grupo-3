@@ -99,6 +99,8 @@ void GameLoop::applySnapshot(const Snapshot& snapshot) {
         carState.y = WORLD_HEIGHT - carSnap.y / 1000.0f;
         carState.angle = carSnap.angle + 90.0f;
         carState.type = carSnap.carId;
+        carState.health = carSnap.health;
+        carState.onBridge = carSnap.onBridge;
 
         data.cars.push_back(carState);
     }

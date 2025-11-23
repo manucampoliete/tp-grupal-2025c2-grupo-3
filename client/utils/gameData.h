@@ -30,6 +30,8 @@ struct BroadcastData {
         float y; 
         float angle;
         uint8_t type;
+        uint8_t health;
+        bool onBridge;
     };
 
     std::vector<CarState> cars;

@@ -62,6 +62,8 @@ public:
     void renderPodium(const FinalResults& results);
 
     void renderMinimap();
+
+    void renderHealthBar(uint8_t health, int windowWidth);
     
     // To recalculate all the UI
     void updateLayout(int windowWidth, int windowHeight);

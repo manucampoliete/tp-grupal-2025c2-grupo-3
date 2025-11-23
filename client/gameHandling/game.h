@@ -66,6 +66,7 @@ private:
     int lastWindowHeight = 0;
 
     void loadSounds();
+    void loadBridges();
     void updateUILayout();
     void update(float dt);
     void render();

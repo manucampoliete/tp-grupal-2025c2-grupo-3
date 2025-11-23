@@ -39,9 +39,6 @@ Snapshot ClientGameProtocol::recvSnapshot() {
     uint32_t countdown = recvU32();
     uint8_t numCars = recvU8();
 
-    std::cout << "[PROTOCOL] Snapshot received: countdown=" << countdown
-              << "ms, numCars=" << numCars << std::endl;
-
     std::vector<Snapshot::CarSnapshot> cars;
     for (uint8_t i = 0; i < numCars; ++i) {
         ClientID clientId = recvU16();
@@ -50,12 +47,10 @@ Snapshot ClientGameProtocol::recvSnapshot() {
         uint16_t angle = recvU16();
         uint16_t speed = recvU16();
         CarID carId = recvU8();
+        uint8_t health = 100; // deshardcodear desp
+        bool onBridge = false; // deshardcodear desp
 
-        std::cout << "  [Car " << i << "] clientId=" << clientId << ", pos=(" << x << "," << y << ")"
-                  << ", angle=" << angle << ", speed=" << speed << ", carId=" << (int)carId
-                  << std::endl;
-
-        cars.emplace_back(clientId, x, y, angle, speed, carId);
+        cars.emplace_back(clientId, x, y, angle, speed, carId, health, onBridge);
     }
 
     return Snapshot(countdown, cars);

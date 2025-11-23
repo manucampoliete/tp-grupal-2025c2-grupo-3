@@ -28,5 +28,5 @@ Snapshot::CarSnapshot Player::buildCarSnapshot() {
 
     uint16_t speed = static_cast<uint16_t>(std::round(car.getSpeed() * 1000));
 
-    return Snapshot::CarSnapshot(clientId, x, y, angle, speed, car.getId());
+    return Snapshot::CarSnapshot(clientId, x, y, angle, speed, car.getId(), 100, false);
 }
