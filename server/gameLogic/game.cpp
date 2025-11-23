@@ -10,8 +10,9 @@
 
 #include <iostream>
 
-#include "collision_loader.h"
+#include "collisionLoader.h"
 #include "contact_listener.h"
+#include "../../common/constantRateLoop/constantRateLoop.h"
 
 #define TARGET_FPS 60
 #define FRAME_DURATION_MS (1000 / TARGET_FPS)
@@ -87,7 +88,6 @@ void Game::broadcastRacing() {
 
 void Game::broadcast() {
     switch (currentState) {
-    switch (currentState) {
         case GameState::COUNTDOWN:
             broadcastCountdown();
             break;
@@ -113,7 +113,6 @@ std::chrono::seconds Game::getRemainingGameStateTime() {
     auto gameStateElapsed = now - gameStateStartTime;
 
     switch (currentState) {
-    switch (currentState) {
         case GameState::COUNTDOWN:
             return std::chrono::duration_cast<std::chrono::seconds>(
                     countdownDuration - gameStateElapsed);
@@ -133,14 +132,12 @@ std::chrono::seconds Game::getRemainingGameStateTime() {
     return std::chrono::seconds(0);  // para evitar warning
 }
 
-void Game::setGameState(GameState newState) {
-    currentState = newState;
+
 void Game::setGameState(GameState newState) {
     currentState = newState;
     gameStateStartTime = std::chrono::high_resolution_clock::now();
 
     // el cliente espera que le avisen cuando cambia el estado
-    switch (newState) {
     switch (newState) {
         case GameState::COUNTDOWN:
             std::cout << "[GAME] Estado cambiado a COUNTDOWN" << std::endl;
@@ -168,7 +165,6 @@ void Game::updateGameState() {
     auto now = std::chrono::high_resolution_clock::now();
     auto gameStateElapsed = now - gameStateStartTime;
 
-    switch (currentState) {
     switch (currentState) {
         case GameState::COUNTDOWN:
             if (gameStateElapsed >= countdownDuration) {
@@ -202,7 +198,6 @@ void Game::updateGameState() {
 }
 
 void Game::handleGameState() {
-    switch (currentState) {
     switch (currentState) {
         case GameState::COUNTDOWN:
             handleCountdownState();
@@ -296,10 +291,9 @@ void Game::run() {
     ContactListener contactListener(this);
     world->SetContactListener(&contactListener);
 
-    using clock = std::chrono::high_resolution_clock;
-    auto lastTime = clock::now();
-    float accumulatedTime = 0.0f;
-
+    uint64_t lastIt = 0;
+    uint64_t it = 0;
+    ConstantRateLoop crl;
     while (shouldKeepRunning()) {
         // Do some stuff
         updateGameState();
