@@ -7,6 +7,8 @@
 
 class ServerGameRecvProtocol: public RecvProtocol {
 private:
+    GameResolver& gameResolver;
+
     /**
      * Decodes a Move State byte into an ActiveDirections object.
      */
@@ -14,51 +16,51 @@ private:
 
     /**
      * Receives a Move State message from the socket and
-     * processes it using the provided GameResolver.
+     * processes it using the GameResolver.
      */
-    void recvMoveState(GameResolver& gameResolver);
+    void recvMoveState();
 
     /**
      * Receives an Inmortality message from the socket and
-     * processes it using the provided GameResolver.
+     * processes it using the GameResolver.
      */
-    void recvInmortality(GameResolver& gameResolver);
+    void recvInmortality();
 
     /**
      * Receives an InstaWin message from the socket and
-     * processes it using the provided GameResolver.
+     * processes it using the GameResolver.
      */
-    void recvInstaWin(GameResolver& gameResolver);
+    void recvInstaWin();
 
     /**
      * Receives an InstaLose message from the socket and
-     * processes it using the provided GameResolver.
+     * processes it using the GameResolver.
      */
-    void recvInstaLose(GameResolver& gameResolver);
+    void recvInstaLose();
 
     /**
      * Receives a SuperSpeed message from the socket and
-     * processes it using the provided GameResolver.
+     * processes it using the GameResolver.
      */
-    void recvSuperSpeed(GameResolver& gameResolver);
+    void recvSuperSpeed();
 
     /**
      * Receives a ModifyCar message from the socket and
-     * processes it using the provided GameResolver.
+     * processes it using the GameResolver.
      */
-    void recvModifyCar(GameResolver& gameResolver);
+    void recvModifyCar();
 
 public:
     /**
-     * Constructor that takes a reference to a Socket object.
+     * Constructor that takes a reference to a Socket object and a GameResolver object.
      */
-    explicit ServerGameRecvProtocol(Socket& skt);
+    explicit ServerGameRecvProtocol(Socket& skt, GameResolver& gameResolver);
 
     /**
      * Consumes one protocol message from the socket and
-     * processes it using the provided GameResolver.
+     * processes it using the GameResolver.
      */
-    void consumeOne(GameResolver& gameResolver);
+    void consumeOne();
 };
 
 #endif  // SERVER_GAME_RECV_PROTOCOL_H
