@@ -37,7 +37,7 @@ public:
     uint16_t recvPlayerDied();
     RaceResults recvRaceResults();
     uint8_t recvStatsCountdown();
-    CarProperties recvCarProperties();
+    std::vector<CarProperties> recvCarProperties();
     uint8_t recvModCountdown();
     FinalResults recvFinalResults();
 

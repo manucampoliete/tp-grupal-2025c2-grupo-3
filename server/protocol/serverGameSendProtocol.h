@@ -20,6 +20,9 @@ public:
 
     void sendRaceSnapshot(std::shared_ptr<Snapshot> snapshot);
 
+    void sendRaceResultsSnapshot(std::shared_ptr<Snapshot> snapshot);
+
+    void sendModificationSnapshot(std::shared_ptr<Snapshot> snapshot);
     void sendCollisionSnapshot(const Snapshot::CollisionData& collision);
 };
 

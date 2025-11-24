@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <variant>
+#include <vector>
 
 #include "gameData.h"
 #include "../../common/messages/snapshot.h"
@@ -35,7 +36,7 @@ struct StatsCountdownMessage {
 };
 
 struct ModificationPhaseMessage {
-    CarProperties properties;
+    std::vector<CarProperties> properties;
 };
 
 struct ModCountdownMessage {

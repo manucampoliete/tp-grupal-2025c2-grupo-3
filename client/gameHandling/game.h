@@ -84,7 +84,7 @@ public:
     void startRace();
     void setStatsCountdown(uint8_t number);
     void showStats(const RaceResults& results);
-    void showModifications(const CarProperties& props);
+    void showModifications(const std::vector<CarProperties>& props);
     void setModCountdown(uint8_t number);
     void showFinalResults(const FinalResults& results);
     void showCheatNotification(CheatType type);

@@ -34,7 +34,8 @@ private:
 
     //tiempos
     std::chrono::seconds countdownDuration;
-    std::chrono::minutes raceDuration;
+    // std::chrono::minutes raceDuration;
+    std::chrono::seconds raceDuration;
     std::chrono::seconds statsDuration;
     std::chrono::seconds upgradesDuration;
     // std::chrono::duration<float> elapsed;
@@ -72,6 +73,12 @@ private:
     void broadcastGameEnd();
 
     void setGameState(GameState new_state);
+    void setCountdownState();
+    void setRacingState();
+    void setShowingStatsState();
+    void setModifyingCarState();
+    // void setEliminatedState();
+    // void setGameEndState();
 
     void updateGameState();
 
