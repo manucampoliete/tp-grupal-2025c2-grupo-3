@@ -80,8 +80,21 @@ b2Vec2 Car::getPosition() { return body->GetPosition(); }
 
 float Car::getAngle() { return body->GetAngle(); }
 
-float Car::getSpeed() const { return body->GetLinearVelocity().Length(); }
+float Car::getCurrentSpeed() const { return body->GetLinearVelocity().Length(); }
 
 CarID Car::getId() { return carId; }
 
-float Car::getHealth() const { return health; }
+float Car::getMaxHealth() const { return maxHealth; }
+
+float Car::getMaxSpeed() const { return maxSpeed; } 
+
+void Car::setCurrentHealth(float health) { currentHealth = health; }
+
+void Car::improveProperties(bool improveVelocity, bool improveHealth) {
+    if (improveVelocity) {
+        maxSpeed *= VELOCITY_IMPROVEMENT_PERCENTAGE;
+    }
+    if (improveHealth) {
+        maxHealth *= HEALTH_IMPROVEMENT_PERCENTAGE;
+    }
+}

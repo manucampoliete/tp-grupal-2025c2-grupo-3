@@ -145,6 +145,20 @@ std::chrono::seconds Game::getRemainingGameStateTime() {
     return std::chrono::seconds(0);  // para evitar warning
 }
 
+void Game::setCountdownState() {
+    setGameState(GameState::COUNTDOWN);
+
+    // incializar players (aplicar penalizaciones, poner vida = max_vida)
+    // BUG: si un jugador finaliza la carrera por tiempo limite no se le aplica la penalizacion!
+    // se arregla en showing stats? (sumarle el tiempo maximo al tiempo de carrera actual, que es donde se refleja la penalizacion)
+    for (auto& [id, player]: players) {
+        player.resetForNewRace();
+    }
+
+    // no se hace el primer broadcast para countdown, se manda solo el broadcast por frame
+    // responseQueuesMonitor.broadcast(std::make_shared<Snapshot>(MSG_COUNTDOWN_START));
+}
+
 // cambia el estado y manda el broadcast de que se empezó la carrera
 void Game::setRacingState() {
     setGameState(GameState::RACING);
@@ -157,6 +171,7 @@ void Game::setShowingStatsState() {
     auto now = std::chrono::high_resolution_clock::now();
     auto gameStateElapsed = now - gameStateStartTime;
     std::chrono::seconds raceTimeSecs = std::chrono::duration_cast<std::chrono::seconds>(gameStateElapsed);
+    
     for (auto& [id, player]: players) {
         if (!player.hasFinished()) {
             player.setArrivalTime(raceTimeSecs.count());
@@ -229,7 +244,8 @@ void Game::updateGameState() {
             if (gameStateElapsed >= upgradesDuration) {
                 // aumentar numero de carrera en 1
                 // pasar a countdown
-                setGameState(GameState::COUNTDOWN);
+                // setGameState(GameState::COUNTDOWN);
+                setCountdownState();
             }
             break;
         case GameState::ELIMINATED: 
@@ -293,12 +309,10 @@ void Game::handleShowingStatsState() {
 }
 
 void Game::handleModifyingCarState() {
-    // mandar al cliente las modificaciones disponibles/su magnitud?
-    // recibir las modificaciones de los clientes (patron comando de nuevo?)
-    /* while (clientCommandsQueue.tryPop(cmd)) {
+    std::unique_ptr<Command> cmd;
+    while (clientCommandsQueue.tryPop(cmd)) {
         cmd->execute(*this);
-    } */
-    // hay que hacer un nuevo tipo de comando (ModifyCarCommand?) que modifique las propiedades del auto del jugador
+    }
 }
 
 void Game::run() {
@@ -388,7 +402,7 @@ void Game::makeInstaLose(ClientID clientId) {
 void Game::improveCarProperties(ClientID clientId, bool improveVelocity, bool improveHealth) {
     std::cout << "Improving car properties for player " << clientId << ": "
               << (improveVelocity ? "velocity " : "") << (improveHealth ? "health" : "") << std::endl;
-
+    
     /**
      * TODO: implement this method
      * REMEMBER: Each improvement has a cost that is computed as a penalty to the arrival time
@@ -396,9 +410,8 @@ void Game::improveCarProperties(ClientID clientId, bool improveVelocity, bool im
      * Could be something like:
      */
 
-    // auto& player = players.at(clientId);
-    // if (improveVelocity) player.improveCarVelocity();
-    // if (improveHealth) player.improveCarHealth();
+    auto& player = players.at(clientId);
+    player.improveCarProperties(improveVelocity, improveHealth);
 }
 
 Game::~Game() {}
