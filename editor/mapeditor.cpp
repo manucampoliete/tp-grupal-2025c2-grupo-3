@@ -86,61 +86,6 @@ MapEditor::MapEditor(int cityId, QWidget* parent)
     view->centerOn(mapItem);
 }
 
-void MapEditor::serializeToYaml(const QString& filename)
-{
-    std::vector<CircuitSegment>& circuit = this->circuitSegments;
-
-    if (circuit.empty()) {
-        std::cout << "Advertencia: No hay checkpoints o puntos de inicio/fin para guardar." << std::endl;
-        return;
-    }
-
-    YAML::Emitter emitter;
-    emitter << YAML::BeginMap;
-    emitter << YAML::Key << "map_name" << YAML::Value << "City_Map_1";
-
-    emitter << YAML::Key << "segments";
-    emitter << YAML::Value << YAML::BeginSeq;
-
-    for (const auto& segment : circuit) {
-        emitter << YAML::BeginMap;
-
-        emitter << YAML::Key << "segment_start_type" << YAML::Value << typeToString(segment.cpType).toStdString();
-        emitter << YAML::Key << "position";
-        emitter << YAML::Value << YAML::BeginSeq << segment.cpPosition.x() << segment.cpPosition.y() << YAML::EndSeq;
-
-        emitter << YAML::Key << "direction" << YAML::Value << directionToString(segment.cpDirection).toStdString();
-
-        emitter << YAML::Key << "hints_to_next_cp";
-        emitter << YAML::Value << YAML::BeginSeq;
-
-        for (const auto& hint : segment.segmentHints) {
-            emitter << YAML::BeginMap;
-
-            emitter << YAML::Key << "type_id" << YAML::Value << hint.direction;
-            emitter << YAML::Key << "position";
-            emitter << YAML::Value << YAML::BeginSeq << hint.position.x() << hint.position.y() << YAML::EndSeq;
-
-            emitter << YAML::EndMap;
-        }
-
-        emitter << YAML::EndSeq;
-        emitter << YAML::EndMap;
-    }
-
-    emitter << YAML::EndSeq;
-    emitter << YAML::EndMap;
-
-    QFile file(filename);
-    if (file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate)) {
-        file.write(emitter.c_str());
-        file.close();
-        std::cout << "✅ Mapa guardado exitosamente en YAML: " << filename.toStdString() << std::endl;
-    } else {
-        std::cout << "❌ Error al abrir archivo para escritura: " << file.errorString().toStdString() << std::endl;
-    }
-}
-
 void MapEditor::onSaveRequest()
 {
     QString filter = "Archivos de Mapa YAML (*.yaml *.yml)";
@@ -167,30 +112,90 @@ void MapEditor::onSaveRequest()
     }
 }
 
+void MapEditor::serializeToYaml(const QString& filename)
+{
+    std::vector<CircuitSegment>& circuit = this->circuitSegments;
+
+    if (circuit.empty()) {
+        std::cout << "Advertencia: No hay checkpoints o puntos de inicio/fin para guardar." << std::endl;
+        return;
+    }
+
+    YAML::Emitter emitter;
+    emitter << YAML::BeginMap;
+    emitter << YAML::Key << "map_name" << YAML::Value << "City_Map_1";
+
+    emitter << YAML::Key << "segments";
+    emitter << YAML::Value << YAML::BeginSeq;
+
+    for (const auto& segment : circuit) {
+        if (!segment.cpElementPtr) continue;
+
+        MapElement* cp = segment.cpElementPtr;
+
+        emitter << YAML::BeginMap;
+
+        emitter << YAML::Key << "segment_start_type" << YAML::Value << typeToString(cp->getElementType()).toStdString();
+
+        QPointF finalCpPos = cp->pos();
+        emitter << YAML::Key << "position";
+        emitter << YAML::Value << YAML::BeginSeq << finalCpPos.x() << finalCpPos.y() << YAML::EndSeq;
+
+        emitter << YAML::Key << "direction" << YAML::Value << directionToString(cp->getElementDirection()).toStdString();
+
+        emitter << YAML::Key << "hints_to_next_cp";
+        emitter << YAML::Value << YAML::BeginSeq;
+
+        for (const auto& hintPtr : segment.segmentHints) {
+            if (!hintPtr) continue;
+
+            MapElement* hint = hintPtr;
+
+            QPointF finalHintPos = hint->pos();
+
+            emitter << YAML::BeginMap;
+            emitter << YAML::Key << "type_id" << YAML::Value << hint->getElementDirection();
+            emitter << YAML::Key << "position";
+            emitter << YAML::Value << YAML::BeginSeq << finalHintPos.x() << finalHintPos.y() << YAML::EndSeq;
+
+            emitter << YAML::EndMap;
+        }
+
+        emitter << YAML::EndSeq;
+        emitter << YAML::EndMap;
+    }
+
+    emitter << YAML::EndSeq;
+    emitter << YAML::EndMap;
+
+    QFile file(filename);
+    if (file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate)) {
+        file.write(emitter.c_str());
+        file.close();
+        std::cout << "✅ Mapa guardado exitosamente en YAML: " << filename.toStdString() << std::endl;
+    } else {
+        std::cout << "❌ Error al abrir archivo para escritura: " << file.errorString().toStdString() << std::endl;
+    }
+}
+
 void MapEditor::processNewElement(MapElement* newElement) {
     if (newElement->getElementType() == TYPE_HINT) {
-        HintData hint;
-        hint.direction = newElement->getElementDirection();
-        hint.position = newElement->pos();
-        hintsInCurrentSegment.push_back(hint);
-        std::cout << "DEBUG: Hint agregado al segmento actual. Total: " << hintsInCurrentSegment.size() << std::endl;
-
+        this->hintsInCurrentSegment.push_back(newElement);
+        std::cout << "DEBUG: Hint agregado al segmento actual. Total: " << this->hintsInCurrentSegment.size() << std::endl;
     } else if (newElement->getElementType() == TYPE_START ||
                newElement->getElementType() == TYPE_CHECKPOINT ||
                newElement->getElementType() == TYPE_FINISH)
     {
         CircuitSegment newSegment;
-        newSegment.cpType = newElement->getElementType();
-        newSegment.cpDirection = newElement->getElementDirection();
-        newSegment.cpPosition = newElement->pos();
 
-        if (!circuitSegments.empty()) {
-            circuitSegments.back().segmentHints = hintsInCurrentSegment;
+        newSegment.cpElementPtr = newElement;
+
+        if (!this->circuitSegments.empty()) {
+            this->circuitSegments.back().segmentHints = this->hintsInCurrentSegment;
         }
 
-        circuitSegments.push_back(newSegment);
-
-        hintsInCurrentSegment.clear();
-        std::cout << "DEBUG: CP/Start/Finish colocado. Segmento cerrado. Nuevo Total: " << circuitSegments.size() << std::endl;
+        this->circuitSegments.push_back(newSegment);
+        this->hintsInCurrentSegment.clear();
+        std::cout << "DEBUG: CP/Start/Finish colocado. Segmento cerrado. Nuevo Total: " << this->circuitSegments.size() << std::endl;
     }
 }

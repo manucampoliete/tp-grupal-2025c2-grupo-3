@@ -25,7 +25,7 @@ private:
     QGraphicsScene* scene;
     QGraphicsPixmapItem* mapItem = nullptr;
     QImage collisionMask;
-    std::vector<HintData> hintsInCurrentSegment;
+    std::vector<MapElement*> hintsInCurrentSegment;
     std::vector<CircuitSegment> circuitSegments;
 
     void loadCity(int cityId);
