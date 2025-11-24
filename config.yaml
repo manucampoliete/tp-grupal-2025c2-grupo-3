@@ -1,64 +1,82 @@
 cars:
   0:
-    #fisicas
+    # Physics
     max_speed: 100.0
     acceleration: 20.0
     angular_speed: 2.0
+    mass: -1.0
     #
     name: "Jeep Wrangler"
     health: 100.0
     car_id: 0
   1:
-    #fisicas
+    # Physics
     max_speed: 20.0
     acceleration: 50.0
     angular_speed: 3.0
+    mass: -1.0
     #
     name: "Ferrari F40"
     health: 50.0
     car_id: 1
   2:
-  #fisicas
+    # Physics
     max_speed: 20.0
     acceleration: 50.0
     angular_speed: 3.0
+    mass: -1.0
     #
     name: "BMW Z4"
     health: 50.0
     car_id: 2
   3:
-    #fisicas
+    # Physics
     max_speed: 50.0
     acceleration: 1.0
     angular_speed: 3.0
+    mass: -1.0
     #
     name: "VW Beetle"
     health: 2.0
     car_id: 3
   4:
-    #fisicas
+    # Physics
     max_speed: 200.0
     acceleration: 50.0
     angular_speed: 3.0
+    mass: -1.0
     #
     name: "Ford Bronco"
     health: 100.0
     car_id: 4
   5:
-    #fisicas
+    # Physics
     max_speed: 2.0
     acceleration: 50.0
     angular_speed: 3.0
+    mass: -1.0
     #
     name: "Ford F100"
     health: 50.0
     car_id: 5
   6:
-    #fisicas
+    # Physics
     max_speed: 100.0
     acceleration: 50.0
     angular_speed: 3.0
+    mass: -1.0
     #
     name: "MB S-Class"
     health: 80.0
     car_id: 6
+
+game_phases_timers:
+  countdown: 10     # Seconds. First 7 -> "Ready", last 3 -> "3", "2", "1", "Go!"
+  racing: 10        # Minutes. Time for the race
+  showing_stats: 10 # Seconds. Time to show race results
+  modifying_car: 10 # Seconds. Time to modify car between races
+  game_end: 15      # Seconds. Time to show final results
+
+number_of_races: 6
+
+rate_loop: 60
