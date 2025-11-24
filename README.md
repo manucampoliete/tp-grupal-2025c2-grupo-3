@@ -119,43 +119,43 @@ Performance óptimo, menos de 5% de consumo de en cliente y servidor CPU.
 ## Código
 Acá les dejo algunas observaciones. Como les mencioné, el servidor está bien, solo añado sugerencias con el tema de RAII, yaml, etc, pero para el cliente les dejé algunas que creo que son más importantes.
 
-Servidor:
-1- Estaría bueno que algunas clases que heredan de Thread, como Acceptor y Game, manejen su propio join, start y stop. Ahora mismo, por ejemplo, Server le hace eso al Acceptor, pero el Acceptor mismo podría encargarse de hacer eso en sus propios constructor y destructor respectivamente, lo que sería más RAII.
-2- El Server no debería devolver códigos de error o éxito, solo tirar una excepción si algo salió mal o no hacer nada si se cerró correctamente.
-https://github.com/manucampoliete/tp-grupal-2025c2-grupo-3/blob/c5b4256a4a2b357b41fa751c7a1406f4cda3476d/server/server.cpp#L15
+Servidor:  
+1- Estaría bueno que algunas clases que heredan de Thread, como Acceptor y Game, manejen su propio join, start y stop. Ahora mismo, por ejemplo, Server le hace eso al Acceptor, pero el Acceptor mismo podría encargarse de hacer eso en sus propios constructor y destructor respectivamente, lo que sería más RAII.  
+2- ~~El Server no debería devolver códigos de error o éxito, solo tirar una excepción si algo salió mal o no hacer nada si se cerró correctamente.
+https://github.com/manucampoliete/tp-grupal-2025c2-grupo-3/blob/c5b4256a4a2b357b41fa751c7a1406f4cda3476d/server/server.cpp#L15~~
 3-
-https://github.com/manucampoliete/tp-grupal-2025c2-grupo-3/blob/c5b4256a4a2b357b41fa751c7a1406f4cda3476d/server/synchronized/responseQueuesMonitor.h#L38-L39
-Podría directamente devolver un bool o tirar una excepción si no está la queue.
+~~https://github.com/manucampoliete/tp-grupal-2025c2-grupo-3/blob/c5b4256a4a2b357b41fa751c7a1406f4cda3476d/server/synchronized/responseQueuesMonitor.h#L38-L39
+Podría directamente devolver un bool o tirar una excepción si no está la queue.~~  
 4- Acá el Player le pide todos sus datos al Car, podría ser, en su lugar, que el Car tenga la responsabilidad de construir su propio snapshot.
 https://github.com/manucampoliete/tp-grupal-2025c2-grupo-3/blob/c5b4256a4a2b357b41fa751c7a1406f4cda3476d/server/gameLogic/player.cpp#L17-L32
 5- En vez de cargar el .yaml cada vez que quiero crear un auto podría cargarse una vez y luego acceder a él desde este método.
 https://github.com/manucampoliete/tp-grupal-2025c2-grupo-3/blob/c5b4256a4a2b357b41fa751c7a1406f4cda3476d/server/gameLogic/car_builder.h#L15-L29
 6- Esto podría venir del .yaml
 https://github.com/manucampoliete/tp-grupal-2025c2-grupo-3/blob/c5b4256a4a2b357b41fa751c7a1406f4cda3476d/server/gameLogic/game.cpp#L27-L30
-7- Para evitar tener que hacer el CRL a mano es que deberían usar la clase que implementaron en common.
-https://github.com/manucampoliete/tp-grupal-2025c2-grupo-3/blob/c5b4256a4a2b357b41fa751c7a1406f4cda3476d/server/gameLogic/game.cpp#L266-L285
-8- Entiendo por qué le pusieron este nombre
+7- ~~Para evitar tener que hacer el CRL a mano es que deberían usar la clase que implementaron en common.
+https://github.com/manucampoliete/tp-grupal-2025c2-grupo-3/blob/c5b4256a4a2b357b41fa751c7a1406f4cda3476d/server/gameLogic/game.cpp#L266-L285~~
+8- ~~Entiendo por qué le pusieron este nombre
 https://github.com/manucampoliete/tp-grupal-2025c2-grupo-3/blob/c5b4256a4a2b357b41fa751c7a1406f4cda3476d/server/clientHandling/clientHandler.cpp#L38-L41
-Pero el ClientHandler no necesita saber que el Sender es un Thread o que el Receiver es un ‘fake thread’. Justamente, hacerlo RAII les permitiría encapsular eso, para el ClientHandler el Sender y el Receiver son entidades que de algún modo manejan IO para él, no necesita saber que lo hacen a través de threads. No son solo los nombres de los métodos, sino que debería bastar con en cada uno solo crear al Sender y al Receiver, no tener que hacerles start.
-9- Si cada vez que tengo que llamarlo tengo que pasarle la referencia, es mejor directamente construirlo con esa referencia.
+Pero el ClientHandler no necesita saber que el Sender es un Thread o que el Receiver es un ‘fake thread’. Justamente, hacerlo RAII les permitiría encapsular eso, para el ClientHandler el Sender y el Receiver son entidades que de algún modo manejan IO para él, no necesita saber que lo hacen a través de threads. No son solo los nombres de los métodos, sino que debería bastar con en cada uno solo crear al Sender y al Receiver, no tener que hacerles start.~~  
+9- ~~Si cada vez que tengo que llamarlo tengo que pasarle la referencia, es mejor directamente construirlo con esa referencia.
 https://github.com/manucampoliete/tp-grupal-2025c2-grupo-3/blob/c5b4256a4a2b357b41fa751c7a1406f4cda3476d/server/clientHandling/clientHandler.cpp#L27-L30
-Si lo que le pasara por referencia fuera el socket, estaría claramente mal, en este caso es lo mismo.
-10- Este archivo está en common
+Si lo que le pasara por referencia fuera el socket, estaría claramente mal, en este caso es lo mismo.~~  
+10- ~~Este archivo está en common
 [tp-grupal-2025c2-grupo-3/common/messages/gameData.h at main · manucampoliete/tp-grupal-2025c2-grupo-3](https://github.com/manucampoliete/tp-grupal-2025c2-grupo-3/blob/main/common/messages/gameData.h)
-Aunque no encontré su uso en el servidor. De todas formas, esta clase tiene contenido de SDL, así que NO debería estar en common, solo la debería usar en el cliente. Esto implica que, o bien están dependiendo de SDL en el servidor, lo cual está mal, o está en la carpeta equivocada, que es un simple fix.
+Aunque no encontré su uso en el servidor. De todas formas, esta clase tiene contenido de SDL, así que NO debería estar en common, solo la debería usar en el cliente. Esto implica que, o bien están dependiendo de SDL en el servidor, lo cual está mal, o está en la carpeta equivocada, que es un simple fix.~~
 
-Cliente:
+Cliente:  
 1- Están usando dependencias de SDL puro. No es grave, pero lo mejor es SDL2pp para RAII, con SDL, en ese sentido, tienen que reinventar la rueda prácticamente. Lo menciono por cosas como el uso de SDL_Mixer
 [tp-grupal-2025c2-grupo-3/client/audio/soundManager.h at main · manucampoliete/tp-grupal-2025c2-grupo-3](https://github.com/manucampoliete/tp-grupal-2025c2-grupo-3/blob/main/client/audio/soundManager.h#L8C1-L8C28)
-Que podrían cambiar por SDL2pp::Mixer.
+Que podrían cambiar por SDL2pp::Mixer.  
 2- No usen std::thread, a mano para eso tienen la clase Thread.
 https://github.com/manucampoliete/tp-grupal-2025c2-grupo-3/blob/c5b4256a4a2b357b41fa751c7a1406f4cda3476d/client/lobby/lobby.cpp#L123-L130
-Es preferible que tengan varios Thread que solo usan una vez a tener varios std::thread sueltos por ahí.
+Es preferible que tengan varios Thread que solo usan una vez a tener varios std::thread sueltos por ahí.  
 3- No estoy seguro de si Qt les impone usar news a mano cada vez. Sin embargo, si alguna vez pueden elegir entre usar news y deletes a mano o usar smart pointers (si Qt se los permite), usen siempre smart pointers.
 https://github.com/manucampoliete/tp-grupal-2025c2-grupo-3/blob/c5b4256a4a2b357b41fa751c7a1406f4cda3476d/client/lobby/guestwaiting.cpp#L8
-Aunque, como les digo, no estoy al tanto de si con Qt hay problemas con eso, en cuyo caso estaría todo ok con usar news.
+Aunque, como les digo, no estoy al tanto de si con Qt hay problemas con eso, en cuyo caso estaría todo ok con usar news.  
 4- Tienen mucha lógica acoplada en Game. Deberían separarla en más clases.
-https://github.com/manucampoliete/tp-grupal-2025c2-grupo-3/blob/main/client/gameHandling/game.cpp
+https://github.com/manucampoliete/tp-grupal-2025c2-grupo-3/blob/main/client/gameHandling/game.cpp  
 5- En ese mismo Game están usando World, que tiene un mutex interno. Como Game corre la interfaz gráfica, lo debe hacer desde el hilo principal; si están usando mutex en el hilo principal, eso está mal, el hilo principal no debe bloquearse, lo único que puede tomarle tiempo es procesar eventos y renderizar, pero no puede estar bloqueado por mutexes.
 
 
