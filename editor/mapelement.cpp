@@ -14,6 +14,25 @@ MapElement::MapElement(ElementType type, ElementDirection direction, const QPixm
     setOffset(-pixmap.width() / 2, -pixmap.height() / 2); // Centro
 }
 
+QString typeToString(ElementType type) {
+    switch (type) {
+        case TYPE_HINT: return "HINT";
+        case TYPE_START: return "START_POINT";
+        case TYPE_FINISH: return "FINISH_LINE";
+        case TYPE_CHECKPOINT: return "CHECKPOINT";
+    }
+    return "UNKNOWN";
+}
+
+QString directionToString(ElementDirection direction) {
+    switch (direction) {
+        case DIR_HORIZONTAL: return "HORIZONTAL";
+        case DIR_VERTICAL:   return "VERTICAL";
+
+        default: return QString::number(direction);
+    }
+}
+
 QVariant MapElement::itemChange(GraphicsItemChange change, const QVariant &value)
 {
     if (change == ItemPositionChange) {

@@ -9,6 +9,8 @@
 #include <QDir>
 #include <QFileDialog>
 #include "toolbox.h"
+#include <yaml-cpp/yaml.h>
+
 
 MapEditor::MapEditor(int cityId, QWidget* parent)
         : QWidget(parent),
@@ -83,6 +85,66 @@ MapEditor::MapEditor(int cityId, QWidget* parent)
     view->centerOn(mapItem);
 }
 
+void MapEditor::serializeToYaml(const QString& filename)
+{
+    QList<QGraphicsItem*> allItems = scene->items();
+
+    std::vector<const MapElement*> elementsToSave;
+
+    for (QGraphicsItem* item : allItems) {
+        MapElement* mapElement = dynamic_cast<MapElement*>(item);
+        if (mapElement) {
+            elementsToSave.push_back(mapElement);
+        }
+    }
+
+    if (elementsToSave.empty()) {
+        std::cout << "Advertencia: No hay elementos para guardar." << std::endl;
+        return;
+    }
+
+    YAML::Emitter emitter;
+    emitter << YAML::BeginMap;
+    emitter << YAML::Key << "map_name" << YAML::Value << "City_Map_1";
+
+    emitter << YAML::Key << "elements";
+    emitter << YAML::Value << YAML::BeginSeq;
+
+    for (const MapElement* element : elementsToSave) {
+
+        QPointF pos = element->pos();
+        ElementType type = element->getElementType();
+        ElementDirection dir = element->getElementDirection();
+
+        emitter << YAML::BeginMap;
+
+        emitter << YAML::Key << "id" << YAML::Value << typeToString(type).toStdString();
+
+        emitter << YAML::Key << "position";
+        emitter << YAML::Value << YAML::BeginSeq << pos.x() << pos.y() << YAML::EndSeq;
+
+        if (type != TYPE_HINT) {
+            emitter << YAML::Key << "direction" << YAML::Value << directionToString(dir).toStdString();
+        } else {
+            emitter << YAML::Key << "hint_type" << YAML::Value << dir;
+        }
+
+        emitter << YAML::EndMap;
+    }
+
+    emitter << YAML::EndSeq;
+    emitter << YAML::EndMap;
+
+    QFile file(filename);
+    if (file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate)) {
+        file.write(emitter.c_str());
+        file.close();
+        std::cout << "✅ Mapa guardado exitosamente en YAML: " << filename.toStdString() << std::endl;
+    } else {
+        std::cout << "❌ Error al abrir archivo para escritura: " << file.errorString().toStdString() << std::endl;
+    }
+}
+
 void MapEditor::onSaveRequest()
 {
     QString filter = "Archivos de Mapa YAML (*.yaml *.yml)";
@@ -102,7 +164,7 @@ void MapEditor::onSaveRequest()
 
         std::cout << "Iniciando serialización a: " << fileName.toStdString() << std::endl;
 
-        //serializeToYaml(fileName);
+        serializeToYaml(fileName);
 
     } else {
         std::cout << "Guardado cancelado por el usuario." << std::endl;

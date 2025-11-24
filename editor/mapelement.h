@@ -34,6 +34,10 @@ enum ElementDirection {
 
 QPixmap loadPixmapForElement(ElementType type, ElementDirection direction);
 
+QString typeToString(ElementType type);
+
+QString directionToString(ElementDirection direction);
+
 
 class MapElement : public QGraphicsPixmapItem {
 public:
