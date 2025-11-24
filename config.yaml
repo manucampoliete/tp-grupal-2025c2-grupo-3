@@ -8,7 +8,6 @@ cars:
     #
     name: "Jeep Wrangler"
     health: 100.0
-    car_id: 0
   1:
     # Physics
     max_speed: 20.0
@@ -18,7 +17,6 @@ cars:
     #
     name: "Ferrari F40"
     health: 50.0
-    car_id: 1
   2:
     # Physics
     max_speed: 20.0
@@ -28,7 +26,6 @@ cars:
     #
     name: "BMW Z4"
     health: 50.0
-    car_id: 2
   3:
     # Physics
     max_speed: 50.0
@@ -38,7 +35,6 @@ cars:
     #
     name: "VW Beetle"
     health: 2.0
-    car_id: 3
   4:
     # Physics
     max_speed: 200.0
@@ -48,7 +44,6 @@ cars:
     #
     name: "Ford Bronco"
     health: 100.0
-    car_id: 4
   5:
     # Physics
     max_speed: 2.0
@@ -58,7 +53,6 @@ cars:
     #
     name: "Ford F100"
     health: 50.0
-    car_id: 5
   6:
     # Physics
     max_speed: 100.0
@@ -68,7 +62,6 @@ cars:
     #
     name: "MB S-Class"
     health: 80.0
-    car_id: 6
 
 game_phases_timers:
   countdown: 10     # Seconds. First 7 -> "Ready", last 3 -> "3", "2", "1", "Go!"
