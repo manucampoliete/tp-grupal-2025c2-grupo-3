@@ -7,7 +7,7 @@
 UIRenderer::UIRenderer(Renderer& renderer, Font& font, Font& fontSmall, Font& fontBig,
                        Texture& mapTexture, World& world, uint8_t playerId,
                        Texture& cheatImmortalityImg, Texture& cheatWinImg,
-                       Texture& cheatLoseImg):
+                       Texture& cheatLoseImg, Texture& cheatSpeedImg):
         renderer(renderer),
         font(font),
         fontSmall(fontSmall),
@@ -17,7 +17,8 @@ UIRenderer::UIRenderer(Renderer& renderer, Font& font, Font& fontSmall, Font& fo
         playerId(playerId),
         cheatImmortalityImg(cheatImmortalityImg),
         cheatWinImg(cheatWinImg),
-        cheatLoseImg(cheatLoseImg) {}
+        cheatLoseImg(cheatLoseImg),
+        cheatSpeedImg(cheatSpeedImg) {}
 
 
 void UIRenderer::updateLayout(int windowWidth, int windowHeight) {
@@ -39,6 +40,8 @@ void UIRenderer::updateLayout(int windowWidth, int windowHeight) {
 
     speedButtonRect = Rect(popupX + marginX, popupY + marginY * 2, btnW, btnH);
     healthButtonRect = Rect(popupX + marginX, popupY + marginY * 4, btnW, btnH);
+    accelButtonRect = Rect(popupX + marginX, popupY + marginY * 2, btnW, btnH);
+    massButtonRect = Rect(popupX + marginX, popupY + marginY * 4, btnW, btnH);
     saveButtonRect = Rect(popupX + (popupW - btnW) / 2, popupY + marginY * 7, btnW, btnH);
 
     // Minimap
@@ -170,10 +173,10 @@ void UIRenderer::renderStatsPopup(const RaceResults& currentResults, uint32_t st
     int rowHeight = (w < 1000) ? 40 : 50;  // More compact rows on smaller screens
     
     // Define column widths (proportional to popup)
-    int colPosW = static_cast<int>(statsPopupRect.w * 0.15f);
-    int colNameW = static_cast<int>(statsPopupRect.w * 0.35f);
-    int colRaceW = static_cast<int>(statsPopupRect.w * 0.25f);
-    int colTotalW = static_cast<int>(statsPopupRect.w * 0.25f);
+    int colPosW = static_cast<int>(statsPopupRect.w * 0.12f);
+    int colNameW = static_cast<int>(statsPopupRect.w * 0.30f);
+    int colRaceW = static_cast<int>(statsPopupRect.w * 0.29f);
+    int colTotalW = static_cast<int>(statsPopupRect.w * 0.29f);
 
     int colPosX = statsPopupRect.x + 20;
     int colNameX = colPosX + colPosW;
@@ -210,8 +213,8 @@ void UIRenderer::renderStatsPopup(const RaceResults& currentResults, uint32_t st
     int position = 1;
 
     for (const auto& player: currentResults.players) {
-        // posición
-        std::string posText = std::to_string(position) + "°";
+        // Position
+        std::string posText = std::to_string(position);
         SDL_Color rowColor = (position == 1) ? SDL_Color{255, 215, 0, 255} : // Gold for 1°
                               (position == 2) ? SDL_Color{192, 192, 192, 255} : // Silver for 2°
                               (position == 3) ? SDL_Color{205, 127, 50, 255} : // Bronze for 3°
@@ -219,13 +222,15 @@ void UIRenderer::renderStatsPopup(const RaceResults& currentResults, uint32_t st
 
         Surface posS = activeFont.RenderText_Solid(posText, rowColor);
         Texture posT(renderer, posS);
-        renderer.Copy(posT, NullOpt, Rect(colPosX, rowY, posT.GetWidth(), posT.GetHeight()));
+        int posX = colPosX + (colPosW - posT.GetWidth()) / 2;
+        renderer.Copy(posT, NullOpt, Rect(posX, rowY, posT.GetWidth(), posT.GetHeight()));
 
         // Name
         Surface nameS = activeFont.RenderText_Solid(player.playerName, rowColor);
         Texture nameT(renderer, nameS);
+        int nameX = colNameX + (colNameW - nameT.GetWidth()) / 2;
         renderer.Copy(nameT, NullOpt,
-                      Rect(colNameX, rowY, nameT.GetWidth(), nameT.GetHeight()));
+                      Rect(nameX, rowY, nameT.GetWidth(), nameT.GetHeight()));
 
         // Race time
         int raceMinutes = player.raceTimeMs / 60000;
@@ -237,8 +242,9 @@ void UIRenderer::renderStatsPopup(const RaceResults& currentResults, uint32_t st
 
         Surface raceS = activeFont.RenderText_Solid(raceTimeBuf, rowColor);
         Texture raceT(renderer, raceS);
+        int raceX = colRaceX + (colRaceW - raceT.GetWidth()) / 2;
         renderer.Copy(raceT, NullOpt,
-                      Rect(colRaceX, rowY, raceT.GetWidth(), raceT.GetHeight()));
+                      Rect(raceX, rowY, raceT.GetWidth(), raceT.GetHeight()));
         
         // Total time
         int totalMinutes = player.totalTimeMs / 60000;
@@ -250,8 +256,9 @@ void UIRenderer::renderStatsPopup(const RaceResults& currentResults, uint32_t st
 
         Surface totalS = activeFont.RenderText_Solid(totalTimeBuf, rowColor);
         Texture totalT(renderer, totalS);
+        int totalX = colTotalX + (colTotalW - totalT.GetWidth()) / 2;
         renderer.Copy(totalT, NullOpt,
-                      Rect(colTotalX, rowY, totalT.GetWidth(), totalT.GetHeight()));
+                      Rect(totalX, rowY, totalT.GetWidth(), totalT.GetHeight()));
 
         rowY += rowHeight;
         position++;
@@ -270,7 +277,8 @@ void UIRenderer::renderStatsPopup(const RaceResults& currentResults, uint32_t st
 }
 
 
-void UIRenderer::renderModificationPopup(bool speedModified, bool healthModified, bool saved,
+void UIRenderer::renderModificationPopup(bool speedModified, bool healthModified, 
+                                           bool accelModified, bool massModified, bool saved,
                                            uint32_t modTimerMs, const CarProperties& props) {
     // Reset scaling for the UI
     renderer.SetScale(1.0f, 1.0f);
@@ -286,17 +294,27 @@ void UIRenderer::renderModificationPopup(bool speedModified, bool healthModified
     
     // Choose font based on window size
     Font& activeFont = (w < 1000) ? fontSmall : font;
-    
-    // Recalculate buttons (positions relative to the recalculated popup)
-    int btnW = static_cast<int>(popupW * 0.6f);
-    int btnH = static_cast<int>(popupH * 0.15f);
-    int marginX = (popupW - btnW) / 2;  // centrar horizontalmente
-    int marginY = static_cast<int>(popupH * 0.15f);
 
-    Rect speedBtn(popupX + marginX, popupY + marginY * 1.5, btnW, btnH);
-    Rect healthBtn(popupX + marginX, popupY + marginY * 2.6, btnW, btnH);
-    Rect saveBtn(popupX + marginX, popupY + popupH - marginY - btnH - 50, btnW, btnH);
+    // Buttons in two columns
+    int btnW = static_cast<int>(popupW * 0.38f);
+    int btnH = static_cast<int>(popupH * 0.12f);
+    int gapX = static_cast<int>(popupW * 0.06f); // Space between cols
+    int gapY = static_cast<int>(popupH * 0.03f); // Space between rows
+    int startY = modPopupRect.y + 130;
     
+    int leftX = popupX + static_cast<int>(popupW * 0.08f);
+    int rightX = leftX + btnW + gapX;
+
+    Rect speedBtn(leftX, startY, btnW, btnH);
+    Rect healthBtn(rightX, startY, btnW, btnH);
+    Rect accelBtn(leftX, startY + btnH + gapY, btnW, btnH);
+    Rect massBtn(rightX, startY + btnH + gapY, btnW, btnH);
+    
+    // Save button (centered)
+    int saveBtnW = static_cast<int>(popupW * 0.5f);
+    int saveBtnH = static_cast<int>(popupH * 0.1f);
+    Rect saveBtn(popupX + (popupW - saveBtnW) / 2, modPopupRect.y + popupH - saveBtnH - 70, saveBtnW, saveBtnH);
+
     // Dark overlay in the background
     renderer.SetDrawBlendMode(SDL_BLENDMODE_BLEND);
     renderer.SetDrawColor(0, 0, 0, 180);
@@ -327,7 +345,7 @@ void UIRenderer::renderModificationPopup(bool speedModified, bool healthModified
             Rect(subX, modPopupRect.y + 70, subtexture.GetWidth(), subtexture.GetHeight()));
 
 
-    // VELOCITY BUTTON
+    // SPEED BUTTON
     renderer.SetDrawBlendMode(SDL_BLENDMODE_BLEND);
     renderer.SetDrawColor(speedModified ? 50 : 80, speedModified ? 200 : 80,
                           speedModified ? 50 : 100, 255);
@@ -341,20 +359,19 @@ void UIRenderer::renderModificationPopup(bool speedModified, bool healthModified
     
     // Button's text (vertically centered)
     std::string speedText =
-            "Velocity: " + std::to_string(props.speed) + " → " + std::to_string(props.speed + 5);
+            "Speed: " + std::to_string(props.speed) + " → " + std::to_string(props.speed + 5);
     Surface speedSurface = activeFont.RenderText_Solid(speedText, {255, 255, 255, 255});
     Texture speedTexture(renderer, speedSurface);
     int speedTextX = speedBtn.x + (speedBtn.w - speedTexture.GetWidth()) / 2;  // Centered
-    int speedTextY = speedBtn.y + 15;
-    renderer.Copy(
-            speedTexture, NullOpt,
+    int speedTextY = speedBtn.y + 10;
+    renderer.Copy(speedTexture, NullOpt,
             Rect(speedTextX, speedTextY, speedTexture.GetWidth(), speedTexture.GetHeight()));
     
     // Penalty (to the right of the button)
     Surface speedPen = activeFont.RenderText_Solid("Cost: +10s", {255, 200, 100, 255});
     Texture speedPenT(renderer, speedPen);
     int speedPenX = speedBtn.x + (speedBtn.w - speedPenT.GetWidth()) / 2;  // Centered
-    int speedPenY = speedTextY + speedTexture.GetHeight() + 10;
+    int speedPenY = speedTextY + speedTexture.GetHeight() + 5;
     renderer.Copy(speedPenT, NullOpt,
                   Rect(speedPenX, speedPenY, speedPenT.GetWidth(), speedPenT.GetHeight()));
 
@@ -375,18 +392,78 @@ void UIRenderer::renderModificationPopup(bool speedModified, bool healthModified
     Surface healthSurface = activeFont.RenderText_Solid(healthText, {255, 255, 255, 255});
     Texture healthTexture(renderer, healthSurface);
     int healthTextX = healthBtn.x + (healthBtn.w - healthTexture.GetWidth()) / 2;  // Centered
-    int healthTextY = healthBtn.y + 15;
+    int healthTextY = healthBtn.y + 10;
     renderer.Copy(healthTexture, NullOpt,
-                  Rect(healthTextX, healthTextY, healthTexture.GetWidth(),
-                       healthTexture.GetHeight()));
+                  Rect(healthTextX, healthTextY, healthTexture.GetWidth(), healthTexture.GetHeight()));
 
     Surface healthPen = activeFont.RenderText_Solid("Cost: +8s", {255, 200, 100, 255});
     Texture healthPenT(renderer, healthPen);
     int healthPenX = healthBtn.x + (healthBtn.w - healthPenT.GetWidth()) / 2;  // Centered
-    int healthPenY = healthTextY + healthTexture.GetHeight() + 10;
-    renderer.Copy(
-            healthPenT, NullOpt,
+    int healthPenY = healthTextY + healthTexture.GetHeight() + 5;
+    renderer.Copy(healthPenT, NullOpt,
             Rect(healthPenX, healthPenY, healthPenT.GetWidth(), healthPenT.GetHeight()));
+    
+
+    // ACCEL BUTTON
+    renderer.SetDrawBlendMode(SDL_BLENDMODE_BLEND);
+    renderer.SetDrawColor(accelModified ? 50 : 80, accelModified ? 200 : 80,
+                          accelModified ? 50 : 100, 255);
+    renderer.FillRect(accelBtn);
+    
+    // Button's border
+    renderer.SetDrawBlendMode(SDL_BLENDMODE_NONE);
+    renderer.SetDrawColor(accelModified ? 100 : 60, accelModified ? 255 : 100,
+                          accelModified ? 100 : 120, 255);
+    renderer.DrawRect(accelBtn);
+    
+    // Button's text (vertically centered)
+    std::string accelText =
+            "Acceleration: " + std::to_string(props.accel) + " → " + std::to_string(props.accel + 5);
+    Surface accelSurface = activeFont.RenderText_Solid(accelText, {255, 255, 255, 255});
+    Texture accelTexture(renderer, accelSurface);
+    int accelTextX = accelBtn.x + (accelBtn.w - accelTexture.GetWidth()) / 2;  // Centered
+    int accelTextY = accelBtn.y + 10;
+    renderer.Copy(accelTexture, NullOpt,
+            Rect(accelTextX, accelTextY, accelTexture.GetWidth(), accelTexture.GetHeight()));
+    
+    // Penalty (to the right of the button)
+    Surface accelPen = activeFont.RenderText_Solid("Cost: +10s", {255, 200, 100, 255});
+    Texture accelPenT(renderer, accelPen);
+    int accelPenX = accelBtn.x + (accelBtn.w - accelPenT.GetWidth()) / 2;  // Centered
+    int accelPenY = accelTextY + accelTexture.GetHeight() + 5;
+    renderer.Copy(accelPenT, NullOpt,
+                  Rect(accelPenX, accelPenY, accelPenT.GetWidth(), accelPenT.GetHeight()));
+    
+
+    // MASS BUTTON
+    renderer.SetDrawBlendMode(SDL_BLENDMODE_BLEND);
+    renderer.SetDrawColor(massModified ? 50 : 80, massModified ? 200 : 80,
+                          massModified ? 50 : 100, 255);
+    renderer.FillRect(massBtn);
+    
+    // Button's border
+    renderer.SetDrawBlendMode(SDL_BLENDMODE_NONE);
+    renderer.SetDrawColor(massModified ? 100 : 60, massModified ? 255 : 100,
+                          massModified ? 100 : 120, 255);
+    renderer.DrawRect(massBtn);
+    
+    // Button's text (vertically centered)
+    std::string massText =
+            "Velocity: " + std::to_string(props.mass) + " → " + std::to_string(props.mass + 5);
+    Surface massSurface = activeFont.RenderText_Solid(massText, {255, 255, 255, 255});
+    Texture massTexture(renderer, massSurface);
+    int massTextX = massBtn.x + (massBtn.w - massTexture.GetWidth()) / 2;  // Centered
+    int massTextY = massBtn.y + 10;
+    renderer.Copy(massTexture, NullOpt,
+            Rect(massTextX, massTextY, massTexture.GetWidth(), massTexture.GetHeight()));
+    
+    // Penalty (to the right of the button)
+    Surface massPen = activeFont.RenderText_Solid("Cost: +10s", {255, 200, 100, 255});
+    Texture massPenT(renderer, massPen);
+    int massPenX = massBtn.x + (massBtn.w - massPenT.GetWidth()) / 2;  // Centered
+    int massPenY = massTextY + massTexture.GetHeight() + 5;
+    renderer.Copy(massPenT, NullOpt,
+                  Rect(massPenX, massPenY, massPenT.GetWidth(), massPenT.GetHeight()));
 
     
     // SAVE BUTTON
@@ -413,8 +490,7 @@ void UIRenderer::renderModificationPopup(bool speedModified, bool healthModified
     Texture saveTexture(renderer, saveSurface);
     int saveTextX = saveBtn.x + (saveBtn.w - saveTexture.GetWidth()) / 2;
     int saveTextY = saveBtn.y + (saveBtn.h - saveTexture.GetHeight()) / 2;
-    renderer.Copy(
-            saveTexture, NullOpt,
+    renderer.Copy(saveTexture, NullOpt,
             Rect(saveTextX, saveTextY, saveTexture.GetWidth(), saveTexture.GetHeight()));
 
     
@@ -426,12 +502,13 @@ void UIRenderer::renderModificationPopup(bool speedModified, bool healthModified
     Texture countdownTexture(renderer, countdownSurface);
     int timerX = modPopupRect.x + (modPopupRect.w - countdownTexture.GetWidth()) / 2;
     int timerY = modPopupRect.y + modPopupRect.h - 40;
-    renderer.Copy(
-            countdownTexture, NullOpt,
+    renderer.Copy(countdownTexture, NullOpt,
             Rect(timerX, timerY, countdownTexture.GetWidth(), countdownTexture.GetHeight()));
 
     speedButtonRect = speedBtn;
     healthButtonRect = healthBtn;
+    accelButtonRect = accelBtn;
+    massButtonRect = massBtn;
     saveButtonRect = saveBtn;
 }
 
@@ -533,6 +610,12 @@ void UIRenderer::renderCheatNotification(CheatType activeCheatNotification) {
             titleColor = {255, 0, 0, 255};  // Red
             cheatImg = &cheatLoseImg;
             break;
+        
+        case CheatType::SUPER_SPEED:
+            title = "SUPER SPEED";
+            titleColor = {255, 255, 0, 255};  // Yellow
+            cheatImg = &cheatSpeedImg;
+            break;
 
         default:
             return;
@@ -562,6 +645,7 @@ void UIRenderer::renderCheatNotification(CheatType activeCheatNotification) {
     renderer.Copy(titleTexture, NullOpt,
                   Rect(titleX, titleY, titleTexture.GetWidth(), titleTexture.GetHeight()));
 }
+
 
 void UIRenderer::renderEliminatedPopup() {
     renderer.SetScale(1.0f, 1.0f);

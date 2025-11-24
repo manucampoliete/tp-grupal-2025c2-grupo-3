@@ -26,6 +26,7 @@ Game::Game(World& world, GameLoop& gameLoop, uint8_t playerId)
       cheatInmortalityImg(renderer, "client/assets/cheats/inmortality.png"),
       cheatWinImg(renderer, "client/assets/cheats/win.png"),
       cheatLoseImg(renderer, "client/assets/cheats/lose.png"),
+      cheatSpeedImg(renderer, "client/assets/cheats/speed.png"),
       
       // References
       world(world),
@@ -37,7 +38,7 @@ Game::Game(World& world, GameLoop& gameLoop, uint8_t playerId)
       soundManager(),
       worldRenderer(renderer, mapTexture, carSprites, world, playerId),
       uiRenderer(renderer, font, fontSmall, fontBig, mapTexture, world, playerId,
-                 cheatInmortalityImg, cheatWinImg, cheatLoseImg),
+                 cheatInmortalityImg, cheatWinImg, cheatLoseImg, cheatSpeedImg),
       effectsManager(),
       inputHandler(gameLoop, stateManager, soundManager, worldRenderer, uiRenderer) {
 
@@ -58,12 +59,13 @@ void Game::loadSounds() {
         soundManager.loadSound("explosion", "client/assets/sounds/explosion.wav");
         soundManager.loadSound("checkpoint", "client/assets/sounds/checkpoint.wav");
         soundManager.loadSound("countdown", "client/assets/sounds/beep.wav");
-        soundManager.loadSound("race_end", "client/assets/sounds/finish.wav");
+        soundManager.loadSound("race_end", "client/assets/sounds/race_end.wav");
         soundManager.loadSound("brake", "client/assets/sounds/brake.wav");
         soundManager.loadSound("engine", "client/assets/sounds/engine.wav");
         soundManager.loadSound("confirm", "client/assets/sounds/confirm.wav");
         soundManager.loadSound("victory", "client/assets/sounds/victory.wav");
         soundManager.loadSound("race_start", "client/assets/sounds/race_start.wav");
+        soundManager.loadSound("button_click", "client/assets/sounds/button_click.wav");
     } catch (const std::exception& e) {
         std::cerr << "[GAME] Error loading sounds: " << e.what() << std::endl;
     }
@@ -157,6 +159,7 @@ void Game::render() {
 
         case GameState::MODIFYING_CAR:
             uiRenderer.renderModificationPopup(stateManager.isSpeedModified(), stateManager.isHealthModified(), 
+                        stateManager.isAccelModified(), stateManager.isMassModified(), 
                         stateManager.areModsSaved(), stateManager.getModTimerMs(), stateManager.getCarProperties());
             break;
 

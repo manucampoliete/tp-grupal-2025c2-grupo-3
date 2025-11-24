@@ -182,10 +182,10 @@ void GameLoop::sendMovement(bool up, bool down, bool left, bool right) {
     clientCommandQueue.tryPush(cmd);
 }
 
-void GameLoop::sendModifications(bool speed, bool health) {
-    std::cout << "[GAME_HANDLER] Modifications: speed=" << speed << ", health=" << health
+void GameLoop::sendModifications(bool speed, bool health, bool accel, bool mass) {
+    std::cout << "[GAME_HANDLER] Modifications: speed=" << speed << ", health=" << health << ", accel=" << accel << ", mass=" << mass
               << std::endl;
-    ModifyCarCommand cmd(speed, health);
+    ModifyCarCommand cmd(speed, health, accel, mass);
     clientCommandQueue.tryPush(cmd);
 }
 
@@ -202,4 +202,9 @@ void GameLoop::sendCheatInstaWin() {
 void GameLoop::sendCheatInstaLose() {
     clientCommandQueue.tryPush(CheatInstaLoseCommand{});
     if (game) game->showCheatNotification(CheatType::INSTA_LOSE);
+}
+
+void GameLoop::sendCheatSuperSpeed() {
+    clientCommandQueue.tryPush(CheatSuperSpeedCommand{});
+    if (game) game->showCheatNotification(CheatType::SUPER_SPEED);
 }

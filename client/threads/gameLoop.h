@@ -69,10 +69,11 @@ public:
      * Methods to send commands (called by Game)
      */
     void sendMovement(bool up, bool down, bool left, bool right);
-    void sendModifications(bool speed, bool health);
+    void sendModifications(bool speed, bool health, bool accel, bool mass);
     void sendCheatInmortality();
     void sendCheatInstaWin();
     void sendCheatInstaLose();
+    void sendCheatSuperSpeed();
 
     ~GameLoop() override = default;
 };

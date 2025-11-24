@@ -36,6 +36,8 @@ private:
     CarProperties carProperties;
     bool speedModified = false;
     bool healthModified = false;
+    bool accelModified = false;
+    bool massModified = false;
     bool modsSaved = false;
 
     // Eliminated state
@@ -66,6 +68,8 @@ public:
     // Modification controls
     void toggleSpeedMod();
     void toggleHealthMod();
+    void toggleAccelMod();
+    void toggleMassMod();
     void saveMods();
 
     // Timer setters 
@@ -83,6 +87,8 @@ public:
     
     bool isSpeedModified() const { return speedModified; }
     bool isHealthModified() const { return healthModified; }
+    bool isAccelModified() const { return accelModified; }
+    bool isMassModified() const { return massModified; }
     bool areModsSaved() const { return modsSaved; }
     
     float getEliminatedPopupDelayMs() const { return eliminatedPopupDelayMs; }

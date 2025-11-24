@@ -49,6 +49,7 @@ private:
     SDL2pp::Texture cheatInmortalityImg;
     SDL2pp::Texture cheatWinImg;
     SDL2pp::Texture cheatLoseImg;
+    SDL2pp::Texture cheatSpeedImg;
 
     World& world;
     GameLoop& gameLoop;

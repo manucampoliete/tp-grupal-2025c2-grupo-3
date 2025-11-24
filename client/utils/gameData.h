@@ -8,7 +8,7 @@
 #include <SDL2pp/Rect.hh>
 
 
-enum class CheatType { NONE, INMORTALITY, INSTA_WIN, INSTA_LOSE };
+enum class CheatType { NONE, INMORTALITY, INSTA_WIN, INSTA_LOSE, SUPER_SPEED };
 
 // Coordinates (x, y, width, height) in the sprite sheet for each car type
 const SDL2pp::Rect CARS[7] = {
@@ -66,6 +66,8 @@ struct FinalResults {
 struct CarProperties {
     uint16_t speed;
     uint16_t health;
+    uint16_t accel;
+    uint16_t mass;
 };
 
 // datos de colisión
@@ -214,18 +216,32 @@ struct SmokeCloud {
 };
 
 // Brake trail 
+// Two lines. Now it doesn't go over the buildings
 struct BrakeTrail {
-    float x1, y1;  // Start
-    float x2, y2;  // End
+    std::vector<std::pair<float, float>> points;
     float life;
     float alpha;
+    static constexpr int MAX_POINTS = 50; // so we dont use too much memory
     
-    BrakeTrail(float x, float y) 
-        : x1(x), y1(y), x2(x), y2(y), life(3.0f), alpha(200) {}
+    BrakeTrail(float x, float y) : 
+        life(3.0f), alpha(200) {
+            points.push_back({x,y});
+        }
     
     void extend(float newX, float newY) {
-        x2 = newX;
-        y2 = newY;
+        // only add if its far enough from the last one
+        if (!points.empty()) {
+            float dx = newX - points.back().first;
+            float dy = newY - points.back().second;
+            float dist = std::sqrt(dx*dx + dy*dy);
+            
+            // At least 5px f
+            if (dist > 5.0f) {
+                points.push_back({newX, newY});
+                if (points.size() > MAX_POINTS)
+                    points.erase(points.begin());
+            }
+        }
     }
     
     void update(float dt) {
