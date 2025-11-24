@@ -68,6 +68,16 @@ void GameStateManager::toggleHealthMod() {
         healthModified = !healthModified;
 }
 
+void GameStateManager::toggleAccelMod() {
+    if (!modsSaved)
+        accelModified = !accelModified;
+}
+
+void GameStateManager::toggleMassMod() {
+    if (!modsSaved)
+        massModified = !massModified;
+}
+
 void GameStateManager::saveMods() {
     modsSaved = true;
 }

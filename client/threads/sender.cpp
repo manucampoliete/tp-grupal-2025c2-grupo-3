@@ -27,7 +27,7 @@ void Sender::run() {
                 else if constexpr (std::is_same_v<T, CheatSuperSpeedCommand>) 
                     protocol.sendSuperSpeedRequest();
                 else if constexpr (std::is_same_v<T, ModifyCarCommand>) 
-                    protocol.sendModifications(command.speedMod, command.healthMod);
+                    protocol.sendModifications(command.speedMod, command.healthMod, command.accelMod, command.massMod);
             }, cmd);
 
         } catch (const ClosedQueue& e) {

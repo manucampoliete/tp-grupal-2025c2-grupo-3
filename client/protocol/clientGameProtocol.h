@@ -28,7 +28,7 @@ public:
     uint8_t recvMessageType();
 
     void sendMove(const ActiveDirections& activeDirections);
-    void sendModifications(bool speedMod, bool healthMod);
+    void sendModifications(bool speedMod, bool healthMod, bool accelMod, bool massMod);
 
     Snapshot recvSnapshot();
     uint8_t recvCountdown();

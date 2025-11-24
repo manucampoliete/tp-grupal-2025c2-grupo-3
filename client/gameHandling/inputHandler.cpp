@@ -139,14 +139,26 @@ void InputHandler::handleMouseClick(const SDL_Event& event) {
             stateManager.toggleHealthMod();
             soundManager.playSound("confirm");
         }
+
+        // Accel button
+        if (uiRenderer.getAccelButtonRect().Contains(x, y)) {
+            stateManager.toggleAccelMod();
+            soundManager.playSound("confirm");
+        }
+
+        // Mass button
+        if (uiRenderer.getMassButtonRect().Contains(x, y)) {
+            stateManager.toggleMassMod();
+            soundManager.playSound("confirm");
+        }
     }
 
     // Save button
     if (uiRenderer.getSaveButtonRect().Contains(x, y) && !stateManager.areModsSaved()) {
         stateManager.saveMods();
         soundManager.playSound("confirm");
-        gameLoop.sendModifications(stateManager.isSpeedModified(),
-                                   stateManager.isHealthModified());
+        gameLoop.sendModifications(stateManager.isSpeedModified(), stateManager.isHealthModified(),
+                                    stateManager.isAccelModified(), stateManager.isMassModified());
         std::cout << "[INPUT] Modifications saved and sent" << std::endl;
     }
 }

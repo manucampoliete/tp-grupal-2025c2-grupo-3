@@ -158,6 +158,7 @@ void Game::render() {
 
         case GameState::MODIFYING_CAR:
             uiRenderer.renderModificationPopup(stateManager.isSpeedModified(), stateManager.isHealthModified(), 
+                        stateManager.isAccelModified(), stateManager.isMassModified(), 
                         stateManager.areModsSaved(), stateManager.getModTimerMs(), stateManager.getCarProperties());
             break;
 

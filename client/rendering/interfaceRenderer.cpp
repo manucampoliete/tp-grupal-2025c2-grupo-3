@@ -40,6 +40,8 @@ void UIRenderer::updateLayout(int windowWidth, int windowHeight) {
 
     speedButtonRect = Rect(popupX + marginX, popupY + marginY * 2, btnW, btnH);
     healthButtonRect = Rect(popupX + marginX, popupY + marginY * 4, btnW, btnH);
+    accelButtonRect = Rect(popupX + marginX, popupY + marginY * 2, btnW, btnH);
+    massButtonRect = Rect(popupX + marginX, popupY + marginY * 4, btnW, btnH);
     saveButtonRect = Rect(popupX + (popupW - btnW) / 2, popupY + marginY * 7, btnW, btnH);
 
     // Minimap
@@ -271,7 +273,8 @@ void UIRenderer::renderStatsPopup(const RaceResults& currentResults, uint32_t st
 }
 
 
-void UIRenderer::renderModificationPopup(bool speedModified, bool healthModified, bool saved,
+void UIRenderer::renderModificationPopup(bool speedModified, bool healthModified, 
+                                           bool accelModified, bool massModified, bool saved,
                                            uint32_t modTimerMs, const CarProperties& props) {
     // Reset scaling for the UI
     renderer.SetScale(1.0f, 1.0f);
@@ -296,6 +299,8 @@ void UIRenderer::renderModificationPopup(bool speedModified, bool healthModified
 
     Rect speedBtn(popupX + marginX, popupY + marginY * 1.5, btnW, btnH);
     Rect healthBtn(popupX + marginX, popupY + marginY * 2.6, btnW, btnH);
+    Rect accelBtn(popupX + marginX, popupY + marginY * 1.5, btnW, btnH);
+    Rect massBtn(popupX + marginX, popupY + marginY * 2.6, btnW, btnH);
     Rect saveBtn(popupX + marginX, popupY + popupH - marginY - btnH - 50, btnW, btnH);
     
     // Dark overlay in the background
@@ -388,6 +393,70 @@ void UIRenderer::renderModificationPopup(bool speedModified, bool healthModified
     renderer.Copy(
             healthPenT, NullOpt,
             Rect(healthPenX, healthPenY, healthPenT.GetWidth(), healthPenT.GetHeight()));
+    
+
+    // ACCEL BUTTON
+    renderer.SetDrawBlendMode(SDL_BLENDMODE_BLEND);
+    renderer.SetDrawColor(accelModified ? 50 : 80, accelModified ? 200 : 80,
+                          accelModified ? 50 : 100, 255);
+    renderer.FillRect(accelBtn);
+    
+    // Button's border
+    renderer.SetDrawBlendMode(SDL_BLENDMODE_NONE);
+    renderer.SetDrawColor(accelModified ? 100 : 60, accelModified ? 255 : 100,
+                          accelModified ? 100 : 120, 255);
+    renderer.DrawRect(accelBtn);
+    
+    // Button's text (vertically centered)
+    std::string accelText =
+            "Acceleration: " + std::to_string(props.accel) + " → " + std::to_string(props.accel + 5);
+    Surface accelSurface = activeFont.RenderText_Solid(accelText, {255, 255, 255, 255});
+    Texture accelTexture(renderer, accelSurface);
+    int accelTextX = accelBtn.x + (accelBtn.w - accelTexture.GetWidth()) / 2;  // Centered
+    int accelTextY = accelBtn.y + 15;
+    renderer.Copy(
+            accelTexture, NullOpt,
+            Rect(accelTextX, accelTextY, accelTexture.GetWidth(), accelTexture.GetHeight()));
+    
+    // Penalty (to the right of the button)
+    Surface accelPen = activeFont.RenderText_Solid("Cost: +10s", {255, 200, 100, 255});
+    Texture accelPenT(renderer, accelPen);
+    int accelPenX = accelBtn.x + (accelBtn.w - accelPenT.GetWidth()) / 2;  // Centered
+    int accelPenY = accelTextY + accelTexture.GetHeight() + 10;
+    renderer.Copy(accelPenT, NullOpt,
+                  Rect(accelPenX, accelPenY, accelPenT.GetWidth(), accelPenT.GetHeight()));
+    
+
+    // MASS BUTTON
+    renderer.SetDrawBlendMode(SDL_BLENDMODE_BLEND);
+    renderer.SetDrawColor(massModified ? 50 : 80, massModified ? 200 : 80,
+                          massModified ? 50 : 100, 255);
+    renderer.FillRect(massBtn);
+    
+    // Button's border
+    renderer.SetDrawBlendMode(SDL_BLENDMODE_NONE);
+    renderer.SetDrawColor(massModified ? 100 : 60, massModified ? 255 : 100,
+                          massModified ? 100 : 120, 255);
+    renderer.DrawRect(massBtn);
+    
+    // Button's text (vertically centered)
+    std::string massText =
+            "Velocity: " + std::to_string(props.mass) + " → " + std::to_string(props.mass + 5);
+    Surface massSurface = activeFont.RenderText_Solid(massText, {255, 255, 255, 255});
+    Texture massTexture(renderer, massSurface);
+    int massTextX = massBtn.x + (massBtn.w - massTexture.GetWidth()) / 2;  // Centered
+    int massTextY = massBtn.y + 15;
+    renderer.Copy(
+            massTexture, NullOpt,
+            Rect(massTextX, massTextY, massTexture.GetWidth(), massTexture.GetHeight()));
+    
+    // Penalty (to the right of the button)
+    Surface massPen = activeFont.RenderText_Solid("Cost: +10s", {255, 200, 100, 255});
+    Texture massPenT(renderer, massPen);
+    int massPenX = massBtn.x + (massBtn.w - massPenT.GetWidth()) / 2;  // Centered
+    int massPenY = massTextY + massTexture.GetHeight() + 10;
+    renderer.Copy(massPenT, NullOpt,
+                  Rect(massPenX, massPenY, massPenT.GetWidth(), massPenT.GetHeight()));
 
     
     // SAVE BUTTON
@@ -433,6 +502,8 @@ void UIRenderer::renderModificationPopup(bool speedModified, bool healthModified
 
     speedButtonRect = speedBtn;
     healthButtonRect = healthBtn;
+    accelButtonRect = accelBtn;
+    massButtonRect = massBtn;
     saveButtonRect = saveBtn;
 }
 
