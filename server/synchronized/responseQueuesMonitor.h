@@ -35,12 +35,11 @@ public:
 
     /**
      * Removes the response queue for the given clientId.
-     * If a queue for the given clientId exists, removes it from the map and returns 1.
-     * Otherwise, returns 0.
+     * Returns true if a queue was removed, false if no queue for the given clientId existed.
      * Note: the Sender associated with the queue should have been
      * stopped before calling this method.
      */
-    std::size_t removeQueue(ClientID clientId);
+    bool removeQueue(ClientID clientId);
 
     /**
      * Broadcasts the given snapshot to all response queues.
