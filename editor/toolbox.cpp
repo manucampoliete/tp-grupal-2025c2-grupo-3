@@ -45,12 +45,28 @@ Toolbox::Toolbox(QWidget* parent) : QWidget(parent)
     hintGrid->addWidget(new ElementIcon(TYPE_HINT, DIR_CURVE_RIGHT_UP,    this), 3, 2); // R-UP (10)
     hintGrid->addWidget(new ElementIcon(TYPE_HINT, DIR_CURVE_RIGHT_DOWN,  this), 4, 1); // R-DOWN (11) - Nota: en la fila 4
 
-
     // Ajustar el espaciado
     hintGrid->setHorizontalSpacing(5);
     hintGrid->setVerticalSpacing(5);
 
     mainLayout->addLayout(hintGrid);
+
+    QLabel* raceLabel = new QLabel("\nInicio y Meta"); // Añadir un salto de línea para separación
+    mainLayout->addWidget(raceLabel);
+
+    QGridLayout* raceGrid = new QGridLayout;
+
+    // PUNTO DE PARTIDA (START)
+    raceGrid->addWidget(new QLabel("Inicio:"), 0, 0);
+    raceGrid->addWidget(new ElementIcon(TYPE_START, DIR_HORIZONTAL, this), 0, 1); // H
+    raceGrid->addWidget(new ElementIcon(TYPE_START, DIR_VERTICAL,   this), 0, 2); // V
+
+            // META DE LLEGADA (FINISH)
+    raceGrid->addWidget(new QLabel("Meta:"), 1, 0);
+    raceGrid->addWidget(new ElementIcon(TYPE_FINISH, DIR_HORIZONTAL, this), 1, 1); // H
+    raceGrid->addWidget(new ElementIcon(TYPE_FINISH, DIR_VERTICAL,   this), 1, 2); // V
+
+    mainLayout->addLayout(raceGrid);
 
     // --- ESPACIO PARA CHECKPOINTS/START/FINISH (futuro) ---
     mainLayout->addStretch();

@@ -20,5 +20,9 @@
         <file>media/assets/curve_right_up.png</file>
         <file>media/assets/curve_up_left.png</file>
         <file>media/assets/curve_up_right.png</file>
+        <file>media/assets/finish_horizontal.png</file>
+        <file>media/assets/finish_vertical.png</file>
+        <file>media/assets/start_horizontal.png</file>
+        <file>media/assets/start_vertical.png</file>
     </qresource>
 </RCC>
