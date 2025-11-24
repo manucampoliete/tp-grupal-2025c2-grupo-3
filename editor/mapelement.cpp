@@ -78,8 +78,13 @@ QString getAssetPath(ElementType type, ElementDirection direction)
             }
             break;
 
-        case TYPE_CHECKPOINT:
-            return (direction == DIR_HORIZONTAL) ? base + "cp_horizontal.png" : base + "cp_vertical.png";
+        case TYPE_CHECKPOINT: // <-- NUEVO CASO
+            switch (direction) {
+                case DIR_HORIZONTAL: return base + "cp_horizontal.png";
+                case DIR_VERTICAL:   return base + "cp_vertical.png";
+                default: break;
+            }
+            break;
 
         case TYPE_START:
             return (direction == DIR_HORIZONTAL) ? base + "start_horizontal.png" : base + "start_vertical.png";

@@ -24,5 +24,7 @@
         <file>media/assets/finish_vertical.png</file>
         <file>media/assets/start_horizontal.png</file>
         <file>media/assets/start_vertical.png</file>
+        <file>media/assets/cp_horizontal.png</file>
+        <file>media/assets/cp_vertical.png</file>
     </qresource>
 </RCC>

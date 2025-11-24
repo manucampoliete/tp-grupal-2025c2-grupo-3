@@ -56,7 +56,18 @@ Toolbox::Toolbox(QWidget* parent) : QWidget(parent)
 
     mainLayout->addLayout(raceGrid);
 
-    mainLayout->addStretch();
+    QLabel* cpLabel = new QLabel("\nCheckpoints");
+    mainLayout->addWidget(cpLabel);
+
+    QGridLayout* cpGrid = new QGridLayout;
+
+    cpGrid->addWidget(new QLabel("CP H:"), 0, 0);
+    cpGrid->addWidget(new ElementIcon(TYPE_CHECKPOINT, DIR_HORIZONTAL, this), 0, 1);
+
+    cpGrid->addWidget(new QLabel("CP V:"), 1, 0);
+    cpGrid->addWidget(new ElementIcon(TYPE_CHECKPOINT, DIR_VERTICAL,   this), 1, 1);
+
+    mainLayout->addLayout(cpGrid);
 
     QPushButton* saveButton = new QPushButton("Guardar Mapa");
 
