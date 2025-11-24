@@ -7,48 +7,57 @@ ActiveDirections ServerGameRecvProtocol::decodeMoveState(uint8_t moveState) {
                             moveState & RIGHT_MASK);
 }
 
-void ServerGameRecvProtocol::recvMoveState(GameResolver& gameResolver) {
+void ServerGameRecvProtocol::recvMoveState() {
     gameResolver.handleMove(decodeMoveState(recvU8()));
 }
 
-void ServerGameRecvProtocol::recvInmortality(GameResolver& gameResolver) {
+void ServerGameRecvProtocol::recvInmortality() {
     gameResolver.handleInmortality();
 }
 
-void ServerGameRecvProtocol::recvInstaWin(GameResolver& gameResolver) {
+void ServerGameRecvProtocol::recvInstaWin() {
     gameResolver.handleInstaWin();
 }
 
-void ServerGameRecvProtocol::recvInstaLose(GameResolver& gameResolver) {
+void ServerGameRecvProtocol::recvInstaLose() {
     gameResolver.handleInstaLose();
 }
 
-void ServerGameRecvProtocol::recvModifyCar(GameResolver& gameResolver) {
+void ServerGameRecvProtocol::recvSuperSpeed() {
+    gameResolver.handleSuperSpeed();
+}
+
+void ServerGameRecvProtocol::recvModifyCar() {
     gameResolver.handleModifyCar(recvU8() == 0x01, recvU8() == 0x01);
 }
 
-ServerGameRecvProtocol::ServerGameRecvProtocol(Socket& skt): RecvProtocol(skt) {}
+ServerGameRecvProtocol::ServerGameRecvProtocol(Socket& skt, GameResolver& gameResolver): 
+    RecvProtocol(skt), gameResolver(gameResolver) {}
 
-void ServerGameRecvProtocol::consumeOne(GameResolver& gameResolver) {
+void ServerGameRecvProtocol::consumeOne() {
     switch (recvU8()) {
         case SEND_MOVE_STATE: {
-            recvMoveState(gameResolver);
+            recvMoveState();
             break;
         }
         case SEND_INMORTALITY: {
-            recvInmortality(gameResolver);
+            recvInmortality();
             break;
         }
         case SEND_INSTA_WIN: {
-            recvInstaWin(gameResolver);
+            recvInstaWin();
             break;
         }
         case SEND_INSTA_LOSE: {
-            recvInstaLose(gameResolver);
+            recvInstaLose();
+            break;
+        }
+        case SEND_SUPER_SPEED: {
+            recvSuperSpeed();
             break;
         }
         case MSG_MODIFY_CAR: {
-            recvModifyCar(gameResolver);
+            recvModifyCar();
             break;
         }
         default:

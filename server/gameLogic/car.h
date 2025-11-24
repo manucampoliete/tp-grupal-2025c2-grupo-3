@@ -78,6 +78,8 @@ public:
      */
     void updateActiveDirections(ActiveDirections activeDirections);
 
+    void applyDamage(float impact);
+
     /**
      * Returns the position of the car.
      */
@@ -95,6 +97,11 @@ public:
     void setCurrentHealth(float health);
 
     void improveProperties(bool improveVelocity, bool improveHealth);
+  
+    float getCurrentHealth();
+
+    void setCollisionLayer(uint8_t layer);
+    void toggleCollisionLayer();
 };
 
 #endif

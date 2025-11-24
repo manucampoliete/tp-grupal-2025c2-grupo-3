@@ -49,6 +49,12 @@ struct Snapshot {
         ClientID playerId;
         uint16_t speed;
         uint16_t health;
+    struct CollisionData {
+    uint16_t playerId;  // quién chocó
+    float intensity;     // 0.0 (leve) a 1.0 (fuerte)
+                         // Se tiene que mandar como uint8_t (0-255) y el cliente lo pasa a float (0.0-1.0)
+    uint32_t x;          // coordenada x del choque * 1000
+    uint32_t y;          // coordenada y del choque * 1000
     };
 
     uint32_t countdown;  // remaining race time in milliseconds
@@ -57,6 +63,8 @@ struct Snapshot {
     RaceResults results;
 
     std::vector<CarProperties> carProperties;
+    CollisionData collisionData;
+    ClientID clientId; // for dead player snapshot
     
     // SnapshotType type;
     uint8_t type;  // using uint8_t for easier serialization
@@ -81,6 +89,11 @@ struct Snapshot {
 
     // mod snapshot
     Snapshot(const std::vector<Snapshot::CarProperties>& carProperties);
+    // collision snapshot
+    Snapshot(const CollisionData& collision);
+
+    // dead player snapshot
+    Snapshot(ClientID clientId);
 
     /**
      * Copy constructor for Snapshot

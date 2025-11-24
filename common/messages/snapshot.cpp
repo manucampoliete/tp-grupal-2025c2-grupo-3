@@ -31,6 +31,11 @@ Snapshot::Snapshot(RaceResults results): results(results), type(MSG_RACE_END) {}
 
 Snapshot::Snapshot(const std::vector<CarProperties>& carProperties): carProperties(carProperties), type(MSG_MOD_PHASE) {}
 
+Snapshot::Snapshot(const CollisionData& collision):
+        countdown(0), collisionData(collision), type(MSG_COLLISION) {}
+
+Snapshot::Snapshot(ClientID clientId): 
+        clientId(clientId), type(MSG_PLAYER_DIED) {}
 
 
 Snapshot::CarSnapshot& Snapshot::CarSnapshot::operator=(const CarSnapshot& other) {

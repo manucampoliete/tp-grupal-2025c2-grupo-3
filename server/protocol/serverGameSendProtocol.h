@@ -23,6 +23,7 @@ public:
     void sendRaceResultsSnapshot(std::shared_ptr<Snapshot> snapshot);
 
     void sendModificationSnapshot(std::shared_ptr<Snapshot> snapshot);
+    void sendCollisionSnapshot(const Snapshot::CollisionData& collision);
 };
 
 #endif  // SERVER_GAME_SEND_PROTOCOL_H

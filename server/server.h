@@ -36,7 +36,7 @@ public:
     void run();
 
     /**
-     * Destructor: joins the acceptor thread.
+     * Destructor: destroys the acceptor and the matches map monitor.
      */
     ~Server();
 };

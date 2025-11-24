@@ -72,7 +72,7 @@ void Game::loadSounds() {
 void Game::loadBridges() {
     // por ahora hardcodeado para Vice City
     // TODO: recibir qué mapa se está usando
-    std::string bridgePath = "client/assets/cities/Vice City-Bridges.png";
+    std::string bridgePath = "client/assets/cities/Vice-City-Bridges.png";
     worldRenderer.loadBridgeTexture(bridgePath);
 }
 

@@ -53,11 +53,19 @@ public:
     void improveCarProperties(bool improveVelocity, bool improveHealth);
 
     void resetForNewRace();
+    void applyCollisionDamage(float impact) { car.applyDamage(impact); }
 
     /**
      * Builds and returns a CarSnapshot representing the player's car.
      */
     Snapshot::CarSnapshot buildCarSnapshot();
+
+    Snapshot::CollisionData buildCollisionSnapshot(float impact);
+
+    ClientID getClientId() const { return clientId; }
+    bool isAlive() { return car.getHealth() > 0.0f; }
+
+    Car getCar() const { return car; }
 };
 
 #endif

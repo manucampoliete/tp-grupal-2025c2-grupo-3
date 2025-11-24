@@ -10,4 +10,7 @@ target_sources(taller_server
     player.h
     car.h
     carBuilder.h
+    bodyData.h
     )
+
+add_subdirectory(collisions)

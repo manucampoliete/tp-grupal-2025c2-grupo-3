@@ -40,21 +40,6 @@ void MatchesMapMonitor::reapDeadMatches() {
     }
 }
 
-void MatchesMapMonitor::stopAllMatches() {
-    std::lock_guard<std::mutex> lock(mtx);
-    for (auto& pair: matchMap) {
-        pair.second->stop();
-    }
-}
-
-void MatchesMapMonitor::joinAllMatches() {
-    std::lock_guard<std::mutex> lock(mtx);
-    for (auto& pair: matchMap) {
-        pair.second->join();
-    }
-    matchMap.clear();
-}
-
 Queue<std::unique_ptr<Command>>& MatchesMapMonitor::getClientCommandsQueue(MatchID matchId) {
     std::lock_guard<std::mutex> lock(mtx);
     return matchMap[matchId]->getClientCommandsQueue();
@@ -64,4 +49,13 @@ Queue<std::shared_ptr<Snapshot>>& MatchesMapMonitor::getResponsesQueue(MatchID m
                                                                        ClientID clientId) {
     std::lock_guard<std::mutex> lock(mtx);
     return matchMap[matchId]->getResponsesQueue(clientId);
+}
+
+MatchesMapMonitor::~MatchesMapMonitor() {
+    std::lock_guard<std::mutex> lock(mtx);  // Necessary?
+    for (auto& [id, gamePtr] : matchMap) {
+        gamePtr->stop();
+        gamePtr->join();
+    }
+    matchMap.clear();
 }

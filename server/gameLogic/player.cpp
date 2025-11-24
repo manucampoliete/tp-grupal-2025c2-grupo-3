@@ -3,10 +3,23 @@
 #include "carBuilder.h"
 #include "yaml-cpp/yaml.h"
 
+#include "bodyData.h"
+
+#include <iostream>
+
+
 #define RADTODEG 57.295779513082320876f
 
 Player::Player(ClientID clientId, const std::string& username, b2Body* body, CarID carId):
-        clientId(clientId), username(username), car(CarFactory::createCar(body, carId)), totalRaceTime(0), penalty(0) {}
+        clientId(clientId), username(username), car(CarFactory::createCar(body, carId)), totalRaceTime(0), penalty(0)
+{
+    auto* data = new BodyData();
+    data->player = this;
+
+    // al parecer esta es la forma moderna de hacerlo
+    // SetUserData es de versiones viejas de box2d
+    body->GetUserData().pointer = reinterpret_cast<uintptr_t>(data);
+}
 
 void Player::move(ActiveDirections activeDirections) {
     car.updateActiveDirections(activeDirections);
@@ -55,4 +68,19 @@ void Player::resetForNewRace() {
     finished = false;
     currentRaceTime = 0;
     car.setCurrentHealth(car.getMaxHealth());
+}
+// espera un impacto normalizado
+Snapshot::CollisionData Player::buildCollisionSnapshot(float normalizedImpact) {
+    Snapshot::CollisionData collision;
+    collision.playerId = clientId;
+
+    collision.intensity = normalizedImpact;
+
+    uint32 x = static_cast<uint32_t>(std::round(car.getPosition().x * 1000));
+    uint32 y = static_cast<uint32_t>(std::round(car.getPosition().y * 1000));
+
+    collision.x = x;
+    collision.y = y;
+
+    return collision;
 }

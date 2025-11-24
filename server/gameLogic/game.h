@@ -26,8 +26,10 @@ private:
     std::unique_ptr<b2World> world;
     int32 velocityIt;
     int32 positionIt;
+
     Queue<std::unique_ptr<Command>> clientCommandsQueue;
     ResponseQueuesMonitor responseQueuesMonitor;
+
     std::map<ClientID, Player> players;
 
     //tiempos
@@ -145,12 +147,15 @@ public:
      */
     void movePlayer(ClientID clientId, ActiveDirections activeDirections);
 
+    void handleCollision(Player* player, float impact);
+
     /**
      * Cheats!
      */
     void makeInmortal(ClientID clientId);
     void makeInstaWin(ClientID clientId);
     void makeInstaLose(ClientID clientId);
+    void makePlayerGoSuperFast(ClientID clientId);
 
     /**
      * Improves the car properties of the player with the given clientId.

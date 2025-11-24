@@ -23,8 +23,15 @@ void ServerGameSendProtocol::sendRaceSnapshot(std::shared_ptr<Snapshot> snapshot
         sendU16(car.speed);
         sendU8(car.carId);
     }
+}
 
-    // logica para mandar autos que murieron
+void ServerGameSendProtocol::sendCollisionSnapshot(const Snapshot::CollisionData& collision) {
+    sendU16(collision.playerId);
+    // convertir intensidad float (0.0-1.0) a uint8_t (0-255)
+    uint8_t intensity = static_cast<uint8_t>(collision.intensity * 255.0f);
+    sendU8(intensity);
+    sendU32(collision.x);
+    sendU32(collision.y);
 }
 
 void ServerGameSendProtocol::sendRaceResultsSnapshot(std::shared_ptr<Snapshot> snapshot) {
@@ -63,6 +70,9 @@ void ServerGameSendProtocol::sendSnapshot(std::shared_ptr<Snapshot> snapshot) {
             break;
         case SEND_RACE_SNAPSHOT:
             sendRaceSnapshot(snapshot);
+            break;
+        case MSG_COLLISION:
+            sendCollisionSnapshot(snapshot->collisionData);
             break;
         case MSG_RACE_END:  // estoy seria para mostrar las estadisticas
             sendRaceResultsSnapshot(snapshot);
