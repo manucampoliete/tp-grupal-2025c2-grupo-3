@@ -37,7 +37,7 @@ void GameStateManager::showGameEnd(const FinalResults& results) {
 
 void GameStateManager::showCheatNotification(CheatType type) {
     activeCheat = type;
-    cheatTimerMs = 400.0f;
+    cheatTimerMs = 1000.0f;
 }
 
 void GameStateManager::updateTimers(float dtMs) {

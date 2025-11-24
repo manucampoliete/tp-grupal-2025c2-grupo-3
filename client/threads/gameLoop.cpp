@@ -203,3 +203,8 @@ void GameLoop::sendCheatInstaLose() {
     clientCommandQueue.tryPush(CheatInstaLoseCommand{});
     if (game) game->showCheatNotification(CheatType::INSTA_LOSE);
 }
+
+void GameLoop::sendCheatSuperSpeed() {
+    clientCommandQueue.tryPush(CheatSuperSpeedCommand{});
+    if (game) game->showCheatNotification(CheatType::SUPER_SPEED);
+}

@@ -73,6 +73,7 @@ public:
     void sendCheatInmortality();
     void sendCheatInstaWin();
     void sendCheatInstaLose();
+    void sendCheatSuperSpeed();
 
     ~GameLoop() override = default;
 };

@@ -17,6 +17,7 @@ struct MoveCommand {
 struct CheatInmortalityCommand {};
 struct CheatInstaWinCommand {};
 struct CheatInstaLoseCommand {};
+struct CheatSuperSpeedCommand {};
 
 
 struct ModifyCarCommand {
@@ -33,6 +34,7 @@ using ClientMessage = std::variant<
     CheatInmortalityCommand,
     CheatInstaWinCommand,
     CheatInstaLoseCommand,
+    CheatSuperSpeedCommand,
     ModifyCarCommand
 >;
 

@@ -7,7 +7,7 @@
 UIRenderer::UIRenderer(Renderer& renderer, Font& font, Font& fontSmall, Font& fontBig,
                        Texture& mapTexture, World& world, uint8_t playerId,
                        Texture& cheatImmortalityImg, Texture& cheatWinImg,
-                       Texture& cheatLoseImg):
+                       Texture& cheatLoseImg, Texture& cheatSpeedImg):
         renderer(renderer),
         font(font),
         fontSmall(fontSmall),
@@ -17,7 +17,8 @@ UIRenderer::UIRenderer(Renderer& renderer, Font& font, Font& fontSmall, Font& fo
         playerId(playerId),
         cheatImmortalityImg(cheatImmortalityImg),
         cheatWinImg(cheatWinImg),
-        cheatLoseImg(cheatLoseImg) {}
+        cheatLoseImg(cheatLoseImg),
+        cheatSpeedImg(cheatSpeedImg) {}
 
 
 void UIRenderer::updateLayout(int windowWidth, int windowHeight) {
@@ -533,6 +534,12 @@ void UIRenderer::renderCheatNotification(CheatType activeCheatNotification) {
             titleColor = {255, 0, 0, 255};  // Red
             cheatImg = &cheatLoseImg;
             break;
+        
+        case CheatType::SUPER_SPEED:
+            title = "SUPER SPEED";
+            titleColor = {255, 255, 0, 255};  // Yellow
+            cheatImg = &cheatSpeedImg;
+            break;
 
         default:
             return;
@@ -562,6 +569,7 @@ void UIRenderer::renderCheatNotification(CheatType activeCheatNotification) {
     renderer.Copy(titleTexture, NullOpt,
                   Rect(titleX, titleY, titleTexture.GetWidth(), titleTexture.GetHeight()));
 }
+
 
 void UIRenderer::renderEliminatedPopup() {
     renderer.SetScale(1.0f, 1.0f);

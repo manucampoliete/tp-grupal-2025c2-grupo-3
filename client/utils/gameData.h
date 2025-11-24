@@ -8,7 +8,7 @@
 #include <SDL2pp/Rect.hh>
 
 
-enum class CheatType { NONE, INMORTALITY, INSTA_WIN, INSTA_LOSE };
+enum class CheatType { NONE, INMORTALITY, INSTA_WIN, INSTA_LOSE, SUPER_SPEED };
 
 // Coordinates (x, y, width, height) in the sprite sheet for each car type
 const SDL2pp::Rect CARS[7] = {

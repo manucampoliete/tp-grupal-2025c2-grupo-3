@@ -47,6 +47,7 @@ public:
     void sendInmortalityRequest();
     void sendInstaWinRequest();
     void sendInstaLoseRequest();
+    void sendSuperSpeedRequest();
 };
 
 #endif  // CLIENT_PROTOCOL_H

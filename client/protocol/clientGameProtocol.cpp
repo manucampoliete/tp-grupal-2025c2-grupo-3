@@ -138,3 +138,5 @@ void ClientGameProtocol::sendInmortalityRequest() { sendU8(SEND_INMORTALITY); }
 void ClientGameProtocol::sendInstaWinRequest() { sendU8(SEND_INSTA_WIN); }
 
 void ClientGameProtocol::sendInstaLoseRequest() { sendU8(SEND_INSTA_LOSE); }
+
+void ClientGameProtocol::sendSuperSpeedRequest() { sendU8(SEND_SUPER_SPEED); }

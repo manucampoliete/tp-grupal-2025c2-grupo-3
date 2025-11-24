@@ -93,6 +93,10 @@ void InputHandler::handleCheats(SDL_Scancode key, const Uint8* keyState) {
     // L + E (Trigger E) = Instant Lose
     if (key == SDL_SCANCODE_E && keyState[SDL_SCANCODE_L])
         gameLoop.sendCheatInstaLose();
+    
+    // F + H (Trigger H) = Super Speed
+    if (key == SDL_SCANCODE_H && keyState[SDL_SCANCODE_F])
+        gameLoop.sendCheatSuperSpeed();
 }
 
 
