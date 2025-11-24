@@ -37,6 +37,12 @@ private:
     void recvInstaLose(GameResolver& gameResolver);
 
     /**
+     * Receives a SuperSpeed message from the socket and
+     * processes it using the provided GameResolver.
+     */
+    void recvSuperSpeed(GameResolver& gameResolver);
+
+    /**
      * Receives a ModifyCar message from the socket and
      * processes it using the provided GameResolver.
      */

@@ -23,6 +23,10 @@ void ServerGameRecvProtocol::recvInstaLose(GameResolver& gameResolver) {
     gameResolver.handleInstaLose();
 }
 
+void ServerGameRecvProtocol::recvSuperSpeed(GameResolver& gameResolver) {
+    gameResolver.handleSuperSpeed();
+}
+
 void ServerGameRecvProtocol::recvModifyCar(GameResolver& gameResolver) {
     gameResolver.handleModifyCar(recvU8() == 0x01, recvU8() == 0x01);
 }
@@ -45,6 +49,10 @@ void ServerGameRecvProtocol::consumeOne(GameResolver& gameResolver) {
         }
         case SEND_INSTA_LOSE: {
             recvInstaLose(gameResolver);
+            break;
+        }
+        case SEND_SUPER_SPEED: {
+            recvSuperSpeed(gameResolver);
             break;
         }
         case MSG_MODIFY_CAR: {

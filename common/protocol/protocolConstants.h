@@ -29,6 +29,7 @@
 #define SEND_INMORTALITY 0xFF
 #define SEND_INSTA_WIN 0xFE
 #define SEND_INSTA_LOSE 0xFD
+#define SEND_SUPER_SPEED 0xFC
 
 // Cliente → Servidor
 #define MSG_MODIFY_CAR 0x0D  // enviar modificaciones de auto
