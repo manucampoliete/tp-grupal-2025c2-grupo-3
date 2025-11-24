@@ -4,6 +4,8 @@
 #include <QGraphicsView>
 #include <QWheelEvent>
 
+class MapEditor;
+
 class MapView : public QGraphicsView {
     Q_OBJECT
 
@@ -12,6 +14,7 @@ public:
 
     QSize sizeHint() const override;
     void setResources(const QImage& mask);
+    void setMapEditorParent(MapEditor* parentEditor);
 
 protected:
     void wheelEvent(QWheelEvent* event) override;
@@ -20,6 +23,7 @@ protected:
     void dragMoveEvent(QDragMoveEvent* event) override;
 
 private:
+    MapEditor* mapEditorParent;
     QImage collisionMask;
     QPixmap tempPixmap;
 };

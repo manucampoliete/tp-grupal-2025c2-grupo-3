@@ -1,4 +1,5 @@
 #include "mapview.h"
+#include "mapeditor.h"
 #include "mapelement.h"
 #include <QDragEnterEvent>
 #include <QDropEvent>
@@ -7,7 +8,7 @@
 #include <iostream>
 
 MapView::MapView(QGraphicsScene* scene, QWidget* parent)
-        : QGraphicsView(scene, parent)
+        : QGraphicsView(scene, parent), mapEditorParent(nullptr)
 {
     setRenderHint(QPainter::Antialiasing);
     setDragMode(QGraphicsView::ScrollHandDrag);
@@ -17,6 +18,11 @@ MapView::MapView(QGraphicsScene* scene, QWidget* parent)
 QSize MapView::sizeHint() const
 {
     return QSize(1000, 700);
+}
+
+void MapView::setMapEditorParent(MapEditor* parentEditor)
+{
+    this->mapEditorParent = parentEditor;
 }
 
 void MapView::wheelEvent(QWheelEvent* event)
@@ -84,6 +90,10 @@ void MapView::dropEvent(QDropEvent *event)
         MapElement* element = new MapElement(type, direction, elementPixmap, collisionMask);
         element->setPos(scenePoint);
         scene()->addItem(element);
+
+        if (mapEditorParent) {
+            mapEditorParent->processNewElement(element);
+        }
 
         std::cout << "✅ Drop ACEPTADO: Tipo " << type << std::endl;
     } else {
