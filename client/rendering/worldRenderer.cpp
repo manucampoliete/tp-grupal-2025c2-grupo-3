@@ -270,24 +270,51 @@ void WorldRenderer::renderSmoke() {
 
 void WorldRenderer::renderBrakeTrails() {
     renderer.SetDrawBlendMode(SDL_BLENDMODE_BLEND);
+    renderer.SetDrawColor(30, 30, 30, 255);
     
     for (const auto& trail : brakeTrails) {
-        if (!trail.is_alive())
+        if (!trail.is_alive() || trail.points.size() < 2)
             continue;
-        
-        float screenX1 = trail.x1 - camera.x;
-        float screenY1 = trail.y1 - camera.y;
-        float screenX2 = trail.x2 - camera.x;
-        float screenY2 = trail.y2 - camera.y;
+
         renderer.SetDrawColor(30, 30, 30, trail.alpha);
         
-        for (int offset = -2; offset <= 2; offset++) {
-            renderer.DrawLine(
-                static_cast<int>(screenX1) + offset,
-                static_cast<int>(screenY1),
-                static_cast<int>(screenX2) + offset,
-                static_cast<int>(screenY2)
-            );
+        for (size_t i = 0; i < trail.points.size() - 1; i++) {
+            float x1 = trail.points[i].first - camera.x;
+            float y1 = trail.points[i].second - camera.y;
+            float x2 = trail.points[i + 1].first - camera.x;
+            float y2 = trail.points[i + 1].second - camera.y;
+            
+            // Calcular vector perpendicular para las dos líneas
+            float dx = x2 - x1;
+            float dy = y2 - y1;
+            float len = std::sqrt(dx*dx + dy*dy);
+            
+            if (len > 0.1f) {
+                float perpX = -dy / len;
+                float perpY = dx / len;
+                
+                // Wheels width
+                float offset = 6.0f;  // 6 px
+                
+                // Left line
+                int lx1 = static_cast<int>(x1 + perpX * offset);
+                int ly1 = static_cast<int>(y1 + perpY * offset);
+                int lx2 = static_cast<int>(x2 + perpX * offset);
+                int ly2 = static_cast<int>(y2 + perpY * offset);
+                
+                // width 3px
+                for (int w = -1; w <= 1; w++)
+                    renderer.DrawLine(lx1 + w, ly1, lx2 + w, ly2);
+                
+                // Right line
+                int rx1 = static_cast<int>(x1 - perpX * offset);
+                int ry1 = static_cast<int>(y1 - perpY * offset);
+                int rx2 = static_cast<int>(x2 - perpX * offset);
+                int ry2 = static_cast<int>(y2 - perpY * offset);
+                
+                for (int w = -1; w <= 1; w++)
+                    renderer.DrawLine(rx1 + w, ry1, rx2 + w, ry2);
+            }
         }
     }
     
