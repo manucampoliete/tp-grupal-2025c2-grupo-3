@@ -9,9 +9,6 @@ Server::Server(const std::string& servname):
 
 void Server::run() {
     while (std::cin.get() != END_SERVER_KEY) {}
-    matchesMapMonitor.stopAllMatches();
 }
 
-Server::~Server() {
-    matchesMapMonitor.joinAllMatches();
-}
+Server::~Server() {}

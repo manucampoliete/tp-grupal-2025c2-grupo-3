@@ -13,9 +13,9 @@ Queue<std::shared_ptr<Snapshot>>& ResponseQueuesMonitor::getQueue(ClientID clien
     return responseQueues.at(clientId);
 }
 
-std::size_t ResponseQueuesMonitor::removeQueue(ClientID clientId) {
+bool ResponseQueuesMonitor::removeQueue(ClientID clientId) {
     std::lock_guard<std::mutex> lock(mtx);
-    return responseQueues.erase(clientId);
+    return static_cast<bool>(responseQueues.erase(clientId));
 }
 
 bool ResponseQueuesMonitor::broadcast(std::shared_ptr<Snapshot> snapshot) {

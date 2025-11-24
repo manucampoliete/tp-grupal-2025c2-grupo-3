@@ -5,6 +5,7 @@
 #include "../commands/instaWinCommand.h"
 #include "../commands/moveCommand.h"
 #include "../commands/improvementsCommand.h"
+#include "../commands/superSpeedCommand.h"
 
 GameResolver::GameResolver(ClientID clientId, Queue<std::unique_ptr<Command>>& clientCommandsQueue):
         clientId(clientId), clientCommandsQueue(clientCommandsQueue) {}
@@ -23,6 +24,10 @@ void GameResolver::handleInstaWin() {
 
 void GameResolver::handleInstaLose() {
     clientCommandsQueue.push(std::make_unique<InstaLoseCommand>(clientId));
+}
+
+void GameResolver::handleSuperSpeed() {
+    clientCommandsQueue.push(std::make_unique<SuperSpeedCommand>(clientId));
 }
 
 void GameResolver::handleModifyCar(bool improveVelocity, bool improveHealth) {

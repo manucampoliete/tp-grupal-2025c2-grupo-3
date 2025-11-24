@@ -383,6 +383,14 @@ void Game::makeInstaLose(ClientID clientId) {
      */
 }
 
+void Game::makePlayerGoSuperFast(ClientID clientId) {
+    std::cout << "Making player " << clientId << " go super fast!" << std::endl;
+    /**
+     * TODO: implement this method
+     * NOTE: we can increase the player's car velocity temporarily (or permanently?)
+     */
+}
+
 void Game::improveCarProperties(ClientID clientId, bool improveVelocity, bool improveHealth) {
     std::cout << "Improving car properties for player " << clientId << ": "
               << (improveVelocity ? "velocity " : "") << (improveHealth ? "health" : "") << std::endl;

@@ -40,6 +40,11 @@ public:
     void handleInstaLose();
 
     /**
+     * Handles a SUPER_SPEED request from the client.
+     */
+    void handleSuperSpeed();
+
+    /**
      * Handles a MODIFY_CAR request from the client.
      */
     void handleModifyCar(bool improveVelocity, bool improveHealth);

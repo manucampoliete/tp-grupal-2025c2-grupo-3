@@ -14,8 +14,8 @@
  */
 class Receiver {
 private:
-    ServerGameRecvProtocol protocol;
     GameResolver gameResolver;
+    ServerGameRecvProtocol protocol;
     std::atomic<bool> _keepRunning;  // Emulate a Thread-like behavior
 
 public:

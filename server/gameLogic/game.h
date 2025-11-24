@@ -148,6 +148,7 @@ public:
     void makeInmortal(ClientID clientId);
     void makeInstaWin(ClientID clientId);
     void makeInstaLose(ClientID clientId);
+    void makePlayerGoSuperFast(ClientID clientId);
 
     /**
      * Improves the car properties of the player with the given clientId.
