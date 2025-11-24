@@ -39,15 +39,22 @@ QString typeToString(ElementType type);
 QString directionToString(ElementDirection direction);
 
 
-class MapElement : public QGraphicsPixmapItem {
+class MapElement : public QObject, public QGraphicsPixmapItem {
+    Q_OBJECT
+
 public:
     MapElement(ElementType type, ElementDirection direction, const QPixmap& pixmap, const QImage& mask);
 
     ElementType getElementType() const { return elementType; }
     ElementDirection getElementDirection() const { return elementDirection; }
+    void deleteElement();
+
+signals:
+    void elementRemoved(MapElement* element);
 
 protected:
     QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
+    void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
 
 private:
     QImage collisionMask;

@@ -19,6 +19,7 @@ public:
 
 private slots:
     void onSaveRequest();
+    void onElementRemoved(MapElement* element);
 
 private:
     MapView* view;

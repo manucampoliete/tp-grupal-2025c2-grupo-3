@@ -1,9 +1,11 @@
 #include "mapelement.h"
 #include <QColor>
 #include <iostream>
+#include <QGraphicsSceneMouseEvent>
+#include <QGraphicsScene>
 
 MapElement::MapElement(ElementType type, ElementDirection direction, const QPixmap& pixmap, const QImage& mask)
-        : QGraphicsPixmapItem(pixmap),
+        : QObject(nullptr), QGraphicsPixmapItem(pixmap),
         collisionMask(mask),
         elementType(type),
         elementDirection(direction)
@@ -31,6 +33,25 @@ QString directionToString(ElementDirection direction) {
 
         default: return QString::number(direction);
     }
+}
+
+void MapElement::mousePressEvent(QGraphicsSceneMouseEvent *event) {
+    if (event->button() == Qt::RightButton) {
+        std::cout << "DEBUG: Clic derecho detectado en elemento." << std::endl;
+        deleteElement();
+        return;
+    }
+    QGraphicsPixmapItem::mousePressEvent(event);
+}
+
+void MapElement::deleteElement() {
+    emit elementRemoved(this);
+
+    if (scene()) {
+        scene()->removeItem(this);
+    }
+
+    this->deleteLater();
 }
 
 QVariant MapElement::itemChange(GraphicsItemChange change, const QVariant &value)

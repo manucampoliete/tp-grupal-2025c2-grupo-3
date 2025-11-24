@@ -10,6 +10,7 @@
 #include <QFileDialog>
 #include "toolbox.h"
 #include <yaml-cpp/yaml.h>
+#include <algorithm>
 
 
 MapEditor::MapEditor(int cityId, QWidget* parent)
@@ -179,6 +180,9 @@ void MapEditor::serializeToYaml(const QString& filename)
 }
 
 void MapEditor::processNewElement(MapElement* newElement) {
+    connect(newElement, &MapElement::elementRemoved,
+            this, &MapEditor::onElementRemoved,
+            Qt::QueuedConnection);
     if (newElement->getElementType() == TYPE_HINT) {
         this->hintsInCurrentSegment.push_back(newElement);
         std::cout << "DEBUG: Hint agregado al segmento actual. Total: " << this->hintsInCurrentSegment.size() << std::endl;
@@ -197,5 +201,45 @@ void MapEditor::processNewElement(MapElement* newElement) {
         this->circuitSegments.push_back(newSegment);
         this->hintsInCurrentSegment.clear();
         std::cout << "DEBUG: CP/Start/Finish colocado. Segmento cerrado. Nuevo Total: " << this->circuitSegments.size() << std::endl;
+    }
+}
+
+void MapEditor::onElementRemoved(MapElement* element) {
+    std::cout << "DEBUG: Intentando eliminar Ptr: " << element << std::endl;
+
+    // 1. Limpieza de HINTS EN SEGMENTO ACTUAL (VIVOS)
+    if (element->getElementType() == TYPE_HINT) {
+        auto& hints = this->hintsInCurrentSegment;
+
+        // El std::remove_if es más claro para punteros
+        hints.erase(std::remove_if(hints.begin(), hints.end(),
+                                   [element](MapElement* ptr) { return ptr == element; }),
+                    hints.end());
+
+        std::cout << "DEBUG: Hint removido de la lista ACTUAL. Total: " << hints.size() << std::endl;
+    }
+
+            // 2. Limpieza de PUNTEROS DE SEGMENTOS CERRADOS (CRÍTICO para evitar SegFault)
+
+    // a) Limpiar los hints de los segmentos ya cerrados:
+    for (auto& segment : this->circuitSegments) {
+        // Usamos remove_if para barrer el puntero 'element' de los hints de este segmento.
+        auto& hints = segment.segmentHints;
+        hints.erase(std::remove(hints.begin(), hints.end(), element), hints.end());
+    }
+
+            // b) Limpiar el Checkpoint/Start/Finish si es el elemento borrado:
+    if (element->getElementType() != TYPE_HINT) {
+
+        auto& segments = this->circuitSegments;
+
+        // Removemos todo el segmento si su CP Elemento es el puntero que estamos eliminando.
+        segments.erase(std::remove_if(segments.begin(), segments.end(),
+                                      [element](const CircuitSegment& s) {
+                                          return s.cpElementPtr == element;
+                                      }),
+                       segments.end());
+
+        std::cout << "DEBUG: CP/Element removido. Nuevo total de segmentos: " << segments.size() << std::endl;
     }
 }
