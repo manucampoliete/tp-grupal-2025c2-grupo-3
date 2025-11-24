@@ -4,16 +4,15 @@
 #include <atomic>
 #include <memory>
 
-#include "../../common/messages/gameData.h"
 #include "../../common/queue/queue.h"
-#include "../../common/utils/activeDirections.h"
+#include "../utils/gameData.h"
 #include "../protocol/clientGameProtocol.h"
 
 #include "../threads/gameLoop.h"
 #include "../threads/receiver.h"
 #include "../threads/sender.h"
-#include "world.h"
-#include "../../common/messages/serverMessage.h"
+#include "../utils/serverMessage.h"
+#include "../utils/clientMessage.h"
 
 
 /**
@@ -27,9 +26,7 @@ private:
     ClientGameProtocol protocol;
     ClientID clientId;
 
-    World world;
-
-    Queue<ActiveDirections> clientRequestsQueue;
+    Queue<ClientMessage> clientCommandQueue;
     Queue<ServerMessage> serverMessagesQueue;
 
     Sender sender;

@@ -5,7 +5,7 @@
 #include <variant>
 
 #include "gameData.h"
-#include "snapshot.h"
+#include "../../common/messages/snapshot.h"
 
 
 struct CountdownMessage {
@@ -30,8 +30,16 @@ struct RaceEndMessage {
     RaceResults results;
 };
 
+struct StatsCountdownMessage {
+    uint8_t number;
+};
+
 struct ModificationPhaseMessage {
     CarProperties properties;
+};
+
+struct ModCountdownMessage {
+    uint8_t number;
 };
 
 struct GameEndMessage {
@@ -46,7 +54,9 @@ using ServerMessage = std::variant<
     CollisionMessage,
     PlayerDiedMessage,
     RaceEndMessage,
+    StatsCountdownMessage,
     ModificationPhaseMessage,
+    ModCountdownMessage,
     GameEndMessage
 >;
 

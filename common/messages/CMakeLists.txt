@@ -4,7 +4,5 @@ target_sources(taller_common
     snapshot.cpp
     PUBLIC
     # .h files
-    serverMessage.h
     snapshot.h
-    gameData.h
     )

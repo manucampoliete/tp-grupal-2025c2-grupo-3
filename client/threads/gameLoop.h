@@ -3,13 +3,13 @@
 
 #include <memory>
 
-#include "../../common/messages/gameData.h"
+#include "../utils/gameData.h"
 #include "../../common/queue/queue.h"
 #include "../../common/thread/thread.h"
-#include "../../common/utils/activeDirections.h"
 #include "../protocol/clientGameProtocol.h"
 
-#include "../../common/messages/serverMessage.h"
+#include "../utils/serverMessage.h"
+#include "../utils/clientMessage.h"
 #include "../gameHandling/world.h"
 
 
@@ -24,14 +24,19 @@ class Game;
 class GameLoop: public Thread {
 private:
     Queue<ServerMessage>& serverMessagesQueue;
-    Queue<ActiveDirections>& clientRequestsQueue;
-    ClientGameProtocol& protocol;
+    Queue<ClientMessage>& clientCommandQueue;
 
-    World& world;
+    World world;
     ClientID clientId;
 
     std::unique_ptr<Game> game;
-    uint8_t lastCountdownNumber;
+
+    uint8_t lastCountdownNumber = UINT8_MAX;
+    uint8_t lastStatsCountdown = UINT8_MAX;
+    uint8_t lastModCountdown = UINT8_MAX;
+
+    void processServerMessages();
+    void applySnapshot(const Snapshot& snapshot);
     
     /**
      * Methods used by other threads to notify events
@@ -42,7 +47,9 @@ private:
     void onCollision(const CollisionData& collision);
     void onPlayerDied(ClientID deadPlayerId);
     void onRaceEnd(const RaceResults& results);
+    void onStatsCountdown(uint8_t number);
     void onModificationPhase(const CarProperties& props);
+    void onModCountdown(uint8_t number);
     void onGameEnd(const FinalResults& results);
 
 public:
@@ -50,8 +57,8 @@ public:
      * Constructor
      */
     GameLoop(Queue<ServerMessage>& serverMessagesQueue, 
-             Queue<ActiveDirections>& clientRequestsQueue,
-             ClientGameProtocol& protocol, World& world, ClientID clientId);
+             Queue<ClientMessage>& clientCommandQueue,
+             ClientID clientId);
 
     /**
      * Main loop that runs in the thread

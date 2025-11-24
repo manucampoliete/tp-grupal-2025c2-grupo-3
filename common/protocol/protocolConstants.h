@@ -41,8 +41,10 @@
 #define MSG_CHECKPOINT 0x14   // jugador cruzó un checkpoint
 #define MSG_COLLISION 0x15    // notificación de colisión
 #define MSG_PLAYER_DIED 0x16  // un jugador murio (salud = 0?)
-#define MSG_RACE_END 0x17     // terminó la carrera (resultados)
+#define MSG_RACE_END 0x17     // terminó la carrera (tabla stats)
+#define MSG_STATS_COUNTDOWN 0x1A  
 #define MSG_MOD_PHASE 0x18    // fase de modificación de auto
+#define MSG_MOD_COUNTDOWN 0x1B  
 #define MSG_GAME_END 0x19     // partida completa terminada (ganador)
 
 

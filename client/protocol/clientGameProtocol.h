@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 
-#include "../../common/messages/gameData.h"
+#include "../utils/gameData.h"
 #include "../../common/messages/snapshot.h"
 #include "../../common/protocol/recvProtocol.h"
 #include "../../common/protocol/sendProtocol.h"
@@ -36,7 +36,9 @@ public:
     CollisionData recvCollision();
     uint16_t recvPlayerDied();
     RaceResults recvRaceResults();
+    uint8_t recvStatsCountdown();
     CarProperties recvCarProperties();
+    uint8_t recvModCountdown();
     FinalResults recvFinalResults();
 
     /**
