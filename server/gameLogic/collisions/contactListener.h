@@ -5,7 +5,7 @@
 #include <set>
 #include <tuple>
 
-#include "bodyData.h"
+#include "../bodyData.h"
 
 #define IMPACT_THRESHOLD 15000.0f
 

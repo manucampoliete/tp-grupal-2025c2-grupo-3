@@ -23,8 +23,6 @@ void ServerGameSendProtocol::sendRaceSnapshot(std::shared_ptr<Snapshot> snapshot
         sendU16(car.speed);
         sendU8(car.carId);
     }
-
-    // logica para mandar autos que murieron
 }
 
 void ServerGameSendProtocol::sendCollisionSnapshot(const Snapshot::CollisionData& collision) {

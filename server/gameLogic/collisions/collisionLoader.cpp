@@ -1,13 +1,9 @@
-#include <box2d/box2d.h>
-#include <yaml-cpp/yaml.h>
-#include <vector>
-#include <iostream>
+#include "collisionLoader.h" 
 
-class CollisionLoader {
-public:
-// recibe pixelsToMeters, pero por el momento la relacion metros <-> pixeles es 1 a 1 (box2d puede andar mal con esta escala)
-// worldHeight se recibe para poder invertir el eje Y y que las colisiones estén donde tienen que estar (porque se generan de la imagen, que tecnicamente para box2d está al revés)
-static std::vector<b2Body*> LoadCollisions(const std::string& yamlPath, std::unique_ptr<b2World>& world, float pixelsToMeters = 1.0f, float worldHeight = 0.0f) {
+#include "../bodyData.h"
+
+std::vector<b2Body*> CollisionLoader::LoadCollisions(const std::string& yamlPath, std::unique_ptr<b2World>& world, float pixelsToMeters, float worldHeight, uint8_t layer, bool isSensor)
+{
     std::vector<b2Body*> collisionBodies;
     try {
         YAML::Node config = YAML::LoadFile(yamlPath);
@@ -42,11 +38,28 @@ static std::vector<b2Body*> LoadCollisions(const std::string& yamlPath, std::uni
             
             b2FixtureDef fixtureDef;
             fixtureDef.shape = &box;
+            fixtureDef.isSensor = isSensor;
             fixtureDef.density = 0.0f;      // esto no importa
             fixtureDef.friction = 0.3f;     // para que se frene un poco si se arrastra contra la pared
             fixtureDef.restitution = 0.0f;  // rebote
             
+            // capa de colision
+            b2Filter filter;
+            filter.categoryBits = layer;
+            filter.maskBits = layer == WALL_LOW_LAYER ? MASK_WALL_LOW :
+                              layer == WALL_HIGH_LAYER ? MASK_WALL_HIGH :
+                              layer == SENSOR_LAYER ? MASK_SENSOR : 0;
+            fixtureDef.filter = filter;
+
             body->CreateFixture(&fixtureDef);
+
+            if(isSensor) {
+                // datos del cuerpo
+                auto* data = new BodyData();
+                data->player = nullptr;
+                data->sensorId = LAYER_SWITCH_SENSOR; // por ahora solo hay un tipo de sensor
+                body->GetUserData().pointer = reinterpret_cast<uintptr_t>(data);
+            }
             
             collisionBodies.push_back(body);
         }        
@@ -55,5 +68,4 @@ static std::vector<b2Body*> LoadCollisions(const std::string& yamlPath, std::uni
     }
     
     return collisionBodies;
-    }
-};
+}

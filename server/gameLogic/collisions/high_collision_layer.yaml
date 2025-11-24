@@ -1,0 +1,21 @@
+map:
+  width: 4640
+  height: 4672
+  block_size: 1
+collisions:
+- x: 2320.0
+  y: 1048.0
+  width: 4640.0
+  height: 2096.0
+- x: 1143.0
+  y: 3384.0
+  width: 2286.0
+  height: 2576.0
+- x: 3513.5
+  y: 3384.0
+  width: 2253.0
+  height: 2576.0
+- x: 2336.5
+  y: 3598.0
+  width: 101.0
+  height: 2148.0

@@ -41,6 +41,8 @@ public:
 
     ClientID getClientId() const { return clientId; }
     bool isAlive() { return car.getHealth() > 0.0f; }
+
+    Car getCar() const { return car; }
 };
 
 #endif

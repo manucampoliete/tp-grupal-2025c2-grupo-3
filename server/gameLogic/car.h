@@ -86,12 +86,12 @@ public:
      * Returns the angle of the car in radians.
      */
     float getAngle();
-
     float getSpeed();
-
     CarID getId();
-
     float getHealth();
+
+    void setCollisionLayer(uint8_t layer);
+    void toggleCollisionLayer();
 };
 
 #endif

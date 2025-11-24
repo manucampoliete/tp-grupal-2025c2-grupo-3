@@ -10,8 +10,9 @@
 
 #include <iostream>
 
-#include "collisionLoader.h"
-#include "contact_listener.h"
+#include "collisions/collisionLoader.h"
+#include "collisions/contactListener.h"
+#include "collisions/collisionBits.h"
 #include "../../common/constantRateLoop/constantRateLoop.h"
 
 #define TARGET_FPS 60
@@ -56,6 +57,13 @@ b2Body* Game::createNewCarBody() {
     boxFixtureDef.density = 1;
     // boxFixtureDef.friction = 0.3f;
     boxFixtureDef.restitution = 0.0f;  // poco rebote
+
+    // capa de colision
+    b2Filter filter;
+    filter.categoryBits = CAR_LOW_LAYER;
+    filter.maskBits = MASK_CAR_LOW;
+    boxFixtureDef.filter = filter;
+
     car->CreateFixture(&boxFixtureDef);
 
     car->SetLinearDamping(0.5f);  // para que se frene con el tiempo
@@ -284,7 +292,12 @@ void Game::run() {
     broadcastStartSignal();
     setGameState(GameState::COUNTDOWN);
 
-    /* auto collisionBodies =  */CollisionLoader::LoadCollisions("server/gameLogic/collisions.yaml", world, 1.0f, WORLD_HEIGHT);
+    // refactor (init collisions)
+    CollisionLoader::LoadCollisions("server/gameLogic/collisions/low_collision_layer.yaml", world, 1.0f, WORLD_HEIGHT, WALL_LOW_LAYER);
+
+    CollisionLoader::LoadCollisions("server/gameLogic/collisions/high_collision_layer.yaml", world, 1.0f, WORLD_HEIGHT, WALL_HIGH_LAYER);
+
+    CollisionLoader::LoadCollisions("server/gameLogic/collisions/layer_switch.yaml", world, 1.0f, WORLD_HEIGHT, SENSOR_LAYER, IS_SENSOR);
     
     // contact listener para manejar choques
     // se le pasa un puntero a Game para que pueda llamar a handleCollision

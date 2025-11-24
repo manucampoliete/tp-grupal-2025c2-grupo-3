@@ -1,24 +1,32 @@
-#include "contact_listener.h"
-#include "game.h"
+#include "contactListener.h"
+#include "../game.h"
 
 #include <iostream>
 
 #include <bits/stdc++.h>
 
 void ContactListener::BeginContact(b2Contact* contact) {
-    // Aquí puedes manejar el inicio de una colisión entre dos cuerpos
     b2Body* bodyA = contact->GetFixtureA()->GetBody();
     b2Body* bodyB = contact->GetFixtureB()->GetBody();
 
-    // Ejemplo: imprimir las posiciones de los cuerpos en colisión
-    b2Vec2 positionA = bodyA->GetPosition();
-    b2Vec2 positionB = bodyB->GetPosition();
+    auto* dataA = reinterpret_cast<BodyData*>(bodyA->GetUserData().pointer);
+    auto* dataB = reinterpret_cast<BodyData*>(bodyB->GetUserData().pointer);
 
-    (void)positionA;
-    (void)positionB;
+    // no hay players involucrados
+    if (!dataA && !dataB) return;
 
-    // std::cout << "Begin Contact between Body A at (" << positionA.x << ", " << positionA.y
-    //           << ") and Body B at (" << positionB.x << ", " << positionB.y << ")\n";
+    // A es auto, B es sensor
+    if (dataA && dataA->player && dataB && dataB->sensorId) {
+        // handleLayerSwitch(dataA->player);
+        dataA->player->getCar().toggleCollisionLayer();
+        return;
+    }
+
+    // B es auto, A es sensor
+    if (dataB && dataB->player && dataA && dataA->sensorId) {
+        dataB->player->getCar().toggleCollisionLayer();
+        return;
+    }
 }
 
 void ContactListener::EndContact(b2Contact* contact) {

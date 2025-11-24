@@ -3,6 +3,8 @@
 #include <utility>
 #include <iostream>
 
+#include "collisions/collisionBits.h"
+
 #define DAMAGE_SCALE 50.0f
 
 // Para facilitar la lectura del codigo recordar que "velocity" es un vector y "speed" es una
@@ -106,3 +108,24 @@ float Car::getSpeed() { return body->GetLinearVelocity().Length(); }
 CarID Car::getId() { return carId; }
 
 float Car::getHealth() { return health; }
+
+void Car::setCollisionLayer(uint8_t layer) {
+    b2Filter filter = body->GetFixtureList()->GetFilterData();
+    filter.categoryBits = layer;
+    filter.maskBits = (layer == CAR_LOW_LAYER) ? MASK_CAR_LOW : MASK_CAR_HIGH;
+    body->GetFixtureList()->SetFilterData(filter);
+}
+
+void Car::toggleCollisionLayer() {
+    b2Filter filter = body->GetFixtureList()->GetFilterData();
+    if (filter.categoryBits == CAR_LOW_LAYER) {
+        filter.categoryBits = CAR_HIGH_LAYER;
+        filter.maskBits = MASK_CAR_HIGH;
+    } else {
+        filter.categoryBits = CAR_LOW_LAYER;
+        filter.maskBits = MASK_CAR_LOW;
+    }
+    body->GetFixtureList()->SetFilterData(filter);
+    std::cout << "[CAR] Toggled collision layer. New layer: "
+              << ((filter.categoryBits == CAR_LOW_LAYER) ? "LOW" : "HIGH") << std::endl;
+}
