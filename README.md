@@ -5,11 +5,11 @@ Buenas. Estas correcciones las hice en base a la rama `main`, recibió unos comm
 1. ~~Carreras de hasta 8 jugadores.~~
 2. Las partidas tienen múltiples carreras. NO (siempre se queda en la primera partida)
 3. Múltiples recorridos. NO (no hay recorridos)
-4. Tabla de posiciones. NO (se entra en fase pero no se muestra nada)
-4.a. Tiempo de cada jugadores. NO
+4. Tabla de posiciones. NO (se entra en fase pero no se muestra nada)  
+4.a. Tiempo de cada jugadores. NO  
 4.b.Tiempo total acumulado. NO
-5. Checkpoints en los recorridos (franjas que cruzan la calle). NO
-5.a. Checkpoint de salida. NO
+5. Checkpoints en los recorridos (franjas que cruzan la calle). NO  
+5.a. Checkpoint de salida. NO  
 5.b. Checkpoint de llegada. NO
 6. Hints en los recorridos. NO
 7. Aparición de checkpoints y hints en orden. NO
@@ -21,14 +21,14 @@ Buenas. Estas correcciones las hice en base a la rama `main`, recibió unos comm
 4. Suma de penalizaciones para tiempo total en estadísticas. NO
 5. Elección y modificaciones del auto
 6. ~~Se elige el auto a usar en el Lobby. SI~~
-7. Autos tienen:
-7.a. ~~Velocidad. SI~~
-7.b. ~~Aceleración. SI~~
-7.c. Salud. PARCIAL (sí pero no se puede ver y el auto no se rompe)
+7. Autos tienen:  
+7.a. ~~Velocidad. SI~~  
+7.b. ~~Aceleración. SI~~  
+7.c. Salud. PARCIAL (sí pero no se puede ver y el auto no se rompe)  
 7.d. Masa. NO
 8. ~~Múltiples autos: al menos 4. SI~~
-9. Etapa de mejoras de autos. PARCIAL (se entra en fase pero no se ve nada)
-9.a. Mejora de atributos del auto. NO
+9. Etapa de mejoras de autos. PARCIAL (se entra en fase pero no se ve nada)  
+9.a. Mejora de atributos del auto. NO  
 9.b. Penalización en tiempo por mejora. NO
 
 ## NPCs
@@ -70,9 +70,9 @@ PARCIAL (los primeros tres están, pero hacerlos no tiene impacto real en el jue
 5. Checkpoints y hints en el minimapa. NO
 6. ~~El minimapa renderiza al jugador. SI~~
 7. Hints visuales al colisionar según la potencia del impacto. NO
-8. Sonidos. PARCIAL (solo de countdown)
-8.a. Sonidos al colisionar. NO
-8.b. Sonido de fin de carrera. NO
+8. Sonidos. PARCIAL (solo de countdown)  
+8.a. Sonidos al colisionar. NO  
+8.b. Sonido de fin de carrera. NO  
 8.c. Sonido de frenada. NO
 9. Volumen regulado por distancia al origen del sonido. NO
 10. ~~Música dentro de la partida. SI~~
