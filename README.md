@@ -48,12 +48,16 @@ Buenas. Estas correcciones las hice en base a la rama `main`, recibió unos comm
 2. Autos pasan por arriba y por abajo de los puentes. NO
 
 ## Configuración
-1. Configuración en YAML.
-2. ~~Atributos de autos. SI~~
-3. Tiempos de fases del juego. NO
-4. Tiempo de partida. NO
-5. Cantidad de carreras. NO
-6. Rate loop. NO
+1. ~~Configuración en YAML~~.
+2. ~~Atributos de autos.~~
+3. ~~Tiempos de fases del juego.~~
+4. ~~Tiempo de partida.~~ (*)
+5. ~~Cantidad de carreras.~~
+6. ~~Rate loop.~~
+
+(*) Si se refiere al tiempo de una carrera, ya esta considerado en los tiempos de fases del juego.
+    Si se refiere al tiempo total de una partida, este se puede deducir como la cantidad de carreras multiplicada por la suma de los tiempos de las fases.
+(**) Si bien todos estos valores se encuentran en el archivo config.yaml, faltaria parsear algunos de ellos en el codigo, en vez de usar macros/constantes/literales.
 
 ## Cheats
 PARCIAL (los primeros tres están, pero hacerlos no tiene impacto real en el juego, sigue normalmente, y no hay daño por colisiones)
