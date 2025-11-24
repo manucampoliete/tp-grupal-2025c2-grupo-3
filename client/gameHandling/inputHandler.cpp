@@ -131,25 +131,25 @@ void InputHandler::handleMouseClick(const SDL_Event& event) {
         // Speed button
         if (uiRenderer.getSpeedButtonRect().Contains(x, y)) {
             stateManager.toggleSpeedMod();
-            soundManager.playSound("confirm");
+            soundManager.playSound("button_click");
         }
 
         // Health button
         if (uiRenderer.getHealthButtonRect().Contains(x, y)) {
             stateManager.toggleHealthMod();
-            soundManager.playSound("confirm");
+            soundManager.playSound("button_click");
         }
 
         // Accel button
         if (uiRenderer.getAccelButtonRect().Contains(x, y)) {
             stateManager.toggleAccelMod();
-            soundManager.playSound("confirm");
+            soundManager.playSound("button_click");
         }
 
         // Mass button
         if (uiRenderer.getMassButtonRect().Contains(x, y)) {
             stateManager.toggleMassMod();
-            soundManager.playSound("confirm");
+            soundManager.playSound("button_click");
         }
     }
 

@@ -59,12 +59,13 @@ void Game::loadSounds() {
         soundManager.loadSound("explosion", "client/assets/sounds/explosion.wav");
         soundManager.loadSound("checkpoint", "client/assets/sounds/checkpoint.wav");
         soundManager.loadSound("countdown", "client/assets/sounds/beep.wav");
-        soundManager.loadSound("race_end", "client/assets/sounds/finish.wav");
+        soundManager.loadSound("race_end", "client/assets/sounds/race_end.wav");
         soundManager.loadSound("brake", "client/assets/sounds/brake.wav");
         soundManager.loadSound("engine", "client/assets/sounds/engine.wav");
         soundManager.loadSound("confirm", "client/assets/sounds/confirm.wav");
         soundManager.loadSound("victory", "client/assets/sounds/victory.wav");
         soundManager.loadSound("race_start", "client/assets/sounds/race_start.wav");
+        soundManager.loadSound("button_click", "client/assets/sounds/button_click.wav");
     } catch (const std::exception& e) {
         std::cerr << "[GAME] Error loading sounds: " << e.what() << std::endl;
     }
