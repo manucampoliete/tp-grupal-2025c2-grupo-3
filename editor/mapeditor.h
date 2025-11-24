@@ -14,14 +14,17 @@ class MapEditor : public QWidget {
 public:
     explicit MapEditor(int cityId, QWidget* parent = nullptr);
 
+private slots:
+    void onSaveRequest();
+
 private:
     MapView* view;
     QGraphicsScene* scene;
     QGraphicsPixmapItem* mapItem = nullptr;
-
     QImage collisionMask;
 
     void loadCity(int cityId);
+    void serializeToYaml(const QString& filename);
 };
 
 #endif

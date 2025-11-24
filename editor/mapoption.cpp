@@ -35,7 +35,7 @@ void MapOption::setSelected(bool sel) {
     if (sel) {
         setStyleSheet(
                 "QWidget#mapOptionRoot {"
-                "   border: 3px solid #FFD700;"   // <-- amarillo
+                "   border: 3px solid #FFD700;"
                 "   border-radius: 8px;"
                 "}"
                 );

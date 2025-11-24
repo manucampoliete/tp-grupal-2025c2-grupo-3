@@ -48,26 +48,20 @@ Editor::Editor(QWidget* parent): QMainWindow(parent), ui(new Ui::Editor) {
 }
 
 void Editor::launchMapEditor(int cityId) {
-    // 1. Crear e insertar MapEditor
     MapEditor* mapEditor = new MapEditor(cityId, this);
 
-    // FIX CLAVE: Forzar al MapEditor a expandirse para llenar todo el QStackedWidget.
     mapEditor->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     ui->stackedWidget->addWidget(mapEditor);
     ui->stackedWidget->setCurrentWidget(mapEditor);
 
-            // --- FIX DE TAMAÑO Y CENTRADO ---
     const int editorWidth = 1280;
     const int editorHeight = 720;
 
-            // a) Deshabilitar el FixedSize para poder cambiarlo
     this->setFixedSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
 
-            // b) Cambiar el tamaño de la ventana principal al tamaño deseado del editor
     this->resize(editorWidth, editorHeight);
 
-            // c) Recalcular y centrar la ventana en la pantalla (usando el nuevo tamaño)
     QScreen* screen = QGuiApplication::primaryScreen();
     int screenWidth = screen->geometry().width();
     int screenHeight = screen->geometry().height();
@@ -75,22 +69,13 @@ void Editor::launchMapEditor(int cityId) {
     int newY = (screenHeight - editorHeight) / 2;
     this->move(newX, newY);
 
-            // d) Fijar el tamaño para el editor
     this->setFixedSize(editorWidth, editorHeight);
-    // -------------------------------
 
-
-            // --- FIX DE FONDO ---
-            // e) Quitar el fondo borroso aplicado a la QMainWindow
     QPalette palette = this->palette();
     palette.setBrush(QPalette::Window, QBrush(Qt::white));
     this->setPalette(palette);
     this->setAutoFillBackground(false);
-    // --------------------
 
-            // 3. Asegurar que el MapEditor tome todo el espacio disponible
-            // La combinación de setSizePolicy aquí y setMinimumSize en MapEditor.cpp
-            // debe forzar el relleno completo.
     this->updateGeometry();
 }
 

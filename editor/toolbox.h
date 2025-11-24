@@ -8,5 +8,8 @@ class Toolbox : public QWidget
 public:
     explicit Toolbox(QWidget* parent = nullptr);
 
+signals:
+    void saveClicked();
+
 protected:
 };

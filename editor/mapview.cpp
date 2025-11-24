@@ -37,7 +37,6 @@ void MapView::setResources(const QImage& mask)
 
 void MapView::dragEnterEvent(QDragEnterEvent *event)
 {
-    // Verifica si el MIME data comienza con el prefijo genérico de nuestros elementos
     if (event->mimeData()->hasText() && event->mimeData()->text().startsWith("asset/element/")) {
         event->acceptProposedAction();
         std::cout << "DEBUG: Evento DragEnter recibido. MIME: " << event->mimeData()->text().toStdString() << std::endl;
@@ -51,19 +50,15 @@ void MapView::dropEvent(QDropEvent *event)
     QString mimeText = event->mimeData()->text();
 
     if (mimeText.startsWith("asset/element/")) {
-
-        // FIX CLAVE: ACEPTAR LA ACCIÓN PROPUESTA AL PRINCIPIO
         event->acceptProposedAction();
-        std::cout << "DEBUG: Evento Drop recibido." << std::endl; // ¡Ahora este print debe verse!
+        std::cout << "DEBUG: Evento Drop recibido." << std::endl;
 
         QPointF scenePoint = mapToScene(event->pos());
         QPoint p = scenePoint.toPoint();
 
-                // 2. VERIFICACIÓN DE RESTRICCIÓN
         bool outOfBounds = p.x() < 0 || p.y() < 0 || p.x() >= collisionMask.width() || p.y() >= collisionMask.height();
         bool isCollision = false;
 
-        // ... (Lógica de colisión) ...
         if (!outOfBounds) {
             QColor pixel = collisionMask.pixelColor(p);
             const int redValue = pixel.red();
@@ -76,18 +71,16 @@ void MapView::dropEvent(QDropEvent *event)
 
         if (outOfBounds || isCollision) {
             std::cout << (isCollision ? "❌ Drop RECHAZADO: No es una zona de calle." : "⚠️ Drop RECHAZADO: Fuera de los límites del mapa.") << std::endl;
-            event->ignore(); // Ignoramos la acción aceptada si la validación falla
+            event->ignore();
             return;
         }
 
-                // --- DROP ACEPTADO Y VALIDADO ---
         QStringList parts = mimeText.split('/');
         ElementType type = static_cast<ElementType>(parts.value(2).toInt());
         ElementDirection direction = static_cast<ElementDirection>(parts.value(3).toInt());
 
         QPixmap elementPixmap = loadPixmapForElement(type, direction);
 
-                // Crear el nuevo elemento
         MapElement* element = new MapElement(type, direction, elementPixmap, collisionMask);
         element->setPos(scenePoint);
         scene()->addItem(element);
@@ -99,9 +92,7 @@ void MapView::dropEvent(QDropEvent *event)
 }
 void MapView::dragMoveEvent(QDragMoveEvent *event)
 {
-    // FIX CLAVE: Verificar solo el prefijo 'asset/element/'
     if (event->mimeData()->hasText() && event->mimeData()->text().startsWith("asset/element/")) {
-        // Acepta la acción continuamente, lo cual permite que el drop se dispare
         event->acceptProposedAction();
     } else {
         QGraphicsView::dragMoveEvent(event);

@@ -6,6 +6,8 @@
 #include <QPixmap>
 #include <QGraphicsScene>
 #include <iostream>
+#include <QDir>
+#include <QFileDialog>
 #include "toolbox.h"
 
 MapEditor::MapEditor(int cityId, QWidget* parent)
@@ -61,6 +63,8 @@ MapEditor::MapEditor(int cityId, QWidget* parent)
     Toolbox* toolbox = new Toolbox(this);
     toolbox->setFixedWidth(150);
 
+    connect(toolbox, &Toolbox::saveClicked, this, &MapEditor::onSaveRequest);
+
     QHBoxLayout* mainLayout = new QHBoxLayout(this);
 
     mainLayout->setContentsMargins(0, 0, 0, 0);
@@ -77,4 +81,30 @@ MapEditor::MapEditor(int cityId, QWidget* parent)
     view->scale(initialZoomFactor, initialZoomFactor);
 
     view->centerOn(mapItem);
+}
+
+void MapEditor::onSaveRequest()
+{
+    QString filter = "Archivos de Mapa YAML (*.yaml *.yml)";
+    QString defaultPath = QDir::homePath() + "/nuevo_mapa.yaml";
+
+    QString fileName = QFileDialog::getSaveFileName(
+            this,
+            "Guardar Circuito de Carrera",
+            defaultPath,
+            filter
+            );
+
+    if (!fileName.isEmpty()) {
+        if (!fileName.toLower().endsWith(".yaml") && !fileName.toLower().endsWith(".yml")) {
+            fileName += ".yaml";
+        }
+
+        std::cout << "Iniciando serialización a: " << fileName.toStdString() << std::endl;
+
+        //serializeToYaml(fileName);
+
+    } else {
+        std::cout << "Guardado cancelado por el usuario." << std::endl;
+    }
 }
