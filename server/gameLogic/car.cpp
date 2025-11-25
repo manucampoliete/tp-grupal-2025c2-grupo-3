@@ -14,7 +14,7 @@
  * TODO: modularizar
  */
 void Car::updatePhysics() {
-    if(health <= 0.0f) {
+    if(currentHealth <= 0.0f) {
         // el auto esta destruido, se frena rapido y no se puede mover
         body->SetLinearDamping(2.5f);
         body->SetAngularDamping(5.0f);
@@ -90,13 +90,9 @@ void Car::updateActiveDirections(ActiveDirections activeDirections) {
 
 void Car::applyDamage(float impact) {
     // el impacto ya viene normalizado
-    std::cout << "///////////////////////" << std::endl;
-    std::cout << "[CAR] Starting health: " << health << std::endl;
-    health -= impact * DAMAGE_SCALE; 
-    if (health < 0.0f)
-        health = 0.0f;
-    std::cout << "[CAR] Applied damage: " << impact * DAMAGE_SCALE << std::endl;
-    std::cout << "[CAR] Remaining health: " << health << std::endl;
+    currentHealth -= impact * DAMAGE_SCALE; 
+    if (currentHealth < 0.0f)
+        currentHealth = 0.0f;
 }
 
 b2Vec2 Car::getPosition() { return body->GetPosition(); }
@@ -120,6 +116,8 @@ void Car::improveProperties(bool improveVelocity, bool improveHealth) {
     if (improveHealth) {
         maxHealth *= HEALTH_IMPROVEMENT_PERCENTAGE;
     }
+}
+
 float Car::getCurrentHealth() { return currentHealth; }
 
 void Car::setCollisionLayer(uint8_t layer) {
@@ -139,6 +137,9 @@ void Car::toggleCollisionLayer() {
         filter.maskBits = MASK_CAR_LOW;
     }
     body->GetFixtureList()->SetFilterData(filter);
-    std::cout << "[CAR] Toggled collision layer. New layer: "
-              << ((filter.categoryBits == CAR_LOW_LAYER) ? "LOW" : "HIGH") << std::endl;
+}
+
+bool Car::isOnBridge() {
+    b2Filter filter = body->GetFixtureList()->GetFilterData();
+    return (filter.categoryBits == CAR_HIGH_LAYER);
 }

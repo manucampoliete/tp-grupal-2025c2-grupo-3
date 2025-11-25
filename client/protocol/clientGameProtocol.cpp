@@ -47,8 +47,8 @@ Snapshot ClientGameProtocol::recvSnapshot() {
         uint16_t angle = recvU16();
         uint16_t speed = recvU16();
         CarID carId = recvU8();
-        uint8_t health = 100; // deshardcodear desp
-        bool onBridge = false; // deshardcodear desp
+        uint8_t health = recvU8();
+        bool onBridge = recvU8();
 
         cars.emplace_back(clientId, x, y, angle, speed, carId, health, onBridge);
     }

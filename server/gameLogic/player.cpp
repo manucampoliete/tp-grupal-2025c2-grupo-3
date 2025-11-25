@@ -11,7 +11,7 @@
 #define RADTODEG 57.295779513082320876f
 
 Player::Player(ClientID clientId, const std::string& username, b2Body* body, CarID carId):
-        clientId(clientId), username(username), car(CarFactory::createCar(body, carId)), totalRaceTime(0), penalty(0)
+        clientId(clientId), username(username), car(CarBuilder::createCar(body, carId)), totalRaceTime(0), penalty(0)
 {
     auto* data = new BodyData();
     data->player = this;
@@ -54,7 +54,9 @@ Snapshot::CarSnapshot Player::buildCarSnapshot() {
 
     uint16_t speed = static_cast<uint16_t>(std::round(car.getCurrentSpeed() * 1000));
 
-    return Snapshot::CarSnapshot(clientId, x, y, angle, speed, car.getId(), 100, false);
+    uint8_t healthPercentage = static_cast<uint8_t>(std::round((car.getCurrentHealth() / car.getMaxHealth()) * 100));
+
+    return Snapshot::CarSnapshot(clientId, x, y, angle, speed, car.getId(), healthPercentage, car.isOnBridge());
 }
 
 void Player::improveCarProperties(bool improveVelocity, bool improveHealth)  {

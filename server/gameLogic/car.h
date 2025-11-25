@@ -66,6 +66,7 @@ public:
             angularVelThreshold(ANGULAR_VEL_THRESHOLD),
             name(std::move(name)),
             maxHealth(maxHealth),
+            currentHealth(maxHealth),
             carId(carId) {}
 
     /**
@@ -102,6 +103,8 @@ public:
 
     void setCollisionLayer(uint8_t layer);
     void toggleCollisionLayer();
+
+    bool isOnBridge();
 };
 
 #endif

@@ -22,6 +22,8 @@ void ServerGameSendProtocol::sendRaceSnapshot(std::shared_ptr<Snapshot> snapshot
         sendU16(car.angle);
         sendU16(car.speed);
         sendU8(car.carId);
+        sendU8(car.health);
+        sendU8(car.onBridge ? 1 : 0);
     }
 }
 

@@ -63,7 +63,7 @@ public:
     Snapshot::CollisionData buildCollisionSnapshot(float impact);
 
     ClientID getClientId() const { return clientId; }
-    bool isAlive() { return car.getHealth() > 0.0f; }
+    bool isAlive() { return car.getCurrentHealth() > 0.0f; }
 
     Car getCar() const { return car; }
 };
