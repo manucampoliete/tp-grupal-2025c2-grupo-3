@@ -11,11 +11,11 @@ Toolbox::Toolbox(QWidget* parent) : QWidget(parent)
     QVBoxLayout* mainLayout = new QVBoxLayout(this);
     mainLayout->setAlignment(Qt::AlignTop);
 
-    QLabel* title = new QLabel("Elementos de Carrera");
+    QLabel* title = new QLabel("Elements");
     title->setAlignment(Qt::AlignCenter);
     mainLayout->addWidget(title);
 
-    QLabel* hintLabel = new QLabel("Hints (12 Direcciones)");
+    QLabel* hintLabel = new QLabel("Hints");
     mainLayout->addWidget(hintLabel);
 
     QGridLayout* hintGrid = new QGridLayout;
@@ -41,16 +41,16 @@ Toolbox::Toolbox(QWidget* parent) : QWidget(parent)
 
     mainLayout->addLayout(hintGrid);
 
-    QLabel* raceLabel = new QLabel("\nInicio y Meta");
-    mainLayout->addWidget(raceLabel);
+    //QLabel* raceLabel = new QLabel("\nStart and Finish");
+    //mainLayout->addWidget(raceLabel);
 
     QGridLayout* raceGrid = new QGridLayout;
 
-    raceGrid->addWidget(new QLabel("Inicio:"), 0, 0);
+    raceGrid->addWidget(new QLabel("Start:"), 0, 0);
     raceGrid->addWidget(new ElementIcon(TYPE_START, DIR_HORIZONTAL, this), 0, 1);
     raceGrid->addWidget(new ElementIcon(TYPE_START, DIR_VERTICAL,   this), 0, 2);
 
-    raceGrid->addWidget(new QLabel("Meta:"), 1, 0);
+    raceGrid->addWidget(new QLabel("Finish:"), 1, 0);
     raceGrid->addWidget(new ElementIcon(TYPE_FINISH, DIR_HORIZONTAL, this), 1, 1);
     raceGrid->addWidget(new ElementIcon(TYPE_FINISH, DIR_VERTICAL,   this), 1, 2);
 
@@ -61,17 +61,17 @@ Toolbox::Toolbox(QWidget* parent) : QWidget(parent)
 
     QGridLayout* cpGrid = new QGridLayout;
 
-    cpGrid->addWidget(new QLabel("CP H:"), 0, 0);
+    cpGrid->addWidget(new QLabel("H:"), 0, 0);
     cpGrid->addWidget(new ElementIcon(TYPE_CHECKPOINT, DIR_HORIZONTAL, this), 0, 1);
 
-    cpGrid->addWidget(new QLabel("CP V:"), 1, 0);
+    cpGrid->addWidget(new QLabel("V:"), 1, 0);
     cpGrid->addWidget(new ElementIcon(TYPE_CHECKPOINT, DIR_VERTICAL,   this), 1, 1);
 
     mainLayout->addLayout(cpGrid);
 
-    QPushButton* saveButton = new QPushButton("Guardar Mapa");
+    QPushButton* saveButton = new QPushButton("Save Map");
 
-    saveButton->setStyleSheet("background-color: #007bff; color: white; padding: 10px; border-radius: 5px;");
+    saveButton->setStyleSheet("background-color: #050505; color: white; padding: 10px; border-radius: 5px;");
 
     mainLayout->addWidget(saveButton);
 

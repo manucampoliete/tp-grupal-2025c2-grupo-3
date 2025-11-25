@@ -83,8 +83,9 @@ void Editor::launchMapEditor(int cityId) {
 
     this->setFixedSize(editorWidth, editorHeight);
 
+    QColor customColor("#123DB5");
     QPalette palette = this->palette();
-    palette.setBrush(QPalette::Window, QBrush(Qt::white));
+    palette.setBrush(QPalette::Window, QBrush(customColor));
     this->setPalette(palette);
     this->setAutoFillBackground(false);
 
