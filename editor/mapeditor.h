@@ -9,6 +9,13 @@
 #include "mapelement.h"
 #include "circuitsegment.h"
 
+struct MapPaths {
+    QString mapPath;
+    QString maskPath;
+};
+
+MapPaths getMapPaths(int cityId);
+
 class MapEditor : public QWidget {
     Q_OBJECT
 
@@ -22,12 +29,13 @@ private slots:
     void onElementRemoved(MapElement* element);
 
 private:
-    MapView* view;
-    QGraphicsScene* scene;
+    MapView* view = nullptr;
+    QGraphicsScene* scene = nullptr;
     QGraphicsPixmapItem* mapItem = nullptr;
     QImage collisionMask;
     std::vector<MapElement*> hintsInCurrentSegment;
     std::vector<CircuitSegment> circuitSegments;
+    int cityMapID;
 
     void loadCity(int cityId);
     void serializeToYaml(const QString& filename);

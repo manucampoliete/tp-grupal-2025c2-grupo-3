@@ -11,10 +11,12 @@ class MapOption : public QFrame {
 public:
     explicit MapOption(const QString& title,
                              const QString& imagePath,
+                             const int cityId,
                              QWidget* parent = nullptr);
 
     void setSelected(bool sel);
     bool isSelected() const { return selected; }
+    int getCityId() const { return cityId; }
 
 signals:
     void clicked(MapOption* self);
@@ -26,6 +28,7 @@ private:
     bool selected;
     QLabel* imageLabel;
     QLabel* titleLabel;
+    int cityId;
 };
 
 #endif

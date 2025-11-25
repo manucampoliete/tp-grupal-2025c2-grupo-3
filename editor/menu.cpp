@@ -4,14 +4,15 @@
 #include "ui_menu.h"
 
 Menu::Menu(QWidget* parent): QWidget(parent), ui(new Ui::Menu) {
+    std::cout << "hola" << std::endl;
     ui->setupUi(this);
 
     ui->menuContainer->setFixedSize(850, 450);
 
-    options[0] = new MapOption("Liberty City", ":/media/liberty.jpg", this);
-    options[1] = new MapOption("San Andreas", ":/media/sanandreas.jpg", this);
-    options[2] = new MapOption("Vice City", ":/media/vicecity.jpg", this);
-    options[3] = new MapOption("Custom", ":/media/city.jpeg", this);
+    options[0] = new MapOption("Liberty City", ":/media/liberty.jpg", 0, this);
+    options[1] = new MapOption("San Andreas", ":/media/sanandreas.jpg", 1, this);
+    options[2] = new MapOption("Vice City", ":/media/vicecity.jpg", 2, this);
+    options[3] = new MapOption("Custom", ":/media/custom.png", 3, this);
 
     QHBoxLayout* box = new QHBoxLayout;
     for (int i = 0; i < 4; i++) {
@@ -42,8 +43,8 @@ void Menu::onSelectButtonPressed() {
         return;
     }
 
-    int selectedCityId = 1;
-
+    int selectedCityId = current->getCityId();
+    std::cout << selectedCityId << std::endl;
     emit mapSelected(selectedCityId);
 }
 

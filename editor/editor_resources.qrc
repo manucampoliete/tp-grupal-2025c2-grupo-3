@@ -6,7 +6,6 @@
         <file>media/sanandreas.jpg</file>
         <file>media/vicecity.jpg</file>
         <file>media/custom.png</file>
-        <file>media/asset_vicecity.png</file>
         <file>media/mask_vicecity.jpeg</file>
         <file>media/assets/arrow_down.png</file>
         <file>media/assets/arrow_left.png</file>
@@ -26,5 +25,6 @@
         <file>media/assets/start_vertical.png</file>
         <file>media/assets/cp_horizontal.png</file>
         <file>media/assets/cp_vertical.png</file>
+        <file>media/vice_city_map.png</file>
     </qresource>
 </RCC>

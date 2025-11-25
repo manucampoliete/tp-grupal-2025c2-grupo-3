@@ -3,9 +3,9 @@
 #include <QPixmap>
 
 MapOption::MapOption(const QString& title,
-                                 const QString& imagePath,
-                                 QWidget* parent)
-        : QFrame(parent), selected(false)
+                     const QString& imagePath, const int id,
+                     QWidget* parent)
+        : QFrame(parent), selected(false), cityId(id)
 {
     setObjectName("mapOptionRoot");
     setFrameShape(QFrame::StyledPanel);
