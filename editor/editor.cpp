@@ -4,6 +4,11 @@
 
 #include <QScreen>
 #include <QFontDatabase>
+#include <QDir>
+#include <QFileDialog>
+#include <iostream>
+#include <QMessageBox>
+#include <yaml-cpp/yaml.h>
 
 Editor::Editor(QWidget* parent): QMainWindow(parent), ui(new Ui::Editor) {
     ui->setupUi(this);
@@ -41,6 +46,8 @@ Editor::Editor(QWidget* parent): QMainWindow(parent), ui(new Ui::Editor) {
 
     connect(menu, &Menu::exitClicked, this, &Editor::exitEditor);
 
+    connect(menu, &Menu::mapOpenRequested, this, &Editor::openMapFileDialog);
+
     connect(menu, &Menu::mapSelected, this, &Editor::launchMapEditor);
 
     ui->stackedWidget->setCurrentWidget(menu);
@@ -48,7 +55,12 @@ Editor::Editor(QWidget* parent): QMainWindow(parent), ui(new Ui::Editor) {
 }
 
 void Editor::launchMapEditor(int cityId) {
-    MapEditor* mapEditor = new MapEditor(cityId, this);
+    const QString& finalPath = filePathToLoad;
+    MapEditor* mapEditor = new MapEditor(cityId, finalPath, this);
+
+    if (!filePathToLoad.isEmpty()) {
+        filePathToLoad = QString();
+    }
 
     mapEditor->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
@@ -77,6 +89,30 @@ void Editor::launchMapEditor(int cityId) {
     this->setAutoFillBackground(false);
 
     this->updateGeometry();
+}
+
+int Editor::loadMapIdFromYaml(const QString& filePath) {
+    try {
+        YAML::Node root = YAML::LoadFile(filePath.toStdString());
+        return root["map_name"].as<int>();
+    } catch (const YAML::Exception& e) {
+        qWarning() << "YAML Read Error (ID):" << e.what();
+        return -1;
+    }
+}
+
+void Editor::openMapFileDialog() {
+    QString filter = "Archivos de Mapa YAML (*.yaml *.yml)";
+    QString startPath = QDir::homePath();
+
+    QString fileName = QFileDialog::getOpenFileName(this, "Abrir Mapa de Carrera (YAML)", startPath, filter);
+
+    if (!fileName.isEmpty()) {
+        filePathToLoad = fileName;
+        launchMapEditor(0);
+    } else {
+        std::cout << "Carga de mapa cancelada." << std::endl;
+    }
 }
 
 void Editor::exitEditor() {

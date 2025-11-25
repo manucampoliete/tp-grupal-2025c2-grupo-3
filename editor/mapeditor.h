@@ -14,6 +14,20 @@ struct MapPaths {
     QString maskPath;
 };
 
+struct LoadedHintData {
+    ElementDirection direction;
+    double x;
+    double y;
+};
+
+struct LoadedSegmentData {
+    ElementType cpType;
+    ElementDirection cpDirection;
+    double cpX;
+    double cpY;
+    std::vector<LoadedHintData> hints;
+};
+
 MapPaths getMapPaths(int cityId);
 
 class MapEditor : public QWidget {
@@ -21,8 +35,10 @@ class MapEditor : public QWidget {
 
 public:
     explicit MapEditor(int cityId, QWidget* parent = nullptr);
+    explicit MapEditor(int cityId, const QString& filePath, QWidget* parent = nullptr);
 
     void processNewElement(MapElement* newElement);
+    void loadMapForEditing(const QString& filename);
 
 private slots:
     void onSaveRequest();
@@ -38,7 +54,11 @@ private:
     int cityMapID;
 
     void loadCity(int cityId);
-    void serializeToYaml(const QString& filename);
+    void serializeToYaml(const QString& filename);  
+    std::vector<LoadedSegmentData> deserializeFromYaml(const QString& filename);
+    void setupLoadedCircuit(const std::vector<LoadedSegmentData>& loadedSegments);
+    MapElement* recreateElement(ElementType type, ElementDirection direction, double x, double y);
+    void setupMapAssets(int cityId);
 };
 
 #endif

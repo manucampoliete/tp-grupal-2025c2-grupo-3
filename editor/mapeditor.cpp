@@ -11,6 +11,7 @@
 #include "toolbox.h"
 #include <yaml-cpp/yaml.h>
 #include <algorithm>
+#include <QMessageBox>
 
 MapPaths getMapPaths(int cityId) {
     MapPaths paths;
@@ -39,6 +40,14 @@ MapPaths getMapPaths(int cityId) {
     return paths;
 }
 
+MapEditor::MapEditor(int cityId, const QString& filePath, QWidget* parent)
+        : MapEditor(cityId, parent)
+{
+    if (!filePath.isEmpty()) {
+        loadMapForEditing(filePath);
+    }
+}
+
 MapEditor::MapEditor(int cityId, QWidget* parent)
         : QWidget(parent),
         cityMapID(cityId)
@@ -50,42 +59,7 @@ MapEditor::MapEditor(int cityId, QWidget* parent)
     view->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     view->setScene(scene);
 
-    MapPaths selectedPaths = getMapPaths(cityMapID);
-    QString mapPath = selectedPaths.mapPath;
-    QString maskPath = selectedPaths.maskPath;
-
-    QPixmap mapPixmap(mapPath);
-
-    if (mapPixmap.isNull()) std::cout << "ERROR: QPixmap failed." << std::flush;
-
-    mapItem = scene->addPixmap(mapPixmap);
-    mapItem->setZValue(0);
-
-    collisionMask.load(maskPath);
-
-    if (collisionMask.isNull()) std::cout << "ERROR: QImage failed to load." << std::flush;
-
-    collisionMask = collisionMask.convertToFormat(QImage::Format_Grayscale8);
-
-    std::cout << "Máscara cargada ORIGINALMENTE: " << collisionMask.width() << "x" << collisionMask.height() << std::endl;
-
-    if (collisionMask.size() != mapPixmap.size()) {
-        QSize targetSize = mapPixmap.size();
-
-        collisionMask = collisionMask.scaled(
-                targetSize, // Target: 4640x4672
-                Qt::IgnoreAspectRatio,
-                Qt::SmoothTransformation
-                );
-
-        if (collisionMask.size() == targetSize) {
-            std::cout << "ESCALADO EXITOSO. Nuevas dimensiones de la máscara: "
-                      << collisionMask.width() << "x" << collisionMask.height() << std::endl;
-        } else {
-            std::cout << "ERROR CRÍTICO: Fallo al escalar la imagen. Dimensiones actuales: "
-                      << collisionMask.width() << "x" << collisionMask.height() << std::endl;
-        }
-    }
+    setupMapAssets(cityMapID);
 
     view->setMapEditorParent(this);
     view->setResources(collisionMask);
@@ -104,12 +78,57 @@ MapEditor::MapEditor(int cityId, QWidget* parent)
     mainLayout->addWidget(view);
 
     setLayout(mainLayout);
+}
+
+void MapEditor::loadMapForEditing(const QString& filename) {
+    std::vector<LoadedSegmentData> loadedSegments = deserializeFromYaml(filename);
+
+    if (loadedSegments.empty()) {
+        std::cout << "Advertencia: La carga falló o el archivo YAML está vacío. No se continuará." << std::endl;
+        QMessageBox::critical(this, "Error de Carga", "No se encontraron datos de carrera válidos en el archivo.");
+        return;
+    }
+
+    setupMapAssets(this->cityMapID);
+    setupLoadedCircuit(loadedSegments);
+
+    std::cout << "✅ Carga de mapa completada. El editor está listo para continuar." << std::endl;
+}
+
+void MapEditor::setupMapAssets(int cityId) {
+    MapPaths selectedPaths = getMapPaths(cityId);
+    QString mapPath = selectedPaths.mapPath;
+    QString maskPath = selectedPaths.maskPath;
+
+    QPixmap mapPixmap(mapPath);
+    if (mapPixmap.isNull()) {
+        std::cout << "ERROR CRÍTICO: No se pudo cargar el mapa principal en: " << mapPath.toStdString() << std::endl;
+        return;
+    }
+
+    if (mapItem) {
+        scene->removeItem(mapItem);
+    }
+    mapItem = scene->addPixmap(mapPixmap);
+    mapItem->setZValue(0);
+
+    if (this->collisionMask.load(maskPath)) {
+
+        QSize targetSize = mapPixmap.size();
+        this->collisionMask = this->collisionMask.convertToFormat(QImage::Format_Grayscale8);
+
+        if (this->collisionMask.size() != targetSize) {
+            this->collisionMask = this->collisionMask.scaled(targetSize, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+        }
+
+        view->setResources(this->collisionMask);
+    } else {
+        std::cout << "ERROR CRÍTICO: No se pudo cargar la máscara en: " << maskPath.toStdString() << std::endl;
+    }
 
     view->fitInView(mapItem, Qt::KeepAspectRatio);
-
     const double initialZoomFactor = 30.0;
     view->scale(initialZoomFactor, initialZoomFactor);
-
     view->centerOn(mapItem);
 }
 
@@ -259,5 +278,157 @@ void MapEditor::onElementRemoved(MapElement* element) {
                        segments.end());
 
         std::cout << "DEBUG: CP/Element removido. Nuevo total de segmentos: " << segments.size() << std::endl;
+    }
+}
+
+MapElement* MapEditor::recreateElement(ElementType type, ElementDirection direction, double x, double y)
+{
+    QPixmap elementPixmap = loadPixmapForElement(type, direction);
+
+    MapElement* element = new MapElement(type, direction, elementPixmap, this->collisionMask);
+
+    QObject::connect(element, &MapElement::elementRemoved,
+                     this, &MapEditor::onElementRemoved,
+                     Qt::QueuedConnection);
+
+    element->setPos(x, y);
+    scene->addItem(element);
+
+    return element;
+}
+
+std::vector<LoadedSegmentData> MapEditor::deserializeFromYaml(const QString& filename) {
+    std::vector<LoadedSegmentData> segments;
+
+    try {
+        YAML::Node root = YAML::LoadFile(filename.toStdString());
+
+        if (!root["map_id"]) throw std::runtime_error("Falta la clave 'map_id'.");
+
+        int loadedMapId = root["map_id"].as<int>();
+        this->cityMapID = loadedMapId;
+
+        const YAML::Node& segmentsNode = root["segments"];
+        if (!segmentsNode || !segmentsNode.IsSequence()) {
+            throw std::runtime_error("El nodo 'segments' no es una secuencia válida.");
+        }
+
+        for (const auto& segmentNode : segmentsNode) {
+
+            if (!segmentNode.IsMap()) continue;
+
+            LoadedSegmentData segment;
+
+            std::string typeStr = segmentNode["segment_start_type"].as<std::string>();
+            std::string dirStr = segmentNode["direction"].as<std::string>();
+
+            ElementType cpType = stringToType(typeStr);
+            ElementDirection cpDir = stringToDirection(dirStr);
+
+            const YAML::Node& positionNode = segmentNode["position"];
+            if (!positionNode || !positionNode.IsSequence() || positionNode.size() < 2) {
+                qWarning() << "Error: El nodo 'position' del CP es inválido o falta.";
+                continue;
+            }
+
+            double cpX = positionNode[0].as<double>();
+            double cpY = positionNode[1].as<double>();
+
+            segment.cpType = cpType;
+            segment.cpDirection = cpDir;
+            segment.cpX = cpX;
+            segment.cpY = cpY;
+
+            const YAML::Node& hintsNode = segmentNode["hints_to_next_cp"];
+            if (hintsNode && hintsNode.IsSequence()) {
+                for (const auto& hintNode : hintsNode) {
+                    if (!hintNode.IsMap()) continue;
+
+                    ElementDirection hintDir = static_cast<ElementDirection>(hintNode["type_id"].as<int>());
+                    double hintX = hintNode["position"][0].as<double>();
+                    double hintY = hintNode["position"][1].as<double>();
+
+                    LoadedHintData hintData;
+                    hintData.direction = hintDir;
+                    hintData.x = hintX;
+                    hintData.y = hintY;
+
+                    segment.hints.push_back(hintData);
+                }
+            }
+
+            segments.push_back(segment);
+        }
+    } catch (const YAML::BadFile& e) {
+        QMessageBox::critical(this, "Error de YAML", QString("No se pudo abrir o leer el archivo: %1").arg(e.what()));
+        return std::vector<LoadedSegmentData>();
+    } catch (const YAML::Exception& e) {
+        QMessageBox::critical(this, "Error de Deserialización", QString("Error al parsear YAML: %1").arg(e.what()));
+        return std::vector<LoadedSegmentData>();
+    } catch (const std::runtime_error& e) {
+        QMessageBox::critical(this, "Error de Estructura", e.what());
+        return std::vector<LoadedSegmentData>();
+    }
+    return segments;
+}
+
+void MapEditor::setupLoadedCircuit(const std::vector<LoadedSegmentData>& loadedData) {
+
+    std::cout << "SLCT_DEBUG 1: Setup START. Segmentos cargados: " << loadedData.size() << std::flush;
+
+    this->circuitSegments.clear();
+    this->hintsInCurrentSegment.clear();
+
+    if (loadedData.empty()) return;
+
+    for (const auto& loadedSegment : loadedData) {
+        MapElement* cpElement = recreateElement(
+                loadedSegment.cpType,
+                loadedSegment.cpDirection,
+                loadedSegment.cpX,
+                loadedSegment.cpY
+                );
+
+        CircuitSegment newSegment;
+        newSegment.cpElementPtr = cpElement;
+
+        for (const auto& hintData : loadedSegment.hints) {
+            MapElement* hintElement = recreateElement(
+                    TYPE_HINT,
+                    hintData.direction,
+                    hintData.x,
+                    hintData.y
+                    );
+            newSegment.segmentHints.push_back(hintElement);
+        }
+
+        this->circuitSegments.push_back(newSegment);
+    }
+
+    if (!this->circuitSegments.empty()) {
+        CircuitSegment& lastSegment = this->circuitSegments.back();
+
+        if (lastSegment.cpElementPtr && lastSegment.cpElementPtr->getElementType() == TYPE_FINISH) {
+            QMessageBox::information(this, "Modo Edición", "Meta de llegada liberada para extensión del circuito.");
+
+            MapElement* finishPtr = lastSegment.cpElementPtr;
+
+            this->circuitSegments.pop_back();
+
+            if (!this->circuitSegments.empty()) {
+                this->hintsInCurrentSegment = this->circuitSegments.back().segmentHints;
+            }
+
+            QObject::disconnect(finishPtr, nullptr, this, nullptr);
+            if (finishPtr->scene()) {
+                finishPtr->scene()->removeItem(finishPtr);
+            }
+            finishPtr->deleteLater();
+
+            std::cout << "SLCT_DEBUG 6: Setup FINISHED (Meta Liberada)." << std::endl;
+        }
+        else {
+            this->hintsInCurrentSegment = this->circuitSegments.back().segmentHints;
+        }
     }
 }

@@ -44,8 +44,14 @@ void Menu::onSelectButtonPressed() {
     }
 
     int selectedCityId = current->getCityId();
-    std::cout << selectedCityId << std::endl;
-    emit mapSelected(selectedCityId);
+
+    if (selectedCityId == 3) {
+        std::cout << "Modo Custom: Solicitando archivo YAML." << std::endl;
+        emit mapOpenRequested();
+    } else {
+        std::cout << "Modo Edición: Cargando mapa ID " << selectedCityId << std::endl;
+        emit mapSelected(selectedCityId);
+    }
 }
 
 Menu::~Menu() { delete ui; }

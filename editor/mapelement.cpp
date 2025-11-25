@@ -35,6 +35,31 @@ QString directionToString(ElementDirection direction) {
     }
 }
 
+ElementType stringToType(const std::string& typeStr) {
+    if (typeStr == "HINT") return TYPE_HINT;
+    if (typeStr == "CHECKPOINT") return TYPE_CHECKPOINT;
+    if (typeStr == "START_POINT") return TYPE_START;
+    if (typeStr == "FINISH_LINE") return TYPE_FINISH;
+
+    return TYPE_HINT;
+}
+
+ElementDirection stringToDirection(const std::string& dirStr) {
+    if (dirStr == "HORIZONTAL") return DIR_HORIZONTAL;
+    if (dirStr == "VERTICAL") return DIR_VERTICAL;
+
+    try {
+        return static_cast<ElementDirection>(std::stoi(dirStr));
+    } catch (const std::invalid_argument& e) {
+        // Manejo de error si el string no es un número (devolver un valor seguro)
+        return DIR_UP;
+    } catch (const std::out_of_range& e) {
+        return DIR_UP;
+    }
+
+    return DIR_HORIZONTAL;
+}
+
 void MapElement::mousePressEvent(QGraphicsSceneMouseEvent *event) {
     if (event->button() == Qt::RightButton) {
         std::cout << "DEBUG: Clic derecho detectado en elemento." << std::endl;

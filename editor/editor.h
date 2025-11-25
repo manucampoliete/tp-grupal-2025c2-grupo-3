@@ -21,12 +21,15 @@ public:
 
 private slots:
     void launchMapEditor(int cityId);
+    void openMapFileDialog();
 
 private:
     Ui::Editor* ui;
     Menu* menu;
+    QString filePathToLoad;
 
     void exitEditor();
+    int loadMapIdFromYaml(const QString& filePath);
 };
 
 #endif  // EDITOR_H

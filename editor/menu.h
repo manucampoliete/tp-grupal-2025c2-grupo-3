@@ -18,6 +18,7 @@ public:
 signals:
     void exitClicked();
     void mapSelected(int cityId);
+    void mapOpenRequested();
 
 private slots:
     void on_buttonExit_clicked();
