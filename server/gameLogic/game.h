@@ -26,8 +26,10 @@ private:
     std::unique_ptr<b2World> world;
     int32 velocityIt;
     int32 positionIt;
+
     Queue<std::unique_ptr<Command>> clientCommandsQueue;
     ResponseQueuesMonitor responseQueuesMonitor;
+
     std::map<ClientID, Player> players;
 
     //tiempos
@@ -70,6 +72,12 @@ private:
     void broadcastGameEnd();
 
     void setGameState(GameState new_state);
+    void setCountdownState();
+    void setRacingState();
+    void setShowingStatsState();
+    void setModifyingCarState();
+    // void setEliminatedState();
+    // void setGameEndState();
 
     void updateGameState();
 
@@ -137,6 +145,8 @@ public:
      * Moves the player with the given clientId according to the given activeDirections.
      */
     void movePlayer(ClientID clientId, ActiveDirections activeDirections);
+
+    void handleCollision(Player* player, float impact);
 
     /**
      * Cheats!

@@ -23,6 +23,8 @@
 #define LINEAR_VEL_THRESHOLD 1.0f
 #define ANGULAR_VEL_THRESHOLD 1.0f
 
+#define VELOCITY_IMPROVEMENT_PERCENTAGE 1.5f
+#define HEALTH_IMPROVEMENT_PERCENTAGE 1.05f
 
 class Car {
 private:
@@ -44,7 +46,8 @@ private:
 
     // datos
     std::string name;
-    float health;
+    float maxHealth;
+    float currentHealth;
     CarID carId;
 
 public:
@@ -53,7 +56,7 @@ public:
      */
     explicit Car(b2Body* body, CarID carId = 0, std::string name = "Car",
                  float maxSpeed = MAX_SPEED, float acceleration = ACC,
-                 float angularSpeed = ANGULAR_SPEED, float health = 100.0f):
+                 float angularSpeed = ANGULAR_SPEED, float maxHealth = 100.0f):
             body(body),
             maxSpeed(maxSpeed),
             acceleration(acceleration),
@@ -62,7 +65,8 @@ public:
             linearVelThreshold(LINEAR_VEL_THRESHOLD),
             angularVelThreshold(ANGULAR_VEL_THRESHOLD),
             name(std::move(name)),
-            health(health),
+            maxHealth(maxHealth),
+            currentHealth(maxHealth),
             carId(carId) {}
 
     /**
@@ -75,6 +79,8 @@ public:
      */
     void updateActiveDirections(ActiveDirections activeDirections);
 
+    void applyDamage(float impact);
+
     /**
      * Returns the position of the car.
      */
@@ -84,10 +90,21 @@ public:
      * Returns the angle of the car in radians.
      */
     float getAngle();
-
-    float getSpeed();
-
+    float getCurrentSpeed() const;
     CarID getId();
+    float getMaxHealth() const;
+    float getMaxSpeed() const;
+
+    void setCurrentHealth(float health);
+
+    void improveProperties(bool improveVelocity, bool improveHealth);
+  
+    float getCurrentHealth();
+
+    void setCollisionLayer(uint8_t layer);
+    void toggleCollisionLayer();
+
+    bool isOnBridge();
 };
 
 #endif

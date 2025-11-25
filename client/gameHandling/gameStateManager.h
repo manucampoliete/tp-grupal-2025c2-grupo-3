@@ -28,11 +28,11 @@ private:
     int totalRaces = 6;
 
     // Stats phase
-    uint32_t statsTimerMs = 10000;
+    uint8_t statsTimerMs = 10;
     RaceResults raceResults;
 
     // Modification phase
-    uint32_t modTimerMs = 10000;
+    uint8_t modTimerMs = 10;
     CarProperties carProperties;
     bool speedModified = false;
     bool healthModified = false;
@@ -74,14 +74,14 @@ public:
 
     // Timer setters 
     void setRaceTimer(uint32_t ms) { raceTimerMs = ms; }
-    void setStatsTimer(uint32_t ms) { statsTimerMs = ms; }
-    void setModTimer(uint32_t ms) { modTimerMs = ms; }
+    void setStatsTimer(uint8_t ms) { statsTimerMs = ms; }
+    void setModTimer(uint8_t ms) { modTimerMs = ms; }
 
     GameState getState() const { return currentState; }
     uint8_t getCountdownNumber() const { return countdownNumber; }
     uint32_t getRaceTimerMs() const { return raceTimerMs; }
-    uint32_t getStatsTimerMs() const { return statsTimerMs; }
-    uint32_t getModTimerMs() const { return modTimerMs; }
+    uint8_t getStatsTimerMs() const { return statsTimerMs; }
+    uint8_t getModTimerMs() const { return modTimerMs; }
     int getCurrentRace() const { return currentRace; }
     int getTotalRaces() const { return totalRaces; }
     

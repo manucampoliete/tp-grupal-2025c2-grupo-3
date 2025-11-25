@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <vector>
+#include <string>
 
 #include "../types/types.h"
 #include "../protocol/protocolConstants.h"
@@ -34,8 +35,37 @@ struct Snapshot {
         CarSnapshot& operator=(const CarSnapshot& other);
     };
 
+    struct RaceResults {
+        struct PlayerResult {
+            std::string playerName;
+            uint32_t raceTimeMs;
+            uint32_t totalTimeMs;
+        };
+
+        std::vector<PlayerResult> players;
+    };
+
+    struct CarProperties {
+        ClientID playerId;
+        uint16_t speed;
+        uint16_t health;
+    };
+    struct CollisionData {
+        uint16_t playerId;  // quién chocó
+        float intensity;     // 0.0 (leve) a 1.0 (fuerte)
+                            // Se tiene que mandar como uint8_t (0-255) y el cliente lo pasa a float (0.0-1.0)
+        uint32_t x;          // coordenada x del choque * 1000
+        uint32_t y;          // coordenada y del choque * 1000
+    };
+
     uint32_t countdown;  // remaining race time in milliseconds
     std::vector<CarSnapshot> cars;
+
+    RaceResults results;
+
+    std::vector<CarProperties> carProperties;
+    CollisionData collisionData;
+    ClientID clientId; // for dead player snapshot
     
     // SnapshotType type;
     uint8_t type;  // using uint8_t for easier serialization
@@ -49,11 +79,22 @@ struct Snapshot {
     // change state snapshot
     Snapshot(int type);
 
-    // countdown snapshot
-    Snapshot(uint32_t countdown);
+    // remaining time snapshot (countdown, stats, upgrades)
+    Snapshot(uint32_t remaining, int type);
 
     // racing snapshot
     Snapshot(uint32_t countdown, const std::vector<CarSnapshot>& cars);
+
+    // stats snapshot
+    Snapshot(RaceResults results);
+
+    // mod snapshot
+    Snapshot(const std::vector<Snapshot::CarProperties>& carProperties);
+    // collision snapshot
+    Snapshot(const CollisionData& collision);
+
+    // dead player snapshot
+    Snapshot(ClientID clientId);
 
     /**
      * Copy constructor for Snapshot

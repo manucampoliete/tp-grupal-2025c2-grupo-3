@@ -237,8 +237,7 @@ void UIRenderer::renderStatsPopup(const RaceResults& currentResults, uint32_t st
         int raceSeconds = (player.raceTimeMs % 60000) / 1000;
         int raceMillis = player.raceTimeMs % 1000;
         char raceTimeBuf[32];
-        snprintf(raceTimeBuf, sizeof(raceTimeBuf), "%02d:%02d.%03d", raceMinutes, raceSeconds,
-                 raceMillis);
+        snprintf(raceTimeBuf, sizeof(raceTimeBuf), "%02d:%02d:%03d", raceMinutes, raceSeconds, raceMillis);
 
         Surface raceS = activeFont.RenderText_Solid(raceTimeBuf, rowColor);
         Texture raceT(renderer, raceS);
@@ -265,7 +264,8 @@ void UIRenderer::renderStatsPopup(const RaceResults& currentResults, uint32_t st
     }
 
     // COUNTDOWN (bottom centered)
-    int seconds = statsTimerMs / 1000;
+    int seconds = statsTimerMs;
+    std::cout << "Stats popup timer seconds: " << seconds << std::endl;
     std::string timerText = "Next stage in: " + std::to_string(seconds) + "s";
     Surface timerSurface =
             activeFont.RenderText_Solid(timerText, {150, 255, 150, 255});  // Light green

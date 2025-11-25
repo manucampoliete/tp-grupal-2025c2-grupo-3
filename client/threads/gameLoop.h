@@ -48,7 +48,7 @@ private:
     void onPlayerDied(ClientID deadPlayerId);
     void onRaceEnd(const RaceResults& results);
     void onStatsCountdown(uint8_t number);
-    void onModificationPhase(const CarProperties& props);
+    void onModificationPhase(const std::vector<CarProperties>& props);
     void onModCountdown(uint8_t number);
     void onGameEnd(const FinalResults& results);
 

@@ -74,7 +74,7 @@ void Game::loadSounds() {
 void Game::loadBridges() {
     // por ahora hardcodeado para Vice City
     // TODO: recibir qué mapa se está usando
-    std::string bridgePath = "client/assets/cities/Vice City-Bridges.png";
+    std::string bridgePath = "client/assets/cities/Vice-City-Bridges.png";
     worldRenderer.loadBridgeTexture(bridgePath);
 }
 
@@ -191,7 +191,7 @@ void Game::startRace() {
 }
 
 void Game::setStatsCountdown(uint8_t number) {
-    stateManager.setStatsTimer(number * 1000);
+    stateManager.setStatsTimer(number);
 }
 
 void Game::showStats(const RaceResults& results) {
@@ -200,8 +200,13 @@ void Game::showStats(const RaceResults& results) {
     soundManager.playSound("race_end");
 }
 
-void Game::showModifications(const CarProperties& props) {
-    stateManager.showModifications(props);
+void Game::showModifications(const std::vector<CarProperties>& props) {
+    for (const auto& prop : props) {
+        if (prop.playerId == playerId) {
+            stateManager.showModifications(prop);
+        }
+        break;
+    }
 }
 
 void Game::setModCountdown(uint8_t number) {

@@ -161,7 +161,7 @@ void GameLoop::onStatsCountdown(uint8_t number) {
     }
 }
 
-void GameLoop::onModificationPhase(const CarProperties& props) {
+void GameLoop::onModificationPhase(const std::vector<CarProperties>& props) {
     if (game) game->showModifications(props);
 }
 

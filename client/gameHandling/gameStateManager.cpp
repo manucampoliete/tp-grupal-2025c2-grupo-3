@@ -19,7 +19,7 @@ void GameStateManager::setEliminated() {
 void GameStateManager::showStats(const RaceResults& results) {
     currentState = GameState::SHOWING_STATS;
     raceResults = results;
-    statsTimerMs = 10000; // default 10 seconda
+    statsTimerMs = 10;
 }
 
 void GameStateManager::showModifications(const CarProperties& props) {

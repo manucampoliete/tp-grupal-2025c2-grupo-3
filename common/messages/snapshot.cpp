@@ -18,8 +18,8 @@ Snapshot::Snapshot(): countdown(0), cars(), type(SEND_STARTED) {}
 
 Snapshot::Snapshot(int type): countdown(0), cars(), type(static_cast<uint8_t>(type)) {} 
 
-Snapshot::Snapshot(uint32_t countdown):
-        countdown(countdown), cars(), type(MSG_COUNTDOWN) {}
+Snapshot::Snapshot(uint32_t remaining, int type):
+        countdown(remaining), cars(), type(static_cast<uint8_t>(type)) {}
 
 Snapshot::Snapshot(uint32_t countdown, const std::vector<CarSnapshot>& cars):
         countdown(countdown), cars(cars), type(SEND_RACE_SNAPSHOT) {}
@@ -27,6 +27,15 @@ Snapshot::Snapshot(uint32_t countdown, const std::vector<CarSnapshot>& cars):
 Snapshot::Snapshot(const Snapshot& other):
         countdown(other.countdown), cars(other.cars), type(other.type) {}
 
+Snapshot::Snapshot(RaceResults results): results(results), type(MSG_RACE_END) {}
+
+Snapshot::Snapshot(const std::vector<CarProperties>& carProperties): carProperties(carProperties), type(MSG_MOD_PHASE) {}
+
+Snapshot::Snapshot(const CollisionData& collision):
+        countdown(0), collisionData(collision), type(MSG_COLLISION) {}
+
+Snapshot::Snapshot(ClientID clientId): 
+        clientId(clientId), type(MSG_PLAYER_DIED) {}
 
 
 Snapshot::CarSnapshot& Snapshot::CarSnapshot::operator=(const CarSnapshot& other) {

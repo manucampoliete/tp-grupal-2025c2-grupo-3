@@ -10,7 +10,9 @@
 
 #include "car.h"
 
-class CarFactory {
+#include <iostream>
+
+class CarBuilder {
 public:
     static Car createCar(b2Body* body, CarID carId) {
         YAML::Node config = YAML::LoadFile("config.yaml");

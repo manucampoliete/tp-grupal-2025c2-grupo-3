@@ -64,6 +64,7 @@ struct FinalResults {
 
 
 struct CarProperties {
+    uint16_t playerId;
     uint16_t speed;
     uint16_t health;
     uint16_t accel;

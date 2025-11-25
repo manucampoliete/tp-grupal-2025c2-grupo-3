@@ -4,9 +4,13 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <chrono>
+#include <iostream>
 
 #include "../../common/messages/snapshot.h"
 #include "car.h"
+
+#define PENALTY_PER_IMPROVEMENT 5
 
 class Player {
 private:
@@ -14,6 +18,11 @@ private:
     std::string username;
     Car car;
 
+    bool finished;
+    uint32_t currentRaceTime;
+    uint32_t totalRaceTime;
+
+    uint32_t penalty;
 
 public:
     /**
@@ -31,10 +40,32 @@ public:
      */
     void updateCarPhysics();
 
+    bool hasFinished();
+    void setArrivalTime(float arrivalTime);
+
+    std::string getUsername() const { return username; }
+    uint32 getCurrentRaceTime() const { return currentRaceTime; }
+    uint32 getTotalRaceTime() const { return totalRaceTime; }
+    uint16 getCarSpeed() const { return car.getCurrentSpeed(); }
+    uint8 getCarHealth() const { return car.getMaxHealth(); }
+
+    // TODO: agregar para masa y aceleracion
+    void improveCarProperties(bool improveVelocity, bool improveHealth);
+
+    void resetForNewRace();
+    void applyCollisionDamage(float impact) { car.applyDamage(impact); }
+
     /**
      * Builds and returns a CarSnapshot representing the player's car.
      */
     Snapshot::CarSnapshot buildCarSnapshot();
+
+    Snapshot::CollisionData buildCollisionSnapshot(float impact);
+
+    ClientID getClientId() const { return clientId; }
+    bool isAlive() { return car.getCurrentHealth() > 0.0f; }
+
+    Car getCar() const { return car; }
 };
 
 #endif
