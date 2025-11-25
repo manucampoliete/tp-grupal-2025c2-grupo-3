@@ -29,10 +29,12 @@ void ClientGameProtocol::sendMove(const ActiveDirections& activeDirections) {
     sendU8(encodeMoveState(activeDirections));
 }
 
-void ClientGameProtocol::sendModifications(bool speedMod, bool healthMod) {
+void ClientGameProtocol::sendModifications(bool speedMod, bool healthMod, bool accelMod, bool massMod) {
     sendU8(MSG_MODIFY_CAR);
     sendU8(speedMod ? 0x01 : 0x00);
     sendU8(healthMod ? 0x01 : 0x00);
+    sendU8(accelMod ? 0x01 : 0x00);
+    sendU8(massMod ? 0x01 : 0x00);
 }
 
 Snapshot ClientGameProtocol::recvSnapshot() {
@@ -109,6 +111,10 @@ std::vector<CarProperties> ClientGameProtocol::recvCarProperties() {
         props.push_back(prop);
     }
     
+//     props.speed = recvU16();
+//     props.health = recvU16();
+//     props.accel = recvU16();
+//     props.mass = recvU16();
 
     return props;
 }
@@ -146,3 +152,5 @@ void ClientGameProtocol::sendInmortalityRequest() { sendU8(SEND_INMORTALITY); }
 void ClientGameProtocol::sendInstaWinRequest() { sendU8(SEND_INSTA_WIN); }
 
 void ClientGameProtocol::sendInstaLoseRequest() { sendU8(SEND_INSTA_LOSE); }
+
+void ClientGameProtocol::sendSuperSpeedRequest() { sendU8(SEND_SUPER_SPEED); }

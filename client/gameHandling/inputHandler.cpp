@@ -93,6 +93,10 @@ void InputHandler::handleCheats(SDL_Scancode key, const Uint8* keyState) {
     // L + E (Trigger E) = Instant Lose
     if (key == SDL_SCANCODE_E && keyState[SDL_SCANCODE_L])
         gameLoop.sendCheatInstaLose();
+    
+    // F + H (Trigger H) = Super Speed
+    if (key == SDL_SCANCODE_H && keyState[SDL_SCANCODE_F])
+        gameLoop.sendCheatSuperSpeed();
 }
 
 
@@ -127,13 +131,25 @@ void InputHandler::handleMouseClick(const SDL_Event& event) {
         // Speed button
         if (uiRenderer.getSpeedButtonRect().Contains(x, y)) {
             stateManager.toggleSpeedMod();
-            soundManager.playSound("confirm");
+            soundManager.playSound("button_click");
         }
 
         // Health button
         if (uiRenderer.getHealthButtonRect().Contains(x, y)) {
             stateManager.toggleHealthMod();
-            soundManager.playSound("confirm");
+            soundManager.playSound("button_click");
+        }
+
+        // Accel button
+        if (uiRenderer.getAccelButtonRect().Contains(x, y)) {
+            stateManager.toggleAccelMod();
+            soundManager.playSound("button_click");
+        }
+
+        // Mass button
+        if (uiRenderer.getMassButtonRect().Contains(x, y)) {
+            stateManager.toggleMassMod();
+            soundManager.playSound("button_click");
         }
     }
 
@@ -141,8 +157,8 @@ void InputHandler::handleMouseClick(const SDL_Event& event) {
     if (uiRenderer.getSaveButtonRect().Contains(x, y) && !stateManager.areModsSaved()) {
         stateManager.saveMods();
         soundManager.playSound("confirm");
-        gameLoop.sendModifications(stateManager.isSpeedModified(),
-                                   stateManager.isHealthModified());
+        gameLoop.sendModifications(stateManager.isSpeedModified(), stateManager.isHealthModified(),
+                                    stateManager.isAccelModified(), stateManager.isMassModified());
         std::cout << "[INPUT] Modifications saved and sent" << std::endl;
     }
 }

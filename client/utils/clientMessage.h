@@ -17,14 +17,17 @@ struct MoveCommand {
 struct CheatInmortalityCommand {};
 struct CheatInstaWinCommand {};
 struct CheatInstaLoseCommand {};
+struct CheatSuperSpeedCommand {};
 
 
 struct ModifyCarCommand {
     bool speedMod;
     bool healthMod;
+    bool accelMod;
+    bool massMod;
     
-    ModifyCarCommand(bool speed, bool health) : speedMod(speed), healthMod(health) {}
-    ModifyCarCommand() : speedMod(false), healthMod(false) {}
+    ModifyCarCommand(bool speed, bool health, bool accel, bool mass) : speedMod(speed), healthMod(health), accelMod(accel), massMod(mass) {}
+    ModifyCarCommand() : speedMod(false), healthMod(false), accelMod(false), massMod(false) {}
 };
 
 
@@ -33,6 +36,7 @@ using ClientMessage = std::variant<
     CheatInmortalityCommand,
     CheatInstaWinCommand,
     CheatInstaLoseCommand,
+    CheatSuperSpeedCommand,
     ModifyCarCommand
 >;
 

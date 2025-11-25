@@ -29,11 +29,14 @@ private:
     Texture& cheatImmortalityImg;
     Texture& cheatWinImg;
     Texture& cheatLoseImg;
+    Texture& cheatSpeedImg;
 
     Rect statsPopupRect;
     Rect modPopupRect;
     Rect speedButtonRect;
     Rect healthButtonRect;
+    Rect accelButtonRect;
+    Rect massButtonRect;
     Rect saveButtonRect;
 
     // Minimap: 20% of the window width
@@ -43,7 +46,7 @@ private:
 public:
     UIRenderer(Renderer& renderer, Font& font, Font& fontSmall, Font& fontBig,
                Texture& mapTexture, World& world, uint8_t playerId,
-               Texture& cheatImmortalityImg, Texture& cheatWinImg, Texture& cheatLoseImg);
+               Texture& cheatImmortalityImg, Texture& cheatWinImg, Texture& cheatLoseImg, Texture& cheatSpeedImg);
 
     void renderCountdown(uint8_t countdownNumber);
 
@@ -52,7 +55,8 @@ public:
 
     void renderStatsPopup(const RaceResults& currentResults, uint32_t statsTimerMs);
 
-    void renderModificationPopup(bool speedModified, bool healthModified, bool saved,
+    void renderModificationPopup(bool speedModified, bool healthModified,
+                                   bool accelModified, bool massModified, bool saved,
                                    uint32_t modTimerMs, const CarProperties& props);
 
     void renderCheatNotification(CheatType activeCheatNotification);
@@ -70,6 +74,8 @@ public:
 
     const Rect& getSpeedButtonRect() const { return speedButtonRect; }
     const Rect& getHealthButtonRect() const { return healthButtonRect; }
+    const Rect& getAccelButtonRect() const { return accelButtonRect; }
+    const Rect& getMassButtonRect() const { return massButtonRect; }
     const Rect& getSaveButtonRect() const { return saveButtonRect; }
 };
 
