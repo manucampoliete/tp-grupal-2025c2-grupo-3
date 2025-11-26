@@ -16,7 +16,7 @@
 Player::Player(ClientID clientId, const std::string& username, b2Body* body, CarID carId):
         clientId(clientId), username(username), car(CarBuilder::createCar(body, carId)), totalRaceTime(0), penalty(0)
 {
-    auto* data = new BodyData();
+    auto* data = new BodyData(); /** TODO: solve this leak */
     data->player = this;
 
     // al parecer esta es la forma moderna de hacerlo
@@ -102,3 +102,8 @@ Snapshot::CollisionData Player::buildCollisionSnapshot(float normalizedImpact) {
 
     return collision;
 }
+
+Player::~Player() {
+}
+
+

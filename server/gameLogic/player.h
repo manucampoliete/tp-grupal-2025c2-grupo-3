@@ -66,6 +66,8 @@ public:
     bool isAlive() { return car.getCurrentHealth() > 0.0f; }
 
     Car getCar() const { return car; }
+
+    ~Player();
 };
 
 #endif
