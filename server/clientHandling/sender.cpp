@@ -17,3 +17,8 @@ void Sender::run() {
         }
     }
 }
+
+void Sender::stop() {
+    Thread::stop();
+    responsesQueue.close();  // Senders cannot pop, game cannot tryPush when broadcasting
+}

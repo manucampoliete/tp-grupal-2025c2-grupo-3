@@ -39,7 +39,7 @@ public:
      * Note: the Sender associated with the queue should have been
      * stopped before calling this method.
      */
-    bool removeQueue(ClientID clientId);
+    bool removeQueue(ClientID clientId);  /** NOTE: not used */
 
     /**
      * Broadcasts the given snapshot to all response queues.
@@ -47,14 +47,6 @@ public:
      * Note: because tryPush is used, this method does not block the gameloop.
      */
     bool broadcast(std::shared_ptr<Snapshot> snapshot);
-
-    /**
-     * Closes all response queues.
-     * This unblocks any Sender that is blocked on Queue::pop().
-     * After calling this method, no more responses can be pushed to any queue.
-     * This method is typically called when the server is shutting down.
-     */
-    void closeAll();
 
     /**
      * Destructor

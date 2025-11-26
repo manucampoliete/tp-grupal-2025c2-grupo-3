@@ -393,7 +393,6 @@ void Game::run() {
 void Game::stop() {
     Thread::stop();
     clientCommandsQueue.close();  // Receivers cannot push, game cannot tryPop (once it's empty)
-    responseQueuesMonitor.closeAll();  // Senders cannot pop, game cannot tryPush when broadcasting
 }
 
 void Game::join() {

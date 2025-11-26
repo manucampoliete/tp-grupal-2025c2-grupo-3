@@ -28,6 +28,8 @@ public:
      * Sender to stop. In all these cases, the Sender thread ends.
      */
     void run() override;
+    
+    void stop() override;
 
     /**
      * Destructor

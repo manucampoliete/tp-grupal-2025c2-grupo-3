@@ -27,11 +27,4 @@ bool ResponseQueuesMonitor::broadcast(std::shared_ptr<Snapshot> snapshot) {
     return all;
 }
 
-void ResponseQueuesMonitor::closeAll() {
-    std::lock_guard<std::mutex> lock(mtx);
-    for (auto& pair: responseQueues) {
-        pair.second.close();
-    }
-}
-
 ResponseQueuesMonitor::~ResponseQueuesMonitor() {}
