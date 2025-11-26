@@ -7,8 +7,11 @@
 
 #include <iostream>
 
+#include <cstdlib>
+
 
 #define RADTODEG 57.295779513082320876f
+#define PIXELS_TO_METERS 0.01f // 1 pixel = 0.01 metros (1 metro = 100 pixeles)
 
 Player::Player(ClientID clientId, const std::string& username, b2Body* body, CarID carId):
         clientId(clientId), username(username), car(CarBuilder::createCar(body, carId)), totalRaceTime(0), penalty(0)
@@ -40,9 +43,20 @@ void Player::setArrivalTime(float arrivalTime) {
     }
 }
 
+void debugPrintCarInfo(ClientID clientId, uint32 x, uint32 y, uint16 angle, uint16 speed, CarID carId, uint8_t healthPercentage, bool onBridge) {
+    system("clear");
+    std::cout << "[DEBUG] CarSnapshot - PlayerID: " << clientId << std::endl
+              << " | CarID: " << carId << std::endl
+              << " | Position (px): (" << x / 1000 << ", " << y / 1000 << ")" << std::endl
+              << " | Angle: " << angle << std::endl
+              << " | Speed: " << speed / 1000 << std::endl
+              << " | Health%: " << static_cast<int>(healthPercentage) << "%" << std::endl
+              << " | OnBridge: " << (onBridge ? "Yes" : "No") << std::endl;
+}
+
 Snapshot::CarSnapshot Player::buildCarSnapshot() {
-    uint32 x = static_cast<uint32_t>(std::round(car.getPosition().x * 1000));
-    uint32 y = static_cast<uint32_t>(std::round(car.getPosition().y * 1000));
+    uint32 x = static_cast<uint32_t>(std::round(car.getPosition().x / PIXELS_TO_METERS * 1000));
+    uint32 y = static_cast<uint32_t>(std::round(car.getPosition().y / PIXELS_TO_METERS * 1000));
 
     // normalizacion del angulo para que este entre 0 y 360
     // evita que en la animacion se vea un "snap" del auto cuando el angulo hace overflow
@@ -55,6 +69,8 @@ Snapshot::CarSnapshot Player::buildCarSnapshot() {
     uint16_t speed = static_cast<uint16_t>(std::round(car.getCurrentSpeed() * 1000));
 
     uint8_t healthPercentage = static_cast<uint8_t>(std::round((car.getCurrentHealth() / car.getMaxHealth()) * 100));
+
+    // debugPrintCarInfo(clientId, x, y, angle, speed, car.getId(), healthPercentage, car.isOnBridge());
 
     return Snapshot::CarSnapshot(clientId, x, y, angle, speed, car.getId(), healthPercentage, car.isOnBridge());
 }

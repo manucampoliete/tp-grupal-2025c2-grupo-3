@@ -15,16 +15,16 @@ std::vector<b2Body*> CollisionLoader::LoadCollisions(const std::string& yamlPath
         }
         
         for (const auto& collision : collisions) {
-            float x = collision["x"].as<float>() / pixelsToMeters;
+            float x = collision["x"].as<float>() * pixelsToMeters;
             float y_pixels = collision["y"].as<float>();
             
             // se invierte Y
             float y = (worldHeight > 0.0f) 
-                ? (worldHeight - y_pixels) / pixelsToMeters 
-                : y_pixels / pixelsToMeters; 
+                ? (worldHeight - y_pixels) * pixelsToMeters 
+                : y_pixels * pixelsToMeters; 
             
-            float width = collision["width"].as<float>() / pixelsToMeters;
-            float height = collision["height"].as<float>() / pixelsToMeters;
+            float width = collision["width"].as<float>() * pixelsToMeters;
+            float height = collision["height"].as<float>() * pixelsToMeters;
 
             // BOX2D //
             b2BodyDef bodyDef;

@@ -16,12 +16,22 @@
 #define LINEAR_VEL_THRESHOLD 1.0f
 #define ANGULAR_VEL_THRESHOLD 1.0f */
 
+#define SCALE 0.05f  // modificar segun convenga, afecta a todas las constantes de velocidad
+
+// throttle
 #define MAX_SPEED 10.0f
-#define ACC 20.0f
-#define ANGULAR_SPEED 2.0f
-#define TURN_FACTOR_THRESHOLD MAX_SPEED / 3
-#define LINEAR_VEL_THRESHOLD 1.0f
-#define ANGULAR_VEL_THRESHOLD 1.0f
+#define ACC 8.0f
+
+// steering
+#define ANGULAR_SPEED 0.05f                      // actua sobre el torque
+#define MAX_ANGULAR_SPEED 0.05f                  // ANGULAR_SPEED y MAX_ANGULAR_SPEED se pasan por yaml? o son para todos los autos?
+#define STEERING_SPEED_THRESHOLD 0.1f           // velocidad minima para empezar a girar
+#define MIN_STEERING_FACTOR 0.0f                // evita que el factor quede en 0 cuando hay poca velocidad
+//#define TURN_FACTOR_THRESHOLD MAX_SPEED / 3
+
+// thresholds
+#define LINEAR_VEL_THRESHOLD 0.05f
+#define ANGULAR_VEL_THRESHOLD 0.05f
 
 #define VELOCITY_IMPROVEMENT_PERCENTAGE 1.5f
 #define HEALTH_IMPROVEMENT_PERCENTAGE 1.05f
@@ -50,6 +60,13 @@ private:
     float currentHealth;
     CarID carId;
 
+    void applyFriction();
+    void applyThrottle();
+    void applySteering();
+    void applySpeedLimits();
+    void applyStallPrevention();
+    void handleDestroyedState();
+
 public:
     /**
      * Constructor
@@ -58,11 +75,11 @@ public:
                  float maxSpeed = MAX_SPEED, float acceleration = ACC,
                  float angularSpeed = ANGULAR_SPEED, float maxHealth = 100.0f):
             body(body),
-            maxSpeed(maxSpeed),
-            acceleration(acceleration),
+            maxSpeed(maxSpeed * SCALE),
+            acceleration(acceleration * SCALE),
             angularSpeed(angularSpeed),
-            turnFactorThreshold(TURN_FACTOR_THRESHOLD),
-            linearVelThreshold(LINEAR_VEL_THRESHOLD),
+            turnFactorThreshold(maxSpeed/3),
+            linearVelThreshold(LINEAR_VEL_THRESHOLD * SCALE),
             angularVelThreshold(ANGULAR_VEL_THRESHOLD),
             name(std::move(name)),
             maxHealth(maxHealth),

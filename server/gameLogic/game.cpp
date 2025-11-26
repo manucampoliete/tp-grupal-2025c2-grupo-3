@@ -18,9 +18,12 @@
 
 #define TARGET_FPS 60
 #define FRAME_DURATION_MS (1000 / TARGET_FPS)
-#define PLAYER_SPEED 200.0f  // píxeles por segundo
-#define WORLD_HEIGHT 4672.0f
 #define TIME_STEP (1.0f / TARGET_FPS) // duracion del step que simula box2d cada frame
+
+#define PIXELS_TO_METERS 0.01f // 1 pixel = 0.01 metros (1 metro = 100 pixeles)
+#define WORLD_HEIGHT 4672.0f // en pixeles
+#define WORLD_HEIGHT_METERS (WORLD_HEIGHT * PIXELS_TO_METERS)
+
 
 #define MAX_PLAYERS 8
 #define RACE_DURATION 5
@@ -42,8 +45,8 @@ b2Body* Game::createNewCarBody() {
     b2BodyDef body_def;
     body_def.type = b2_dynamicBody;
     // body_def.position.Set(0, 0);
-    body_def.position.Set(WORLD_HEIGHT / 2, WORLD_HEIGHT / 2);
-    body_def.angle = 0;
+    body_def.position.Set(WORLD_HEIGHT_METERS / 2, WORLD_HEIGHT_METERS / 2); // casi el centro
+    body_def.angle = 1.571f; // 90 grados en radianes
 
     // box2d permite darle el caracter de "bala" a objetos para que estos atraviesen colisiones lo menos posible
     // sin esto un auto muy rapido podria atravesar edificios
@@ -52,7 +55,9 @@ b2Body* Game::createNewCarBody() {
     b2Body* car = world->CreateBody(&body_def);
 
     b2PolygonShape boxShape;
-    boxShape.SetAsBox(28.0f/2, 22.0/2);
+    float pixelWidth = 28.0f;
+    float pixelHeight = 22.0f;
+    boxShape.SetAsBox(pixelWidth/2 * PIXELS_TO_METERS, pixelHeight/2 * PIXELS_TO_METERS);  // SetAsBox recibe "half-width" y "half-height"
 
     b2FixtureDef boxFixtureDef;
     boxFixtureDef.shape = &boxShape;
@@ -62,13 +67,15 @@ b2Body* Game::createNewCarBody() {
 
     // capa de colision
     b2Filter filter;
-    filter.categoryBits = CAR_LOW_LAYER;
-    filter.maskBits = MASK_CAR_LOW;
+    /* filter.categoryBits = CAR_LOW_LAYER;
+    filter.maskBits = MASK_CAR_LOW; */
+    filter.categoryBits = CAR_HIGH_LAYER;
+    filter.maskBits = MASK_CAR_HIGH;
     boxFixtureDef.filter = filter;
 
     car->CreateFixture(&boxFixtureDef);
 
-    car->SetLinearDamping(0.5f);  // para que se frene con el tiempo
+    // car->SetLinearDamping(0.5f);  // para que se frene con el tiempo
 
     return car;
 }
@@ -335,7 +342,6 @@ void Game::handleCollision(Player* player, float impact) {
     }
 
     const float IMPACT_DAMAGE_THRESHOLD = 0.2f; // umbral minimo para aplicar daño
-
     if (impact < IMPACT_DAMAGE_THRESHOLD) {
         return; // no aplicar daño ni notificar si el impacto es muy bajo
     }
@@ -356,11 +362,11 @@ void Game::run() {
     setGameState(GameState::COUNTDOWN);
 
     // refactor (init collisions)
-    CollisionLoader::LoadCollisions("server/gameLogic/collisions/low_collision_layer.yaml", world, 1.0f, WORLD_HEIGHT, WALL_LOW_LAYER);
+    CollisionLoader::LoadCollisions("server/gameLogic/collisions/low_collision_layer.yaml", world, PIXELS_TO_METERS, WORLD_HEIGHT, WALL_LOW_LAYER);
 
-    CollisionLoader::LoadCollisions("server/gameLogic/collisions/high_collision_layer.yaml", world, 1.0f, WORLD_HEIGHT, WALL_HIGH_LAYER);
+    CollisionLoader::LoadCollisions("server/gameLogic/collisions/high_collision_layer.yaml", world, PIXELS_TO_METERS, WORLD_HEIGHT, WALL_HIGH_LAYER);
 
-    CollisionLoader::LoadCollisions("server/gameLogic/collisions/layer_switch.yaml", world, 1.0f, WORLD_HEIGHT, SENSOR_LAYER, IS_SENSOR);
+    CollisionLoader::LoadCollisions("server/gameLogic/collisions/layer_switch.yaml", world, PIXELS_TO_METERS, WORLD_HEIGHT, SENSOR_LAYER, IS_SENSOR);
     
     // contact listener para manejar choques
     // se le pasa un puntero a Game para que pueda llamar a handleCollision

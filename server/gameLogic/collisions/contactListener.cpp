@@ -45,8 +45,8 @@ void ContactListener::PostSolve(b2Contact* contact, const b2ContactImpulse* impu
 
     // Umbrales de impulso para normalizar el impacto
     // Acelerar contra una pared constantemente llega a poco menos de 16k, asi que se usa como referencia para evitar daño por raspaduras triviales
-    const float MIN_IMPULSE = 16000.0f;
-    const float MAX_IMPULSE = 40000.0f;
+    const float MIN_IMPULSE = 0.0026f;
+    const float MAX_IMPULSE = 0.1f;
 
     if (rawImpulse < MIN_IMPULSE) {
         return;   // ignorar raspadura

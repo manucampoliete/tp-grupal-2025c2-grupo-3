@@ -3,14 +3,14 @@ cars:
     # Physics
     max_speed: 100.0
     acceleration: 20.0
-    angular_speed: 2.0
+    angular_speed: 1.0
     mass: -1.0
     #
     name: "Jeep Wrangler"
     health: 100.0
   1:
     # Physics
-    max_speed: 20.0
+    max_speed: 300.0
     acceleration: 50.0
     angular_speed: 3.0
     mass: -1.0
