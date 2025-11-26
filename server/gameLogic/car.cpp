@@ -4,6 +4,7 @@
 #include <iostream>
 
 #include "collisions/collisionBits.h"
+#include "bodyData.h"
 
 #define DAMAGE_SCALE 25.0f
 
@@ -214,4 +215,8 @@ void Car::toggleCollisionLayer() {
 bool Car::isOnBridge() {
     b2Filter filter = body->GetFixtureList()->GetFilterData();
     return (filter.categoryBits == CAR_HIGH_LAYER);
+}
+
+Car::~Car() {
+    delete reinterpret_cast<BodyData*>(body->GetUserData().pointer);
 }

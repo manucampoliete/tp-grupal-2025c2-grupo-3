@@ -122,6 +122,8 @@ public:
     void toggleCollisionLayer();
 
     bool isOnBridge();
+
+    ~Car();
 };
 
 #endif
