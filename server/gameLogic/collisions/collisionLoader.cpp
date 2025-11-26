@@ -55,7 +55,7 @@ std::vector<b2Body*> CollisionLoader::LoadCollisions(const std::string& yamlPath
 
             if(isSensor) {
                 // datos del cuerpo
-                auto* data = new BodyData();  // ACA TENEMOS UN LEAK
+                auto* data = new BodyData();  /** TODO: solve this leak */
                 data->player = nullptr;
                 data->sensorId = LAYER_SWITCH_SENSOR; // por ahora solo hay un tipo de sensor
                 body->GetUserData().pointer = reinterpret_cast<uintptr_t>(data);

@@ -218,5 +218,12 @@ bool Car::isOnBridge() {
 }
 
 Car::~Car() {
-    delete reinterpret_cast<BodyData*>(body->GetUserData().pointer);
+    // This line causes invalid reads (see ContactListener)
+    // I prefer to leak the BodyData for now (16 bytes per body)
+
+    // delete reinterpret_cast<BodyData*>(body->GetUserData().pointer);
+
+    /**
+     * TODO: solve memory leak without causing invalid reads
+     */
 }
