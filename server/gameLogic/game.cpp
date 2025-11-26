@@ -396,6 +396,10 @@ void Game::stop() {
     responseQueuesMonitor.closeAll();  // Senders cannot pop, game cannot tryPush when broadcasting
 }
 
+void Game::join() {
+    if (started) Thread::join();
+}
+
 bool Game::isAlive() const {
     return !started or (started and Thread::isAlive());
 }

@@ -115,6 +115,8 @@ public:
      */
     void stop() override;
     
+    void join() override;
+    
     /**
      * Returns true if the game thread is still running, false otherwise.
      */
