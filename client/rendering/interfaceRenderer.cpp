@@ -178,7 +178,7 @@ void UIRenderer::renderStatsPopup(const RaceResults& currentResults, uint32_t st
     int colRaceW = static_cast<int>(statsPopupRect.w * 0.29f);
     int colTotalW = static_cast<int>(statsPopupRect.w * 0.29f);
 
-    int colPosX = statsPopupRect.x + 20;
+    int colPosX = statsPopupRect.x + 10;
     int colNameX = colPosX + colPosW;
     int colRaceX = colNameX + colNameW;
     int colTotalX = colRaceX + colRaceW;
@@ -186,22 +186,23 @@ void UIRenderer::renderStatsPopup(const RaceResults& currentResults, uint32_t st
     // Render headers
     Surface h1S = activeFont.RenderText_Solid("POS", {200, 200, 200, 255});
     Texture h1T(renderer, h1S);
-    renderer.Copy(h1T, NullOpt, Rect(colPosX, tableStartY, h1T.GetWidth(), h1T.GetHeight()));
+    int posX = colPosX + (colPosW - h1T.GetWidth()) / 2;
+    renderer.Copy(h1T, NullOpt, Rect(posX, tableStartY, h1T.GetWidth(), h1T.GetHeight()));
 
     Surface h2S = activeFont.RenderText_Solid("PLAYER", {200, 200, 200, 255});
     Texture h2T(renderer, h2S);
-    renderer.Copy(h2T, NullOpt,
-                  Rect(colNameX, tableStartY, h2T.GetWidth(), h2T.GetHeight()));
+    int nameX = colNameX + (colNameW - h2T.GetWidth()) / 2;
+    renderer.Copy(h2T, NullOpt, Rect(nameX, tableStartY, h2T.GetWidth(), h2T.GetHeight()));
 
     Surface h3S = activeFont.RenderText_Solid("RACE TIME", {200, 200, 200, 255});
     Texture h3T(renderer, h3S);
-    renderer.Copy(h3T, NullOpt,
-                  Rect(colRaceX, tableStartY, h3T.GetWidth(), h3T.GetHeight()));
+    int raceX = colRaceX + (colRaceW - h3T.GetWidth()) / 2;
+    renderer.Copy(h3T, NullOpt, Rect(raceX, tableStartY, h3T.GetWidth(), h3T.GetHeight()));
 
     Surface h4S = activeFont.RenderText_Solid("TOTAL TIME", {200, 200, 200, 255});
     Texture h4T(renderer, h4S);
-    renderer.Copy(h4T, NullOpt,
-                  Rect(colTotalX, tableStartY, h4T.GetWidth(), h4T.GetHeight()));
+    int totalX = colTotalX + (colTotalW - h4T.GetWidth()) / 2;
+    renderer.Copy(h4T, NullOpt, Rect(totalX, tableStartY, h4T.GetWidth(), h4T.GetHeight()));
     
     // Separator line under headers
     renderer.SetDrawColor(100, 100, 150, 255);
@@ -226,7 +227,10 @@ void UIRenderer::renderStatsPopup(const RaceResults& currentResults, uint32_t st
         renderer.Copy(posT, NullOpt, Rect(posX, rowY, posT.GetWidth(), posT.GetHeight()));
 
         // Name
-        Surface nameS = activeFont.RenderText_Solid(player.playerName, rowColor);
+        std::string displayName = player.playerName;
+        if (displayName.empty()) displayName = "-";
+
+        Surface nameS = activeFont.RenderText_Solid(displayName, rowColor);
         Texture nameT(renderer, nameS);
         int nameX = colNameX + (colNameW - nameT.GetWidth()) / 2;
         renderer.Copy(nameT, NullOpt,
@@ -296,10 +300,10 @@ void UIRenderer::renderModificationPopup(bool speedModified, bool healthModified
     Font& activeFont = (w < 1000) ? fontSmall : font;
 
     // Buttons in two columns
-    int btnW = static_cast<int>(popupW * 0.38f);
-    int btnH = static_cast<int>(popupH * 0.12f);
+    int btnW = static_cast<int>(popupW * 0.40);
+    int btnH = static_cast<int>(popupH * 0.16f);
     int gapX = static_cast<int>(popupW * 0.06f); // Space between cols
-    int gapY = static_cast<int>(popupH * 0.03f); // Space between rows
+    int gapY = static_cast<int>(popupH * 0.05f); // Space between rows
     int startY = modPopupRect.y + 130;
     
     int leftX = popupX + static_cast<int>(popupW * 0.08f);
@@ -359,11 +363,11 @@ void UIRenderer::renderModificationPopup(bool speedModified, bool healthModified
     
     // Button's text (vertically centered)
     std::string speedText =
-            "Speed: " + std::to_string(props.speed) + " → " + std::to_string(props.speed + 5);
+            "Speed: " + std::to_string(props.speed) + " -> " + std::to_string(props.speed + 5);
     Surface speedSurface = activeFont.RenderText_Solid(speedText, {255, 255, 255, 255});
     Texture speedTexture(renderer, speedSurface);
     int speedTextX = speedBtn.x + (speedBtn.w - speedTexture.GetWidth()) / 2;  // Centered
-    int speedTextY = speedBtn.y + 10;
+    int speedTextY = speedBtn.y + 12;
     renderer.Copy(speedTexture, NullOpt,
             Rect(speedTextX, speedTextY, speedTexture.GetWidth(), speedTexture.GetHeight()));
     
@@ -388,7 +392,7 @@ void UIRenderer::renderModificationPopup(bool speedModified, bool healthModified
     renderer.DrawRect(healthBtn);
 
     std::string healthText =
-            "Health: " + std::to_string(props.health) + " → " + std::to_string(props.health + 5);
+            "Health: " + std::to_string(props.health) + " -> " + std::to_string(props.health + 5);
     Surface healthSurface = activeFont.RenderText_Solid(healthText, {255, 255, 255, 255});
     Texture healthTexture(renderer, healthSurface);
     int healthTextX = healthBtn.x + (healthBtn.w - healthTexture.GetWidth()) / 2;  // Centered
@@ -418,7 +422,7 @@ void UIRenderer::renderModificationPopup(bool speedModified, bool healthModified
     
     // Button's text (vertically centered)
     std::string accelText =
-            "Acceleration: " + std::to_string(props.accel) + " → " + std::to_string(props.accel + 5);
+            "Accel: " + std::to_string(props.accel) + " -> " + std::to_string(props.accel + 5);
     Surface accelSurface = activeFont.RenderText_Solid(accelText, {255, 255, 255, 255});
     Texture accelTexture(renderer, accelSurface);
     int accelTextX = accelBtn.x + (accelBtn.w - accelTexture.GetWidth()) / 2;  // Centered
@@ -449,7 +453,7 @@ void UIRenderer::renderModificationPopup(bool speedModified, bool healthModified
     
     // Button's text (vertically centered)
     std::string massText =
-            "Velocity: " + std::to_string(props.mass) + " → " + std::to_string(props.mass + 5);
+            "Mass: " + std::to_string(props.mass) + " -> " + std::to_string(props.mass + 5);
     Surface massSurface = activeFont.RenderText_Solid(massText, {255, 255, 255, 255});
     Texture massTexture(renderer, massSurface);
     int massTextX = massBtn.x + (massBtn.w - massTexture.GetWidth()) / 2;  // Centered
