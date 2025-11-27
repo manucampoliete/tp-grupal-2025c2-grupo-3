@@ -13,6 +13,8 @@ class SendProtocol {
 private:
     Socket& skt;
 
+    void safeSendAll(const void *data, unsigned int sz);
+
 public:
     /**
      * Constructor that takes a reference to a Socket object.

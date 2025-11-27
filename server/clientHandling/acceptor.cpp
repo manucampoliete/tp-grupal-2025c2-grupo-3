@@ -27,10 +27,10 @@ void Acceptor::fullReapDead() {
 }
 
 void Acceptor::clear() {
-    for (const auto& c: clients) {
+    std::for_each(clients.begin(), clients.end(), [](const auto& c) {
         c->kill();
         c->join();
-    }
+    });
     clients.clear();
 }
 

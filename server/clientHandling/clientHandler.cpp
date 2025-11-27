@@ -45,8 +45,12 @@ void ClientHandler::join() {
 }
 
 void ClientHandler::kill() {
-    hardKill();  // Could be changed to politeKill() but it surely requires extra handling in
-                 // other parts of the code
+    if (!isDead()) hardKill();  // If dead, not necessary to kill
+
+    /**
+     * NOTE: could be changed to politeKill() but it surely 
+     * requires extra handling in other parts of the code
+     */
 }
 
 bool ClientHandler::isDead() const { return !isAlive() and (!sender or !sender->isAlive()); }

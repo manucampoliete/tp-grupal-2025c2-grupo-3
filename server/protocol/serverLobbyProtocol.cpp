@@ -86,11 +86,14 @@ void ServerLobbyProtocol::consumeOne() {
             recvStartMatch();
             break;
         }
-        default:
+        default: {
             /**
-             * TODO: Handle unknown message type
+             * If we are here it is because recvU8() returned an unknown message type
+             * NOTE: the case of disconnection is handled at RecvProtocol level
              */
+            throw std::runtime_error("Lobby phase aborted due to unknown message type");
             break;
+        }
     }
 }
 

@@ -13,6 +13,8 @@ class RecvProtocol {
 private:
     Socket& skt;
 
+    void safeRecvAll(void *data, unsigned int sz);
+
 public:
     /**
      * Constructor that takes a reference to a Socket object.
