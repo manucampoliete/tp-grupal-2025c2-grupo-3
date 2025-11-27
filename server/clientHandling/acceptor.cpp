@@ -12,11 +12,7 @@
 
 void Acceptor::reapDeadClients() {
     auto it = std::remove_if(clients.begin(), clients.end(), [](const auto& c) {
-        bool isDead = c->isDead();
-        if (isDead) {
-            c->join();
-        }
-        return isDead;
+        return c->isDead();
     });
     clients.erase(it, clients.end());  // cppcheck-suppress missingReturn
 }
@@ -27,10 +23,6 @@ void Acceptor::fullReapDead() {
 }
 
 void Acceptor::clear() {
-    std::for_each(clients.begin(), clients.end(), [](const auto& c) {
-        c->kill();
-        c->join();
-    });
     clients.clear();
 }
 

@@ -64,4 +64,7 @@ void ClientHandler::run() {
     receiver.emplace(peer, lobbyResolver.getClientCommandsQueue(), clientId);
 }
 
-ClientHandler::~ClientHandler() {}
+ClientHandler::~ClientHandler() {
+    kill();
+    join();
+}
