@@ -26,13 +26,17 @@ void Acceptor::clear() {
     clients.clear();
 }
 
+void Acceptor::stop() {
+    Thread::stop();  // shouldKeepRunning() = false
+    acceptor.shutdown(SHUT_RDWR);
+    acceptor.close();
+}
+
 Acceptor::Acceptor(const std::string& servname, MatchesMapMonitor& matchesMapMonitor):
     acceptor(servname.c_str()),
     matchesMapMonitor(matchesMapMonitor),
     clients(),
-    nextClientId(FIRST_CLIENT_ID) {
-    start();
-}
+    nextClientId(FIRST_CLIENT_ID) { start(); }
 
 void Acceptor::run() {
     while (shouldKeepRunning()) {
@@ -48,12 +52,6 @@ void Acceptor::run() {
         }
     }
     clear();
-}
-
-void Acceptor::stop() {
-    Thread::stop();  // shouldKeepRunning() = false
-    acceptor.shutdown(SHUT_RDWR);
-    acceptor.close();
 }
 
 Acceptor::~Acceptor() {

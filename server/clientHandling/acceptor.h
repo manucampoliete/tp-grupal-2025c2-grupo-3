@@ -33,9 +33,15 @@ private:
     void fullReapDead();
 
     /**
-     * Clears all ClientHandlers: kills, joins, and deletes them, and clears the clients vector.
+     * Clears the clients vector (kills, joins, and deletes all ClientHandlers).
      */
     void clear();
+
+    /**
+     * Stops the acceptor: Thread::shouldKeepRunning() will be false.
+     * If blocked on Socket::accept(), the acceptor socket is shutdown and closed to unblock it.
+     */
+    void stop() override;
 
 public:
     /**
@@ -45,22 +51,15 @@ public:
 
     /**
      * Main acceptor logic: accepts new clients and spawns a ClientHandler for each one.
-     * Every time a new client is accepted, Acceptor::reapDead() is called. When a call to
-     * Acceptor::stop() is made, stops accepting new clients and calls Acceptor::clear() to clean up
+     * Every time a new client is accepted, Acceptor::fullReapDead() is called. When destructed,
+     * stops accepting new clients and calls Acceptor::clear() to clean up
      * all ClientHandlers.
      */
     void run() override;
 
     /**
-     * Stops the acceptor: Thread::shouldKeepRunning() will be false.
-     * If blocked on Socket::accept(), the acceptor socket is shutdown and closed to unblock it.
-     */
-    void stop() override;
-
-    /**
      * Destructor
-     * Nothing special to do, ClientHandlers are cleaned up in Acceptor::run() when the acceptor is
-     * stopped.
+     * Stops the acceptor and joins the thread.
      */
     ~Acceptor() override;
 };
