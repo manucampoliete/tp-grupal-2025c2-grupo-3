@@ -103,15 +103,27 @@ El movimiento del auto es suave y las rotaciones son generosas porque permite sa
 También, estaría bueno ver la vida, aunque por ahora no parece que pierda vida al chocar. El minimapa está bien pero es difícil verme a mí y a los otros autos.
 
 ## Cliente Servidor
-En código, el lado del servidor lo veo bien, con algunas mejoras de asignación de responsabilidades pero no mucho más. El cliente está desorganizado, tiene clases que hacen demasiadas cosas, y usan mutex en el hilo principal.
+~~En código, el lado del servidor lo veo bien, con algunas mejoras de asignación de responsabilidades pero no mucho más. El cliente está desorganizado, tiene clases que hacen demasiadas cosas, y usan mutex en el hilo principal.~~
 
-El servidor no cierra correctamente, ni con ni sin jugadores conectados. Probé bajar el server con ‘q’ cuando tengo un jugador conectado y uno se conectó y se desconectó, pero causó un core dump en el server, muchos leaks de valgrind, y el cliente conectado siguió reproduciendo música y sólo terminó cuando manualmente cerré la ventana del juego, causando otro core dump.
-El servidor también cerro con core dump cuando no había jugadores conectados.
+~~El servidor no cierra correctamente, ni con ni sin jugadores conectados. Probé bajar el server con ‘q’ cuando tengo un jugador conectado y uno se conectó y se desconectó, pero causó un core dump en el server, muchos leaks de valgrind, y el cliente conectado siguió reproduciendo música y sólo terminó cuando manualmente cerré la ventana del juego, causando otro core dump.
+El servidor también cerro con core dump cuando no había jugadores conectados.~~
+
+- Faltaria algunas mejoras de asignacion de responsabilidades en el Server. Por ej. levantar el yaml en el protocolo, malisimo :(
+- Creo que el cliente ya esta un poco mas organizado, se segmentaron las responsabilidades en nuevas clases, y ya no se usa mutex (toda sincronizacion esta dada por las queues)
+- El servidor ahora cierra correctamente en caso de desconexiones de clientes. Ya no hay mas core dumps
+- En el cliente tampoco hay core dump, pero si lo que pasa es que al cerrar el server, el cliente no cierre (sigue mostrando SDL, reproduciendo musica, captando eventos de sfx, etc)
 
 ## Robustez / Valgrind
 El servidor tiene leaks y cerrarlo con jugadores conectados me causó un core dump tanto en servidor como cliente. El servidor cierra con un core dump independientemente de si los jugadores están conectados o no.
 Compilación / Instalación
 Compilé con ‘make’, aunque no se indica qué dependencias hacen falta ni cómo se instalan o cómo se compila el juego. Tuve que instalar box2d, la librería de yaml y qt6 a mano, sería conveniente un instalador por makefile hasta que el instalador formal esté terminado.
+
+LEAKS:
+
+Por ahora descubrimos 2 leaks en el server
+
+1. En el constructor de Player se hace un new BodyData, y nunca se hace el delete. Tendremos uno de estos por cada cliente conectado a una partida. Hacer el delete del mismo en el destructor de Car, causa invalid reads que tienen que ver con el ContactListener. Queda pendiente la solucion de este leak, pero sin causar invalid reads.
+2. Otro leak se da en CollisionLoader::LoadCollisions(). Cuando el parametro isSensor = true, tambien se hace un new BodyData, y nunca se hace el delete. Queda pendiente la solucion de este leak
 
 ## Performance
 Performance óptimo, menos de 5% de consumo de en cliente y servidor CPU.
