@@ -42,7 +42,6 @@ void Acceptor::run() {
                                                      nextClientId++);
             fullReapDead();
             clients.push_back(std::move(c));
-            clients.back()->start();
         } catch (const LibError& err) {
             syslog(LOG_INFO, "[Info] Acceptor: %s", err.what());
             break;
