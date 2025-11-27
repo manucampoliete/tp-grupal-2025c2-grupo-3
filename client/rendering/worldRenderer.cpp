@@ -284,7 +284,6 @@ void WorldRenderer::renderBrakeTrails() {
             float x2 = trail.points[i + 1].first - camera.x;
             float y2 = trail.points[i + 1].second - camera.y;
             
-            // Calcular vector perpendicular para las dos líneas
             float dx = x2 - x1;
             float dy = y2 - y1;
             float len = std::sqrt(dx*dx + dy*dy);

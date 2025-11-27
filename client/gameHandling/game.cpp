@@ -204,8 +204,8 @@ void Game::showModifications(const std::vector<CarProperties>& props) {
     for (const auto& prop : props) {
         if (prop.playerId == playerId) {
             stateManager.showModifications(prop);
+            break;
         }
-        break;
     }
 }
 
