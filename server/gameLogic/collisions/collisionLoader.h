@@ -34,9 +34,9 @@ public:
         YAML::Node config = YAML::LoadFile(collisionsYamlPath);
         YAML::Node collisions = config["collisions"];
             
-        mapWidth = config["map"]["width"].as<uint8_t>();
-        mapHeight = config["map"]["height"].as<uint8_t>();
-        blockSize = config["map"]["block_size"].as<uint8_t>();
+        mapWidth = static_cast<uint8_t>(config["map"]["width"].as<int>());
+        mapHeight = static_cast<uint8_t>(config["map"]["height"].as<int>());
+        blockSize = static_cast<uint8_t>(config["map"]["block_size"].as<int>());
         
         for (const auto& collision : collisions) {
             float x = collision["x"].as<float>();
