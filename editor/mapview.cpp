@@ -59,7 +59,7 @@ void MapView::dropEvent(QDropEvent *event)
         event->acceptProposedAction();
         std::cout << "DEBUG: Evento Drop recibido." << std::endl;
 
-        QPointF scenePoint = mapToScene(event->pos());
+        QPointF scenePoint = mapToScene(event->position().toPoint());
         QPoint p = scenePoint.toPoint();
 
         bool outOfBounds = p.x() < 0 || p.y() < 0 || p.x() >= collisionMask.width() || p.y() >= collisionMask.height();

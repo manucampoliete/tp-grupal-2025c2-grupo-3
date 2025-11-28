@@ -13,7 +13,7 @@ MapElement::MapElement(ElementType type, ElementDirection direction, const QPixm
     setFlag(ItemIsMovable);
     setFlag(ItemIsSelectable);
     setFlag(ItemSendsGeometryChanges, true);
-    setOffset(-pixmap.width() / 2, -pixmap.height() / 2); // Centro
+    setOffset(-pixmap.width() / 2, -pixmap.height() / 2);
 }
 
 QString typeToString(ElementType type) {
@@ -51,7 +51,6 @@ ElementDirection stringToDirection(const std::string& dirStr) {
     try {
         return static_cast<ElementDirection>(std::stoi(dirStr));
     } catch (const std::invalid_argument& e) {
-        // Manejo de error si el string no es un número (devolver un valor seguro)
         return DIR_UP;
     } catch (const std::out_of_range& e) {
         return DIR_UP;
@@ -94,7 +93,7 @@ QVariant MapElement::itemChange(GraphicsItemChange change, const QVariant &value
             if (redValue < blackThreshold)
             {
                 std::cout << "❌ COLISIÓN DETECTADA en CENTRO." << std::endl;
-                return pos(); // Rechazar movimiento
+                return pos();
             }
         }
         return QGraphicsPixmapItem::itemChange(change, value);
@@ -121,10 +120,11 @@ QString getAssetPath(ElementType type, ElementDirection direction)
                 case DIR_CURVE_LEFT_DOWN: return base + "curve_left_down";
                 case DIR_CURVE_RIGHT_UP: return base + "curve_right_up";
                 case DIR_CURVE_RIGHT_DOWN: return base + "curve_right_down";
+                default: return "";
             }
             break;
 
-        case TYPE_CHECKPOINT: // <-- NUEVO CASO
+        case TYPE_CHECKPOINT:
             switch (direction) {
                 case DIR_HORIZONTAL: return base + "cp_horizontal.png";
                 case DIR_VERTICAL:   return base + "cp_vertical.png";

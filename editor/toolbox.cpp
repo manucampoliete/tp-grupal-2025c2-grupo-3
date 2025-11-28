@@ -41,9 +41,6 @@ Toolbox::Toolbox(QWidget* parent) : QWidget(parent)
 
     mainLayout->addLayout(hintGrid);
 
-    //QLabel* raceLabel = new QLabel("\nStart and Finish");
-    //mainLayout->addWidget(raceLabel);
-
     QGridLayout* raceGrid = new QGridLayout;
 
     raceGrid->addWidget(new QLabel("Start:"), 0, 0);
