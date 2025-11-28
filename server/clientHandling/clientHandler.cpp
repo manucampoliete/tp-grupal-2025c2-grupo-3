@@ -45,7 +45,7 @@ void ClientHandler::join() {
 }
 
 void ClientHandler::kill() {
-    if (!isDead()) hardKill();  // If dead, not necessary to kill
+    if (not isDead()) hardKill();  // If dead, not necessary to kill
 
     /**
      * NOTE: could be changed to politeKill() but it surely 

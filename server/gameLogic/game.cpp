@@ -391,8 +391,10 @@ void Game::run() {
 }
 
 void Game::stop() {
-    Thread::stop();
-    clientCommandsQueue.close();  // Receivers cannot push, game cannot tryPop (once it's empty)
+    if (not isDead()) {
+        Thread::stop();
+        clientCommandsQueue.close();  // Receivers cannot push, game cannot tryPop (once it's empty)
+    }
 }
 
 void Game::join() {
