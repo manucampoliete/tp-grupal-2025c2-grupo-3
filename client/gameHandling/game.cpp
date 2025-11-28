@@ -55,7 +55,7 @@ Game::Game(World& world, GameLoop& gameLoop, uint8_t playerId)
 void Game::loadSounds() {
     try {
         soundManager.loadMusic("client/assets/sounds/music.mp3");
-        soundManager.loadSound("collision", "client/assets/sounds/crash.wav");
+        soundManager.loadSound("collision", "client/assets/sounds/collision.wav");
         soundManager.loadSound("explosion", "client/assets/sounds/explosion.wav");
         soundManager.loadSound("checkpoint", "client/assets/sounds/checkpoint.wav");
         soundManager.loadSound("countdown", "client/assets/sounds/beep.wav");
