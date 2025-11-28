@@ -32,7 +32,6 @@ void MatchesMapMonitor::reapDeadMatches() {
     std::lock_guard<std::mutex> lock(mtx);
     for (auto it = matchMap.begin(); it != matchMap.end();) {
         if (it->second->isDead()) {
-            it->second->join();
             it = matchMap.erase(it);
         } else {
             ++it;
