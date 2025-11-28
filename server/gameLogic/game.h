@@ -116,7 +116,7 @@ public:
      * In all these cases, the game thread ends.
      */
     void run() override;
-
+    
     /**
      * Returns true if the game thread is still running, false otherwise.
      */
@@ -164,6 +164,10 @@ public:
     void improveCarProperties(ClientID clientId, bool improveVelocity, bool improveHealth);
 
     /**
+     * Disconnects the player with the given clientId from the game.
+     */
+    void disconnectPlayer(ClientID clientId);
+
     /**
      * Destructor: cleans up the game.
      */

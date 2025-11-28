@@ -6,6 +6,7 @@
 #include "../commands/moveCommand.h"
 #include "../commands/improvementsCommand.h"
 #include "../commands/superSpeedCommand.h"
+#include "../commands/disconnectPlayerCommand.h"
 
 GameResolver::GameResolver(ClientID clientId, Queue<std::unique_ptr<Command>>& clientCommandsQueue):
         clientId(clientId), clientCommandsQueue(clientCommandsQueue) {}
@@ -32,4 +33,8 @@ void GameResolver::handleSuperSpeed() {
 
 void GameResolver::handleModifyCar(bool improveVelocity, bool improveHealth) {
     clientCommandsQueue.push(std::make_unique<ImprovementsCommand>(clientId, improveVelocity, improveHealth));
+}
+
+void GameResolver::handlePlayerDisconnected() {
+    clientCommandsQueue.push(std::make_unique<DisconnectPlayerCommand>(clientId));
 }

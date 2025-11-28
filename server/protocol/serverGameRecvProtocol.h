@@ -50,6 +50,12 @@ private:
      */
     void recvModifyCar();
 
+    /**
+     * Receives a PlayerDisconnect message from the socket and
+     * processes it using the GameResolver.
+     */
+    void recvPlayerDisconnected();
+
 public:
     /**
      * Constructor that takes a reference to a Socket object and a GameResolver object.

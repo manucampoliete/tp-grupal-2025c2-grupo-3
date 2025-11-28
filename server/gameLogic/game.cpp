@@ -478,6 +478,27 @@ void Game::improveCarProperties(ClientID clientId, bool improveVelocity, bool im
     player.improveCarProperties(improveVelocity, improveHealth);
 }
 
+void Game::disconnectPlayer(ClientID clientId) {
+    std::cout << "Disconnecting player " << clientId << " from the game." << std::endl;
+
+    // // Remove player from the game
+    // auto it = players.find(clientId);
+    // if (it != players.end()) {
+    //     // Destroy the player's car body in the physics world
+    //     b2Body* carBody = it->second.getCar().getBody();
+    //     if (carBody) {
+    //         world->DestroyBody(carBody);
+    //     }
+
+    //     // Remove player from the players map
+    //     players.erase(it);
+    // }
+
+    // responseQueuesMonitor.removeQueue(clientId);
+    // // Removing the queue would leave an invalid reference in the Sender
+    // // Maybe ResponseQueuesMonitor should have a closeQueue method instead?
+}
+
 Game::~Game() {
     stop();
     join();

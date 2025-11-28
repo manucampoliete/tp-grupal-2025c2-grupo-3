@@ -2,6 +2,7 @@ target_sources(taller_server
     PRIVATE
     # .cpp files
     command.cpp
+    disconnectPlayerCommand.cpp
     improvementsCommand.cpp
     inmortalityCommand.cpp
     instaLoseCommand.cpp
@@ -11,6 +12,7 @@ target_sources(taller_server
     PUBLIC
     # .h files
     command.h
+    disconnectPlayerCommand.h
     improvementsCommand.h
     inmortalityCommand.h
     instaLoseCommand.h

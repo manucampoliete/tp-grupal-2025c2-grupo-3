@@ -48,6 +48,11 @@ public:
      * Handles a MODIFY_CAR request from the client.
      */
     void handleModifyCar(bool improveVelocity, bool improveHealth);
+
+    /**
+     * Handles a PLAYER_DISCONNECTED request from the client.
+     */
+    void handlePlayerDisconnected();
 };
 
 #endif  // GAME_RESOLVER_H

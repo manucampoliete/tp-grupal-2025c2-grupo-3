@@ -123,6 +123,8 @@ public:
 
     bool isOnBridge();
 
+    b2Body* getBody() { return body; }  /** NOTE: TEMPORAL!!! */
+
     ~Car();
 };
 

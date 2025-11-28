@@ -44,7 +44,7 @@ void Player::setArrivalTime(float arrivalTime) {
 }
 
 void debugPrintCarInfo(ClientID clientId, uint32 x, uint32 y, uint16 angle, uint16 speed, CarID carId, uint8_t healthPercentage, bool onBridge) {
-    system("clear");
+    // system("clear");
     std::cout << "[DEBUG] CarSnapshot - PlayerID: " << clientId << std::endl
               << " | CarID: " << carId << std::endl
               << " | Position (px): (" << x / 1000 << ", " << y / 1000 << ")" << std::endl
