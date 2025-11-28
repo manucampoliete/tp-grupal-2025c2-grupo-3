@@ -36,7 +36,7 @@ ClientHandler::ClientHandler(Socket&& peer, MatchesMapMonitor& matchesMapMonitor
         lobbyResolver(clientId, matchesMapMonitor),
         clientId(clientId),
         sender(std::nullopt),
-        receiver(std::nullopt) {}
+        receiver(std::nullopt) { start(); }
 
 void ClientHandler::join() {
     Thread::join();
@@ -64,4 +64,7 @@ void ClientHandler::run() {
     receiver.emplace(peer, lobbyResolver.getClientCommandsQueue(), clientId);
 }
 
-ClientHandler::~ClientHandler() {}
+ClientHandler::~ClientHandler() {
+    kill();
+    join();
+}

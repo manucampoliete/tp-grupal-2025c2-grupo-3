@@ -12,11 +12,7 @@
 
 void Acceptor::reapDeadClients() {
     auto it = std::remove_if(clients.begin(), clients.end(), [](const auto& c) {
-        bool isDead = c->isDead();
-        if (isDead) {
-            c->join();
-        }
-        return isDead;
+        return c->isDead();
     });
     clients.erase(it, clients.end());  // cppcheck-suppress missingReturn
 }
@@ -27,20 +23,20 @@ void Acceptor::fullReapDead() {
 }
 
 void Acceptor::clear() {
-    std::for_each(clients.begin(), clients.end(), [](const auto& c) {
-        c->kill();
-        c->join();
-    });
     clients.clear();
+}
+
+void Acceptor::stop() {
+    Thread::stop();  // shouldKeepRunning() = false
+    acceptor.shutdown(SHUT_RDWR);
+    acceptor.close();
 }
 
 Acceptor::Acceptor(const std::string& servname, MatchesMapMonitor& matchesMapMonitor):
     acceptor(servname.c_str()),
     matchesMapMonitor(matchesMapMonitor),
     clients(),
-    nextClientId(FIRST_CLIENT_ID) {
-    start();
-}
+    nextClientId(FIRST_CLIENT_ID) { start(); }
 
 void Acceptor::run() {
     while (shouldKeepRunning()) {
@@ -50,19 +46,12 @@ void Acceptor::run() {
                                                      nextClientId++);
             fullReapDead();
             clients.push_back(std::move(c));
-            clients.back()->start();
         } catch (const LibError& err) {
             syslog(LOG_INFO, "[Info] Acceptor: %s", err.what());
             break;
         }
     }
     clear();
-}
-
-void Acceptor::stop() {
-    Thread::stop();  // shouldKeepRunning() = false
-    acceptor.shutdown(SHUT_RDWR);
-    acceptor.close();
 }
 
 Acceptor::~Acceptor() {

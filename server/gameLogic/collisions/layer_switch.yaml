@@ -3,11 +3,83 @@ map:
   height: 4672
   block_size: 1
 collisions:
+- x: 3832.5
+  y: 1037.5
+  width: 65.0
+  height: 7.0
+- x: 2384.5
+  y: 1039.0
+  width: 37.0
+  height: 6.0
+- x: 3832.5
+  y: 1255.5
+  width: 65.0
+  height: 9.0
+- x: 2384.5
+  y: 1255.5
+  width: 37.0
+  height: 7.0
+- x: 2384.5
+  y: 1311.0
+  width: 37.0
+  height: 8.0
+- x: 2384.5
+  y: 1481.0
+  width: 37.0
+  height: 6.0
+- x: 3496.5
+  y: 1593.0
+  width: 9.0
+  height: 70.0
+- x: 3809.5
+  y: 1593.0
+  width: 13.0
+  height: 70.0
 - x: 2336.5
   y: 2139.5
   width: 101.0
   height: 29.0
+- x: 3688.5
+  y: 2310.5
+  width: 69.0
+  height: 9.0
 - x: 2336.5
   y: 2474.5
   width: 101.0
   height: 35.0
+- x: 3688.5
+  y: 2500.5
+  width: 69.0
+  height: 9.0
+- x: 1936.5
+  y: 2644.0
+  width: 37.0
+  height: 6.0
+- x: 2173.0
+  y: 2728.5
+  width: 26.0
+  height: 71.0
+- x: 2471.5
+  y: 2728.5
+  width: 21.0
+  height: 71.0
+- x: 1936.5
+  y: 2808.5
+  width: 37.0
+  height: 7.0
+- x: 2186.5
+  y: 3121.0
+  width: 23.0
+  height: 102.0
+- x: 2477.5
+  y: 3121.0
+  width: 21.0
+  height: 102.0
+- x: 2198.0
+  y: 3592.5
+  width: 16.0
+  height: 71.0
+- x: 2469.0
+  y: 3592.5
+  width: 18.0
+  height: 71.0
