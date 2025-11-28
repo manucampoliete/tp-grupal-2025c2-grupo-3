@@ -11,16 +11,15 @@
 
 
 #define RADTODEG 57.295779513082320876f
-#define PIXELS_TO_METERS 0.01f // 1 pixel = 0.01 metros (1 metro = 100 pixeles)
+#define PIXELS_TO_METERS 0.01f // 1 pixel = 0.01 meters (1 meter = 100 pixels)
 
 Player::Player(ClientID clientId, const std::string& username, b2Body* body, CarID carId):
         clientId(clientId), username(username), car(CarBuilder::createCar(body, carId)), totalRaceTime(0), penalty(0)
 {
-    auto* data = new BodyData(); /** TODO: solve this leak */
-    data->player = this;
-
-    // al parecer esta es la forma moderna de hacerlo
-    // SetUserData es de versiones viejas de box2d
+    auto* data = new BodyData(this);
+    
+    // It seems this is the modern way to do it
+    // SetUserData is from old versions of box2d
     body->GetUserData().pointer = reinterpret_cast<uintptr_t>(data);
 }
 
@@ -35,8 +34,8 @@ bool Player::hasFinished() { return finished; }
 void Player::setArrivalTime(float arrivalTime) {
     if (!finished) {
         finished = true;
-        currentRaceTime = static_cast<uint32_t>(std::round(arrivalTime * 1000));
-        // sumar penalty si existe
+        currentRaceTime = static_cast<uint32_t>(std::round(arrivalTime * 1000));\
+        // Sum penalty if it exists
         currentRaceTime += (penalty > 0) ? (penalty * 1000) : 0;
         totalRaceTime += currentRaceTime;
         penalty = 0;
@@ -58,8 +57,8 @@ Snapshot::CarSnapshot Player::buildCarSnapshot() {
     uint32 x = static_cast<uint32_t>(std::round(car.getPosition().x / PIXELS_TO_METERS * 1000));
     uint32 y = static_cast<uint32_t>(std::round(car.getPosition().y / PIXELS_TO_METERS * 1000));
 
-    // normalizacion del angulo para que este entre 0 y 360
-    // evita que en la animacion se vea un "snap" del auto cuando el angulo hace overflow
+    // Normalization of the angle to be between 0 and 360
+    // It avoids a "snap" in the animation when the angle overflows
     float angleDeg = -car.getAngle() * RADTODEG;
     angleDeg = fmodf(angleDeg, 360.0f);
     if (angleDeg < 0.0f)
@@ -87,7 +86,8 @@ void Player::resetForNewRace() {
     currentRaceTime = 0;
     car.setCurrentHealth(car.getMaxHealth());
 }
-// espera un impacto normalizado
+
+// Expects a normalized impact
 Snapshot::CollisionData Player::buildCollisionSnapshot(float normalizedImpact) {
     Snapshot::CollisionData collision;
     collision.playerId = clientId;
@@ -105,5 +105,3 @@ Snapshot::CollisionData Player::buildCollisionSnapshot(float normalizedImpact) {
 
 Player::~Player() {
 }
-
-

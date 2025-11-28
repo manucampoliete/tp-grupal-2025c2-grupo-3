@@ -1,11 +1,12 @@
 target_sources(taller_server
     PRIVATE
     # .cpp files
-    collisionLoader.cpp
+    # collisionLoader.cpp
     contactListener.cpp
     PUBLIC
     # .h files
+    collisionBits.h
+    collisionGenerator.h
     collisionLoader.h
     contactListener.h
-    collisionBits.h
     )

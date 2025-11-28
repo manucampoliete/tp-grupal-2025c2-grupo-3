@@ -11,6 +11,7 @@
 #include <iostream>
 
 #include "collisions/collisionLoader.h"
+#include "collisions/collisionGenerator.h"
 #include "collisions/contactListener.h"
 #include "collisions/collisionBits.h"
 #include "../../common/constantRateLoop/constantRateLoop.h"
@@ -362,11 +363,13 @@ void Game::run() {
     setGameState(GameState::COUNTDOWN);
 
     // refactor (init collisions)
-    CollisionLoader::LoadCollisions("server/gameLogic/collisions/low_collision_layer.yaml", world, PIXELS_TO_METERS, WORLD_HEIGHT, WALL_LOW_LAYER);
+    CollisionMap lowLayerCollisionMap = CollisionLoader::LoadCollisions("server/gameLogic/collisions/low_collision_layer.yaml");
+    CollisionMap highLayerCollisionMap = CollisionLoader::LoadCollisions("server/gameLogic/collisions/high_collision_layer.yaml");
+    CollisionMap layerSwitchCollisionMap = CollisionLoader::LoadCollisions("server/gameLogic/collisions/layer_switch.yaml");
 
-    CollisionLoader::LoadCollisions("server/gameLogic/collisions/high_collision_layer.yaml", world, PIXELS_TO_METERS, WORLD_HEIGHT, WALL_HIGH_LAYER);
-
-    CollisionLoader::LoadCollisions("server/gameLogic/collisions/layer_switch.yaml", world, PIXELS_TO_METERS, WORLD_HEIGHT, SENSOR_LAYER, IS_SENSOR);
+    CollisionGenerator::GenerateCollisions(lowLayerCollisionMap, world, PIXELS_TO_METERS, WORLD_HEIGHT, WALL_LOW_LAYER);
+    CollisionGenerator::GenerateCollisions(highLayerCollisionMap, world, PIXELS_TO_METERS, WORLD_HEIGHT, WALL_HIGH_LAYER);
+    CollisionGenerator::GenerateCollisions(layerSwitchCollisionMap, world, PIXELS_TO_METERS, WORLD_HEIGHT, SENSOR_LAYER, IS_SENSOR);
     
     // contact listener para manejar choques
     // se le pasa un puntero a Game para que pueda llamar a handleCollision
@@ -502,7 +505,7 @@ void Game::disconnectPlayer(ClientID clientId) {
 }
 
 Game::~Game() {
-for (b2Body* body = world->GetBodyList(); body; body = body->GetNext()) {
+    for (b2Body* body = world->GetBodyList(); body; body = body->GetNext()) {
         auto ptr = body->GetUserData().pointer;
         if (ptr != 0) {
             BodyData* data = reinterpret_cast<BodyData*>(ptr);

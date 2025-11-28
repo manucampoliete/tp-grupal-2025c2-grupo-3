@@ -6,8 +6,11 @@
 class Player;
 
 struct BodyData {
-    Player* player; // si es un auto
-    int sensorId; // si es un sensor (cambio de capa, checkpoints, nodos de NPC...)
+    Player* player;     // Used if it's a player's body
+    int sensorId;       // Used if it's a sensor (layer switch, checkpoints, NPC nodes...)
+
+    BodyData(int sensorId) : player(nullptr), sensorId(sensorId) {}
+    BodyData(Player* player) : player(player), sensorId(-1) {}
 };
 
 #endif
