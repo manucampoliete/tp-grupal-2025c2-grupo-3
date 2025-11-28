@@ -502,6 +502,14 @@ void Game::disconnectPlayer(ClientID clientId) {
 }
 
 Game::~Game() {
+for (b2Body* body = world->GetBodyList(); body; body = body->GetNext()) {
+        auto ptr = body->GetUserData().pointer;
+        if (ptr != 0) {
+            BodyData* data = reinterpret_cast<BodyData*>(ptr);
+            delete data;  // Free memory
+            body->GetUserData().pointer = 0;
+        }
+    }
     stop();
     join();
 }
