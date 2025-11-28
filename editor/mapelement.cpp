@@ -59,6 +59,65 @@ ElementDirection stringToDirection(const std::string& dirStr) {
     return DIR_HORIZONTAL;
 }
 
+int mapElementToUnifiedId(ElementType type, ElementDirection direction) {
+    if (type == TYPE_HINT) 
+        return static_cast<int>(direction); 
+
+    if (type == TYPE_START)
+        return (direction == DIR_HORIZONTAL) ? START_HORIZONTAL : START_VERTICAL;
+    if (type == TYPE_CHECKPOINT)
+        return (direction == DIR_HORIZONTAL) ? CHECKPOINT_HORIZONTAL : CHECKPOINT_VERTICAL;
+    if (type == TYPE_FINISH)
+        return (direction == DIR_HORIZONTAL) ? FINISH_HORIZONTAL : FINISH_VERTICAL;
+    
+    return -1;
+}
+
+ElementProperties mapUnifiedIdToTypeAndDirection(int unifiedId) {
+    ElementProperties props;
+    props.direction = static_cast<ElementDirection>(unifiedId);
+
+    if (unifiedId >= 0 && unifiedId <= 11) {
+        props.type = TYPE_HINT;
+        return props;
+    }
+
+    props.type = TYPE_CHECKPOINT;
+
+    switch (unifiedId) {
+        case 14:
+            props.type = TYPE_START;
+            props.direction = DIR_HORIZONTAL;
+            break;
+        case 15:
+            props.type = TYPE_START;
+            props.direction = DIR_VERTICAL;
+            break;
+            
+        case 16:
+            props.direction = DIR_HORIZONTAL;
+            break;
+        case 17:
+            props.direction = DIR_VERTICAL;
+            break;
+            
+        case 18:
+            props.type = TYPE_FINISH;
+            props.direction = DIR_HORIZONTAL;
+            break;
+        case 19:
+            props.type = TYPE_FINISH;
+            props.direction = DIR_VERTICAL;
+            break;
+            
+        default:
+            props.type = TYPE_HINT; 
+            props.direction = DIR_UP; 
+            break;
+    }
+    return props;
+}
+
 void MapElement::mousePressEvent(QGraphicsSceneMouseEvent *event) {
     if (event->button() == Qt::RightButton) {
         std::cout << "DEBUG: Clic derecho detectado en elemento." << std::endl;

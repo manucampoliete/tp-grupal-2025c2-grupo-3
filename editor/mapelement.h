@@ -31,12 +31,29 @@ enum ElementDirection {
     DIR_VERTICAL = 13
 };
 
+enum UnifiedId{
+    START_HORIZONTAL = 14,
+    START_VERTICAL = 15,
+    
+    CHECKPOINT_HORIZONTAL = 16,
+    CHECKPOINT_VERTICAL = 17,
+    
+    FINISH_HORIZONTAL = 18,
+    FINISH_VERTICAL = 19
+};
+
+struct ElementProperties {
+    ElementType type;
+    ElementDirection direction;
+};
 
 QPixmap loadPixmapForElement(ElementType type, ElementDirection direction);
 QString typeToString(ElementType type);
 QString directionToString(ElementDirection direction);
 ElementType stringToType(const std::string& typeStr);
 ElementDirection stringToDirection(const std::string& dirStr);
+int mapElementToUnifiedId(ElementType type, ElementDirection direction);
+ElementProperties mapUnifiedIdToTypeAndDirection(int unifiedId);
 
 
 class MapElement : public QObject, public QGraphicsPixmapItem {

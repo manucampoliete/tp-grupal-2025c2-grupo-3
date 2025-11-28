@@ -179,15 +179,15 @@ void MapEditor::serializeToYaml(const QString& filename)
 
         MapElement* cp = segment.cpElementPtr;
 
+        int unifiedCpId = mapElementToUnifiedId(cp->getElementType(), cp->getElementDirection());
+
         emitter << YAML::BeginMap;
 
-        emitter << YAML::Key << "segment_start_type" << YAML::Value << typeToString(cp->getElementType()).toStdString();
+        emitter << YAML::Key << "segment_start_type" << YAML::Value << unifiedCpId;
 
         QPointF finalCpPos = cp->pos();
         emitter << YAML::Key << "position";
         emitter << YAML::Value << YAML::BeginSeq << finalCpPos.x() << finalCpPos.y() << YAML::EndSeq;
-
-        emitter << YAML::Key << "direction" << YAML::Value << directionToString(cp->getElementDirection()).toStdString();
 
         emitter << YAML::Key << "hints_to_next_cp";
         emitter << YAML::Value << YAML::BeginSeq;
@@ -196,14 +196,12 @@ void MapEditor::serializeToYaml(const QString& filename)
             if (!hintPtr) continue;
 
             MapElement* hint = hintPtr;
-
-            QPointF finalHintPos = hint->pos();
-
+            
             emitter << YAML::BeginMap;
-            emitter << YAML::Key << "type_id" << YAML::Value << hint->getElementDirection();
+            emitter << YAML::Key << "type_id" << YAML::Value << mapElementToUnifiedId(TYPE_HINT, hint->getElementDirection()); 
             emitter << YAML::Key << "position";
+            QPointF finalHintPos = hint->pos();
             emitter << YAML::Value << YAML::BeginSeq << finalHintPos.x() << finalHintPos.y() << YAML::EndSeq;
-
             emitter << YAML::EndMap;
         }
 
@@ -298,7 +296,7 @@ MapElement* MapEditor::recreateElement(ElementType type, ElementDirection direct
 }
 
 std::vector<LoadedSegmentData> MapEditor::deserializeFromYaml(const QString& filename) {
-    std::vector<LoadedSegmentData> segments;
+    std::vector<LoadedSegmentData> segments; 
 
     try {
         YAML::Node root = YAML::LoadFile(filename.toStdString());
@@ -306,7 +304,7 @@ std::vector<LoadedSegmentData> MapEditor::deserializeFromYaml(const QString& fil
         if (!root["map_id"]) throw std::runtime_error("Falta la clave 'map_id'.");
 
         int loadedMapId = root["map_id"].as<int>();
-        this->cityMapID = loadedMapId;
+        this->cityMapID = loadedMapId; // Setea el ID del mapa base
 
         const YAML::Node& segmentsNode = root["segments"];
         if (!segmentsNode || !segmentsNode.IsSequence()) {
@@ -318,12 +316,16 @@ std::vector<LoadedSegmentData> MapEditor::deserializeFromYaml(const QString& fil
             if (!segmentNode.IsMap()) continue;
 
             LoadedSegmentData segment;
-
-            std::string typeStr = segmentNode["segment_start_type"].as<std::string>();
-            std::string dirStr = segmentNode["direction"].as<std::string>();
-
-            ElementType cpType = stringToType(typeStr);
-            ElementDirection cpDir = stringToDirection(dirStr);
+            
+            const YAML::Node& unifiedIdNode = segmentNode["segment_start_type"];
+            if (!unifiedIdNode) throw std::runtime_error("Falta la clave 'segment_start_type'.");
+            
+            int unifiedId = unifiedIdNode.as<int>();
+            
+            ElementProperties props = mapUnifiedIdToTypeAndDirection(unifiedId);
+            
+            ElementType cpType = props.type;
+            ElementDirection cpDir = props.direction;
 
             const YAML::Node& positionNode = segmentNode["position"];
             if (!positionNode || !positionNode.IsSequence() || positionNode.size() < 2) {
@@ -341,12 +343,21 @@ std::vector<LoadedSegmentData> MapEditor::deserializeFromYaml(const QString& fil
 
             const YAML::Node& hintsNode = segmentNode["hints_to_next_cp"];
             if (hintsNode && hintsNode.IsSequence()) {
+
                 for (const auto& hintNode : hintsNode) {
+
                     if (!hintNode.IsMap()) continue;
 
                     ElementDirection hintDir = static_cast<ElementDirection>(hintNode["type_id"].as<int>());
-                    double hintX = hintNode["position"][0].as<double>();
-                    double hintY = hintNode["position"][1].as<double>();
+                    
+                    const YAML::Node& hintPositionNode = hintNode["position"];
+                    if (!hintPositionNode || !hintPositionNode.IsSequence() || hintPositionNode.size() < 2) {
+                        qWarning() << "Error: El nodo 'position' del hint es inválido.";
+                        continue;
+                    }
+
+                    double hintX = hintPositionNode[0].as<double>();
+                    double hintY = hintPositionNode[1].as<double>();
 
                     LoadedHintData hintData;
                     hintData.direction = hintDir;
@@ -359,6 +370,7 @@ std::vector<LoadedSegmentData> MapEditor::deserializeFromYaml(const QString& fil
 
             segments.push_back(segment);
         }
+
     } catch (const YAML::BadFile& e) {
         QMessageBox::critical(this, "Error de YAML", QString("No se pudo abrir o leer el archivo: %1").arg(e.what()));
         return std::vector<LoadedSegmentData>();
