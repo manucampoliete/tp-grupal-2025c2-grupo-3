@@ -115,8 +115,6 @@ El servidor también cerro con core dump cuando no había jugadores conectados.~
 
 ## Robustez / Valgrind
 El servidor tiene leaks y cerrarlo con jugadores conectados me causó un core dump tanto en servidor como cliente. El servidor cierra con un core dump independientemente de si los jugadores están conectados o no.
-Compilación / Instalación
-Compilé con ‘make’, aunque no se indica qué dependencias hacen falta ni cómo se instalan o cómo se compila el juego. Tuve que instalar box2d, la librería de yaml y qt6 a mano, sería conveniente un instalador por makefile hasta que el instalador formal esté terminado.
 
 LEAKS:
 
@@ -124,6 +122,9 @@ Por ahora descubrimos 2 leaks en el server
 
 1. En el constructor de Player se hace un new BodyData, y nunca se hace el delete. Tendremos uno de estos por cada cliente conectado a una partida. Hacer el delete del mismo en el destructor de Car, causa invalid reads que tienen que ver con el ContactListener. Queda pendiente la solucion de este leak, pero sin causar invalid reads.
 2. Otro leak se da en CollisionLoader::LoadCollisions(). Cuando el parametro isSensor = true, tambien se hace un new BodyData, y nunca se hace el delete. Queda pendiente la solucion de este leak
+
+## Compilación / Instalación
+Compilé con ‘make’, aunque no se indica qué dependencias hacen falta ni cómo se instalan o cómo se compila el juego. Tuve que instalar box2d, la librería de yaml y qt6 a mano, sería conveniente un instalador por makefile hasta que el instalador formal esté terminado.
 
 ## Performance
 Performance óptimo, menos de 5% de consumo de en cliente y servidor CPU.
