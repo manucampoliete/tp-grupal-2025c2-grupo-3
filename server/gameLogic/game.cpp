@@ -35,10 +35,10 @@ Game::Game():
         clientCommandsQueue(),
         responseQueuesMonitor(),
         players(),
-        countdownDuration(3),
+        countdownDuration(10),
         raceDuration(10),
-        statsDuration(5),
-        upgradesDuration(5),
+        statsDuration(10),
+        upgradesDuration(10),
         started(false) {}
 
 b2Body* Game::createNewCarBody() {
@@ -478,4 +478,7 @@ void Game::improveCarProperties(ClientID clientId, bool improveVelocity, bool im
     player.improveCarProperties(improveVelocity, improveHealth);
 }
 
-Game::~Game() {}
+Game::~Game() {
+    stop();
+    join();
+}

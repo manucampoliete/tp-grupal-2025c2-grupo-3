@@ -34,7 +34,7 @@ private:
 
     //tiempos
     std::chrono::seconds countdownDuration;
-    std::chrono::minutes raceDuration;
+    std::chrono::seconds raceDuration;
     std::chrono::seconds statsDuration;
     std::chrono::seconds upgradesDuration;
     // std::chrono::duration<float> elapsed;
@@ -92,6 +92,16 @@ private:
     // void handleEliminatedState();
     void handleGameEndState();
 
+    /**
+     * Calls Thread::stop(), setting shouldKeepRunning() = false
+     * and then:
+     * - closes the clientCommandsQueue
+     * - calls ResponseQueuesMonitor::closeAll()
+     */
+    void stop() override;
+    
+    void join() override;
+
 public:
     /**
      * Constructor
@@ -107,16 +117,6 @@ public:
      */
     void run() override;
 
-    /**
-     * Calls Thread::stop(), setting shouldKeepRunning() = false
-     * and then:
-     * - closes the clientCommandsQueue
-     * - calls ResponseQueuesMonitor::closeAll()
-     */
-    void stop() override;
-    
-    void join() override;
-    
     /**
      * Returns true if the game thread is still running, false otherwise.
      */
@@ -164,8 +164,8 @@ public:
     void improveCarProperties(ClientID clientId, bool improveVelocity, bool improveHealth);
 
     /**
-     * Destructor
-     * Nothing special to do
+    /**
+     * Destructor: cleans up the game.
      */
     ~Game() override;
 };

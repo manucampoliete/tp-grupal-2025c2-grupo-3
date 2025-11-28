@@ -53,9 +53,5 @@ Queue<std::shared_ptr<Snapshot>>& MatchesMapMonitor::getResponsesQueue(MatchID m
 
 MatchesMapMonitor::~MatchesMapMonitor() {
     std::lock_guard<std::mutex> lock(mtx);  // Necessary?
-    for (auto& [id, gamePtr] : matchMap) {
-        gamePtr->stop();
-        gamePtr->join();
-    }
     matchMap.clear();
 }
