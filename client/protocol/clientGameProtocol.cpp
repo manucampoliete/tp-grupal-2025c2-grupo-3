@@ -112,11 +112,6 @@ std::vector<CarProperties> ClientGameProtocol::recvCarProperties() {
 
         props.push_back(prop);
     }
-    
-//     props.speed = recvU16();
-//     props.health = recvU16();
-//     props.accel = recvU16();
-//     props.mass = recvU16();
 
     return props;
 }

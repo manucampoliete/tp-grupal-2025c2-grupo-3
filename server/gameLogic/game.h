@@ -161,7 +161,7 @@ public:
     /**
      * Improves the car properties of the player with the given clientId.
      */
-    void improveCarProperties(ClientID clientId, bool improveVelocity, bool improveHealth);
+    void improveCarProperties(ClientID clientId, bool improveVelocity, bool improveHealth, bool improveAcceleration, bool improveMass);
 
     /**
      * Disconnects the player with the given clientId from the game.

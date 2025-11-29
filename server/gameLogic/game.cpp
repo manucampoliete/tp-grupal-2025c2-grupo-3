@@ -222,10 +222,14 @@ void Game::setModifyingCarState() {
 
     std::vector<Snapshot::CarProperties> carProps;
     for (auto& [id, player]: players) {
-        Snapshot::CarProperties prop;
+        /* Snapshot::CarProperties prop;
         prop.playerId = id;
         prop.speed = player.getCarSpeed();
         prop.health = player.getCarHealth();
+        prop.acceleration = player.getCarAcceleration();
+        prop.mass = player.getCarMass();
+        carProps.push_back(prop); */
+        Snapshot::CarProperties prop = player.buildModifyingCarSnapshot();
         carProps.push_back(prop);
     }
 
@@ -468,19 +472,13 @@ void Game::makePlayerGoSuperFast(ClientID clientId) {
      */
 }
 
-void Game::improveCarProperties(ClientID clientId, bool improveVelocity, bool improveHealth) {
-    std::cout << "Improving car properties for player " << clientId << ": "
-              << (improveVelocity ? "velocity " : "") << (improveHealth ? "health" : "") << std::endl;
-    
-    /**
-     * TODO: implement this method
-     * REMEMBER: Each improvement has a cost that is computed as a penalty to the arrival time
-     * 
-     * Could be something like:
-     */
+void Game::improveCarProperties(ClientID clientId, bool improveVelocity, bool improveHealth, bool improveAcceleration, bool improveMass) {
+    // std::cout << "Improving car properties for player " << clientId << ": "
+    //           << (improveVelocity ? "velocity " : "") << (improveHealth ? "health" : "")
+    //           << (improveMass ? "mass" : "") << (improveAcceleration ? "acceleration" : "") << std::endl;
 
     auto& player = players.at(clientId);
-    player.improveCarProperties(improveVelocity, improveHealth);
+    player.improveCarProperties(improveVelocity, improveHealth, improveAcceleration, improveMass);
 }
 
 void Game::disconnectPlayer(ClientID clientId) {

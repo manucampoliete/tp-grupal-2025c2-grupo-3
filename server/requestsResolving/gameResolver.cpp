@@ -31,8 +31,8 @@ void GameResolver::handleSuperSpeed() {
     clientCommandsQueue.push(std::make_unique<SuperSpeedCommand>(clientId));
 }
 
-void GameResolver::handleModifyCar(bool improveVelocity, bool improveHealth) {
-    clientCommandsQueue.push(std::make_unique<ImprovementsCommand>(clientId, improveVelocity, improveHealth));
+void GameResolver::handleModifyCar(bool improveVelocity, bool improveHealth, bool improveAcceleration, bool improveMass) {
+    clientCommandsQueue.push(std::make_unique<ImprovementsCommand>(clientId, improveVelocity, improveHealth, improveAcceleration, improveMass));
 }
 
 void GameResolver::handlePlayerDisconnected() {

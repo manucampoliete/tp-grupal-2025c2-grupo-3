@@ -55,6 +55,8 @@ void ServerGameSendProtocol::sendModificationSnapshot(std::shared_ptr<Snapshot> 
         sendU16(prop.playerId);
         sendU16(prop.speed);
         sendU16(prop.health);
+        sendU16(prop.acceleration);
+        sendU16(prop.mass);
     }
 }
 

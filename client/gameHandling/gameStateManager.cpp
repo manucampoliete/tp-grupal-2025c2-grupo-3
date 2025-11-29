@@ -24,10 +24,18 @@ void GameStateManager::showStats(const RaceResults& results) {
 
 void GameStateManager::showModifications(const CarProperties& props) {
     currentState = GameState::MODIFYING_CAR;
-    carProperties = props;
+    ModifyingState::Properties p;
+    p.speed = static_cast<float>(props.speed) / 1000;
+    p.health = static_cast<float>(props.health) / 100;
+    p.accel = static_cast<float>(props.accel) / 1000;
+    p.mass = static_cast<float>(props.mass) / 1000;
+    carProperties = p;
     speedModified = false;
     healthModified = false;
+    accelModified = false;
+    massModified = false;
     modsSaved = false;
+    modTimerMs = 10;
 }
 
 void GameStateManager::showGameEnd(const FinalResults& results) {

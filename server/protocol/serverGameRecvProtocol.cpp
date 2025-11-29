@@ -28,7 +28,12 @@ void ServerGameRecvProtocol::recvSuperSpeed() {
 }
 
 void ServerGameRecvProtocol::recvModifyCar() {
-    gameResolver.handleModifyCar(recvU8() == 0x01, recvU8() == 0x01);
+    bool improveVelocity = recvU8() == 0x01;
+    bool improveHealth = recvU8() == 0x01;
+    bool improveAcceleration = recvU8() == 0x01;
+    bool improveMass = recvU8() == 0x01;
+
+    gameResolver.handleModifyCar(improveVelocity, improveHealth, improveAcceleration, improveMass);
 }
 
 void ServerGameRecvProtocol::recvPlayerDisconnected() {

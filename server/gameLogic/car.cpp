@@ -182,12 +182,22 @@ float Car::getMaxSpeed() const { return maxSpeed; }
 
 void Car::setCurrentHealth(float health) { currentHealth = health; }
 
-void Car::improveProperties(bool improveVelocity, bool improveHealth) {
+void Car::improveProperties(bool improveVelocity, bool improveHealth, bool improveAcceleration, bool improveMass) {
     if (improveVelocity) {
         maxSpeed *= VELOCITY_IMPROVEMENT_PERCENTAGE;
     }
     if (improveHealth) {
         maxHealth *= HEALTH_IMPROVEMENT_PERCENTAGE;
+    }
+    if (improveAcceleration) {
+        acceleration *= ACCELERATION_IMPROVEMENT_PERCENTAGE;
+    }
+    if (improveMass) {
+        b2MassData md;
+        body->GetMassData(&md);
+        md.I *= MASS_IMPROVEMENT_PERCENTAGE;
+        md.mass *= MASS_IMPROVEMENT_PERCENTAGE;
+        body->SetMassData(&md);
     }
 }
 
@@ -216,6 +226,17 @@ bool Car::isOnBridge() {
     b2Filter filter = body->GetFixtureList()->GetFilterData();
     return (filter.categoryBits == CAR_HIGH_LAYER);
 }
+
+float Car::getAcceleration() const {
+    return acceleration;
+}
+
+float Car::getMass() const {
+    b2MassData md;
+    body->GetMassData(&md);
+    return md.mass;
+}
+
 
 Car::~Car() {
     // This line causes invalid reads (see ContactListener)

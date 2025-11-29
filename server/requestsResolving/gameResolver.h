@@ -47,7 +47,7 @@ public:
     /**
      * Handles a MODIFY_CAR request from the client.
      */
-    void handleModifyCar(bool improveVelocity, bool improveHealth);
+    void handleModifyCar(bool improveVelocity, bool improveHealth, bool improveAcceleration, bool improveMass);
 
     /**
      * Handles a PLAYER_DISCONNECTED request from the client.

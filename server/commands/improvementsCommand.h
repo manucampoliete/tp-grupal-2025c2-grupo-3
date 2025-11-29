@@ -7,8 +7,10 @@ class ImprovementsCommand: public Command {
 private:
     bool improveVelocity;
     bool improveHealth;
+    bool improveAcceleration;
+    bool improveMass;
 public:
-    ImprovementsCommand(ClientID clientId, bool improveVelocity, bool improveHealth);
+    ImprovementsCommand(ClientID clientId, bool improveVelocity, bool improveHealth, bool improveAcceleration, bool improveMass);
 
     void execute(Game& game) override;
 };

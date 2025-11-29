@@ -35,6 +35,8 @@
 
 #define VELOCITY_IMPROVEMENT_PERCENTAGE 1.5f
 #define HEALTH_IMPROVEMENT_PERCENTAGE 1.05f
+#define ACCELERATION_IMPROVEMENT_PERCENTAGE 1.1f
+#define MASS_IMPROVEMENT_PERCENTAGE 1.1f
 
 class Car {
 private:
@@ -106,17 +108,22 @@ public:
     /**
      * Returns the angle of the car in radians.
      */
-    float getAngle();
-    float getCurrentSpeed() const;
     CarID getId();
-    float getMaxHealth() const;
+
+    float getAngle();
     float getMaxSpeed() const;
+    float getCurrentSpeed() const;
+    
+    float getMaxHealth() const;
+    float getCurrentHealth();
+
+    float getAcceleration() const;
+    float getMass() const;
 
     void setCurrentHealth(float health);
 
-    void improveProperties(bool improveVelocity, bool improveHealth);
+    void improveProperties(bool improveVelocity, bool improveHealth, bool improveAcceleration, bool improveMass);
   
-    float getCurrentHealth();
 
     void setCollisionLayer(uint8_t layer);
     void toggleCollisionLayer();
