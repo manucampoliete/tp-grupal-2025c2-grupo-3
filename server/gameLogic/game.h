@@ -19,6 +19,8 @@
 
 #include "../../common/utils/gameState.h"
 
+#include "collisions/pathLoader.h"
+
 class Command;
 
 class Game: public Thread {

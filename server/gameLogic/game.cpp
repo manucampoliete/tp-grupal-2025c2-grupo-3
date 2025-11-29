@@ -17,6 +17,8 @@
 #include "../../common/constantRateLoop/constantRateLoop.h"
 #include "../../common/messages/snapshot.h"
 
+#include "collisions/pathGenerator.h"
+
 #define TARGET_FPS 60
 #define FRAME_DURATION_MS (1000 / TARGET_FPS)
 #define TIME_STEP (1.0f / TARGET_FPS) // duracion del step que simula box2d cada frame
@@ -361,20 +363,30 @@ void Game::handleCollision(Player* player, float impact) {
 }
 
 void Game::run() {
+    
+    // refactor (init game) //
+
     started = true;
     
     broadcastStartSignal();
     setGameState(GameState::COUNTDOWN);
 
-    // refactor (init collisions)
+    // aca esta el map_id, de aca se decide qué colisiones se van a renderizar
+    Path currentPath = PathLoader::LoadPath("server/gameLogic/race.yaml");
+    PathGenerator::GeneratePath(currentPath, world, PIXELS_TO_METERS, WORLD_HEIGHT);
+
+    // for player in players player.assignPath(currentPath)
+
     CollisionMap lowLayerCollisionMap = CollisionLoader::LoadCollisions("server/gameLogic/collisions/low_collision_layer.yaml");
     CollisionMap highLayerCollisionMap = CollisionLoader::LoadCollisions("server/gameLogic/collisions/high_collision_layer.yaml");
     CollisionMap layerSwitchCollisionMap = CollisionLoader::LoadCollisions("server/gameLogic/collisions/layer_switch.yaml");
 
     CollisionGenerator::GenerateCollisions(lowLayerCollisionMap, world, PIXELS_TO_METERS, WORLD_HEIGHT, WALL_LOW_LAYER);
     CollisionGenerator::GenerateCollisions(highLayerCollisionMap, world, PIXELS_TO_METERS, WORLD_HEIGHT, WALL_HIGH_LAYER);
-    CollisionGenerator::GenerateCollisions(layerSwitchCollisionMap, world, PIXELS_TO_METERS, WORLD_HEIGHT, SENSOR_LAYER, IS_SENSOR);
+    CollisionGenerator::GenerateCollisions(layerSwitchCollisionMap, world, PIXELS_TO_METERS, WORLD_HEIGHT, SENSOR_LAYER, LAYER_SWITCH_SENSOR);
     
+    //////////////////////////
+
     // contact listener para manejar choques
     // se le pasa un puntero a Game para que pueda llamar a handleCollision
     ContactListener contactListener(this);

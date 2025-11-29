@@ -12,7 +12,7 @@ class CollisionGenerator {
 public:
     // Receives pixelsToMeters, but for now the meters <-> pixels relation is 1 to 1 (box2d may not work well with this scale)
     // worldHeight is received to be able to invert the Y axis and have the collisions where they should be (because they are generated from the image, which technically for box2d is upside down)
-    static void GenerateCollisions(const CollisionMap& collisionMap, std::unique_ptr<b2World>& world, float pixelsToMeters, float worldHeight, uint8_t layer, bool isSensor = false) {
+    static void GenerateCollisions(const CollisionMap& collisionMap, std::unique_ptr<b2World>& world, float pixelsToMeters, float worldHeight, uint8_t layer, int sensorId = NOT_A_SENSOR) {
         // If worldHeight is not passed, I take the one from the collision map
         if (worldHeight == 0.0f) {
             worldHeight = collisionMap.mapHeight;
@@ -42,7 +42,7 @@ public:
             
             b2FixtureDef fixtureDef;
             fixtureDef.shape = &box;
-            fixtureDef.isSensor = isSensor;
+            fixtureDef.isSensor = sensorId != NOT_A_SENSOR;
             fixtureDef.density = 0.0f;      // This doesn't matter
             fixtureDef.friction = 0.3f;     // To slow down a bit if dragged against the wall
             fixtureDef.restitution = 0.0f;  // Bounce
@@ -57,9 +57,9 @@ public:
 
             body->CreateFixture(&fixtureDef);
 
-            if (isSensor) {
+            if (fixtureDef.isSensor) {
                 // Body data
-                auto *data = new BodyData(LAYER_SWITCH_SENSOR);  // For now there is only one type of sensor
+                auto *data = new BodyData(sensorId);  // For now there is only one type of sensor
                 body->GetUserData().pointer = reinterpret_cast<uintptr_t>(data);
             }
         }

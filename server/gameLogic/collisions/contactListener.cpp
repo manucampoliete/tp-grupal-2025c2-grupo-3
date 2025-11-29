@@ -18,13 +18,33 @@ void ContactListener::BeginContact(b2Contact* contact) {
     // A es auto, B es sensor
     if (dataA && dataA->player && dataB && dataB->sensorId) {
         // handleLayerSwitch(dataA->player);
-        dataA->player->getCar().toggleCollisionLayer();
+        switch (dataB->sensorId) {
+            case LAYER_SWITCH_SENSOR:
+                dataA->player->getCar().toggleCollisionLayer();
+                break;
+            case CHECKPOINT_SENSOR:
+                std::cout << "[Listener] Checkpoint tocado!" << std::endl;
+                break;
+            default:
+                std::cerr << "[Listener] Sensor desconocido" << std::endl;
+                break;
+        }
         return;
     }
 
     // B es auto, A es sensor
     if (dataB && dataB->player && dataA && dataA->sensorId) {
-        dataB->player->getCar().toggleCollisionLayer();
+        switch (dataA->sensorId) {
+            case LAYER_SWITCH_SENSOR:
+                dataB->player->getCar().toggleCollisionLayer();
+                break;
+            case CHECKPOINT_SENSOR:
+                std::cout << "[Listener] Checkpoint tocado!" << std::endl;
+                break;
+            default:
+                std::cerr << "[Listener] Sensor desconocido" << std::endl;
+                break;
+        }
         return;
     }
 }
