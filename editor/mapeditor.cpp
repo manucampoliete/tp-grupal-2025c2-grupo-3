@@ -75,16 +75,16 @@ MapEditor::MapEditor(int cityId, QWidget* parent): QWidget(parent), cityMapID(ci
 }
 
 void MapEditor::loadMapForEditing(const QString& filename) {
-    std::vector<LoadedSegmentData> loadedSegments = deserializeFromYaml(filename);
+    LoadedMapData loadedData = deserializeFromYaml(filename);
 
-    if (loadedSegments.empty()) {
+    if (loadedData.segments.empty()) {
         std::cout << "Advertencia: La carga falló o el archivo YAML está vacío. No se continuará." << std::endl;
         QMessageBox::critical(this, "Error de Carga", "No se encontraron datos de carrera válidos en el archivo.");
         return;
     }
 
     setupMapAssets(this->cityMapID);
-    setupLoadedCircuit(loadedSegments);
+    setupLoadedCircuit(loadedData);
 
     std::cout << "✅ Carga de mapa completada. El editor está listo para continuar." << std::endl;
 }
@@ -180,7 +180,6 @@ void MapEditor::serializeToYaml(const QString& filename){
         emitter << YAML::Key << "position";
         emitter << YAML::Value << YAML::BeginSeq << finalCpPos.x() << finalCpPos.y() << YAML::EndSeq;
 
-        // Hints asociados
         emitter << YAML::Key << "hints_to_next_cp";
         emitter << YAML::Value << YAML::BeginSeq;
 
@@ -189,8 +188,7 @@ void MapEditor::serializeToYaml(const QString& filename){
 
             MapElement* hint = hintPtr;
             emitter << YAML::BeginMap;
-            emitter << YAML::Key << "type_id" << YAML::Value 
-                    << mapElementToUnifiedId(TYPE_HINT, hint->getElementDirection());
+            emitter << YAML::Key << "type_id" << YAML::Value << hint->getElementDirection();            
             QPointF finalHintPos = hint->pos();
             emitter << YAML::Key << "position";
             emitter << YAML::Value << YAML::BeginSeq << finalHintPos.x() << finalHintPos.y() << YAML::EndSeq;
@@ -275,49 +273,76 @@ MapElement* MapEditor::recreateElement(ElementType type, ElementDirection direct
     return element;
 }
 
-std::vector<LoadedSegmentData> MapEditor::deserializeFromYaml(const QString& filename) {
-    std::vector<LoadedSegmentData> segments; 
+LoadedMapData MapEditor::deserializeFromYaml(const QString& filename) {
+    LoadedMapData result;
 
     try {
         YAML::Node root = YAML::LoadFile(filename.toStdString());
 
-        if (!root["map_id"]) throw std::runtime_error("Falta la clave 'map_id'.");
+        if (!root["map_id"])
+            throw std::runtime_error("Falta la clave 'map_id'.");
 
-        int loadedMapId = root["map_id"].as<int>();
-        this->cityMapID = loadedMapId;
+        this->cityMapID = root["map_id"].as<int>();
+
+        if (root["spawns"] && root["spawns"].IsSequence()) {
+
+            for (const auto& spawnNode : root["spawns"]) {
+
+                if (!spawnNode.IsMap()) continue;
+
+                if (!spawnNode["type_id"]) {
+                    qWarning() << "Spawn sin type_id, se saltea.";
+                    continue;
+                }
+
+                int typeId = spawnNode["type_id"].as<int>();
+                ElementProperties props = mapUnifiedIdToTypeAndDirection(typeId);
+
+                const YAML::Node& pos = spawnNode["position"];
+                if (!pos || !pos.IsSequence() || pos.size() < 2) {
+                    qWarning() << "Spawn con posición inválida.";
+                    continue;
+                }
+
+                double x = pos[0].as<double>();
+                double y = pos[1].as<double>();
+
+                LoadedHintData spawnData;
+                spawnData.direction = props.direction;
+                spawnData.x = x;
+                spawnData.y = y;
+
+                result.spawns.push_back(spawnData);
+            }
+        }
 
         const YAML::Node& segmentsNode = root["segments"];
         if (!segmentsNode || !segmentsNode.IsSequence())
             throw std::runtime_error("El nodo 'segments' no es una secuencia válida.");
 
         for (const auto& segmentNode : segmentsNode) {
+
             if (!segmentNode.IsMap()) continue;
 
             LoadedSegmentData segment;
-            
-            const YAML::Node& unifiedIdNode = segmentNode["segment_start_type"];
-            if (!unifiedIdNode) throw std::runtime_error("Falta la clave 'segment_start_type'.");
-            
-            int unifiedId = unifiedIdNode.as<int>();
-            
-            ElementProperties props = mapUnifiedIdToTypeAndDirection(unifiedId);
-            
-            ElementType cpType = props.type;
-            ElementDirection cpDir = props.direction;
 
-            const YAML::Node& positionNode = segmentNode["position"];
-            if (!positionNode || !positionNode.IsSequence() || positionNode.size() < 2) {
-                qWarning() << "Error: El nodo 'position' del CP es inválido o falta.";
+            if (!segmentNode["segment_start_type"])
+                throw std::runtime_error("Falta 'segment_start_type'.");
+
+            int unifiedId = segmentNode["segment_start_type"].as<int>();
+            ElementProperties cpProps = mapUnifiedIdToTypeAndDirection(unifiedId);
+
+            segment.cpType = cpProps.type;
+            segment.cpDirection = cpProps.direction;
+
+            const YAML::Node& pos = segmentNode["position"];
+            if (!pos || !pos.IsSequence() || pos.size() < 2) {
+                qWarning() << "Segmento con posición inválida, se saltea.";
                 continue;
             }
 
-            double cpX = positionNode[0].as<double>();
-            double cpY = positionNode[1].as<double>();
-
-            segment.cpType = cpType;
-            segment.cpDirection = cpDir;
-            segment.cpX = cpX;
-            segment.cpY = cpY;
+            segment.cpX = pos[0].as<double>();
+            segment.cpY = pos[1].as<double>();
 
             const YAML::Node& hintsNode = segmentNode["hints_to_next_cp"];
             if (hintsNode && hintsNode.IsSequence()) {
@@ -326,82 +351,115 @@ std::vector<LoadedSegmentData> MapEditor::deserializeFromYaml(const QString& fil
 
                     if (!hintNode.IsMap()) continue;
 
-                    ElementDirection hintDir = static_cast<ElementDirection>(hintNode["type_id"].as<int>());
-                    
-                    const YAML::Node& hintPositionNode = hintNode["position"];
-                    if (!hintPositionNode || !hintPositionNode.IsSequence() || hintPositionNode.size() < 2) {
-                        qWarning() << "Error: El nodo 'position' del hint es inválido.";
+                    if (!hintNode["type_id"]) {
+                        qWarning() << "Hint sin type_id.";
                         continue;
                     }
 
-                    double hintX = hintPositionNode[0].as<double>();
-                    double hintY = hintPositionNode[1].as<double>();
+                    int hintUnifiedId = hintNode["type_id"].as<int>();
+                    ElementProperties hintProps = mapUnifiedIdToTypeAndDirection(hintUnifiedId);
 
-                    LoadedHintData hintData;
-                    hintData.direction = hintDir;
-                    hintData.x = hintX;
-                    hintData.y = hintY;
+                    const YAML::Node& hpos = hintNode["position"];
+                    if (!hpos || !hpos.IsSequence() || hpos.size() < 2) {
+                        qWarning() << "Hint con posición inválida.";
+                        continue;
+                    }
 
-                    segment.hints.push_back(hintData);
+                    LoadedHintData hint;
+                    hint.direction = hintProps.direction;
+                    hint.x = hpos[0].as<double>();
+                    hint.y = hpos[1].as<double>();
+
+                    segment.hints.push_back(hint);
                 }
             }
-
-            segments.push_back(segment);
+            result.segments.push_back(segment);
         }
-
     } catch (const YAML::BadFile& e) {
-        QMessageBox::critical(this, "Error de YAML", QString("No se pudo abrir o leer el archivo: %1").arg(e.what()));
-        return std::vector<LoadedSegmentData>();
+        QMessageBox::critical(this, "Error de YAML",
+                              QString("No se pudo abrir el archivo: %1").arg(e.what()));
+        return {};
     } catch (const YAML::Exception& e) {
-        QMessageBox::critical(this, "Error de Deserialización", QString("Error al parsear YAML: %1").arg(e.what()));
-        return std::vector<LoadedSegmentData>();
+        QMessageBox::critical(this, "Error de Parseo",
+                              QString("Error al parsear YAML: %1").arg(e.what()));
+        return {};
     } catch (const std::runtime_error& e) {
-        QMessageBox::critical(this, "Error de Estructura", e.what());
-        return std::vector<LoadedSegmentData>();
+        QMessageBox::critical(this, "Error de estructura",
+                              QString::fromStdString(e.what()));
+        return {};
     }
-    return segments;
+    return result;
 }
 
-void MapEditor::setupLoadedCircuit(const std::vector<LoadedSegmentData>& loadedData) {
-    std::cout << "SLCT_DEBUG 1: Setup START. Segmentos cargados: " << loadedData.size() << std::flush;
+void MapEditor::setupLoadedCircuit(const LoadedMapData& loadedData){
+    std::cout << "SLCT_DEBUG 1: Setup START. Segmentos cargados: "
+              << loadedData.segments.size()
+              << "segmento 1:"
+              << (loadedData.segments.empty() ? 0 : loadedData.segments[0].hints.size())
+              << ", Spawns: " << loadedData.spawns.size()
+              << std::endl;
 
     this->circuitSegments.clear();
     this->hintsInCurrentSegment.clear();
 
-    if (loadedData.empty()) return;
+    for (const auto& loadedSegment : loadedData.segments) {
 
-    for (const auto& loadedSegment : loadedData) {
-        MapElement* cpElement = recreateElement(loadedSegment.cpType, loadedSegment.cpDirection, loadedSegment.cpX, loadedSegment.cpY);
+        MapElement* cpElement = recreateElement(
+            loadedSegment.cpType,
+            loadedSegment.cpDirection,
+            loadedSegment.cpX,
+            loadedSegment.cpY
+        );
 
         CircuitSegment newSegment;
         newSegment.cpElementPtr = cpElement;
 
         for (const auto& hintData : loadedSegment.hints) {
-            MapElement* hintElement = recreateElement(TYPE_HINT, hintData.direction, hintData.x, hintData.y);
+            std::cout << "RECREATING HINT at (" << hintData.x << ", " << hintData.y << ") dir=" << hintData.direction << std::endl;
+
+            MapElement* hintElement = recreateElement(
+                TYPE_HINT,
+                hintData.direction,
+                hintData.x,
+                hintData.y
+            );
             newSegment.segmentHints.push_back(hintElement);
         }
 
         this->circuitSegments.push_back(newSegment);
     }
 
+    this->mapSpawns.clear();
+
+    for (const auto& spawn : loadedData.spawns) {
+        MapElement* spawnElement = recreateElement(
+            TYPE_SPAWN,
+            spawn.direction,
+            spawn.x,
+            spawn.y
+        );
+
+        this->mapSpawns.push_back(spawnElement);
+    }
+
     if (!this->circuitSegments.empty()) {
         CircuitSegment& lastSegment = this->circuitSegments.back();
 
-        if (lastSegment.cpElementPtr && lastSegment.cpElementPtr->getElementType() == TYPE_FINISH) {
-            QMessageBox::information(this, "Modo Edición", "Meta de llegada liberada para extensión del circuito.");
+        if (lastSegment.cpElementPtr &&
+            lastSegment.cpElementPtr->getElementType() == TYPE_FINISH)
+        {
+            QMessageBox::information(this, "Modo Edición",
+                                     "Meta de llegada liberada para extensión del circuito.");
 
             MapElement* finishPtr = lastSegment.cpElementPtr;
 
             this->circuitSegments.pop_back();
 
-            if (!this->circuitSegments.empty()) {
+            if (!this->circuitSegments.empty())
                 this->hintsInCurrentSegment = this->circuitSegments.back().segmentHints;
-            }
 
             QObject::disconnect(finishPtr, nullptr, this, nullptr);
-            if (finishPtr->scene())
-                finishPtr->scene()->removeItem(finishPtr);
-
+            if (finishPtr->scene()) finishPtr->scene()->removeItem(finishPtr);
             finishPtr->deleteLater();
 
             std::cout << "SLCT_DEBUG 6: Setup FINISHED (Meta Liberada)." << std::endl;
@@ -410,4 +468,6 @@ void MapEditor::setupLoadedCircuit(const std::vector<LoadedSegmentData>& loadedD
             this->hintsInCurrentSegment = this->circuitSegments.back().segmentHints;
         }
     }
+
+    std::cout << "SLCT_DEBUG FINAL: Circuit + Spawns reconstruidos correctamente." << std::endl;
 }

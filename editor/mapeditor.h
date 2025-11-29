@@ -27,6 +27,11 @@ struct LoadedSegmentData {
     std::vector<LoadedHintData> hints;
 };
 
+struct LoadedMapData {
+    std::vector<LoadedSegmentData> segments;
+    std::vector<LoadedHintData> spawns;
+};
+
 MapPaths getMapPaths(int cityId);
 
 class MapEditor : public QWidget {
@@ -54,8 +59,8 @@ private:
     int cityMapID;
 
     void serializeToYaml(const QString& filename);
-    std::vector<LoadedSegmentData> deserializeFromYaml(const QString& filename);
-    void setupLoadedCircuit(const std::vector<LoadedSegmentData>& loadedSegments);
+    LoadedMapData deserializeFromYaml(const QString& filename);
+    void setupLoadedCircuit(const LoadedMapData& loadedSegments);
     MapElement* recreateElement(ElementType type, ElementDirection direction, double x, double y);
     void setupMapAssets(int cityId);
 };
