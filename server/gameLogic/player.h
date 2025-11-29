@@ -24,6 +24,8 @@ private:
 
     uint32_t penalty;
 
+    Path currentPath;
+
     void debugPrintCarInfo();
 
 public:
@@ -44,6 +46,8 @@ public:
 
     bool hasFinished();
     void setArrivalTime(float arrivalTime);
+
+    void setCurrentPath(Path currentPath);
 
     std::string getUsername() const { return username; }
     uint32 getCurrentRaceTime() const { return currentRaceTime; }

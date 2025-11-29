@@ -375,7 +375,9 @@ void Game::run() {
     Path currentPath = PathLoader::LoadPath("server/gameLogic/race.yaml");
     PathGenerator::GeneratePath(currentPath, world, PIXELS_TO_METERS, WORLD_HEIGHT);
 
-    // for player in players player.assignPath(currentPath)
+    for (auto& [id, player] : players) {
+        player.setCurrentPath(currentPath);
+    }
 
     CollisionMap lowLayerCollisionMap = CollisionLoader::LoadCollisions("server/gameLogic/collisions/low_collision_layer.yaml");
     CollisionMap highLayerCollisionMap = CollisionLoader::LoadCollisions("server/gameLogic/collisions/high_collision_layer.yaml");

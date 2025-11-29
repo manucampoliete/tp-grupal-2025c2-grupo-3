@@ -42,6 +42,10 @@ void Player::setArrivalTime(float arrivalTime) {
     }
 }
 
+void Player::setCurrentPath(Path currentPath) {
+    currentPath = currentPath;
+}
+
 /* void debugPrintCarInfo(ClientID clientId, uint32 x, uint32 y, uint16 angle, uint16 speed, CarID carId, uint8_t healthPercentage, bool onBridge) {
     system("clear");
     std::cout << "[DEBUG] CarSnapshot - PlayerID: " << clientId << std::endl
