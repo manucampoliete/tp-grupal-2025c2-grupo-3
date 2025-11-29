@@ -1,5 +1,4 @@
 #include "lobby.h"
-
 #include <QBrush>
 #include <QFontDatabase>
 #include <QGuiApplication>
@@ -9,20 +8,29 @@
 #include <QScreen>
 #include <QStackedWidget>
 #include <iostream>
-#include <thread>
-
 #include <ui_guestwaiting.h>
-
 #include "./ui_lobby.h"
-
 #include "guestwaiting.h"
 #include "hostwaiting.h"
 #include "joingame.h"
 #include "mainmenu.h"
 #include "newgame.h"
 
+
+StartSignalThread::StartSignalThread(Lobby* l, ClientLobbyProtocol* p)
+    : lobby(l), protocol(p) {}
+
+void StartSignalThread::run() {
+    protocol->recvStartSignal();
+    lobby->setStartGame(true);
+
+    QMetaObject::invokeMethod(lobby, [this]() {
+        lobby->close();
+    });
+}
+
 Lobby::Lobby(Socket& skt, QWidget* parent):
-        QMainWindow(parent), ui(new Ui::Lobby), protocol(skt) {
+        QMainWindow(parent), ui(new Ui::Lobby), protocol(skt), startSignalThread(this, &protocol) {
     ui->setupUi(this);
 
     this->setWindowTitle("Need For Speed");
@@ -101,11 +109,7 @@ void Lobby::handleJoinGameRequest(const QString& username, const QString& gameId
     
     guestWaiting->setMatchID(gameId);
     stackedWidget->setCurrentWidget(guestWaiting);
-    std::thread([this]() {
-        protocol.recvStartSignal();
-        _startGame = true;
-        QMetaObject::invokeMethod(this, [this]() { this->close(); });
-    }).detach();
+    startSignalThread.start();
 }
 
 void Lobby::handleNewGameRequest(const QString& username, const CarInfo& car)
@@ -119,15 +123,7 @@ void Lobby::handleNewGameRequest(const QString& username, const CarInfo& car)
 
 void Lobby::startGame() {
     protocol.sendStart();
-    
-    std::thread([this]() {
-        protocol.recvStartSignal();
-        _startGame = true;
-
-        QMetaObject::invokeMethod(this, [this]() {
-            this->close();
-        });
-    }).detach();
+    startSignalThread.start();
 }
 
 void Lobby::exitLobby() {
