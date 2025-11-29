@@ -259,14 +259,16 @@ void Game::showCheatNotification(CheatType type) {
     stateManager.showCheatNotification(type);
 }
 
-void Game::onCollision(float x, float y, float intensity) {
+void Game::onCollision(float x, float y, bool intensity) {
     worldRenderer.addCollisionEffect(x, y, intensity);
-    
-    int volume = static_cast<int>(intensity * MIX_MAX_VOLUME);
-    soundManager.playSound("collision", volume);
+    int volume;
+    if (intensity)
+        volume = static_cast<int>(MIX_MAX_VOLUME);
+    else
+        volume = static_cast<int>(0.5 * MIX_MAX_VOLUME);
 
-    if (intensity > 0.7f)
-        effectsManager.triggerScreenFlash();
+    soundManager.playSound("collision", volume);
+    if (intensity) effectsManager.triggerScreenFlash();
 }
 
 void Game::onPlayerDied(uint16_t deadPlayerId) {

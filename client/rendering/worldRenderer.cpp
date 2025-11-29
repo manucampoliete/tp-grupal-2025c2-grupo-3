@@ -214,14 +214,14 @@ void WorldRenderer::renderCollisionEffects() {
     for (const auto& collision: collisionEffects) {
         float screenX = collision.x - camera.x;
         float screenY = collision.y - camera.y;
-
+    
         // White flash that fades out
         float alpha = (1.0f - collision.timeAlive / 0.3f) * collision.intensity;
         Uint8 alphaByte = static_cast<Uint8>(alpha * 255);
-
+    
         renderer.SetDrawColor(255, 255, 255, alphaByte);
-        int radius = static_cast<int>(collision.timeAlive * 100 * collision.intensity);
-
+        int radius = static_cast<int>(collision.timeAlive * 100);
+    
         // Draw simple circle (lines)
         for (int angle = 0; angle < 360; angle += 10) {
             float rad = angle * 3.14159f / 180.0f;
@@ -241,7 +241,7 @@ void WorldRenderer::addExplosion(float x, float y, int particleCount) {
     explosions.emplace_back(x, y, particleCount);
 }
 
-void WorldRenderer::addCollisionEffect(float x, float y, float intensity) {
+void WorldRenderer::addCollisionEffect(float x, float y, bool intensity) {
     collisionEffects.emplace_back(x, y, intensity);
 }
 

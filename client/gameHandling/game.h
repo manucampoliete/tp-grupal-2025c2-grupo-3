@@ -93,7 +93,7 @@ public:
     void showFinalResults(const FinalResults& results);
     void showCheatNotification(CheatType type);
     
-    void onCollision(float x, float y, float intensity);
+    void onCollision(float x, float y, bool intensity);
     void onPlayerDied(uint16_t deadPlayerId);
 
     SoundManager& getSoundManager() { return soundManager; }

@@ -82,7 +82,7 @@ public:
     float getScaleFactor() const { return scaleFactor; }
 
     void addExplosion(float x, float y, int particleCount = 30);
-    void addCollisionEffect(float x, float y, float intensity);
+    void addCollisionEffect(float x, float y, bool intensity);
 
     void setAccelerating(bool accelerating);
     void setBraking(bool braking);
