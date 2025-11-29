@@ -362,6 +362,10 @@ void Game::handleCollision(Player* player, float impact) {
     }
 }
 
+void Game::handleCheckpointContact(Player* player, PathElement& element) {
+    player->updateCurrentPath(element);
+}
+
 void Game::run() {
     
     // refactor (init game) //
@@ -376,7 +380,7 @@ void Game::run() {
     PathGenerator::GeneratePath(currentPath, world, PIXELS_TO_METERS, WORLD_HEIGHT);
 
     for (auto& [id, player] : players) {
-        player.setCurrentPath(currentPath);
+        player.initCurrentPath(currentPath);
     }
 
     CollisionMap lowLayerCollisionMap = CollisionLoader::LoadCollisions("server/gameLogic/collisions/low_collision_layer.yaml");

@@ -9,6 +9,9 @@
 
 #include <cstdlib>
 
+#include "../../common/utils/pathElements.h"
+
+
 
 #define RADTODEG 57.295779513082320876f
 #define PIXELS_TO_METERS 0.01f // 1 pixel = 0.01 meters (1 meter = 100 pixels)
@@ -42,8 +45,58 @@ void Player::setArrivalTime(float arrivalTime) {
     }
 }
 
-void Player::setCurrentPath(Path currentPath) {
-    currentPath = currentPath;
+void Player::updateNextCheckpoint() {
+    for (auto& element : currentPath.elements) {
+        bool isCheckpoint = (element.id == CHECKPOINT_HORIZONTAL ||
+                            element.id == CHECKPOINT_VERTICAL ||
+                            element.id == FINISH_HORIZONTAL ||
+                            element.id == FINISH_VERTICAL);
+        
+        if(isCheckpoint) {
+            nextCheckpoint = element;
+            std::cout << "[NEXT_CHK]: " << element << std::endl;
+            break;
+        }
+    }
+}
+
+void Player::initCurrentPath(Path& currentPath) {
+    this->currentPath = currentPath;
+    updateNextCheckpoint();
+}
+
+// recibe el checkpoint que el jugador tocó
+void Player::updateCurrentPath(PathElement& element) {
+    if (nextCheckpoint != element) {
+        std::cout << "[UPDATE_PATH] " << nextCheckpoint << " is not the same as incoming " << element << std::endl; 
+        return;
+    } 
+
+    auto& elements = currentPath.elements;
+
+    auto it = std::find(elements.begin(), elements.end(), nextCheckpoint);
+    if (it == elements.end()) {
+        // raro que llegue aca
+        std::cerr << "[UPDATE_PATH] Error! el nextCheckpoint no se encontró en el path actual";
+        return;
+    }
+
+    elements.erase(elements.begin(), it + 1);
+
+    if(!elements.empty()) {
+        std::cout << "[UPDATE_PATH] La carrera todavia tiene elementos:" << std::endl;
+        for (auto& element : elements) {
+            std::cout << element << std::endl;
+        }
+        updateNextCheckpoint();
+    }
+    else {
+        // el jugador terminó el recorrido!
+        // handleRaceFinish();
+        std::cout << "[UPDATE_PATH] Player " << clientId << " terminó la carrera!" << std::endl;
+        nextCheckpoint = PathElement();
+    }
+    std::cout <<"[UPDATE_PATH] New path size: " << currentPath.elements.size() << std::endl;
 }
 
 /* void debugPrintCarInfo(ClientID clientId, uint32 x, uint32 y, uint16 angle, uint16 speed, CarID carId, uint8_t healthPercentage, bool onBridge) {

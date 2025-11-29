@@ -6,16 +6,14 @@
 #include <bits/stdc++.h>
 
 void ContactListener::BeginContact(b2Contact* contact) {
-    std::cout << "[Listener] Contacto!!!" << std::endl;
     b2Body* bodyA = contact->GetFixtureA()->GetBody();
     b2Body* bodyB = contact->GetFixtureB()->GetBody();
 
     auto* dataA = reinterpret_cast<BodyData*>(bodyA->GetUserData().pointer);
     auto* dataB = reinterpret_cast<BodyData*>(bodyB->GetUserData().pointer);
 
-    // no hay players involucrados
+    // no hay players ni sensores involucrados
     if (!dataA && !dataB) {
-        std::cout << "[Listener] Pero ninguno tiene BodyData" << std::endl;
         return;
     }
 
@@ -28,6 +26,7 @@ void ContactListener::BeginContact(b2Contact* contact) {
                 break;
             case CHECKPOINT_SENSOR:
                 std::cout << "[Listener] Checkpoint tocado!" << std::endl;
+                game->handleCheckpointContact(dataA->player, dataB->element);
                 break;
             default:
                 std::cerr << "[Listener] Sensor desconocido" << std::endl;
@@ -44,6 +43,7 @@ void ContactListener::BeginContact(b2Contact* contact) {
                 break;
             case CHECKPOINT_SENSOR:
                 std::cout << "[Listener] Checkpoint tocado!" << std::endl;
+                game->handleCheckpointContact(dataB->player, dataA->element);
                 break;
             default:
                 std::cerr << "[Listener] Sensor desconocido" << std::endl;

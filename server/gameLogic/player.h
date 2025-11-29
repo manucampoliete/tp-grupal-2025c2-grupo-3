@@ -27,8 +27,11 @@ private:
     uint32_t penalty;
 
     Path currentPath;
+    PathElement nextCheckpoint;
 
     void debugPrintCarInfo();
+
+    void updateNextCheckpoint();
 
 public:
     /**
@@ -49,8 +52,6 @@ public:
     bool hasFinished();
     void setArrivalTime(float arrivalTime);
 
-    void setCurrentPath(Path currentPath);
-
     std::string getUsername() const { return username; }
     uint32 getCurrentRaceTime() const { return currentRaceTime; }
     uint32 getTotalRaceTime() const { return totalRaceTime; }
@@ -64,6 +65,9 @@ public:
 
     void resetForNewRace();
     void applyCollisionDamage(float impact) { car.applyDamage(impact); }
+
+    void initCurrentPath(Path& currentPath);
+    void updateCurrentPath(PathElement& element);
 
     /**
      * Builds and returns a CarSnapshot representing the player's car.

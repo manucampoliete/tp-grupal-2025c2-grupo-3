@@ -151,6 +151,7 @@ public:
     void movePlayer(ClientID clientId, ActiveDirections activeDirections);
 
     void handleCollision(Player* player, float impact);
+    void handleCheckpointContact(Player* player, PathElement& chk);
 
     /**
      * Cheats!
