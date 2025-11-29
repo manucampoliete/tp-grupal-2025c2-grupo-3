@@ -3,7 +3,7 @@
 #include <iostream>
 
 #define END_SERVER_KEY 'q'
-#define CONFIG_YAML_PATH "server/config.yaml"
+#define CONFIG_YAML_PATH "config.yaml"
 
 Server::Server(const std::string& servname):
     config(ConfigLoader::Load(CONFIG_YAML_PATH)),
