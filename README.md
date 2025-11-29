@@ -55,8 +55,7 @@ Buenas. Estas correcciones las hice en base a la rama `main`, recibió unos comm
 5. ~~Cantidad de carreras.~~
 6. ~~Rate loop.~~
 
-(*) Si se refiere al tiempo de una carrera, ya esta considerado en los tiempos de fases del juego. Pero si se refiere al tiempo total de una partida, este se puede deducir como la cantidad de carreras multiplicada por la suma de los tiempos de las fases.  
-(**) Si bien todos estos valores ya se encuentran en el archivo config.yaml, faltaria parsear algunos de ellos en el codigo, en vez de usar macros/constantes/literales.
+(*) El tiempo de partida en si no esta en el archivo de config, pero se puede deducir a partir de los demas valores
 
 ## Cheats
 PARCIAL (los primeros tres están, pero hacerlos no tiene impacto real en el juego, sigue normalmente, y no hay daño por colisiones)
