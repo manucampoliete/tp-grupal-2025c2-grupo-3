@@ -3,11 +3,12 @@
 #include <cmath>
 
 
-WorldRenderer::WorldRenderer(Renderer& renderer, Texture& mapTexture, Texture& carSprites,
+WorldRenderer::WorldRenderer(Renderer& renderer, Texture& carSprites,
                              World& world, uint8_t playerId):
         renderer(renderer),
-        mapTexture(mapTexture),
         carSprites(carSprites),
+        mapTexture(nullptr),
+        mapRenderer(nullptr),
         bridgeTexture(nullptr),
         bridgeRenderer(nullptr),
         world(world),
@@ -15,6 +16,25 @@ WorldRenderer::WorldRenderer(Renderer& renderer, Texture& mapTexture, Texture& c
         camera(0, 0, 800, 600),
         scaleFactor(1.0f) {}
 
+
+void WorldRenderer::loadMapTexture(const std::string& path) {
+    try {
+        mapRenderer.reset();
+
+        // load image to RAM
+        SDL2pp::Surface surface(path);
+
+        // load to GPU
+        mapTexture = std::make_unique<Texture>(renderer, surface);
+        mapTexture->SetBlendMode(SDL_BLENDMODE_BLEND);
+        
+        mapRenderer = std::make_unique<MapRenderer>(renderer, *mapTexture);
+    } catch (const std::exception& e) {
+        std::cerr << "[WORLD_RENDERER] Error loading map texture: " << e.what() << std::endl;
+        mapRenderer.reset();
+        mapTexture.reset();
+    }
+}
 
 void WorldRenderer::loadBridgeTexture(const std::string& path) {
     try {
@@ -42,16 +62,19 @@ void WorldRenderer::updateLayout(int windowWidth, int windowHeight) {
 
 
 void WorldRenderer::updateCamera(float playerX, float playerY) {
+    if (!mapTexture) return;
+
     camera.x = static_cast<int>(playerX - (camera.w / 2));
     camera.y = static_cast<int>(playerY - (camera.h / 2));
 
     // Avoid camera going out of map bounds
     if (camera.x < 0) camera.x = 0;
     if (camera.y < 0) camera.y = 0;
-    if (camera.x > mapTexture.GetWidth() - camera.w)
-        camera.x = mapTexture.GetWidth() - camera.w;
-    if (camera.y > mapTexture.GetHeight() - camera.h)
-        camera.y = mapTexture.GetHeight() - camera.h;
+    
+    if (camera.x > mapTexture->GetWidth() - camera.w)
+        camera.x = mapTexture->GetWidth() - camera.w;
+    if (camera.y > mapTexture->GetHeight() - camera.h)
+        camera.y = mapTexture->GetHeight() - camera.h;
 }
 
 
@@ -113,9 +136,11 @@ void WorldRenderer::render() {
 
 
 void WorldRenderer::renderMapCamera() {
+    if (!mapRenderer) return;
     renderer.SetScale(scaleFactor, scaleFactor);
-    renderer.Copy(mapTexture, camera, NullOpt);
+    mapRenderer->render(camera);
 }
+
 
 void WorldRenderer::renderCarsUnderBridge() {
     const auto& cars = world.getCars();

@@ -43,7 +43,6 @@ private:
     SDL2pp::Font fontSmall;
     SDL2pp::Font fontBig;
 
-    SDL2pp::Texture mapTexture;
     SDL2pp::Texture carSprites;
 
     SDL2pp::Texture cheatInmortalityImg;
@@ -55,6 +54,10 @@ private:
     World& world;
     GameLoop& gameLoop;
     uint8_t playerId;
+
+    uint8_t mapId;
+    uint8_t race;
+    uint8_t totalRaces;
 
     // owner
     GameStateManager stateManager;
@@ -68,7 +71,6 @@ private:
     int lastWindowHeight = 0;
 
     void loadSounds();
-    void loadBridges();
     void updateUILayout();
     void update(float dt);
     void render();
@@ -83,7 +85,7 @@ public:
     bool processFrame(float dt);
 
     void showCountdown(uint8_t number);
-    void startRace();
+    void startRace(const RaceStart info);
     void setStatsCountdown(uint8_t number);
     void showStats(const RaceResults& results);
     void showModifications(const std::vector<CarProperties>& props);

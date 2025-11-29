@@ -38,7 +38,9 @@ void Receiver::run() {
 
                 case MSG_RACE_START: {
                     std::cout << "[RECEIVER] → Processing RACE_START" << std::endl;
-                    serverMessagesQueue.push(RaceStartMessage{});
+                    RaceStartMessage msg;
+                    msg.info = protocol.recvRaceStart();
+                    serverMessagesQueue.push(msg);
                     break;
                 }
 
@@ -94,14 +96,6 @@ void Receiver::run() {
                     std::cout << "[RECEIVER] → Processing PLAYER_DIED" << std::endl;
                     PlayerDiedMessage msg;
                     msg.playerId = protocol.recvPlayerDied();
-                    serverMessagesQueue.push(msg);
-                    break;
-                }
-
-                case MSG_CHECKPOINT: {
-                    std::cout << "[RECEIVER] → Processing CHECKPOINT" << std::endl;
-                    CheckpointMessage msg;
-                    msg.checkpointId = protocol.recvCheckpoint();
                     serverMessagesQueue.push(msg);
                     break;
                 }

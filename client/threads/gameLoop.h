@@ -42,7 +42,7 @@ private:
      * Methods used by other threads to notify events
      */
     void onCountdown(uint8_t number);
-    void onRaceStart();
+    void onRaceStart(const RaceStart info);
     void onCheckpointCrossed(uint8_t checkpointId);
     void onCollision(const CollisionData& collision);
     void onPlayerDied(ClientID deadPlayerId);

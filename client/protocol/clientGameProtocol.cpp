@@ -7,6 +7,7 @@
 
 #include "../../common/protocol/protocolConstants.h"
 
+
 uint8_t ClientGameProtocol::encodeMoveState(const ActiveDirections& activeDirections) {
     uint8_t moveState = 0;
     if (activeDirections.up)
@@ -22,7 +23,9 @@ uint8_t ClientGameProtocol::encodeMoveState(const ActiveDirections& activeDirect
 
 ClientGameProtocol::ClientGameProtocol(Socket& socket): SendProtocol(socket), RecvProtocol(socket) {}
 
+
 uint8_t ClientGameProtocol::recvMessageType() { return recvU8(); }
+
 
 void ClientGameProtocol::sendMove(const ActiveDirections& activeDirections) {
     sendU8(SEND_MOVE_STATE);
@@ -36,6 +39,7 @@ void ClientGameProtocol::sendModifications(bool speedMod, bool healthMod, bool a
     sendU8(accelMod ? 0x01 : 0x00);
     sendU8(massMod ? 0x01 : 0x00);
 }
+
 
 Snapshot ClientGameProtocol::recvSnapshot() {
     uint32_t countdown = recvU32();
@@ -58,18 +62,21 @@ Snapshot ClientGameProtocol::recvSnapshot() {
     return Snapshot(countdown, cars);
 }
 
-uint8_t ClientGameProtocol::recvCountdown() { return recvU8(); }
+RaceStart ClientGameProtocol::recvRaceStart() {
+    RaceStart info;
+    info.mapId = recvU8();
+    info.race = recvU8();
+    info.totalRaces = recvU8();
 
-uint8_t ClientGameProtocol::recvCheckpoint() { return recvU8(); }
+    return info;
+}
+
+uint8_t ClientGameProtocol::recvCountdown() { return recvU8(); }
 
 CollisionData ClientGameProtocol::recvCollision() {
     CollisionData collision;
     collision.playerId = recvU16();
-    
-    // Receive intensity as uint8_t (0-255) and convert to float (0.0-1.0)
-    uint8_t intensityByte = recvU8();
-    collision.intensity = intensityByte / 255.0f;
-
+    collision.intensity = recvU8(); // 0: low, 1: high
     collision.x = recvU32();
     collision.y = recvU32();
 
@@ -112,11 +119,6 @@ std::vector<CarProperties> ClientGameProtocol::recvCarProperties() {
 
         props.push_back(prop);
     }
-    
-//     props.speed = recvU16();
-//     props.health = recvU16();
-//     props.accel = recvU16();
-//     props.mass = recvU16();
 
     return props;
 }

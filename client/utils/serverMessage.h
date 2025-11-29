@@ -13,10 +13,8 @@ struct CountdownMessage {
     uint8_t number;
 };
 
-struct RaceStartMessage {};
-
-struct CheckpointMessage {
-    uint8_t checkpointId;
+struct RaceStartMessage {
+    RaceStart info;
 };
 
 struct CollisionMessage {
@@ -49,9 +47,8 @@ struct GameEndMessage {
 
 using ServerMessage = std::variant<
     Snapshot,
-    CountdownMessage,
     RaceStartMessage,
-    CheckpointMessage,
+    CountdownMessage,
     CollisionMessage,
     PlayerDiedMessage,
     RaceEndMessage,

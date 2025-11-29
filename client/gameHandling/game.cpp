@@ -17,8 +17,8 @@ Game::Game(World& world, GameLoop& gameLoop, uint8_t playerId)
       fontBig("client/assets/fonts/VCR_OSD_MONO.ttf", 30),
       
       // Textures
-      mapTexture(renderer, "client/assets/cities/Game Boy _ GBC - Grand Theft Auto - "
-                           "Backgrounds - Vice City.png"),
+      // mapTexture(renderer, "client/assets/cities/Game Boy _ GBC - Grand Theft Auto - "
+       //                    "Backgrounds - Vice City.png"),
       carSprites(renderer,
                  SDL2pp::Surface("client/assets/cars/Mobile - Grand Theft Auto 4 - "
                                  "Miscellaneous - Cars.png")
@@ -37,8 +37,8 @@ Game::Game(World& world, GameLoop& gameLoop, uint8_t playerId)
       // Components
       stateManager(),
       soundManager(),
-      worldRenderer(renderer, mapTexture, carSprites, world, playerId),
-      uiRenderer(renderer, font, fontSmall, fontBig, mapTexture, world, playerId,
+      worldRenderer(renderer, carSprites, world, playerId),
+      uiRenderer(renderer, font, fontSmall, fontBig, world, playerId,
                  cheatInmortalityImg, cheatWinImg, cheatLoseImg, cheatSpeedImg, finishImg),
       effectsManager(),
       inputHandler(gameLoop, stateManager, soundManager, worldRenderer, uiRenderer) {
@@ -48,35 +48,26 @@ Game::Game(World& world, GameLoop& gameLoop, uint8_t playerId)
     SDL_SetWindowMinimumSize(window.Get(), 800, 600);
 
     loadSounds();
-    loadBridges();
     updateUILayout();
 }
 
 
 void Game::loadSounds() {
     try {
-        soundManager.loadMusic("client/assets/sounds/music.mp3");
         soundManager.loadSound("collision", "client/assets/sounds/collision.wav");
         soundManager.loadSound("explosion", "client/assets/sounds/explosion.wav");
         soundManager.loadSound("checkpoint", "client/assets/sounds/checkpoint.wav");
         soundManager.loadSound("countdown", "client/assets/sounds/beep.wav");
-        soundManager.loadSound("race_end", "client/assets/sounds/race_end.wav");
+        soundManager.loadSound("raceEnd", "client/assets/sounds/raceEnd.wav");
         soundManager.loadSound("brake", "client/assets/sounds/brake.wav");
         soundManager.loadSound("engine", "client/assets/sounds/engine.wav");
         soundManager.loadSound("confirm", "client/assets/sounds/confirm.wav");
         soundManager.loadSound("victory", "client/assets/sounds/victory.wav");
-        soundManager.loadSound("race_start", "client/assets/sounds/race_start.wav");
-        soundManager.loadSound("button_click", "client/assets/sounds/button_click.wav");
+        soundManager.loadSound("raceStart", "client/assets/sounds/raceStart.wav");
+        soundManager.loadSound("buttonClick", "client/assets/sounds/buttonClick.wav");
     } catch (const std::exception& e) {
         std::cerr << "[GAME] Error loading sounds: " << e.what() << std::endl;
     }
-}
-
-void Game::loadBridges() {
-    // por ahora hardcodeado para Vice City
-    // TODO: recibir qué mapa se está usando
-    std::string bridgePath = "client/assets/cities/Vice-City-Bridges.png";
-    worldRenderer.loadBridgeTexture(bridgePath);
 }
 
 void Game::updateUILayout() {
@@ -146,7 +137,8 @@ void Game::render() {
             uiRenderer.renderRaceUI(stateManager.getRaceTimerMs(), stateManager.getCurrentRace(), stateManager.getTotalRaces(), window.GetWidth());
             uint8_t playerHealth = world.getPlayerHealth(playerId);
             uiRenderer.renderHealthBar(playerHealth, window.GetWidth());
-            uiRenderer.renderMinimap();
+            if (worldRenderer.hasMapLoaded())
+                uiRenderer.renderMinimap(worldRenderer.getMapTexture(), window.GetWidth(), window.GetHeight());
             break;
         }
         case GameState::ELIMINATED:
@@ -183,12 +175,53 @@ void Game::showCountdown(uint8_t number) {
     if (number >= 1 && number <= 3)
         soundManager.playSound("countdown");
     else if (number == 0)
-        soundManager.playSound("race_start");
+        soundManager.playSound("raceStart");
 }
 
-void Game::startRace() {
+void Game::startRace(const RaceStart info) {
+    mapId = info.mapId;
+    race = info.race;
+    totalRaces = info.totalRaces;
+
+    std::string mapPath;
+    std::string bridgePath;
+    std::string musicPath;
+
+    switch (mapId) {
+        case 0: // Vice City
+            mapPath = "client/assets/cities/Game Boy _ GBC - Grand Theft Auto - Backgrounds - Vice City.png";
+            bridgePath = "client/assets/cities/Vice-City-Bridges.png";
+            musicPath = "client/assets/sounds/viceCity.mp3";
+            break;
+        case 1: // Liberty City
+        //    mapPath = "client/assets/cities/Game Boy _ GBC - Grand Theft Auto - Backgrounds - Liberty City.png";
+        //    bridgePath = "client/assets/cities/Liberty-City-Bridges.png"; 
+            musicPath = "client/assets/sounds/libertyCity.mp3";
+            break;
+        case 2: // San Andreas
+        //    mapPath = "client/assets/cities/Game Boy _ GBC - Grand Theft Auto - Backgrounds - San Andreas.png";
+        //    bridgePath = "client/assets/cities/San-Andreas-Bridges.png";
+            break;
+        default: // mientras no tengamos todos implementados
+            mapPath = "client/assets/cities/Game Boy _ GBC - Grand Theft Auto - Backgrounds - Vice City.png";
+            bridgePath = "client/assets/cities/Vice-City-Bridges.png";
+            musicPath = "client/assets/sounds/viceCity.mp3";
+            break;
+    }
+
+    //load new textures
+    // Thanks to unique_ptr the old ones are deleted automatizally
+    worldRenderer.loadMapTexture(mapPath);
+    worldRenderer.loadBridgeTexture(bridgePath);
+
+    try {
+        soundManager.loadMusic(musicPath); 
+        soundManager.playMusic();
+    } catch (const std::exception& e) {
+        std::cerr << "[GAME] Warning: Could not load music for map " << (int)mapId << ": " << e.what() << std::endl;
+    }
+
     stateManager.startRace();
-    soundManager.playMusic();
 }
 
 void Game::setStatsCountdown(uint8_t number) {
@@ -198,7 +231,7 @@ void Game::setStatsCountdown(uint8_t number) {
 void Game::showStats(const RaceResults& results) {
     stateManager.showStats(results);
     soundManager.stopMusic();
-    soundManager.playSound("race_end");
+    soundManager.playSound("raceEnd");
 }
 
 void Game::showModifications(const std::vector<CarProperties>& props) {

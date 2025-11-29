@@ -15,6 +15,7 @@
 #include "../utils/gameData.h"
 #include "../gameHandling/world.h"
 #include "bridgeRenderer.h"
+#include "mapRenderer.h"
 
 using namespace SDL2pp;  // NOLINT
 
@@ -22,8 +23,10 @@ using namespace SDL2pp;  // NOLINT
 class WorldRenderer {
 private:
     Renderer& renderer;
-    Texture& mapTexture;
     Texture& carSprites;
+
+    std::unique_ptr<Texture> mapTexture;
+    std::unique_ptr<MapRenderer> mapRenderer;
 
     std::unique_ptr<Texture> bridgeTexture;
     std::unique_ptr<BridgeRenderer> bridgeRenderer;
@@ -56,11 +59,13 @@ private:
     void renderCollisionEffects();
 
 public:
-    WorldRenderer(Renderer& renderer, Texture& mapTexture, Texture& carSprites, World& world,
+    WorldRenderer(Renderer& renderer, Texture& carSprites, World& world,
                   uint8_t playerId);
     
     // Load bridge texture for current map
     void loadBridgeTexture(const std::string& path);
+
+    void loadMapTexture(const std::string& path);
     
     // Check if bridges are loaded for current map
     bool hasBridges() const { return bridgeRenderer != nullptr; }
@@ -71,6 +76,8 @@ public:
     void updateCamera(float playerX, float playerY);
     void updateEffects(float dt);
 
+    Texture& getMapTexture() const { return *mapTexture; }
+    bool hasMapLoaded() const { return mapTexture != nullptr; }
     const Rect& getCamera() const { return camera; }
     float getScaleFactor() const { return scaleFactor; }
 

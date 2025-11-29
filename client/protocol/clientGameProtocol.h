@@ -31,8 +31,8 @@ public:
     void sendModifications(bool speedMod, bool healthMod, bool accelMod, bool massMod);
 
     Snapshot recvSnapshot();
+    RaceStart recvRaceStart();
     uint8_t recvCountdown();
-    uint8_t recvCheckpoint();
     CollisionData recvCollision();
     uint16_t recvPlayerDied();
     RaceResults recvRaceResults();

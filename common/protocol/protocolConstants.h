@@ -38,10 +38,9 @@
 // Servidor → Cliente
 #define MSG_ASSIGN_ID 0x10    // servidor asigna id al cliente
 #define MSG_COUNTDOWN 0x12    // countdown antes de empezar
-#define MSG_RACE_START 0x13   // señal de inicio de carrera
-#define MSG_CHECKPOINT 0x14   // jugador cruzó un checkpoint
+#define MSG_RACE_START 0x13   // señal de inicio de carreras
 #define MSG_COLLISION 0x15    // notificación de colisión
-#define MSG_PLAYER_DIED 0x16  // un jugador murio (salud = 0?)
+#define MSG_PLAYER_DIED 0x16  // un jugador murio 
 #define MSG_RACE_END 0x17     // terminó la carrera (tabla stats)
 #define MSG_STATS_COUNTDOWN 0x1A  
 #define MSG_MOD_PHASE 0x18    // fase de modificación de auto
