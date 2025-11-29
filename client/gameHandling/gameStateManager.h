@@ -24,8 +24,8 @@ private:
 
     // Racing phase
     uint32_t raceTimerMs = 0;
-    int currentRace = 1;
-    int totalRaces = 6;
+    int currentRace = 0;
+    int totalRaces = 0;
 
     // Stats phase
     uint8_t statsTimerMs = 10;
@@ -76,6 +76,9 @@ public:
     void setRaceTimer(uint32_t ms) { raceTimerMs = ms; }
     void setStatsTimer(uint8_t ms) { statsTimerMs = ms; }
     void setModTimer(uint8_t ms) { modTimerMs = ms; }
+
+    void setCurrentRace(uint8_t race) { currentRace = race; }
+    void setTotalRaces(uint8_t total) { totalRaces = total; }
 
     GameState getState() const { return currentState; }
     uint8_t getCountdownNumber() const { return countdownNumber; }

@@ -187,6 +187,9 @@ void Game::startRace(const RaceStart info) {
     std::string bridgePath;
     std::string musicPath;
 
+    stateManager.setCurrentRace(race);
+    stateManager.setTotalRaces(totalRaces);
+
     switch (mapId) {
         case 0: // Vice City
             mapPath = "client/assets/cities/Game Boy _ GBC - Grand Theft Auto - Backgrounds - Vice City.png";
