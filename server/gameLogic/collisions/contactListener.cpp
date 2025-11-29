@@ -6,6 +6,7 @@
 #include <bits/stdc++.h>
 
 void ContactListener::BeginContact(b2Contact* contact) {
+    std::cout << "[Listener] Contacto!!!" << std::endl;
     b2Body* bodyA = contact->GetFixtureA()->GetBody();
     b2Body* bodyB = contact->GetFixtureB()->GetBody();
 
@@ -13,7 +14,10 @@ void ContactListener::BeginContact(b2Contact* contact) {
     auto* dataB = reinterpret_cast<BodyData*>(bodyB->GetUserData().pointer);
 
     // no hay players involucrados
-    if (!dataA && !dataB) return;
+    if (!dataA && !dataB) {
+        std::cout << "[Listener] Pero ninguno tiene BodyData" << std::endl;
+        return;
+    }
 
     // A es auto, B es sensor
     if (dataA && dataA->player && dataB && dataB->sensorId) {

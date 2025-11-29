@@ -31,19 +31,20 @@ public:
             
             if (!isCheckpoint) continue;
 
-            float x = element.x * pixelsToMeters;
-            float y_pixels = element.y;
-            
+            float x = element.x * pixelsToMeters;            
             // Y axis is inverted
-            float y = worldHeight - y_pixels * pixelsToMeters;
+            float y = (worldHeight - element.y) * pixelsToMeters;
             
             // Hay que darle width/height según el id!
             // (por ahora los hago a todos cuadrados de 50x50 px)
 
             // float w = collision.w * pixelsToMeters;
             // float h = collision.h * pixelsToMeters;
-            float w = 50.0f;
-            float h = 50.0f;
+            float w = 50.0f * pixelsToMeters;
+            float h = 50.0f * pixelsToMeters;
+
+            std::cout << "[PATH_GEN] Generated chk with id: " << element.id
+                << " position (" << x << ", " << y << ")" << std::endl;
 
 
             // --- BOX2D --- //
@@ -74,7 +75,7 @@ public:
             if (fixtureDef.isSensor) {
                 // Body data
                 auto *data = new BodyData(CHECKPOINT_SENSOR, element);
-                body->GetUserData().pointer = reinterpret_cast<uintptr_t>(data);
+                body->GetUserData().pointer = reinterpret_cast<uintptr_t>(data); 
             }
         }
     }

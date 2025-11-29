@@ -10,6 +10,8 @@
 #include "../../common/messages/snapshot.h"
 #include "car.h"
 
+#include "collisions/pathLoader.h"
+
 #define PENALTY_PER_IMPROVEMENT 5
 
 class Player {

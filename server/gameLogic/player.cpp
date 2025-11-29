@@ -61,13 +61,13 @@ void Player::debugPrintCarInfo() {
     // system("clear");
     std::cout << "[DEBUG] Car - PlayerID: " << clientId << std::endl
             //   << " | CarID  : " << car.getId() << std::endl
-            //   << " | Position (px): (" << car.getPosition().x << ", " << car.getPosition().y << ")" << std::endl
+              << " | Position: (" << car.getPosition().x << ", " << car.getPosition().y << ")" << std::endl
             //   << " | Angle  : " << car.getAngle() << std::endl
-              << " | MaxSpeed : " << car.getMaxSpeed() << std::endl
-              << " | Speed  : " << car.getCurrentSpeed() << std::endl
-              << " | Health : " << car.getCurrentHealth() << std::endl
-              << " | Acc    : " << car.getAcceleration() << std::endl
-              << " | Mass   : " << car.getMass() << std::endl
+            //   << " | MaxSpeed : " << car.getMaxSpeed() << std::endl
+            //   << " | Speed  : " << car.getCurrentSpeed() << std::endl
+            //   << " | Health : " << car.getCurrentHealth() << std::endl
+            //   << " | Acc    : " << car.getAcceleration() << std::endl
+            //   << " | Mass   : " << car.getMass() << std::endl
             //   << " | OnBridge: " << car.isOnBridge() << std::endl
             ;
 }

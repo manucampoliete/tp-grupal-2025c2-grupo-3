@@ -23,7 +23,7 @@ struct Path {
     Path(int mapId, std::vector<PathElement>&& elements)
         : mapId(mapId), elements(std::move(elements)) {}
 
-    Path();
+    Path() : mapId(-1) {}
 };
 
 class PathLoader {

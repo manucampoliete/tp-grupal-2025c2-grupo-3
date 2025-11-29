@@ -36,7 +36,7 @@ private:
 
     //tiempos
     std::chrono::seconds countdownDuration;
-    std::chrono::seconds raceDuration;
+    std::chrono::minutes raceDuration;
     std::chrono::seconds statsDuration;
     std::chrono::seconds upgradesDuration;
     // std::chrono::duration<float> elapsed;
