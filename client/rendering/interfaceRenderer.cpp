@@ -9,7 +9,7 @@
 UIRenderer::UIRenderer(Renderer& renderer, Font& font, Font& fontSmall, Font& fontBig,
                        Texture& mapTexture, World& world, uint8_t playerId,
                        Texture& cheatImmortalityImg, Texture& cheatWinImg,
-                       Texture& cheatLoseImg, Texture& cheatSpeedImg):
+                       Texture& cheatLoseImg, Texture& cheatSpeedImg, Texture& finishImg):
         renderer(renderer),
         font(font),
         fontSmall(fontSmall),
@@ -20,7 +20,8 @@ UIRenderer::UIRenderer(Renderer& renderer, Font& font, Font& fontSmall, Font& fo
         cheatImmortalityImg(cheatImmortalityImg),
         cheatWinImg(cheatWinImg),
         cheatLoseImg(cheatLoseImg),
-        cheatSpeedImg(cheatSpeedImg) {}
+        cheatSpeedImg(cheatSpeedImg),
+        finishImg(finishImg) {}
 
 
 void UIRenderer::updateLayout(int windowWidth, int windowHeight) {
@@ -714,6 +715,46 @@ void UIRenderer::renderEliminatedPopup() {
                   Rect(titleX, titleY, titleTexture.GetWidth(), titleTexture.GetHeight()));
 }
 
+void UIRenderer::renderFinishedPopup() {
+    renderer.SetScale(1.0f, 1.0f);
+
+    int w = renderer.GetOutputWidth();
+    int h = renderer.GetOutputHeight();
+
+    renderer.SetDrawBlendMode(SDL_BLENDMODE_BLEND);
+    renderer.SetDrawColor(0, 0, 0, 180);
+    renderer.FillRect(Rect(0, 0, w, h));
+
+    renderer.SetDrawBlendMode(SDL_BLENDMODE_NONE);
+
+    std::string title = "YOU FINISHED THE RACE!";
+    SDL_Color titleColor = {0, 200, 0, 255};
+    Texture* img = &finishImg;
+
+    // Render PNG with transparency
+    if (img) {
+        int imgW = std::min(img->GetWidth(), w / 2);
+        int imgH = (imgW * img->GetHeight()) / img->GetWidth();
+
+        int imgX = (w - imgW) / 2;
+        int imgY = (h - imgH) / 2 + 20;
+
+        renderer.Copy(*img, NullOpt, Rect(imgX, imgY, imgW, imgH));
+    }
+
+    // Title below the image
+    Surface titleSurface = fontBig.RenderText_Solid(title, titleColor);
+    Texture titleTexture(renderer, titleSurface);
+
+    int titleX = (w - titleTexture.GetWidth()) / 2;
+    int titleY = 100;
+
+    if (!img)
+        titleY = (h - titleTexture.GetHeight()) / 2;
+
+    renderer.Copy(titleTexture, NullOpt,
+                  Rect(titleX, titleY, titleTexture.GetWidth(), titleTexture.GetHeight()));
+}
 
 void UIRenderer::renderPodium(const FinalResults& results) {
     renderer.SetScale(1.0f, 1.0f);
