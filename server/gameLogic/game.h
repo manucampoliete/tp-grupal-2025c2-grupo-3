@@ -34,7 +34,7 @@ private:
 
     //tiempos
     std::chrono::seconds countdownDuration;
-    std::chrono::minutes raceDuration;
+    std::chrono::seconds raceDuration;
     std::chrono::seconds statsDuration;
     std::chrono::seconds upgradesDuration;
     // std::chrono::duration<float> elapsed;
@@ -161,7 +161,7 @@ public:
     /**
      * Improves the car properties of the player with the given clientId.
      */
-    void improveCarProperties(ClientID clientId, bool improveVelocity, bool improveHealth);
+    void improveCarProperties(ClientID clientId, bool improveVelocity, bool improveHealth, bool improveAcceleration, bool improveMass);
 
     /**
      * Destructor

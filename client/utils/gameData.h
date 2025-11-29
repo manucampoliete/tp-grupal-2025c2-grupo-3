@@ -38,6 +38,17 @@ struct BroadcastData {
     uint32_t countdown; 
 };
 
+struct ModifyingState {
+    struct Properties {
+        uint16_t id;
+        float speed;
+        float health;
+        float accel;
+        float mass;
+    };
+
+    std::vector<Properties> props;
+};
 
 struct RaceResults {
     struct PlayerResult {

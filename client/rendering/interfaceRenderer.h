@@ -57,7 +57,7 @@ public:
 
     void renderModificationPopup(bool speedModified, bool healthModified,
                                    bool accelModified, bool massModified, bool saved,
-                                   uint32_t modTimerMs, const CarProperties& props);
+                                   uint32_t modTimerMs, const ModifyingState::Properties& props);
 
     void renderCheatNotification(CheatType activeCheatNotification);
 

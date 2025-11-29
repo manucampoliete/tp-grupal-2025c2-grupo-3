@@ -24,6 +24,8 @@ private:
 
     uint32_t penalty;
 
+    void debugPrintCarInfo();
+
 public:
     /**
      * Constructor
@@ -49,8 +51,10 @@ public:
     uint16 getCarSpeed() const { return car.getCurrentSpeed(); }
     uint8 getCarHealth() const { return car.getMaxHealth(); }
 
-    // TODO: agregar para masa y aceleracion
-    void improveCarProperties(bool improveVelocity, bool improveHealth);
+    uint16 getCarAcceleration() const { return car.getAcceleration(); }
+    uint16 getCarMass() const { return car.getMass(); }
+
+    void improveCarProperties(bool improveVelocity, bool improveHealth, bool improveAcceleration, bool improveMass);
 
     void resetForNewRace();
     void applyCollisionDamage(float impact) { car.applyDamage(impact); }
@@ -59,6 +63,7 @@ public:
      * Builds and returns a CarSnapshot representing the player's car.
      */
     Snapshot::CarSnapshot buildCarSnapshot();
+    Snapshot::CarProperties buildModifyingCarSnapshot();
 
     Snapshot::CollisionData buildCollisionSnapshot(float impact);
 

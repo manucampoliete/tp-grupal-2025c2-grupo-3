@@ -4,6 +4,8 @@
 #include <sstream>
 #include <string>
 
+#include <iomanip>
+
 UIRenderer::UIRenderer(Renderer& renderer, Font& font, Font& fontSmall, Font& fontBig,
                        Texture& mapTexture, World& world, uint8_t playerId,
                        Texture& cheatImmortalityImg, Texture& cheatWinImg,
@@ -283,7 +285,7 @@ void UIRenderer::renderStatsPopup(const RaceResults& currentResults, uint32_t st
 
 void UIRenderer::renderModificationPopup(bool speedModified, bool healthModified, 
                                            bool accelModified, bool massModified, bool saved,
-                                           uint32_t modTimerMs, const CarProperties& props) {
+                                           uint32_t modTimerMs, const ModifyingState::Properties& props) {
     // Reset scaling for the UI
     renderer.SetScale(1.0f, 1.0f);
     
@@ -362,8 +364,13 @@ void UIRenderer::renderModificationPopup(bool speedModified, bool healthModified
     renderer.DrawRect(speedBtn);
     
     // Button's text (vertically centered)
-    std::string speedText =
-            "Speed: " + std::to_string(props.speed) + " -> " + std::to_string(props.speed + 5);
+    /* std::string speedText =
+            "Speed: " + std::to_string(props.speed) + " -> " + std::to_string(props.speed + 5); */
+    std::ostringstream firstSpeed;
+    firstSpeed << std::fixed << std::setprecision(2) << props.speed;
+    std::ostringstream improvedSpeed;
+    improvedSpeed << std::fixed << std::setprecision(2) << props.speed + 5;
+    std::string speedText = "Speed: " + firstSpeed.str() + " -> " + improvedSpeed.str();
     Surface speedSurface = activeFont.RenderText_Solid(speedText, {255, 255, 255, 255});
     Texture speedTexture(renderer, speedSurface);
     int speedTextX = speedBtn.x + (speedBtn.w - speedTexture.GetWidth()) / 2;  // Centered
@@ -391,8 +398,13 @@ void UIRenderer::renderModificationPopup(bool speedModified, bool healthModified
                           healthModified ? 100 : 120, 255);
     renderer.DrawRect(healthBtn);
 
-    std::string healthText =
-            "Health: " + std::to_string(props.health) + " -> " + std::to_string(props.health + 5);
+    /* std::string healthText =
+            "Health: " + std::to_string(props.health) + " -> " + std::to_string(props.health + 5); */
+    std::ostringstream firstHealth;
+    firstHealth << std::fixed << std::setprecision(2) << props.health;
+    std::ostringstream improvedHealth;
+    improvedHealth << std::fixed << std::setprecision(2) << props.health + 5;
+    std::string healthText = "Health: " + firstHealth.str() + " -> " + improvedHealth.str();
     Surface healthSurface = activeFont.RenderText_Solid(healthText, {255, 255, 255, 255});
     Texture healthTexture(renderer, healthSurface);
     int healthTextX = healthBtn.x + (healthBtn.w - healthTexture.GetWidth()) / 2;  // Centered
@@ -421,8 +433,13 @@ void UIRenderer::renderModificationPopup(bool speedModified, bool healthModified
     renderer.DrawRect(accelBtn);
     
     // Button's text (vertically centered)
-    std::string accelText =
-            "Accel: " + std::to_string(props.accel) + " -> " + std::to_string(props.accel + 5);
+    /* std::string accelText =
+            "Accel: " + std::to_string(props.accel) + " -> " + std::to_string(props.accel + 5); */
+    std::ostringstream firstAccel;
+    firstAccel << std::fixed << std::setprecision(2) << props.accel;
+    std::ostringstream improvedAccel;
+    improvedAccel << std::fixed << std::setprecision(2) << props.accel + 5;
+    std::string accelText = "Accel: " + firstAccel.str() + " -> " + improvedAccel.str();
     Surface accelSurface = activeFont.RenderText_Solid(accelText, {255, 255, 255, 255});
     Texture accelTexture(renderer, accelSurface);
     int accelTextX = accelBtn.x + (accelBtn.w - accelTexture.GetWidth()) / 2;  // Centered
@@ -452,8 +469,13 @@ void UIRenderer::renderModificationPopup(bool speedModified, bool healthModified
     renderer.DrawRect(massBtn);
     
     // Button's text (vertically centered)
-    std::string massText =
-            "Mass: " + std::to_string(props.mass) + " -> " + std::to_string(props.mass + 5);
+    /* std::string massText =
+            "Mass: " + std::to_string(props.mass) + " -> " + std::to_string(props.mass + 5); */
+    std::ostringstream firstMass;
+    firstMass << std::fixed << std::setprecision(2) << props.mass;
+    std::ostringstream improvedMass;
+    improvedMass << std::fixed << std::setprecision(2) << props.mass + 5;
+    std::string massText = "Mass: " + firstMass.str() + " -> " + improvedMass.str();
     Surface massSurface = activeFont.RenderText_Solid(massText, {255, 255, 255, 255});
     Texture massTexture(renderer, massSurface);
     int massTextX = massBtn.x + (massBtn.w - massTexture.GetWidth()) / 2;  // Centered
@@ -499,7 +521,7 @@ void UIRenderer::renderModificationPopup(bool speedModified, bool healthModified
 
     
     // COUNTDOWN (bottom centered)
-    int seconds = modTimerMs / 1000;
+    int seconds = modTimerMs;
     std::string countdown = "Next race in: " + std::to_string(seconds) + "s";
     Surface countdownSurface =
             activeFont.RenderText_Solid(countdown, {255, 150, 150, 255});  // Light red

@@ -210,7 +210,7 @@ void Game::showModifications(const std::vector<CarProperties>& props) {
 }
 
 void Game::setModCountdown(uint8_t number) {
-    stateManager.setModTimer(number * 1000);
+    stateManager.setModTimer(number);
 }
 
 void Game::showFinalResults(const FinalResults& results) {

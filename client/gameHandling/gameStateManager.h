@@ -33,7 +33,8 @@ private:
 
     // Modification phase
     uint8_t modTimerMs = 10;
-    CarProperties carProperties;
+    // CarProperties carProperties;
+    ModifyingState::Properties carProperties;
     bool speedModified = false;
     bool healthModified = false;
     bool accelModified = false;
@@ -96,7 +97,7 @@ public:
     CheatType getActiveCheat() const { return activeCheat; }
     
     const RaceResults& getRaceResults() const { return raceResults; }
-    const CarProperties& getCarProperties() const { return carProperties; }
+    const ModifyingState::Properties& getCarProperties() const { return carProperties; }
     const FinalResults& getFinalResults() const { return finalResults; }
 };
 

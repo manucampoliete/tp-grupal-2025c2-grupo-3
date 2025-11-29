@@ -43,7 +43,7 @@ void Player::setArrivalTime(float arrivalTime) {
     }
 }
 
-void debugPrintCarInfo(ClientID clientId, uint32 x, uint32 y, uint16 angle, uint16 speed, CarID carId, uint8_t healthPercentage, bool onBridge) {
+/* void debugPrintCarInfo(ClientID clientId, uint32 x, uint32 y, uint16 angle, uint16 speed, CarID carId, uint8_t healthPercentage, bool onBridge) {
     system("clear");
     std::cout << "[DEBUG] CarSnapshot - PlayerID: " << clientId << std::endl
               << " | CarID: " << carId << std::endl
@@ -52,9 +52,25 @@ void debugPrintCarInfo(ClientID clientId, uint32 x, uint32 y, uint16 angle, uint
               << " | Speed: " << speed / 1000 << std::endl
               << " | Health%: " << static_cast<int>(healthPercentage) << "%" << std::endl
               << " | OnBridge: " << (onBridge ? "Yes" : "No") << std::endl;
+} */
+
+void Player::debugPrintCarInfo() {
+    // system("clear");
+    std::cout << "[DEBUG] Car - PlayerID: " << clientId << std::endl
+            //   << " | CarID  : " << car.getId() << std::endl
+            //   << " | Position (px): (" << car.getPosition().x << ", " << car.getPosition().y << ")" << std::endl
+            //   << " | Angle  : " << car.getAngle() << std::endl
+              << " | MaxSpeed : " << car.getMaxSpeed() << std::endl
+              << " | Speed  : " << car.getCurrentSpeed() << std::endl
+              << " | Health : " << car.getCurrentHealth() << std::endl
+              << " | Acc    : " << car.getAcceleration() << std::endl
+              << " | Mass   : " << car.getMass() << std::endl
+            //   << " | OnBridge: " << car.isOnBridge() << std::endl
+            ;
 }
 
 Snapshot::CarSnapshot Player::buildCarSnapshot() {
+    // debugPrintCarInfo();
     uint32 x = static_cast<uint32_t>(std::round(car.getPosition().x / PIXELS_TO_METERS * 1000));
     uint32 y = static_cast<uint32_t>(std::round(car.getPosition().y / PIXELS_TO_METERS * 1000));
 
@@ -75,11 +91,24 @@ Snapshot::CarSnapshot Player::buildCarSnapshot() {
     return Snapshot::CarSnapshot(clientId, x, y, angle, speed, car.getId(), healthPercentage, car.isOnBridge());
 }
 
-void Player::improveCarProperties(bool improveVelocity, bool improveHealth)  {
-    car.improveProperties(improveVelocity, improveHealth);
+Snapshot::CarProperties Player::buildModifyingCarSnapshot() {
+    Snapshot::CarProperties prop;
+    prop.playerId = clientId;
+    prop.speed = car.getMaxSpeed() * 1000;
+    prop.health = car.getMaxHealth() * 100; 
+    prop.acceleration = car.getAcceleration() * 1000;
+    prop.mass = car.getMass() * 1000;
+
+    return prop;
+}
+
+void Player::improveCarProperties(bool improveVelocity, bool improveHealth, bool improveAcceleration, bool improveMass)  {
+    car.improveProperties(improveVelocity, improveHealth, improveAcceleration, improveMass);
     penalty = 0;
     penalty += (improveVelocity ? PENALTY_PER_IMPROVEMENT : 0) +
-                (improveHealth ? PENALTY_PER_IMPROVEMENT : 0);
+                (improveHealth ? PENALTY_PER_IMPROVEMENT : 0) +
+                (improveAcceleration ? PENALTY_PER_IMPROVEMENT : 0) +
+                (improveMass ? PENALTY_PER_IMPROVEMENT : 0);
 }
 
 void Player::resetForNewRace() {

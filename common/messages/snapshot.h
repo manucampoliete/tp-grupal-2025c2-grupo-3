@@ -21,6 +21,8 @@ struct Snapshot {
         uint8_t health;
         bool onBridge;
 
+        std::vector<uint8_t> path;
+
         /**
          * Constructor for CarSnapshot
          */
@@ -49,7 +51,10 @@ struct Snapshot {
         ClientID playerId;
         uint16_t speed;
         uint16_t health;
+        uint16_t acceleration;
+        uint16_t mass;
     };
+    
     struct CollisionData {
         uint16_t playerId;  // quién chocó
         float intensity;     // 0.0 (leve) a 1.0 (fuerte)
