@@ -8,6 +8,7 @@
 #include <iostream>
 
 #include "../../common/messages/snapshot.h"
+#include "../configLoader.h"
 #include "car.h"
 
 #define PENALTY_PER_IMPROVEMENT 5
@@ -30,7 +31,7 @@ public:
     /**
      * Constructor
      */
-    Player(ClientID clientId, const std::string& username, b2Body* body, CarID carId);
+    Player(ClientID clientId, const std::string& username, const std::vector<CarInfo>& carsInfo, CarID carId, b2Body* body);
 
     /**
      * Updates the active directions of the player's car.

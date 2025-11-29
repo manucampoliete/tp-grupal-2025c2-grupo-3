@@ -1,8 +1,9 @@
 #include "lobbyResolver.h"
 
-LobbyResolver::LobbyResolver(ClientID clientId, MatchesMapMonitor& matchesMapMonitor):
+LobbyResolver::LobbyResolver(ClientID clientId, MatchesMapMonitor& matchesMapMonitor, const std::vector<CarInfo>& carsInfo):
         clientId(clientId),
         matchesMapMonitor(matchesMapMonitor),
+        carsInfo(carsInfo),
         inLobbyPhase(true),
         matchIdCopy(UINT16_MAX) {}
 
@@ -31,6 +32,10 @@ void LobbyResolver::handleStartMatch(ServerLobbyProtocol& protocol) {
 }
 
 bool LobbyResolver::isInLobbyPhase() const { return inLobbyPhase; }
+
+const std::vector<CarInfo>& LobbyResolver::getCarsInfo() {
+    return carsInfo;
+}
 
 Queue<std::unique_ptr<Command>>& LobbyResolver::getClientCommandsQueue() {
     return matchesMapMonitor.getClientCommandsQueue(matchIdCopy);

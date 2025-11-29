@@ -3,8 +3,10 @@ target_sources(taller_server
     # .cpp files
     main.cpp
     server.cpp
+    configLoader.cpp
     PUBLIC
     # .h files
+    configLoader.h
     server.h
     )
     

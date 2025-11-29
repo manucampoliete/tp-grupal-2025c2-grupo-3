@@ -19,6 +19,7 @@ class Acceptor: public Thread {
 private:
     Socket acceptor;
     MatchesMapMonitor& matchesMapMonitor;
+    const std::vector<CarInfo>& carsInfo;
     std::vector<std::unique_ptr<ClientHandler>> clients;
     ClientID nextClientId;
 
@@ -47,7 +48,7 @@ public:
     /**
      * Constructor: initializes the acceptor with the given parameters.
      */
-    Acceptor(const std::string& servname, MatchesMapMonitor& matchesMapMonitor);
+    Acceptor(const std::string& servname, MatchesMapMonitor& matchesMapMonitor, const std::vector<CarInfo>& carsInfo);
 
     /**
      * Main acceptor logic: accepts new clients and spawns a ClientHandler for each one.

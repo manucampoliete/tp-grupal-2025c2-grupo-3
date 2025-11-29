@@ -14,20 +14,17 @@
 
 class CarBuilder {
 public:
-    static Car createCar(b2Body* body, CarID carId) {
-        YAML::Node config = YAML::LoadFile("config.yaml");
-        YAML::Node carConfig = config["cars"][static_cast<int>(carId)];
-
-        if (!carConfig)
-            throw std::runtime_error("Car id not found in YAML: " + carId);
-
-        float maxSpeed = carConfig["max_speed"].as<float>();
-        float acceleration = carConfig["acceleration"].as<float>();
-        float angularSpeed = carConfig["angular_speed"].as<float>();
-        float health = carConfig["health"].as<float>();
-        std::string name = carConfig["name"].as<std::string>();
-
-        return Car(body, carId, name, maxSpeed, acceleration, angularSpeed, health);
+    static Car createCar(const std::vector<CarInfo>& carsInfo, CarID carId, b2Body* body) {
+        const CarInfo& carInfo = carsInfo[carId];
+        return Car(
+            body, 
+            carId, 
+            carInfo.name, 
+            carInfo.maxSpeed, 
+            carInfo.acceleration, 
+            carInfo.angularSpeed, 
+            carInfo.health
+        );
     }
 };
 

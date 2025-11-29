@@ -47,7 +47,7 @@ public:
      * Constructor: initializes the ClientHandler with the given parameters.
      * The ClientHandler takes ownership of the peer socket.
      */
-    ClientHandler(Socket&& peer, MatchesMapMonitor& matchesMapMonitor, ClientID clientId);
+    ClientHandler(Socket&& peer, MatchesMapMonitor& matchesMapMonitor, const std::vector<CarInfo>& carsInfo, ClientID clientId);
 
     /**
      * Joins the ClientHandler-Receiver thread and the Sender thread (if it was launched).

@@ -2,12 +2,16 @@
 
 #define FIRST_MATCH_ID 0
 
-MatchesMapMonitor::MatchesMapMonitor(): matchMap(), mtx(), nextMatchId(FIRST_MATCH_ID) {}
+MatchesMapMonitor::MatchesMapMonitor(const Config& config): 
+    config(config), 
+    matchMap(), 
+    mtx(), 
+    nextMatchId(FIRST_MATCH_ID) {}
 
 MatchID MatchesMapMonitor::createMatch(ClientID clientId, const std::string& username,
                                        CarID carId) {
     std::lock_guard<std::mutex> lock(mtx);
-    matchMap[nextMatchId] = std::make_unique<Game>();
+    matchMap[nextMatchId] = std::make_unique<Game>(config);
     matchMap[nextMatchId]->addPlayer(clientId, username, carId);
     return nextMatchId++;
 }

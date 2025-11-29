@@ -7,9 +7,11 @@
 #include <string>
 
 #include "../gameLogic/game.h"
+#include "../configLoader.h"
 
 class MatchesMapMonitor {
 private:
+    const Config& config;
     std::map<MatchID, std::unique_ptr<Game>> matchMap;
     std::mutex mtx;
     MatchID nextMatchId;
@@ -18,7 +20,7 @@ public:
     /**
      * Constructor
      */
-    MatchesMapMonitor();
+    MatchesMapMonitor(const Config& config);
 
     /**
      * Creates a new match, adds the player as the first player in the match,
