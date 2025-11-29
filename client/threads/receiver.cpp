@@ -1,14 +1,12 @@
 #include "receiver.h"
+#include "../../common/errors/peerDisconnectedError.h"
 
 #include <iostream>
-
 #include <syslog.h>
-
 
 Receiver::Receiver(ClientGameProtocol& protocol, Queue<ServerMessage>& serverMessagesQueue):
     protocol(protocol),
     serverMessagesQueue(serverMessagesQueue) {}
-
 
 void Receiver::run() {
     std::cout << "[RECEIVER] Thread started, waiting for messages..." << std::endl;
@@ -110,7 +108,11 @@ void Receiver::run() {
                     std::cerr << "[RECEIVER] UNKNOWN MESSAGE: " << (int)msgType << std::endl;
                     break;
             }
-
+        
+        } catch (const PeerDisconnectedError& e) {
+            std::cout << "[RECEIVER] Peer disconnected, ending..." << std::endl;
+            serverMessagesQueue.close();
+            break;
         } catch (const ClosedQueue& e) {
             std::cout << "[RECEIVER] Queue closed, ending..." << std::endl;
             break;

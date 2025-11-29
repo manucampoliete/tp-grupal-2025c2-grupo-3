@@ -6,5 +6,6 @@ target_sources(taller_common
     PUBLIC
     # .h files
     libError.h
+    peerDisconnectedError.h
     resolverError.h
     )

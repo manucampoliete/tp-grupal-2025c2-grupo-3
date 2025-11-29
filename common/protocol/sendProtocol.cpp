@@ -1,11 +1,11 @@
 #include "sendProtocol.h"
+#include "../errors/peerDisconnectedError.h"
 
 #include <arpa/inet.h>
-#include <stdexcept>
 
 void SendProtocol::safeSendAll(const void *data, unsigned int sz) {
     if (skt.sendAll(data, sz) == 0) {
-        throw std::runtime_error("Connection closed while sending data");
+        throw PeerDisconnectedError();
     }
 }
 

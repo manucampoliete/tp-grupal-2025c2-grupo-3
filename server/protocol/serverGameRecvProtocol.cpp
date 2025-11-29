@@ -1,6 +1,6 @@
 #include "serverGameRecvProtocol.h"
-
 #include "../../common/protocol/protocolConstants.h"
+#include "../../common/errors/peerDisconnectedError.h"
 
 ActiveDirections ServerGameRecvProtocol::decodeMoveState(uint8_t moveState) {
     return ActiveDirections(moveState & UP_MASK, moveState & DOWN_MASK, moveState & LEFT_MASK,
@@ -77,9 +77,9 @@ void ServerGameRecvProtocol::consumeOne() {
                 throw std::runtime_error("Game phase aborted due to unknown message type");
                 break;
         }
-    } catch (const std::runtime_error& e) {
+    } catch (const PeerDisconnectedError& e) {
         /**
-         * Rethrow runtime errors (like disconnections) to be handled at a higher level
+         * Rethrow to be handled at a higher level
          */
         recvPlayerDisconnected();
         throw;

@@ -1,9 +1,8 @@
 #include "sender.h"
+#include "../../common/errors/peerDisconnectedError.h"
 
 #include <iostream>
-
 #include <syslog.h>
-
 
 Sender::Sender(ClientGameProtocol& protocol, Queue<ClientMessage>& commandQueue):
         protocol(protocol), commandQueue(commandQueue) {}
@@ -29,7 +28,11 @@ void Sender::run() {
                 else if constexpr (std::is_same_v<T, ModifyCarCommand>) 
                     protocol.sendModifications(command.speedMod, command.healthMod, command.accelMod, command.massMod);
             }, cmd);
-
+        
+        } catch (const PeerDisconnectedError& e) {
+            std::cout << "[SENDER] Peer disconnected, ending..." << std::endl;
+            commandQueue.close();
+            break;
         } catch (const ClosedQueue& e) {
             std::cout << "[SENDER] Queue closed, ending..." << std::endl;
             break;
