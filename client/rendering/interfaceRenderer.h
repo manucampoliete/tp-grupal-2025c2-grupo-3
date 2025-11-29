@@ -15,6 +15,8 @@
 
 using namespace SDL2pp;  // NOLINT
 
+#define PENALTY_PER_IMPROVEMENT 5
+
 
 class UIRenderer {
 private:
