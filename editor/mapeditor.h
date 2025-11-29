@@ -50,6 +50,7 @@ private:
     QImage collisionMask;
     std::vector<MapElement*> hintsInCurrentSegment;
     std::vector<CircuitSegment> circuitSegments;
+    std::vector<MapElement*> mapSpawns;
     int cityMapID;
 
     void serializeToYaml(const QString& filename);

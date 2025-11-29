@@ -12,16 +12,6 @@ MapElement::MapElement(ElementType type, ElementDirection direction, const QPixm
     setOffset(-pixmap.width() / 2, -pixmap.height() / 2);
 }
 
-QString typeToString(ElementType type) {
-    switch (type) {
-        case TYPE_HINT: return "HINT";
-        case TYPE_START: return "START_POINT";
-        case TYPE_FINISH: return "FINISH_LINE";
-        case TYPE_CHECKPOINT: return "CHECKPOINT";
-    }
-    return "UNKNOWN";
-}
-
 QString directionToString(ElementDirection direction) {
     switch (direction) {
         case DIR_HORIZONTAL: return "HORIZONTAL";
@@ -55,18 +45,25 @@ ElementDirection stringToDirection(const std::string& dirStr) {
     return DIR_HORIZONTAL;
 }
 
-int mapElementToUnifiedId(ElementType type, ElementDirection direction) {
-    if (type == TYPE_HINT) 
-        return static_cast<int>(direction); 
-
-    if (type == TYPE_START)
-        return (direction == DIR_HORIZONTAL) ? START_HORIZONTAL : START_VERTICAL;
-    if (type == TYPE_CHECKPOINT)
-        return (direction == DIR_HORIZONTAL) ? CHECKPOINT_HORIZONTAL : CHECKPOINT_VERTICAL;
-    if (type == TYPE_FINISH)
-        return (direction == DIR_HORIZONTAL) ? FINISH_HORIZONTAL : FINISH_VERTICAL;
-    
-    return -1;
+int mapElementToUnifiedId(ElementType type, ElementDirection dir) {
+    switch(type) {
+        case TYPE_START:
+            return (dir == DIR_HORIZONTAL) ? START_HORIZONTAL : START_VERTICAL;
+        case TYPE_CHECKPOINT:
+            return (dir == DIR_HORIZONTAL) ? CHECKPOINT_HORIZONTAL : CHECKPOINT_VERTICAL;
+        case TYPE_FINISH:
+            return (dir == DIR_HORIZONTAL) ? FINISH_HORIZONTAL : FINISH_VERTICAL;
+        case TYPE_SPAWN:
+            switch(dir) {
+                case DIR_UP: return SPAWN_UP;
+                case DIR_LEFT: return SPAWN_LEFT;
+                case DIR_RIGHT: return SPAWN_RIGHT;
+                case DIR_DOWN: return SPAWN_DOWN;
+                default: return SPAWN_UP;
+            }
+        default:
+            return START_HORIZONTAL;
+    }
 }
 
 ElementProperties mapUnifiedIdToTypeAndDirection(int unifiedId) {
@@ -189,6 +186,16 @@ QString getAssetPath(ElementType type, ElementDirection direction) {
 
         case TYPE_FINISH:
             return (direction == DIR_HORIZONTAL) ? base + "finish_horizontal.png" : base + "finish_vertical.png";
+
+        case TYPE_SPAWN:
+            switch (direction) {
+                case DIR_UP:    return base + "spawn_up.png";
+                case DIR_LEFT:  return base + "spawn_left.png";
+                case DIR_RIGHT: return base + "spawn_right.png";
+                case DIR_DOWN:  return base + "spawn_down.png";
+                default: break;
+            }
+            break;
     }
 
     qWarning() << "Error: Asset no encontrado para Tipo:" << type << "Dirección:" << direction;
@@ -208,9 +215,15 @@ QPixmap loadPixmapForElement(ElementType type, ElementDirection direction) {
         return QPixmap();
     }
 
-    const int desiredSize = 50;
+    QPixmap scaledPixmap;
 
-    QPixmap scaledPixmap = originalPixmap.scaled(desiredSize, desiredSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    if (type == TYPE_SPAWN) {
+        const int spawnSize = 30;
+        scaledPixmap = originalPixmap.scaled(spawnSize, spawnSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    } else {
+        const int desiredSize = 50;
+        scaledPixmap = originalPixmap.scaled(desiredSize, desiredSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    }
 
     return scaledPixmap;
 }

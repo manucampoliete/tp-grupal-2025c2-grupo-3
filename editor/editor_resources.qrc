@@ -26,5 +26,9 @@
         <file>media/assets/cp_horizontal.png</file>
         <file>media/assets/cp_vertical.png</file>
         <file>media/vice_city_map.png</file>
+        <file>media/assets/spawn_up.png</file>
+        <file>media/assets/spawn_down.png</file>
+        <file>media/assets/spawn_left.png</file>
+        <file>media/assets/spawn_right.png</file>
     </qresource>
 </RCC>

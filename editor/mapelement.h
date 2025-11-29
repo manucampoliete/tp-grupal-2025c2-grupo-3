@@ -9,7 +9,8 @@ enum ElementType {
     TYPE_HINT,
     TYPE_CHECKPOINT,
     TYPE_START,
-    TYPE_FINISH
+    TYPE_FINISH,
+    TYPE_SPAWN
 };
 
 enum ElementDirection {
@@ -39,7 +40,12 @@ enum UnifiedId{
     CHECKPOINT_VERTICAL = 17,
     
     FINISH_HORIZONTAL = 18,
-    FINISH_VERTICAL = 19
+    FINISH_VERTICAL = 19,
+
+    SPAWN_UP = 20,
+    SPAWN_LEFT = 21,
+    SPAWN_RIGHT = 22,
+    SPAWN_DOWN = 23
 };
 
 struct ElementProperties {
@@ -48,7 +54,6 @@ struct ElementProperties {
 };
 
 QPixmap loadPixmapForElement(ElementType type, ElementDirection direction);
-QString typeToString(ElementType type);
 QString directionToString(ElementDirection direction);
 ElementType stringToType(const std::string& typeStr);
 ElementDirection stringToDirection(const std::string& dirStr);

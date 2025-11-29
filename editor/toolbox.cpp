@@ -40,6 +40,23 @@ Toolbox::Toolbox(QWidget* parent) : QWidget(parent) {
 
     mainLayout->addLayout(hintGrid);
 
+    QLabel* spawnLabel = new QLabel("\nSpawn Boxes");
+    mainLayout->addWidget(spawnLabel);
+
+    QGridLayout* spawnGrid = new QGridLayout;
+
+    spawnGrid->addWidget(new ElementIcon(TYPE_SPAWN, DIR_UP, this), 0, 1);
+
+    spawnGrid->addWidget(new ElementIcon(TYPE_SPAWN, DIR_LEFT, this), 1, 0);
+    spawnGrid->addWidget(new ElementIcon(TYPE_SPAWN, DIR_RIGHT, this), 1, 2);
+
+    spawnGrid->addWidget(new ElementIcon(TYPE_SPAWN, DIR_DOWN, this), 2, 1);
+
+    spawnGrid->setHorizontalSpacing(5);
+    spawnGrid->setVerticalSpacing(5);
+
+    mainLayout->addLayout(spawnGrid);
+
     QGridLayout* raceGrid = new QGridLayout;
 
     raceGrid->addWidget(new QLabel("Start:"), 0, 0);

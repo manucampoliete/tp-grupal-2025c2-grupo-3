@@ -143,35 +143,44 @@ void MapEditor::onSaveRequest(){
 }
 
 void MapEditor::serializeToYaml(const QString& filename){
-    std::vector<CircuitSegment>& circuit = this->circuitSegments;
-
-    if (circuit.empty()) {
-        std::cout << "Advertencia: No hay checkpoints o puntos de inicio/fin para guardar." << std::endl;
-        return;
-    }
-
     YAML::Emitter emitter;
     emitter << YAML::BeginMap;
+
     emitter << YAML::Key << "map_id" << YAML::Value << this->cityMapID;
+
+    emitter << YAML::Key << "spawns";
+    emitter << YAML::Value << YAML::BeginSeq;
+    for (const auto& spawn : mapSpawns) {
+        if (!spawn) continue;
+
+        emitter << YAML::BeginMap;
+        emitter << YAML::Key << "type_id" << YAML::Value 
+                << mapElementToUnifiedId(spawn->getElementType(), spawn->getElementDirection());
+
+        QPointF pos = spawn->pos();
+        emitter << YAML::Key << "position";
+        emitter << YAML::Value << YAML::BeginSeq << pos.x() << pos.y() << YAML::EndSeq;
+        emitter << YAML::EndMap;
+    }
+    emitter << YAML::EndSeq;
 
     emitter << YAML::Key << "segments";
     emitter << YAML::Value << YAML::BeginSeq;
 
-    for (const auto& segment : circuit) {
+    for (const auto& segment : circuitSegments) {
         if (!segment.cpElementPtr) continue;
 
         MapElement* cp = segment.cpElementPtr;
-
         int unifiedCpId = mapElementToUnifiedId(cp->getElementType(), cp->getElementDirection());
 
         emitter << YAML::BeginMap;
-
         emitter << YAML::Key << "segment_start_type" << YAML::Value << unifiedCpId;
 
         QPointF finalCpPos = cp->pos();
         emitter << YAML::Key << "position";
         emitter << YAML::Value << YAML::BeginSeq << finalCpPos.x() << finalCpPos.y() << YAML::EndSeq;
 
+        // Hints asociados
         emitter << YAML::Key << "hints_to_next_cp";
         emitter << YAML::Value << YAML::BeginSeq;
 
@@ -179,11 +188,11 @@ void MapEditor::serializeToYaml(const QString& filename){
             if (!hintPtr) continue;
 
             MapElement* hint = hintPtr;
-            
             emitter << YAML::BeginMap;
-            emitter << YAML::Key << "type_id" << YAML::Value << mapElementToUnifiedId(TYPE_HINT, hint->getElementDirection()); 
-            emitter << YAML::Key << "position";
+            emitter << YAML::Key << "type_id" << YAML::Value 
+                    << mapElementToUnifiedId(TYPE_HINT, hint->getElementDirection());
             QPointF finalHintPos = hint->pos();
+            emitter << YAML::Key << "position";
             emitter << YAML::Value << YAML::BeginSeq << finalHintPos.x() << finalHintPos.y() << YAML::EndSeq;
             emitter << YAML::EndMap;
         }
@@ -221,6 +230,9 @@ void MapEditor::processNewElement(MapElement* newElement) {
         this->circuitSegments.push_back(newSegment);
         this->hintsInCurrentSegment.clear();
         std::cout << "DEBUG: CP/Start/Finish colocado. Segmento cerrado. Nuevo Total: " << this->circuitSegments.size() << std::endl;
+    } else if (newElement->getElementType() == TYPE_SPAWN) {
+        this->mapSpawns.push_back(newElement);
+        std::cout << "DEBUG: Spawn agregado. Total de spawns: " << this->mapSpawns.size() << std::endl;
     }
 }
 
