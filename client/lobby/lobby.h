@@ -1,5 +1,6 @@
 #ifndef LOBBY_H
 #define LOBBY_H
+
 #include <QMainWindow>
 #include <QStackedWidget>
 #include <vector>
@@ -67,7 +68,7 @@ private:
     JoinGame* joinGame;
     GuestWaiting* guestWaiting;
     HostWaiting* hostWaiting;
-    ClientLobbyProtocol protocol;  // Lobby has its own protocol
+    ClientLobbyProtocol protocol; // Lobby has its own protocol
     std::vector<CarInfo> availableCars;
     uint16_t carId;
     bool _startGame = false;

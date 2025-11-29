@@ -2,11 +2,7 @@
 #include <QMouseEvent>
 #include <QPixmap>
 
-MapOption::MapOption(const QString& title,
-                     const QString& imagePath, const int id,
-                     QWidget* parent)
-        : QFrame(parent), selected(false), cityId(id)
-{
+MapOption::MapOption(const QString& title, const QString& imagePath, const int id, QWidget* parent): QFrame(parent), selected(false), cityId(id) {
     setObjectName("mapOptionRoot");
     setFrameShape(QFrame::StyledPanel);
     setFrameShadow(QFrame::Raised);

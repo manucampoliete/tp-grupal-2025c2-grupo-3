@@ -4,7 +4,6 @@
 #include <QWidget>
 #include <QGraphicsScene>
 #include <QImage>
-
 #include "mapview.h"
 #include "mapelement.h"
 #include "circuitsegment.h"
@@ -53,8 +52,7 @@ private:
     std::vector<CircuitSegment> circuitSegments;
     int cityMapID;
 
-    void loadCity(int cityId);
-    void serializeToYaml(const QString& filename);  
+    void serializeToYaml(const QString& filename);
     std::vector<LoadedSegmentData> deserializeFromYaml(const QString& filename);
     void setupLoadedCircuit(const std::vector<LoadedSegmentData>& loadedSegments);
     MapElement* recreateElement(ElementType type, ElementDirection direction, double x, double y);

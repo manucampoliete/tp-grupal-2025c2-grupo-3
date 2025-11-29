@@ -1,6 +1,5 @@
 #include "guestwaiting.h"
 #include "ui_guestwaiting.h"
-
 #include <QLabel>
 #include <QMovie>
 #include <QTimer>

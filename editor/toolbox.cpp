@@ -6,8 +6,7 @@
 #include <QLabel>
 #include <qpushbutton.h>
 
-Toolbox::Toolbox(QWidget* parent) : QWidget(parent)
-{
+Toolbox::Toolbox(QWidget* parent) : QWidget(parent) {
     QVBoxLayout* mainLayout = new QVBoxLayout(this);
     mainLayout->setAlignment(Qt::AlignTop);
 
@@ -20,21 +19,21 @@ Toolbox::Toolbox(QWidget* parent) : QWidget(parent)
 
     QGridLayout* hintGrid = new QGridLayout;
 
-    hintGrid->addWidget(new ElementIcon(TYPE_HINT, DIR_UP,                this), 0, 1);
-    hintGrid->addWidget(new ElementIcon(TYPE_HINT, DIR_CURVE_UP_LEFT,     this), 0, 0);
-    hintGrid->addWidget(new ElementIcon(TYPE_HINT, DIR_CURVE_UP_RIGHT,    this), 0, 2);
+    hintGrid->addWidget(new ElementIcon(TYPE_HINT, DIR_UP, this), 0, 1);
+    hintGrid->addWidget(new ElementIcon(TYPE_HINT, DIR_CURVE_UP_LEFT, this), 0, 0);
+    hintGrid->addWidget(new ElementIcon(TYPE_HINT, DIR_CURVE_UP_RIGHT, this), 0, 2);
 
-    hintGrid->addWidget(new ElementIcon(TYPE_HINT, DIR_LEFT,              this), 1, 0);
-    hintGrid->addWidget(new ElementIcon(TYPE_HINT, DIR_RIGHT,             this), 1, 2);
+    hintGrid->addWidget(new ElementIcon(TYPE_HINT, DIR_LEFT, this), 1, 0);
+    hintGrid->addWidget(new ElementIcon(TYPE_HINT, DIR_RIGHT, this), 1, 2);
 
-    hintGrid->addWidget(new ElementIcon(TYPE_HINT, DIR_DOWN,              this), 2, 1);
-    hintGrid->addWidget(new ElementIcon(TYPE_HINT, DIR_CURVE_DOWN_LEFT,   this), 2, 0);
-    hintGrid->addWidget(new ElementIcon(TYPE_HINT, DIR_CURVE_DOWN_RIGHT,  this), 2, 2);
+    hintGrid->addWidget(new ElementIcon(TYPE_HINT, DIR_DOWN, this), 2, 1);
+    hintGrid->addWidget(new ElementIcon(TYPE_HINT, DIR_CURVE_DOWN_LEFT, this), 2, 0);
+    hintGrid->addWidget(new ElementIcon(TYPE_HINT, DIR_CURVE_DOWN_RIGHT, this), 2, 2);
 
-    hintGrid->addWidget(new ElementIcon(TYPE_HINT, DIR_CURVE_LEFT_UP,     this), 3, 0);
-    hintGrid->addWidget(new ElementIcon(TYPE_HINT, DIR_CURVE_LEFT_DOWN,   this), 3, 1);
-    hintGrid->addWidget(new ElementIcon(TYPE_HINT, DIR_CURVE_RIGHT_UP,    this), 3, 2);
-    hintGrid->addWidget(new ElementIcon(TYPE_HINT, DIR_CURVE_RIGHT_DOWN,  this), 4, 1);
+    hintGrid->addWidget(new ElementIcon(TYPE_HINT, DIR_CURVE_LEFT_UP, this), 3, 0);
+    hintGrid->addWidget(new ElementIcon(TYPE_HINT, DIR_CURVE_LEFT_DOWN, this), 3, 1);
+    hintGrid->addWidget(new ElementIcon(TYPE_HINT, DIR_CURVE_RIGHT_UP, this), 3, 2);
+    hintGrid->addWidget(new ElementIcon(TYPE_HINT, DIR_CURVE_RIGHT_DOWN, this), 4, 1);
 
     hintGrid->setHorizontalSpacing(5);
     hintGrid->setVerticalSpacing(5);

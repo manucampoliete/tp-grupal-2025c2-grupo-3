@@ -1,6 +1,5 @@
 #include "hostwaiting.h"
 #include "ui_hostwaiting.h"
-
 #include <QTimer>
 
 HostWaiting::HostWaiting(QWidget* parent): QWidget(parent), ui(new Ui::HostWaiting) {

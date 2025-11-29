@@ -17,6 +17,8 @@
 #include "newgame.h"
 
 
+// Usage explanation in lobby.h
+
 StartSignalThread::StartSignalThread(Lobby* l, ClientLobbyProtocol* p)
     : lobby(l), protocol(p) {}
 
@@ -28,6 +30,7 @@ void StartSignalThread::run() {
         lobby->close();
     });
 }
+
 
 Lobby::Lobby(Socket& skt, QWidget* parent):
         QMainWindow(parent), ui(new Ui::Lobby), protocol(skt), startSignalThread(this, &protocol) {
@@ -66,11 +69,12 @@ Lobby::Lobby(Socket& skt, QWidget* parent):
     this->setPalette(palette);
     this->setAutoFillBackground(true);
 
-    stackedWidget->addWidget(mainMenu);      // Index -> 0
-    stackedWidget->addWidget(newGame);       // Index -> 1
-    stackedWidget->addWidget(joinGame);      // Index -> 2
-    stackedWidget->addWidget(guestWaiting);  // Index -> 3
-    stackedWidget->addWidget(hostWaiting);   // Index -> 4
+    stackedWidget->addWidget(mainMenu); // Index -> 0
+    stackedWidget->addWidget(newGame); // Index -> 1
+    stackedWidget->addWidget(joinGame); // Index -> 2
+    stackedWidget->addWidget(guestWaiting); // Index -> 3
+    stackedWidget->addWidget(hostWaiting); // Index -> 4
+
     setCentralWidget(stackedWidget);
 
     connect(mainMenu, &MainMenu::newGameClicked, this,
@@ -96,8 +100,7 @@ Lobby::Lobby(Socket& skt, QWidget* parent):
     stackedWidget->setCurrentWidget(mainMenu);
 }
 
-void Lobby::handleJoinGameRequest(const QString& username, const QString& gameId,
-                                  const CarInfo& car) {
+void Lobby::handleJoinGameRequest(const QString& username, const QString& gameId, const CarInfo& car) {
     bool joined = protocol.sendJoin(static_cast<uint16_t>(gameId.toInt()), username.toStdString(), static_cast<uint8_t>(car.id));
 
     if (!joined) {
@@ -132,9 +135,9 @@ void Lobby::exitLobby() {
 }
 
 void Lobby::closeEvent(QCloseEvent* event) {
-    if (!_startGame) {
+    if (!_startGame)
         _startGame = false;
-    }
+
     QMainWindow::closeEvent(event);
 }
 

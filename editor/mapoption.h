@@ -9,10 +9,7 @@ class MapOption : public QFrame {
     Q_OBJECT
 
 public:
-    explicit MapOption(const QString& title,
-                             const QString& imagePath,
-                             const int cityId,
-                             QWidget* parent = nullptr);
+    explicit MapOption(const QString& title, const QString& imagePath, const int cityId, QWidget* parent = nullptr);
 
     void setSelected(bool sel);
     bool isSelected() const { return selected; }

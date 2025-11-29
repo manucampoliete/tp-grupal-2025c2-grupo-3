@@ -1,8 +1,5 @@
 #include "carselector.h"
-
 #include "carcard.h"
-//#include "ui_carselector.h"
-
 #include <QHBoxLayout>
 #include <iostream>
 
@@ -27,10 +24,7 @@ CarSelector::CarSelector(QWidget* parent, const std::vector<CarInfo>& cars):
     int topMargin = 30;
     int generalMargin = 5;
 
-    this->layout()->setContentsMargins(generalMargin,   // Left
-                                       topMargin,       // Top
-                                       generalMargin,   // Bottom
-                                       generalMargin);  // Right
+    this->layout()->setContentsMargins(generalMargin, topMargin, generalMargin, generalMargin);
 }
 
 void CarSelector::setupCars(const std::vector<CarInfo>& cars) {

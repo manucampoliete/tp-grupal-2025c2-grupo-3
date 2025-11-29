@@ -7,26 +7,21 @@
 #include <QColor>
 #include <iostream>
 
-MapView::MapView(QGraphicsScene* scene, QWidget* parent)
-        : QGraphicsView(scene, parent), mapEditorParent(nullptr)
-{
+MapView::MapView(QGraphicsScene* scene, QWidget* parent): QGraphicsView(scene, parent), mapEditorParent(nullptr){
     setRenderHint(QPainter::Antialiasing);
     setDragMode(QGraphicsView::ScrollHandDrag);
     setAcceptDrops(true);
 }
 
-QSize MapView::sizeHint() const
-{
+QSize MapView::sizeHint() const {
     return QSize(1000, 700);
 }
 
-void MapView::setMapEditorParent(MapEditor* parentEditor)
-{
+void MapView::setMapEditorParent(MapEditor* parentEditor) {
     this->mapEditorParent = parentEditor;
 }
 
-void MapView::wheelEvent(QWheelEvent* event)
-{
+void MapView::wheelEvent(QWheelEvent* event){
     const double scaleFactor = 1.15;
 
     if (event->angleDelta().y() > 0)
@@ -35,14 +30,12 @@ void MapView::wheelEvent(QWheelEvent* event)
         scale(1.0 / scaleFactor, 1.0 / scaleFactor);
 }
 
-void MapView::setResources(const QImage& mask)
-{
+void MapView::setResources(const QImage& mask) {
     this->collisionMask = mask;
     setAcceptDrops(true);
 }
 
-void MapView::dragEnterEvent(QDragEnterEvent *event)
-{
+void MapView::dragEnterEvent(QDragEnterEvent *event) {
     if (event->mimeData()->hasText() && event->mimeData()->text().startsWith("asset/element/")) {
         event->acceptProposedAction();
         std::cout << "DEBUG: Evento DragEnter recibido. MIME: " << event->mimeData()->text().toStdString() << std::endl;
@@ -51,8 +44,7 @@ void MapView::dragEnterEvent(QDragEnterEvent *event)
     }
 }
 
-void MapView::dropEvent(QDropEvent *event)
-{
+void MapView::dropEvent(QDropEvent *event) {
     QString mimeText = event->mimeData()->text();
 
     if (mimeText.startsWith("asset/element/")) {
@@ -100,8 +92,8 @@ void MapView::dropEvent(QDropEvent *event)
         QGraphicsView::dropEvent(event);
     }
 }
-void MapView::dragMoveEvent(QDragMoveEvent *event)
-{
+
+void MapView::dragMoveEvent(QDragMoveEvent *event) {
     if (event->mimeData()->hasText() && event->mimeData()->text().startsWith("asset/element/")) {
         event->acceptProposedAction();
     } else {

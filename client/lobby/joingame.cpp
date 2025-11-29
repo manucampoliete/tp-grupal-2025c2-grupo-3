@@ -1,8 +1,6 @@
 #include "joingame.h"
-
 #include <QFontDatabase>
 #include <vector>
-
 #include "ui_joingame.h"
 
 JoinGame::JoinGame(QWidget* parent, const std::vector<CarInfo>& cars):

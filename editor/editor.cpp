@@ -1,7 +1,6 @@
 #include "editor.h"
 #include "./ui_editor.h"
 #include "mapeditor.h"
-
 #include <QScreen>
 #include <QFontDatabase>
 #include <QDir>

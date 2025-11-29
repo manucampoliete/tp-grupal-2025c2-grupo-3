@@ -1,5 +1,4 @@
 #include "carcard.h"
-
 #include <QProgressBar>
 #include <QVBoxLayout>
 #include <iostream>
@@ -94,12 +93,9 @@ CarCard::CarCard(const CarInfo& car, QWidget* parent): QWidget(parent) {
 
     if (!carImage.isNull()) {
         QSize desiredSize(400, 200);
-
-        imageLabel->setPixmap(
-                carImage.scaled(desiredSize, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+        imageLabel->setPixmap(carImage.scaled(desiredSize, Qt::KeepAspectRatio, Qt::SmoothTransformation));
     } else {
         imageLabel->setText("Image Not Found: " + imagePath);
-        std::cout << "Image not found at path: " << imagePath.toStdString() << std::endl;
     }
 }
 

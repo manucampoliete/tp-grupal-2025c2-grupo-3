@@ -5,11 +5,7 @@
 #include <QGraphicsScene>
 
 MapElement::MapElement(ElementType type, ElementDirection direction, const QPixmap& pixmap, const QImage& mask)
-        : QObject(nullptr), QGraphicsPixmapItem(pixmap),
-        collisionMask(mask),
-        elementType(type),
-        elementDirection(direction)
-{
+        : QObject(nullptr), QGraphicsPixmapItem(pixmap), collisionMask(mask), elementType(type), elementDirection(direction) {
     setFlag(ItemIsMovable);
     setFlag(ItemIsSelectable);
     setFlag(ItemSendsGeometryChanges, true);
@@ -130,15 +126,13 @@ void MapElement::mousePressEvent(QGraphicsSceneMouseEvent *event) {
 void MapElement::deleteElement() {
     emit elementRemoved(this);
 
-    if (scene()) {
+    if (scene())
         scene()->removeItem(this);
-    }
 
     this->deleteLater();
 }
 
-QVariant MapElement::itemChange(GraphicsItemChange change, const QVariant &value)
-{
+QVariant MapElement::itemChange(GraphicsItemChange change, const QVariant &value) {
     if (change == ItemPositionChange) {
         QPointF newPosF = value.toPointF();
         QPoint p = newPosF.toPoint();
@@ -160,8 +154,7 @@ QVariant MapElement::itemChange(GraphicsItemChange change, const QVariant &value
     return QGraphicsPixmapItem::itemChange(change, value);
 }
 
-QString getAssetPath(ElementType type, ElementDirection direction)
-{
+QString getAssetPath(ElementType type, ElementDirection direction) {
     QString base = ":/media/assets/";
 
     switch (type) {
@@ -202,8 +195,7 @@ QString getAssetPath(ElementType type, ElementDirection direction)
     return QString();
 }
 
-QPixmap loadPixmapForElement(ElementType type, ElementDirection direction)
-{
+QPixmap loadPixmapForElement(ElementType type, ElementDirection direction) {
     QString path = getAssetPath(type, direction);
 
     if (path.isEmpty()) {
@@ -218,11 +210,7 @@ QPixmap loadPixmapForElement(ElementType type, ElementDirection direction)
 
     const int desiredSize = 50;
 
-    QPixmap scaledPixmap = originalPixmap.scaled(
-            desiredSize, desiredSize,
-            Qt::KeepAspectRatio,
-            Qt::SmoothTransformation
-            );
+    QPixmap scaledPixmap = originalPixmap.scaled(desiredSize, desiredSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
 
     return scaledPixmap;
 }

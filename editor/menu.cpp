@@ -17,14 +17,12 @@ Menu::Menu(QWidget* parent): QWidget(parent), ui(new Ui::Menu) {
     QHBoxLayout* box = new QHBoxLayout;
     for (int i = 0; i < 4; i++) {
         box->addWidget(options[i]);
-        connect(options[i], &MapOption::clicked,
-                this, &Menu::onOptionClicked);
+        connect(options[i], &MapOption::clicked, this, &Menu::onOptionClicked);
     }
 
     ui->optionsContainer->setLayout(box);
 
-    connect(ui->selectButton, &QPushButton::clicked,
-            this, &Menu::onSelectButtonPressed);
+    connect(ui->selectButton, &QPushButton::clicked, this, &Menu::onSelectButtonPressed);
 }
 
 void Menu::on_buttonExit_clicked() { emit exitClicked(); }

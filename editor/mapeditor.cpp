@@ -40,18 +40,12 @@ MapPaths getMapPaths(int cityId) {
     return paths;
 }
 
-MapEditor::MapEditor(int cityId, const QString& filePath, QWidget* parent)
-        : MapEditor(cityId, parent)
-{
-    if (!filePath.isEmpty()) {
+MapEditor::MapEditor(int cityId, const QString& filePath, QWidget* parent): MapEditor(cityId, parent){
+    if (!filePath.isEmpty())
         loadMapForEditing(filePath);
-    }
 }
 
-MapEditor::MapEditor(int cityId, QWidget* parent)
-        : QWidget(parent),
-        cityMapID(cityId)
-{
+MapEditor::MapEditor(int cityId, QWidget* parent): QWidget(parent), cityMapID(cityId){
     scene = new QGraphicsScene(this);
     view = new MapView(scene, this);
 
@@ -106,20 +100,18 @@ void MapEditor::setupMapAssets(int cityId) {
         return;
     }
 
-    if (mapItem) {
+    if (mapItem)
         scene->removeItem(mapItem);
-    }
+
     mapItem = scene->addPixmap(mapPixmap);
     mapItem->setZValue(0);
 
     if (this->collisionMask.load(maskPath)) {
-
         QSize targetSize = mapPixmap.size();
         this->collisionMask = this->collisionMask.convertToFormat(QImage::Format_Grayscale8);
 
-        if (this->collisionMask.size() != targetSize) {
+        if (this->collisionMask.size() != targetSize)
             this->collisionMask = this->collisionMask.scaled(targetSize, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
-        }
 
         view->setResources(this->collisionMask);
     } else {
@@ -132,34 +124,25 @@ void MapEditor::setupMapAssets(int cityId) {
     view->centerOn(mapItem);
 }
 
-void MapEditor::onSaveRequest()
-{
+void MapEditor::onSaveRequest(){
     QString filter = "Archivos de Mapa YAML (*.yaml *.yml)";
     QString defaultPath = QDir::homePath() + "/nuevo_mapa.yaml";
 
-    QString fileName = QFileDialog::getSaveFileName(
-            this,
-            "Guardar Circuito de Carrera",
-            defaultPath,
-            filter
-            );
+    QString fileName = QFileDialog::getSaveFileName(this,"Guardar Circuito de Carrera",defaultPath,filter);
 
     if (!fileName.isEmpty()) {
-        if (!fileName.toLower().endsWith(".yaml") && !fileName.toLower().endsWith(".yml")) {
+        if (!fileName.toLower().endsWith(".yaml") && !fileName.toLower().endsWith(".yml"))
             fileName += ".yaml";
-        }
 
         std::cout << "Iniciando serialización a: " << fileName.toStdString() << std::endl;
 
         serializeToYaml(fileName);
-
     } else {
         std::cout << "Guardado cancelado por el usuario." << std::endl;
     }
 }
 
-void MapEditor::serializeToYaml(const QString& filename)
-{
+void MapEditor::serializeToYaml(const QString& filename){
     std::vector<CircuitSegment>& circuit = this->circuitSegments;
 
     if (circuit.empty()) {
@@ -223,23 +206,17 @@ void MapEditor::serializeToYaml(const QString& filename)
 }
 
 void MapEditor::processNewElement(MapElement* newElement) {
-    connect(newElement, &MapElement::elementRemoved,
-            this, &MapEditor::onElementRemoved,
-            Qt::QueuedConnection);
+    connect(newElement, &MapElement::elementRemoved, this, &MapEditor::onElementRemoved, Qt::QueuedConnection);
     if (newElement->getElementType() == TYPE_HINT) {
         this->hintsInCurrentSegment.push_back(newElement);
         std::cout << "DEBUG: Hint agregado al segmento actual. Total: " << this->hintsInCurrentSegment.size() << std::endl;
-    } else if (newElement->getElementType() == TYPE_START ||
-               newElement->getElementType() == TYPE_CHECKPOINT ||
-               newElement->getElementType() == TYPE_FINISH)
+    } else if (newElement->getElementType() == TYPE_START || newElement->getElementType() == TYPE_CHECKPOINT || newElement->getElementType() == TYPE_FINISH)
     {
         CircuitSegment newSegment;
-
         newSegment.cpElementPtr = newElement;
 
-        if (!this->circuitSegments.empty()) {
+        if (!this->circuitSegments.empty())
             this->circuitSegments.back().segmentHints = this->hintsInCurrentSegment;
-        }
 
         this->circuitSegments.push_back(newSegment);
         this->hintsInCurrentSegment.clear();
@@ -253,9 +230,7 @@ void MapEditor::onElementRemoved(MapElement* element) {
     if (element->getElementType() == TYPE_HINT) {
         auto& hints = this->hintsInCurrentSegment;
 
-        hints.erase(std::remove_if(hints.begin(), hints.end(),
-                                   [element](MapElement* ptr) { return ptr == element; }),
-                    hints.end());
+        hints.erase(std::remove_if(hints.begin(), hints.end(), [element](MapElement* ptr) { return ptr == element; }), hints.end());
 
         std::cout << "DEBUG: Hint removido de la lista ACTUAL. Total: " << hints.size() << std::endl;
     }
@@ -269,25 +244,18 @@ void MapEditor::onElementRemoved(MapElement* element) {
 
         auto& segments = this->circuitSegments;
 
-        segments.erase(std::remove_if(segments.begin(), segments.end(),
-                                      [element](const CircuitSegment& s) {
-                                          return s.cpElementPtr == element;
-                                      }),
-                       segments.end());
+        segments.erase(std::remove_if(segments.begin(), segments.end(), [element](const CircuitSegment& s) { return s.cpElementPtr == element; }), segments.end());
 
         std::cout << "DEBUG: CP/Element removido. Nuevo total de segmentos: " << segments.size() << std::endl;
     }
 }
 
-MapElement* MapEditor::recreateElement(ElementType type, ElementDirection direction, double x, double y)
-{
+MapElement* MapEditor::recreateElement(ElementType type, ElementDirection direction, double x, double y){
     QPixmap elementPixmap = loadPixmapForElement(type, direction);
 
     MapElement* element = new MapElement(type, direction, elementPixmap, this->collisionMask);
 
-    QObject::connect(element, &MapElement::elementRemoved,
-                     this, &MapEditor::onElementRemoved,
-                     Qt::QueuedConnection);
+    QObject::connect(element, &MapElement::elementRemoved, this, &MapEditor::onElementRemoved, Qt::QueuedConnection);
 
     element->setPos(x, y);
     scene->addItem(element);
@@ -304,15 +272,13 @@ std::vector<LoadedSegmentData> MapEditor::deserializeFromYaml(const QString& fil
         if (!root["map_id"]) throw std::runtime_error("Falta la clave 'map_id'.");
 
         int loadedMapId = root["map_id"].as<int>();
-        this->cityMapID = loadedMapId; // Setea el ID del mapa base
+        this->cityMapID = loadedMapId;
 
         const YAML::Node& segmentsNode = root["segments"];
-        if (!segmentsNode || !segmentsNode.IsSequence()) {
+        if (!segmentsNode || !segmentsNode.IsSequence())
             throw std::runtime_error("El nodo 'segments' no es una secuencia válida.");
-        }
 
         for (const auto& segmentNode : segmentsNode) {
-
             if (!segmentNode.IsMap()) continue;
 
             LoadedSegmentData segment;
@@ -385,7 +351,6 @@ std::vector<LoadedSegmentData> MapEditor::deserializeFromYaml(const QString& fil
 }
 
 void MapEditor::setupLoadedCircuit(const std::vector<LoadedSegmentData>& loadedData) {
-
     std::cout << "SLCT_DEBUG 1: Setup START. Segmentos cargados: " << loadedData.size() << std::flush;
 
     this->circuitSegments.clear();
@@ -394,23 +359,13 @@ void MapEditor::setupLoadedCircuit(const std::vector<LoadedSegmentData>& loadedD
     if (loadedData.empty()) return;
 
     for (const auto& loadedSegment : loadedData) {
-        MapElement* cpElement = recreateElement(
-                loadedSegment.cpType,
-                loadedSegment.cpDirection,
-                loadedSegment.cpX,
-                loadedSegment.cpY
-                );
+        MapElement* cpElement = recreateElement(loadedSegment.cpType, loadedSegment.cpDirection, loadedSegment.cpX, loadedSegment.cpY);
 
         CircuitSegment newSegment;
         newSegment.cpElementPtr = cpElement;
 
         for (const auto& hintData : loadedSegment.hints) {
-            MapElement* hintElement = recreateElement(
-                    TYPE_HINT,
-                    hintData.direction,
-                    hintData.x,
-                    hintData.y
-                    );
+            MapElement* hintElement = recreateElement(TYPE_HINT, hintData.direction, hintData.x, hintData.y);
             newSegment.segmentHints.push_back(hintElement);
         }
 
@@ -432,9 +387,9 @@ void MapEditor::setupLoadedCircuit(const std::vector<LoadedSegmentData>& loadedD
             }
 
             QObject::disconnect(finishPtr, nullptr, this, nullptr);
-            if (finishPtr->scene()) {
+            if (finishPtr->scene())
                 finishPtr->scene()->removeItem(finishPtr);
-            }
+
             finishPtr->deleteLater();
 
             std::cout << "SLCT_DEBUG 6: Setup FINISHED (Meta Liberada)." << std::endl;

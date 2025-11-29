@@ -1,10 +1,7 @@
 #include "newgame.h"
-
 #include <QFontDatabase>
 #include <iostream>
-
 #include "../../common/utils/carinfo.h"
-
 #include "ui_newgame.h"
 
 NewGame::NewGame(QWidget* parent, const std::vector<CarInfo>& cars):
