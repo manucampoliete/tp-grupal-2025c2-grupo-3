@@ -15,6 +15,7 @@
 #include "../utils/gameData.h"
 #include "../gameHandling/world.h"
 #include "bridgeRenderer.h"
+#include "checkpointRenderer.h"
 
 using namespace SDL2pp;  // NOLINT
 
@@ -27,6 +28,8 @@ private:
 
     std::unique_ptr<Texture> bridgeTexture;
     std::unique_ptr<BridgeRenderer> bridgeRenderer;
+
+    CheckpointRenderer checkpointRenderer;
 
     World& world;
     uint8_t playerId;
@@ -49,6 +52,8 @@ private:
     void renderBridges();
     void renderCarsOnBridge();
     void renderCar(const BroadcastData::CarState& carState);
+
+    void renderCheckpoints();
 
     void renderSmoke();
     void renderBrakeTrails();

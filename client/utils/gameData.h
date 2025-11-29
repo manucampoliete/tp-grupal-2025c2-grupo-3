@@ -21,8 +21,6 @@ const SDL2pp::Rect CARS[7] = {
         {205, 515, 20, 45},  // Car 6
 };
 
-// agregar checkppoint y hints
-// agregar health del auto para imprimirlo en la pantalla
 struct BroadcastData {
     struct CarState {
         uint8_t id; 
@@ -32,6 +30,13 @@ struct BroadcastData {
         uint8_t type;
         uint8_t health;
         bool onBridge;
+
+        struct Checkpoint {
+            uint8_t id;
+            float x;
+            float y;
+        };
+        std::vector<Checkpoint> checkpoints;
     };
 
     std::vector<CarState> cars;
