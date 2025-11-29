@@ -67,7 +67,10 @@ public:
     void applyCollisionDamage(float impact) { car.applyDamage(impact); }
 
     void initCurrentPath(Path& currentPath);
-    void updateCurrentPath(PathElement& element);
+    void updateCurrentPath(PathElement& element, std::chrono::seconds raceTimeSecs);
+
+    // aplica finished = true y le asigna la maxima duracion posible de la carrera como tiempo de carrera
+    void handleDeath(std::chrono::seconds raceDurationSecs);
 
     /**
      * Builds and returns a CarSnapshot representing the player's car.

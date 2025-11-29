@@ -11,8 +11,8 @@
 // Para facilitar la lectura del codigo recordar que "velocity" es un vector y "speed" es una
 // magnitud
 
-void Car::handleDestroyedState() {
-    body->SetLinearDamping(3.0f);
+void Car::handleFinishedState() {
+    body->SetLinearDamping(1.0f);
     body->SetAngularDamping(6.0f);
 }
 
@@ -144,9 +144,13 @@ void Car::applyStallPrevention() {
     }
 }
 
-void Car::updatePhysics() {
-    if (currentHealth <= 0.0f) {
+void Car::updatePhysics(bool finished) {
+    /* if (currentHealth <= 0.0f) {
         handleDestroyedState();
+        return;
+    } */
+    if (finished) {
+        handleFinishedState();
         return;
     }
 

@@ -67,7 +67,7 @@ private:
     void applySteering();
     void applySpeedLimits();
     void applyStallPrevention();
-    void handleDestroyedState();
+    void handleFinishedState();
 
 public:
     /**
@@ -90,8 +90,9 @@ public:
 
     /**
      * Updates the physics of the car based on the current active directions.
+     * Receives whether the player finished the race or not (to apply damping and prevent it from moving)
      */
-    void updatePhysics();
+    void updatePhysics(bool finished);
 
     /**
      * Updates the active directions of the car.

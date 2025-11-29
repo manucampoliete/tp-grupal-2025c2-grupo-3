@@ -94,6 +94,8 @@ private:
     // void handleEliminatedState();
     void handleGameEndState();
 
+    bool allPlayersFinished();
+
     /**
      * Calls Thread::stop(), setting shouldKeepRunning() = false
      * and then:

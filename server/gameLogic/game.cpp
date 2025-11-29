@@ -39,7 +39,7 @@ Game::Game():
         responseQueuesMonitor(),
         players(),
         countdownDuration(10),
-        raceDuration(10),
+        raceDuration(1),
         statsDuration(10),
         upgradesDuration(10),
         started(false) {}
@@ -188,14 +188,14 @@ void Game::setRacingState() {
 }
 
 void Game::setShowingStatsState() {
+    // auto now = std::chrono::high_resolution_clock::now();
+    // auto gameStateElapsed = now - gameStateStartTime;
+    // std::chrono::seconds raceTimeSecs = std::chrono::duration_cast<std::chrono::seconds>(gameStateElapsed);
+
     // a los jugadores que no terminaron la carrera se les asigna un tiempo de llegada maximo
-    auto now = std::chrono::high_resolution_clock::now();
-    auto gameStateElapsed = now - gameStateStartTime;
-    std::chrono::seconds raceTimeSecs = std::chrono::duration_cast<std::chrono::seconds>(gameStateElapsed);
-    
     for (auto& [id, player]: players) {
         if (!player.hasFinished()) {
-            player.setArrivalTime(raceTimeSecs.count());
+            player.setArrivalTime(raceDuration.count());
         }
     }
 
@@ -245,6 +245,13 @@ void Game::setGameState(GameState newState) {
     std::cout << "Game state changed to " << static_cast<int>(newState) << std::endl;
 }
 
+bool Game::allPlayersFinished() {
+    for (auto& [id, player] : players) {
+        if (!player.hasFinished()) return false;
+    }
+    return true;
+}
+
 void Game::updateGameState() {
     auto now = std::chrono::high_resolution_clock::now();
     auto gameStateElapsed = now - gameStateStartTime;
@@ -256,7 +263,7 @@ void Game::updateGameState() {
             }
             break;
         case GameState::RACING:
-            if (gameStateElapsed >= raceDuration) {
+            if (gameStateElapsed >= raceDuration || allPlayersFinished()) {
                 setShowingStatsState();
             }
             break;
@@ -273,13 +280,14 @@ void Game::updateGameState() {
                 setCountdownState();
             }
             break;
-        case GameState::ELIMINATED: 
-        // eliminated le sirve solo al cliente?
-        // si un usuario muere el server le va a estar mandando snapshots de carrera
-        // pero tambien manda la vida del auto
-        // si el cliente checkea que su vida es 0, pasa a eliminated en vez de racing
         case GameState::GAME_END:
             // ?
+            break;
+        case GameState::ELIMINATED: 
+            // eliminated le sirve solo al cliente?
+            // si un usuario muere el server le va a estar mandando snapshots de carrera
+            // pero tambien manda la vida del auto
+            // si el cliente checkea que su vida es 0, pasa a eliminated en vez de racing
             break;
     }
 }
@@ -298,11 +306,11 @@ void Game::handleGameState() {
         case GameState::MODIFYING_CAR:
             handleModifyingCarState();
             break;
-        case GameState::ELIMINATED:
-            // handleEliminatedState();
-            break;
         case GameState::GAME_END:
             // handleGameEndState();
+            break;
+        case GameState::ELIMINATED:
+            // handleEliminatedState();
             break;
     }
 }
@@ -325,12 +333,7 @@ void Game::handleRacingState() {
 }
 
 void Game::handleShowingStatsState() {
-    // el handler de showing stats es el que tiene que checkear si
-    // ya no quedan más carreras por correr 
-    // (para mostrar un ganador y no mostrar la pantalla de mejoras)
-
-    // por el momento implementar logica de carrera terminada por tiempo cumplido
-    // cuando este la carrera hecha agregar la logica de tiempo de finalizacion
+    // por el momento nada
 }
 
 void Game::handleModifyingCarState() {
@@ -358,12 +361,17 @@ void Game::handleCollision(Player* player, float impact) {
     responseQueuesMonitor.broadcast(std::make_shared<Snapshot>(collisionData));
 
     if(!player->isAlive()) {
+        std::chrono::seconds raceDurationSecs = std::chrono::duration_cast<std::chrono::seconds>(raceDuration);
+        player->handleDeath(raceDurationSecs);
         responseQueuesMonitor.broadcast(std::make_shared<Snapshot>(player->getClientId()));
     }
 }
 
 void Game::handleCheckpointContact(Player* player, PathElement& element) {
-    player->updateCurrentPath(element);
+    auto now = std::chrono::high_resolution_clock::now();
+    auto gameStateElapsed = now - gameStateStartTime;
+    std::chrono::seconds raceTimeSecs = std::chrono::duration_cast<std::chrono::seconds>(gameStateElapsed);
+    player->updateCurrentPath(element, raceTimeSecs);
 }
 
 void Game::run() {
@@ -402,7 +410,6 @@ void Game::run() {
     uint64_t it = 0;
     ConstantRateLoop crl;
     while (shouldKeepRunning()) {
-        // Do some stuff
         updateGameState();
         uint64_t deltaIt = it - lastIt;
         while (deltaIt-- > 0)

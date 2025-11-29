@@ -30,7 +30,7 @@ void Player::move(ActiveDirections activeDirections) {
     car.updateActiveDirections(activeDirections);
 }
 
-void Player::updateCarPhysics() { car.updatePhysics(); }
+void Player::updateCarPhysics() { car.updatePhysics(finished); }
 
 bool Player::hasFinished() { return finished; }
 
@@ -66,7 +66,7 @@ void Player::initCurrentPath(Path& currentPath) {
 }
 
 // recibe el checkpoint que el jugador tocó
-void Player::updateCurrentPath(PathElement& element) {
+void Player::updateCurrentPath(PathElement& element, std::chrono::seconds raceTimeSecs) {
     if (nextCheckpoint != element) {
         std::cout << "[UPDATE_PATH] " << nextCheckpoint << " is not the same as incoming " << element << std::endl; 
         return;
@@ -92,11 +92,15 @@ void Player::updateCurrentPath(PathElement& element) {
     }
     else {
         // el jugador terminó el recorrido!
-        // handleRaceFinish();
         std::cout << "[UPDATE_PATH] Player " << clientId << " terminó la carrera!" << std::endl;
+        setArrivalTime(raceTimeSecs.count());
         nextCheckpoint = PathElement();
     }
     std::cout <<"[UPDATE_PATH] New path size: " << currentPath.elements.size() << std::endl;
+}
+
+void Player::handleDeath(std::chrono::seconds raceDurationSecs) {
+    setArrivalTime(raceDurationSecs.count());
 }
 
 /* void debugPrintCarInfo(ClientID clientId, uint32 x, uint32 y, uint16 angle, uint16 speed, CarID carId, uint8_t healthPercentage, bool onBridge) {
