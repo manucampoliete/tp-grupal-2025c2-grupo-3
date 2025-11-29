@@ -31,6 +31,9 @@ private:
     int engineChannel = -1;
     bool enginePlaying = false;
 
+    int brakeChannel = -1;
+    bool brakePlaying = false;
+
     bool canPlaySound(const std::string& name);
 
 public:
@@ -61,6 +64,7 @@ public:
     void playEngineLoop();
     void stopEngineLoop();
     void playBrakeSound();
+    void stopBraking();
 
     SoundManager(const SoundManager&) = delete;
     SoundManager& operator=(const SoundManager&) = delete;

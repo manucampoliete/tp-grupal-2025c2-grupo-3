@@ -63,6 +63,7 @@ bool InputHandler::processEvents(bool& windowResized) {
         worldRenderer.setAccelerating(false);
         worldRenderer.setBraking(false);
         soundManager.stopEngineLoop();
+        soundManager.stopBraking();
     }
 
     return true;
@@ -194,5 +195,6 @@ void InputHandler::handleMovement(const Uint8* state) {
         soundManager.playBrakeSound();
     } else {
         worldRenderer.setBraking(false);
+        soundManager.stopBraking();
     }
 }

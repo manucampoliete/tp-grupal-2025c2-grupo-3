@@ -7,7 +7,9 @@ SoundManager::SoundManager():
     mixer(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, MIX_DEFAULT_CHANNELS, 4096),
     backgroundMusic(nullptr),
     engineChannel(-1),
-    enginePlaying(false) {
+    enginePlaying(false),
+    brakeChannel(-1),
+    brakePlaying(false) {
 
     // 16 channels for sound effects
     mixer.AllocateChannels(16);
@@ -164,5 +166,25 @@ void SoundManager::stopEngineLoop() {
 }
 
 void SoundManager::playBrakeSound() {  
-    playSound("brake", sfxVolume * 2);
+    if (!sfxEnabled || brakePlaying)
+        return;
+    
+    auto it = soundEffects.find("brake");
+    if (it != soundEffects.end() && it->second) {
+        try {
+            it->second->SetVolume(sfxVolume * 2);
+            brakeChannel = mixer.PlayChannel(-1, *it->second, -1);  // -1 = loop infinito
+            brakePlaying = true;
+        } catch (const SDL2pp::Exception& e) {
+            std::cerr << "[SOUND] Error playing brake loop: " << e.what() << std::endl;
+        }
+    }
+}
+
+void SoundManager::stopBraking() {
+    if (brakeChannel != -1 && brakePlaying) {
+        mixer.HaltChannel(brakeChannel);
+        brakePlaying = false;
+        brakeChannel = -1;
+    }
 }
