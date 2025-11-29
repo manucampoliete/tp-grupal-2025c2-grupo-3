@@ -140,10 +140,10 @@ https://github.com/manucampoliete/tp-grupal-2025c2-grupo-3/blob/c5b4256a4a2b357b
 Podría directamente devolver un bool o tirar una excepción si no está la queue.~~  
 4- Acá el Player le pide todos sus datos al Car, podría ser, en su lugar, que el Car tenga la responsabilidad de construir su propio snapshot.
 https://github.com/manucampoliete/tp-grupal-2025c2-grupo-3/blob/c5b4256a4a2b357b41fa751c7a1406f4cda3476d/server/gameLogic/player.cpp#L17-L32
-5- En vez de cargar el .yaml cada vez que quiero crear un auto podría cargarse una vez y luego acceder a él desde este método.
-https://github.com/manucampoliete/tp-grupal-2025c2-grupo-3/blob/c5b4256a4a2b357b41fa751c7a1406f4cda3476d/server/gameLogic/car_builder.h#L15-L29
-6- Esto podría venir del .yaml
-https://github.com/manucampoliete/tp-grupal-2025c2-grupo-3/blob/c5b4256a4a2b357b41fa751c7a1406f4cda3476d/server/gameLogic/game.cpp#L27-L30
+5- ~~En vez de cargar el .yaml cada vez que quiero crear un auto podría cargarse una vez y luego acceder a él desde este método.
+https://github.com/manucampoliete/tp-grupal-2025c2-grupo-3/blob/c5b4256a4a2b357b41fa751c7a1406f4cda3476d/server/gameLogic/car_builder.h#L15-L29~~
+~~6- Esto podría venir del .yaml
+https://github.com/manucampoliete/tp-grupal-2025c2-grupo-3/blob/c5b4256a4a2b357b41fa751c7a1406f4cda3476d/server/gameLogic/game.cpp#L27-L30~~
 7- ~~Para evitar tener que hacer el CRL a mano es que deberían usar la clase que implementaron en common.
 https://github.com/manucampoliete/tp-grupal-2025c2-grupo-3/blob/c5b4256a4a2b357b41fa751c7a1406f4cda3476d/server/gameLogic/game.cpp#L266-L285~~
 8- ~~Entiendo por qué le pusieron este nombre
