@@ -8,11 +8,16 @@
 
 #define DAMAGE_SCALE 25.0f
 
+#define PIXELS_TO_METERS 0.01f
+#define WORLD_HEIGHT 4672.0f 
+
+#define DEGTORAD 0.0174533
+
 // Para facilitar la lectura del codigo recordar que "velocity" es un vector y "speed" es una
 // magnitud
 
-void Car::handleDestroyedState() {
-    body->SetLinearDamping(3.0f);
+void Car::handleFinishedState() {
+    body->SetLinearDamping(1.0f);
     body->SetAngularDamping(6.0f);
 }
 
@@ -144,9 +149,13 @@ void Car::applyStallPrevention() {
     }
 }
 
-void Car::updatePhysics() {
-    if (currentHealth <= 0.0f) {
+void Car::updatePhysics(bool finished) {
+    /* if (currentHealth <= 0.0f) {
         handleDestroyedState();
+        return;
+    } */
+    if (finished) {
+        handleFinishedState();
         return;
     }
 
@@ -181,6 +190,25 @@ float Car::getMaxHealth() const { return maxHealth; }
 float Car::getMaxSpeed() const { return maxSpeed; } 
 
 void Car::setCurrentHealth(float health) { currentHealth = health; }
+
+void Car::setPosition(const PathElement& carSpawn) {
+    float x = carSpawn.x * PIXELS_TO_METERS;
+    float y = (WORLD_HEIGHT - carSpawn.y) * PIXELS_TO_METERS;
+    switch (carSpawn.id) {
+        case SPAWN_UP:
+            body->SetTransform(b2Vec2(x, y), 90*DEGTORAD);
+            break;
+        case SPAWN_DOWN:
+            body->SetTransform(b2Vec2(x, y), 270*DEGTORAD);
+            break;
+        case SPAWN_LEFT:
+            body->SetTransform(b2Vec2(x, y), 180*DEGTORAD);
+            break;
+        case SPAWN_RIGHT:
+            body->SetTransform(b2Vec2(x, y), 0*DEGTORAD);
+            break;
+    }
+}
 
 void Car::improveProperties(bool improveVelocity, bool improveHealth, bool improveAcceleration, bool improveMass) {
     if (improveVelocity) {
@@ -235,6 +263,11 @@ float Car::getMass() const {
     b2MassData md;
     body->GetMassData(&md);
     return md.mass;
+}
+
+void Car::resetSpeeds() {
+    body->SetLinearVelocity(b2Vec2_zero);
+    body->SetAngularVelocity(0.0f);
 }
 
 

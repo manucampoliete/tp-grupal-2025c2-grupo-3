@@ -103,12 +103,12 @@ void GameLoop::applySnapshot(const Snapshot& snapshot) {
         carState.health = carSnap.health;
         carState.onBridge = carSnap.onBridge;
 
-        for (const auto& cpSnap : carSnap.checkpoints) {
+        for (const auto& cpSnap : carSnap.path) {
             BroadcastData::CarState::Checkpoint cpState;
             
             cpState.id = cpSnap.id;
             cpState.x = cpSnap.x / 1000.0f;
-            cpState.y = WORLD_HEIGHT - (cpSnap.y / 1000.0f); 
+            cpState.y = (cpSnap.y / 1000.0f); 
 
             carState.checkpoints.push_back(cpState);
         }

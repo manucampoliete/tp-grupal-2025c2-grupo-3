@@ -6,25 +6,51 @@
 #include <bits/stdc++.h>
 
 void ContactListener::BeginContact(b2Contact* contact) {
+    std::cout << "Begin contact with ";
     b2Body* bodyA = contact->GetFixtureA()->GetBody();
     b2Body* bodyB = contact->GetFixtureB()->GetBody();
 
     auto* dataA = reinterpret_cast<BodyData*>(bodyA->GetUserData().pointer);
     auto* dataB = reinterpret_cast<BodyData*>(bodyB->GetUserData().pointer);
 
-    // no hay players involucrados
-    if (!dataA && !dataB) return;
+    // no hay players ni sensores involucrados
+    if (!dataA && !dataB) {
+        return;
+    }
 
     // A es auto, B es sensor
     if (dataA && dataA->player && dataB && dataB->sensorId) {
         // handleLayerSwitch(dataA->player);
-        dataA->player->getCar().toggleCollisionLayer();
+        switch (dataB->sensorId) {
+            case LAYER_SWITCH_SENSOR:
+                std::cout << "layer switch sensor" << std::endl;
+                dataA->player->getCar().toggleCollisionLayer();
+                break;
+            case CHECKPOINT_SENSOR:
+                std::cout << "checkpoint sensor" << std::endl;
+                game->handleCheckpointContact(dataA->player, dataB->element);
+                break;
+            default:
+                std::cerr << "unknown sensor" << std::endl;
+                break;
+        }
         return;
     }
 
     // B es auto, A es sensor
     if (dataB && dataB->player && dataA && dataA->sensorId) {
-        dataB->player->getCar().toggleCollisionLayer();
+        switch (dataA->sensorId) {
+            case LAYER_SWITCH_SENSOR:
+                dataB->player->getCar().toggleCollisionLayer();
+                break;
+            case CHECKPOINT_SENSOR:
+                // std::cout << "[Listener] Checkpoint tocado!" << std::endl;
+                game->handleCheckpointContact(dataB->player, dataA->element);
+                break;
+            default:
+                // std::cerr << "[Listener] Sensor desconocido" << std::endl;
+                break;
+        }
         return;
     }
 }

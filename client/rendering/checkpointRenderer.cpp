@@ -1,6 +1,8 @@
 #include "checkpointRenderer.h"
 #include <iostream>
 
+#include "../../common/utils/pathElements.h"
+
 
 CheckpointRenderer::CheckpointRenderer(Renderer& renderer) :
     renderer(renderer),
@@ -55,30 +57,25 @@ void CheckpointRenderer::render(
             // HINTS (CURVE ARROWS)
             case DIR_CURVE_UP_RIGHT:
                 textureToUse = &curveTexture;
-                angle = 0.0;
-                flip = SDL_FLIP_NONE;
+                angle = 180.0;
+                flip = SDL_FLIP_HORIZONTAL;
                 break;
             case DIR_CURVE_UP_LEFT:
                 textureToUse = &curveTexture;
-                angle = 0.0;
-                flip = SDL_FLIP_HORIZONTAL;
+                angle = 180.0;
+                flip = SDL_FLIP_NONE;
                 break;
             case DIR_CURVE_DOWN_RIGHT:
                 textureToUse = &curveTexture;
-                angle = 180.0;
+                angle = 0.0;
                 flip = SDL_FLIP_NONE;
                 break;
             case DIR_CURVE_DOWN_LEFT:
                 textureToUse = &curveTexture;
-                angle = 180.0;
+                angle = 0.0;
                 flip = SDL_FLIP_HORIZONTAL;
                 break;
             case DIR_CURVE_RIGHT_UP:
-                textureToUse = &curveTexture;
-                angle = 90.0;
-                flip = SDL_FLIP_NONE;
-                break;
-            case DIR_CURVE_RIGHT_DOWN:
                 textureToUse = &curveTexture;
                 angle = 270.0;
                 flip = SDL_FLIP_NONE;
@@ -88,10 +85,15 @@ void CheckpointRenderer::render(
                 angle = 90.0;
                 flip = SDL_FLIP_HORIZONTAL;
                 break;
-            case DIR_CURVE_LEFT_DOWN:
+            case DIR_CURVE_RIGHT_DOWN:
                 textureToUse = &curveTexture;
                 angle = 270.0;
                 flip = SDL_FLIP_HORIZONTAL;
+                break;
+            case DIR_CURVE_LEFT_DOWN:
+                textureToUse = &curveTexture;
+                angle = 90.0;
+                flip = SDL_FLIP_NONE;
                 break;
 
             // START
@@ -129,8 +131,8 @@ void CheckpointRenderer::render(
         }
 
         if (textureToUse) {
-            int w = textureToUse->GetWidth();
-            int h = textureToUse->GetHeight();
+            int w = 50;
+            int h = 50;
 
             Rect dest(screenX - w / 2, screenY - h / 2, w, h);
 

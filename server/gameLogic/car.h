@@ -9,6 +9,8 @@
 #include "../../../common/types/types.h"
 #include "../../../common/utils/activeDirections.h"
 
+#include "collisions/pathLoader.h"
+
 /* #define MAX_SPEED 100.0f
 #define ACC 20.0f
 #define ANGULAR_SPEED 2.0f
@@ -67,7 +69,7 @@ private:
     void applySteering();
     void applySpeedLimits();
     void applyStallPrevention();
-    void handleDestroyedState();
+    void handleFinishedState();
 
 public:
     /**
@@ -90,8 +92,9 @@ public:
 
     /**
      * Updates the physics of the car based on the current active directions.
+     * Receives whether the player finished the race or not (to apply damping and prevent it from moving)
      */
-    void updatePhysics();
+    void updatePhysics(bool finished);
 
     /**
      * Updates the active directions of the car.
@@ -113,14 +116,15 @@ public:
     float getAngle();
     float getMaxSpeed() const;
     float getCurrentSpeed() const;
-    
     float getMaxHealth() const;
     float getCurrentHealth();
-
     float getAcceleration() const;
     float getMass() const;
 
+    void setPosition(const PathElement& carSpawn);
     void setCurrentHealth(float health);
+
+    void resetSpeeds();
 
     void improveProperties(bool improveVelocity, bool improveHealth, bool improveAcceleration, bool improveMass);
   

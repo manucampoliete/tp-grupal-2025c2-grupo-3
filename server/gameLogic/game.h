@@ -21,6 +21,14 @@
 #include "car.h"
 #include "player.h"
 
+#include "../../common/utils/gameState.h"
+
+#include "collisions/pathLoader.h"
+
+#define MAP_LIBERTY_CITY 0
+#define MAP_SAN_ANDREAS 1
+#define MAP_VICE_CITY 2
+
 class Command;
 
 class Game: public Thread {
@@ -35,9 +43,14 @@ private:
 
     std::map<ClientID, Player> players;
 
+    //carreras
+    uint8_t races;
+    uint8_t currentRaceCount;
+    std::vector<std::string> raceFiles;
+
     //tiempos
     std::chrono::seconds countdownDuration;
-    std::chrono::seconds raceDuration;
+    std::chrono::minutes raceDuration;
     std::chrono::seconds statsDuration;
     std::chrono::seconds upgradesDuration;
     // std::chrono::duration<float> elapsed;
@@ -47,10 +60,17 @@ private:
 
     std::atomic<bool> started;
 
+    std::vector<b2Body*> pathBodies;
+    std::vector<b2Body*> lowCollisionLayerBodies;
+    std::vector<b2Body*> highCollisionLayerBodies;
+    std::vector<b2Body*> layerSwitchBodies;
+
     /**
      * Creates and returns a new b2Body for a car.
      */
     b2Body* createNewCarBody();
+
+    void clearMapBodies();
 
     /**
      * Updates the physics of all player cars.
@@ -80,7 +100,7 @@ private:
     void setShowingStatsState();
     void setModifyingCarState();
     // void setEliminatedState();
-    // void setGameEndState();
+    void setGameEndState();
 
     void updateGameState();
 
@@ -94,6 +114,8 @@ private:
     void handleModifyingCarState();
     // void handleEliminatedState();
     void handleGameEndState();
+
+    bool allPlayersFinished();
 
     /**
      * Calls Thread::stop(), setting shouldKeepRunning() = false
@@ -152,6 +174,7 @@ public:
     void movePlayer(ClientID clientId, ActiveDirections activeDirections);
 
     void handleCollision(Player* player, float impact);
+    void handleCheckpointContact(Player* player, PathElement& chk);
 
     /**
      * Cheats!

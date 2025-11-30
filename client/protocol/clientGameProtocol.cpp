@@ -52,17 +52,17 @@ Snapshot ClientGameProtocol::recvSnapshot() {
         uint8_t health = recvU8();
         bool onBridge = recvU8();
 
-        uint8_t numchecks = recvU8();
-        std::vector<Snapshot::Checkpoints> checkpoints;
+        uint8_t numElements = recvU8();
+        std::vector<PathElement> pathElements;
 
-        for (uint8_t j = 0; j < numchecks; ++j) {
+        for (uint8_t j = 0; j < numElements; ++j) {
             uint8_t cpId = recvU8();
             uint32_t cpX = recvU32();
             uint32_t cpY = recvU32();
-            checkpoints.emplace_back(cpId, cpX, cpY);
+            pathElements.emplace_back(cpId, cpX, cpY);
         }
 
-        cars.emplace_back(clientId, x, y, angle, speed, carId, health, onBridge, checkpoints);
+        cars.emplace_back(clientId, x, y, angle, speed, carId, health, onBridge, pathElements);
     }
 
     return Snapshot(countdown, cars);

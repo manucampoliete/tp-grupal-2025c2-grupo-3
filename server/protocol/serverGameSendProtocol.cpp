@@ -24,6 +24,13 @@ void ServerGameSendProtocol::sendRaceSnapshot(std::shared_ptr<Snapshot> snapshot
         sendU8(car.carId);
         sendU8(car.health);
         sendU8(car.onBridge ? 1 : 0);
+
+        sendU8(car.path.size());
+        for (auto& element : car.path) {
+            sendU8(element.id);
+            sendU32(element.x);
+            sendU32(element.y);
+        }
     }
 }
 
@@ -45,6 +52,20 @@ void ServerGameSendProtocol::sendRaceResultsSnapshot(std::shared_ptr<Snapshot> s
         sendU32(player.raceTimeMs);
         sendU32(player.totalTimeMs);
     }
+}
+
+void ServerGameSendProtocol::sendFinalResultsSnapshot(std::shared_ptr<Snapshot> snapshot) {
+    Snapshot::FinalResults& fr = snapshot->finalResults; 
+    sendU16(fr.standings.size());
+
+    for (auto& fs : fr.standings) {
+        sendU16(fs.playerId);
+        sendString(fs.playerName);
+        sendU32(fs.totalTimeMs);
+        sendU8(fs.position);
+    }
+    sendU16(fr.winnerId);
+    sendString(fr.winnerName);
 }
 
 void ServerGameSendProtocol::sendModificationSnapshot(std::shared_ptr<Snapshot> snapshot) {
@@ -89,7 +110,7 @@ void ServerGameSendProtocol::sendSnapshot(std::shared_ptr<Snapshot> snapshot) {
             sendU8(static_cast<uint8_t>(snapshot->countdown));
             break;
         case MSG_GAME_END:
-            // no implementado
+            sendFinalResultsSnapshot(snapshot);
             break;
     }
 }
