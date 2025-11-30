@@ -43,6 +43,10 @@ void ServerGameSendProtocol::sendCollisionSnapshot(const Snapshot::CollisionData
     sendU32(collision.y);
 }
 
+void ServerGameSendProtocol::sendPlayerDiedSnapshot(ClientID id) {
+    sendU16(id);
+}
+
 void ServerGameSendProtocol::sendRaceResultsSnapshot(std::shared_ptr<Snapshot> snapshot) {
     uint8_t numPlayers = static_cast<uint8_t>(snapshot->results.players.size());
     sendU8(numPlayers);
@@ -98,6 +102,9 @@ void ServerGameSendProtocol::sendSnapshot(std::shared_ptr<Snapshot> snapshot) {
             break;
         case MSG_COLLISION:
             sendCollisionSnapshot(snapshot->collisionData);
+            break;
+        case MSG_PLAYER_DIED:
+            sendPlayerDiedSnapshot(snapshot->clientId);
             break;
         case MSG_RACE_END:  // estoy seria para mostrar las estadisticas
             sendRaceResultsSnapshot(snapshot);

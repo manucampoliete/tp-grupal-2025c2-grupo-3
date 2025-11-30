@@ -27,6 +27,8 @@ public:
     void sendModificationSnapshot(std::shared_ptr<Snapshot> snapshot);
     
     void sendCollisionSnapshot(const Snapshot::CollisionData& collision);
+
+    void sendPlayerDiedSnapshot(ClientID id);
 };
 
 #endif  // SERVER_GAME_SEND_PROTOCOL_H

@@ -390,28 +390,30 @@ void Game::updateGameState() {
     switch (currentState) {
         case GameState::COUNTDOWN:
             if (gameStateElapsed >= countdownDuration) {
+                std::cout << "[GAME] Switched to racing state" << std::endl;
                 setRacingState();
             }
             break;
         case GameState::RACING:
             if (gameStateElapsed >= raceDuration || allPlayersFinished()) {
                 if (currentRaceCount >= races) {
+                    std::cout << "[GAME] Switched to game end state" << std::endl;
                     setGameEndState();
                 } else {
+                    std::cout << "[GAME] Switched to showing stats state" << std::endl;
                     setShowingStatsState();
                 }
             }
             break;
         case GameState::SHOWING_STATS:
             if (gameStateElapsed >= statsDuration) {
+                std::cout << "[GAME] Switched to modifying car state" << std::endl;
                 setModifyingCarState();
             }
             break;
         case GameState::MODIFYING_CAR:
             if (gameStateElapsed >= upgradesDuration) {
-                // aumentar numero de carrera en 1
-                // pasar a countdown
-                // setGameState(GameState::COUNTDOWN);
+                std::cout << "[GAME] Switched to countdown state" << std::endl;
                 setCountdownState();
             }
             break;
@@ -604,6 +606,7 @@ void Game::makeInstaLose(ClientID clientId) {
      * TODO: implement this method
      * NOTE: we can set the player's car health to 0
      */
+    handleCollision(&players.at(clientId), 999);
 }
 
 void Game::makePlayerGoSuperFast(ClientID clientId) {
