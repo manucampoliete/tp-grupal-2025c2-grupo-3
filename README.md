@@ -2,50 +2,54 @@ Buenas. Estas correcciones las hice en base a la rama `main`, recibió unos comm
 
 # Features
 ## Carrera y Partida
-1. ~~Carreras de hasta 8 jugadores.~~
-2. Las partidas tienen múltiples carreras. NO (siempre se queda en la primera partida)
-3. Múltiples recorridos. NO (no hay recorridos)
-4. Tabla de posiciones. NO (se entra en fase pero no se muestra nada)  
-4.a. Tiempo de cada jugadores. NO  
-4.b.Tiempo total acumulado. NO
-5. Checkpoints en los recorridos (franjas que cruzan la calle). NO  
-5.a. Checkpoint de salida. NO  
-5.b. Checkpoint de llegada. NO
-6. Hints en los recorridos. NO
-7. Aparición de checkpoints y hints en orden. NO
+1. ~~Carreras de hasta 8 jugadores.~~  
+2. ~~Las partidas tienen múltiples carreras. NO (siempre se queda en la primera partida)~~  
+3. ~~Múltiples recorridos. NO (no hay recorridos)~~  
+4. ~~Tabla de posiciones. NO (se entra en fase pero no se muestra nada)~~  
+4.a. ~~Tiempo de cada jugadores. NO~~  
+4.b. ~~Tiempo total acumulado. NO~~  
+5. ~~Checkpoints en los recorridos (franjas que cruzan la calle). NO~~  
+5.a. ~~Checkpoint de salida. NO~~  
+5.b. ~~Checkpoint de llegada. NO~~
+6. ~~Hints en los recorridos. NO~~
+7. ~~Aparición de checkpoints y hints en orden. NO~~ (*)
+
+(*) En vez de mostrar todos e ir quitando los que ya pasamos quizas tenemos que mostrar de a tramos.
 
 ## Fin de carrera
-1. Finaliza si todos llegan a la meta. NO
+1. ~~Finaliza si todos llegan a la meta. NO~~
 2. Autos descalificados no cuentan. NO (no hay descalificados, si me salgo el auto queda ahí inmóvil)
 3. ~~Finaliza si pasan 10 minutos. SI~~
-4. Suma de penalizaciones para tiempo total en estadísticas. NO
-5. Elección y modificaciones del auto
+4. ~~Suma de penalizaciones para tiempo total en estadísticas. NO~~
+5. ~~Elección y modificaciones del auto~~
 6. ~~Se elige el auto a usar en el Lobby. SI~~
-7. Autos tienen:  
+7. ~~Autos tienen:~~  
 7.a. ~~Velocidad. SI~~  
 7.b. ~~Aceleración. SI~~  
-7.c. Salud. PARCIAL (sí pero no se puede ver y el auto no se rompe)  
-7.d. Masa. NO
+7.c. ~~Salud. PARCIAL (sí pero no se puede ver y el auto no se rompe)~~  
+7.d. ~~Masa. NO~~
 8. ~~Múltiples autos: al menos 4. SI~~
-9. Etapa de mejoras de autos. PARCIAL (se entra en fase pero no se ve nada)  
-9.a. Mejora de atributos del auto. NO  
-9.b. Penalización en tiempo por mejora. NO
+9. ~~Etapa de mejoras de autos. PARCIAL (se entra en fase pero no se ve nada)~~  
+9.a. ~~Mejora de atributos del auto. NO~~  
+9.b. ~~Penalización en tiempo por mejora. NO~~  
 
 ## NPCs
 1. Existen NPCs. NO
 2. Recorrido al azar. NO
 
 ## Choques
-1. ~~Choque con edificios y autos. SI~~
-2. Baja la velocidad y salud del auto. NO
-3. Severidad depende del ángulo. NO
-4. Animación de choque. NO
-5. Animación de explosión de auto por salud en cero. NO
-6. Pantalla de carrera perdida por salud en cero. NO
+1. ~~Choque con edificios y autos. SI~~  
+2. ~~Baja la velocidad y salud del auto. NO~~  
+3. Severidad depende del ángulo. NO  
+4. ~~Animación de choque. NO~~  
+5. ~~Animación de explosión de auto por salud en cero. NO~~  
+6. ~~Pantalla de carrera perdida por salud en cero. NO~~    
+
+
 
 ## Ciudades
-1. 3 ciudades disponibles para jugar. NO
-2. Autos pasan por arriba y por abajo de los puentes. NO
+1. 3 ciudades disponibles para jugar. NO (tenemos 2, falta juntar server y client)
+2. ~~Autos pasan por arriba y por abajo de los puentes. NO~~
 
 ## Configuración
 1. ~~Configuración en YAML~~.
@@ -61,40 +65,40 @@ Buenas. Estas correcciones las hice en base a la rama `main`, recibió unos comm
 PARCIAL (los primeros tres están, pero hacerlos no tiene impacto real en el juego, sigue normalmente, y no hay daño por colisiones)
 1. Vida infinita.
 2. Ganar automáticamente.
-3. Perder automáticamente.
+3. ~~Perder automáticamente.~~  
 4. Alguno adicional.
 
 ## Vista y sonidos
-1. Clara visualización de un auto cuando está por encima o por debajo de un puente. NO
+1. ~~Clara visualización de un auto cuando está por encima o por debajo de un puente. NO~~
 2. ~~Visualización de rotaciones. SI~~
 3. ~~Cámara centrada en el auto. SI~~
-4. ~~Minimapa. SI~~
-5. Checkpoints y hints en el minimapa. NO
+4. ~~Minimapa. SI~~ (agregar check + hints?)
+5. ~~Checkpoints y hints en el minimapa. NO~~
 6. ~~El minimapa renderiza al jugador. SI~~
-7. Hints visuales al colisionar según la potencia del impacto. NO
-8. Sonidos. PARCIAL (solo de countdown)  
-8.a. Sonidos al colisionar. NO  
-8.b. Sonido de fin de carrera. NO  
-8.c. Sonido de frenada. NO
+7. Hints visuales al colisionar según la potencia del impacto. NO (*)
+8. ~~Sonidos. PARCIAL (solo de countdown)~~  
+8.a. ~~Sonidos al colisionar. NO~~  
+8.b. ~~Sonido de fin de carrera. NO~~  
+8.c. ~~Sonido de frenada. NO~~
 9. Volumen regulado por distancia al origen del sonido. NO
 10. ~~Música dentro de la partida. SI~~
-11. Animaciones (al menos dos). NO
+11. ~~Animaciones (al menos dos). NO~~
 12. ~~Hud con tiempo restante de partida. SI~~
 
 
 ## Editor
 No pude compilar el editor porque no está en el makefile y cuando quise intentar añadir el target ‘taller_editor’ no funcionó, pero les dejo más o menos las features que tenemos en cuenta.
-1. Cargar carreras.
-2. Guardar carreras y usarlos en 
-3. Añadir checkpoints.
-4. Añadir hints.
-5. Visualizar mapa completo
-6. Drag & Drop para checkpoints y hints
-7. Elegir mapa para armar el recorrido.
-8. Checkpoint de salida y llegada.
-9. Visualizar recorrido ordenado.
-10. Zoom in & Zoom out.
-11. Spawns de autos.
+1. ~~Cargar carreras.~~
+2. ~~Guardar carreras y usarlos en el juego~~
+3. ~~Añadir checkpoints.~~
+4. ~~Añadir hints.~~
+5. ~~Visualizar mapa completo~~
+6. ~~Drag & Drop para checkpoints y hints~~
+7. ~~Elegir mapa para armar el recorrido.~~
+8. ~~Checkpoint de salida y llegada.~~
+9. Visualizar recorrido ordenado.  
+10. ~~Zoom in & Zoom out.~~
+11. ~~Spawns de autos.~~
 Como no ví checkpoints ni hints al correr el cliente asumo que no está todavia.
 
 ## UX / Jugabilidad
@@ -152,15 +156,15 @@ Cliente:
 1- Están usando dependencias de SDL puro. No es grave, pero lo mejor es SDL2pp para RAII, con SDL, en ese sentido, tienen que reinventar la rueda prácticamente. Lo menciono por cosas como el uso de SDL_Mixer
 [tp-grupal-2025c2-grupo-3/client/audio/soundManager.h at main · manucampoliete/tp-grupal-2025c2-grupo-3](https://github.com/manucampoliete/tp-grupal-2025c2-grupo-3/blob/main/client/audio/soundManager.h#L8C1-L8C28)
 Que podrían cambiar por SDL2pp::Mixer.  
-2- No usen std::thread, a mano para eso tienen la clase Thread.
+2- ~~No usen std::thread, a mano para eso tienen la clase Thread.
 https://github.com/manucampoliete/tp-grupal-2025c2-grupo-3/blob/c5b4256a4a2b357b41fa751c7a1406f4cda3476d/client/lobby/lobby.cpp#L123-L130
-Es preferible que tengan varios Thread que solo usan una vez a tener varios std::thread sueltos por ahí.  
-3- No estoy seguro de si Qt les impone usar news a mano cada vez. Sin embargo, si alguna vez pueden elegir entre usar news y deletes a mano o usar smart pointers (si Qt se los permite), usen siempre smart pointers.
+Es preferible que tengan varios Thread que solo usan una vez a tener varios std::thread sueltos por ahí.~~  
+3- ~~No estoy seguro de si Qt les impone usar news a mano cada vez. Sin embargo, si alguna vez pueden elegir entre usar news y deletes a mano o usar smart pointers (si Qt se los permite), usen siempre smart pointers.
 https://github.com/manucampoliete/tp-grupal-2025c2-grupo-3/blob/c5b4256a4a2b357b41fa751c7a1406f4cda3476d/client/lobby/guestwaiting.cpp#L8
-Aunque, como les digo, no estoy al tanto de si con Qt hay problemas con eso, en cuyo caso estaría todo ok con usar news.  
-4- Tienen mucha lógica acoplada en Game. Deberían separarla en más clases.
-https://github.com/manucampoliete/tp-grupal-2025c2-grupo-3/blob/main/client/gameHandling/game.cpp  
-5- En ese mismo Game están usando World, que tiene un mutex interno. Como Game corre la interfaz gráfica, lo debe hacer desde el hilo principal; si están usando mutex en el hilo principal, eso está mal, el hilo principal no debe bloquearse, lo único que puede tomarle tiempo es procesar eventos y renderizar, pero no puede estar bloqueado por mutexes.
+Aunque, como les digo, no estoy al tanto de si con Qt hay problemas con eso, en cuyo caso estaría todo ok con usar news.~~  
+4- ~~Tienen mucha lógica acoplada en Game. Deberían separarla en más clases.
+https://github.com/manucampoliete/tp-grupal-2025c2-grupo-3/blob/main/client/gameHandling/game.cpp~~  
+5- ~~En ese mismo Game están usando World, que tiene un mutex interno. Como Game corre la interfaz gráfica, lo debe hacer desde el hilo principal; si están usando mutex en el hilo principal, eso está mal, el hilo principal no debe bloquearse, lo único que puede tomarle tiempo es procesar eventos y renderizar, pero no puede estar bloqueado por mutexes.~~
 
 
 El servidor está prolijo dentro de todo, quizá movería algunas cosas a otras clases y haría alguna que otra cosa más RAII, pero está bien aún así. En el cliente tienen mutexes en el hilo principal, lo que no está bien, el hilo principal debería procesar eventos y renderizar, pero sin bloquear el hilo en ese entretanto, y hay bastante lógica acoplada en las clases Game y GameLoop.
