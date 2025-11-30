@@ -1,11 +1,11 @@
 #include "recvProtocol.h"
+#include "../errors/peerDisconnectedError.h"
 
 #include <arpa/inet.h>
-#include <stdexcept>
 
 void RecvProtocol::safeRecvAll(void *data, unsigned int sz) {
     if (skt.recvAll(data, sz) == 0) {
-        throw std::runtime_error("Connection closed while receiving data");
+        throw PeerDisconnectedError();
     }
 }
 

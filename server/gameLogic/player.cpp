@@ -16,8 +16,8 @@
 #define RADTODEG 57.295779513082320876f
 #define PIXELS_TO_METERS 0.01f // 1 pixel = 0.01 meters (1 meter = 100 pixels)
 
-Player::Player(ClientID clientId, const std::string& username, b2Body* body, CarID carId):
-        clientId(clientId), username(username), car(CarBuilder::createCar(body, carId)), totalRaceTime(0), penalty(0)
+Player::Player(ClientID clientId, const std::string& username, const std::vector<CarInfo>& carsInfo, CarID carId, b2Body* body):
+        clientId(clientId), username(username), car(CarBuilder::createCar(carsInfo, carId, body)), totalRaceTime(0), penalty(0)
 {
     auto* data = new BodyData(this);
     

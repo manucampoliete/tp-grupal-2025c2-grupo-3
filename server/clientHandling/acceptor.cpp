@@ -32,9 +32,10 @@ void Acceptor::stop() {
     acceptor.close();
 }
 
-Acceptor::Acceptor(const std::string& servname, MatchesMapMonitor& matchesMapMonitor):
+Acceptor::Acceptor(const std::string& servname, MatchesMapMonitor& matchesMapMonitor, const std::vector<CarInfo>& carsInfo):
     acceptor(servname.c_str()),
     matchesMapMonitor(matchesMapMonitor),
+    carsInfo(carsInfo),
     clients(),
     nextClientId(FIRST_CLIENT_ID) { start(); }
 
@@ -43,7 +44,7 @@ void Acceptor::run() {
         try {
             Socket peer = acceptor.accept();
             auto c = std::make_unique<ClientHandler>(std::move(peer), matchesMapMonitor,
-                                                     nextClientId++);
+                                                     carsInfo, nextClientId++);
             fullReapDead();
             clients.push_back(std::move(c));
         } catch (const LibError& err) {

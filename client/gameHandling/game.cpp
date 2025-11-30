@@ -27,6 +27,7 @@ Game::Game(World& world, GameLoop& gameLoop, uint8_t playerId)
       cheatWinImg(renderer, "client/assets/cheats/win.png"),
       cheatLoseImg(renderer, "client/assets/cheats/lose.png"),
       cheatSpeedImg(renderer, "client/assets/cheats/speed.png"),
+      finishImg(renderer, "client/assets/cheats/finish.png"),
       
       // References
       world(world),
@@ -38,7 +39,7 @@ Game::Game(World& world, GameLoop& gameLoop, uint8_t playerId)
       soundManager(),
       worldRenderer(renderer, mapTexture, carSprites, world, playerId),
       uiRenderer(renderer, font, fontSmall, fontBig, mapTexture, world, playerId,
-                 cheatInmortalityImg, cheatWinImg, cheatLoseImg, cheatSpeedImg),
+                 cheatInmortalityImg, cheatWinImg, cheatLoseImg, cheatSpeedImg, finishImg),
       effectsManager(),
       inputHandler(gameLoop, stateManager, soundManager, worldRenderer, uiRenderer) {
 

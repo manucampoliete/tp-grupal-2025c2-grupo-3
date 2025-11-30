@@ -31,9 +31,9 @@ void ClientHandler::handleLobbyPhase() {
 }
 
 ClientHandler::ClientHandler(Socket&& peer, MatchesMapMonitor& matchesMapMonitor,
-                             ClientID clientId):
+                             const std::vector<CarInfo>& carsInfo, const ClientID clientId):
         peer(std::move(peer)),
-        lobbyResolver(clientId, matchesMapMonitor),
+        lobbyResolver(clientId, matchesMapMonitor, carsInfo),
         clientId(clientId),
         sender(std::nullopt),
         receiver(std::nullopt) { start(); }

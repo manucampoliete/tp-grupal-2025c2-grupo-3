@@ -6,7 +6,6 @@
 #include <yaml-cpp/yaml.h>
 
 #include "../../common/protocol/protocolConstants.h"
-#include "../../common/utils/carinfo.h"
 
 void ServerLobbyProtocol::sendClientID(ClientID clientId) {
     sendU8(SEND_CLIENT_ID);
@@ -14,35 +13,16 @@ void ServerLobbyProtocol::sendClientID(ClientID clientId) {
 }
 
 void ServerLobbyProtocol::sendInitialInfo() {
-    YAML::Node config = YAML::LoadFile("config.yaml");
-
-    CarID carId = 0;
-    YAML::Node carInfo = config["cars"][static_cast<int>(carId)];
-    std::vector<CarInfo> infos;
-    while (carInfo) {
-        CarInfo info;
-        info.id = carId;
-        info.name = carInfo["name"].as<std::string>();
-
-        float max_speed = carInfo["max_speed"].as<float>();
-        info.speed = static_cast<uint16_t>(std::round(max_speed));
-
-        float health = carInfo["health"].as<float>();
-        info.health = static_cast<uint16_t>(std::round(health));
-
-        infos.emplace_back(info);
-
-        carInfo = config["cars"][static_cast<int>(++carId)];
-    }
+    const auto& carsInfo = lobbyResolver.getCarsInfo();
 
     sendU8(SEND_INITIAL_INFO);
-    sendU16(infos.size());
+    sendU16(carsInfo.size());
 
-    for (auto info: infos) {
+    for (auto info: carsInfo) {
         sendU8(info.id);
         sendString(info.name);
-        sendU16(info.speed);
-        sendU16(info.health);
+        sendU16(static_cast<uint16_t>(info.maxSpeed));
+        sendU16(static_cast<uint16_t>(info.health));
     }
 }
 

@@ -12,8 +12,12 @@
 #include "../../common/queue/queue.h"
 #include "../../common/thread/thread.h"
 #include "../../common/types/types.h"
+#include "../../common/utils/gameState.h"
+
 #include "../commands/command.h"
 #include "../synchronized/responseQueuesMonitor.h"
+#include "../configLoader.h"
+
 #include "car.h"
 #include "player.h"
 
@@ -25,6 +29,7 @@ class Command;
 
 class Game: public Thread {
 private:
+    const Config& config;
     std::unique_ptr<b2World> world;
     int32 velocityIt;
     int32 positionIt;
@@ -110,7 +115,7 @@ public:
     /**
      * Constructor
      */
-    Game();
+    Game(const Config& config);
 
     /**
      * Main game logic: processes commands from the clientCommandsQueue.

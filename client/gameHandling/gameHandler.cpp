@@ -37,6 +37,12 @@ void GameHandler::stop() {
     std::cout << "[GAME_HANDLER] Stopping..." << std::endl;
     running = false;
 
+    /**
+     * Manu:
+     * At a given point of the project Queue::close() was modified to not throw exception when already closed.
+     * This allows to do this close() calls without try-catch.
+     * But maybe this is not a good idea, we can revert this change if needed.
+     */
     clientCommandQueue.close();
     serverMessagesQueue.close();
 

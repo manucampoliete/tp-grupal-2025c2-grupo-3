@@ -15,8 +15,9 @@ class ServerLobbyProtocol;
 
 class LobbyResolver {
 private:
-    ClientID clientId;
+    const ClientID clientId;
     MatchesMapMonitor& matchesMapMonitor;
+    const std::vector<CarInfo>& carsInfo; 
     bool inLobbyPhase;
     MatchID matchIdCopy;
 
@@ -24,7 +25,7 @@ public:
     /**
      * Constructor
      */
-    LobbyResolver(ClientID clientId, MatchesMapMonitor& matchesMapMonitor);
+    LobbyResolver(ClientID clientId, MatchesMapMonitor& matchesMapMonitor, const std::vector<CarInfo>& carsInfo);
 
     /**
      * Handles a CREATE_MATCH request from the client.
@@ -47,6 +48,8 @@ public:
      * Returns true if the client is in the lobby phase, false otherwise.
      */
     bool isInLobbyPhase() const;
+    
+    const std::vector<CarInfo>& getCarsInfo();
 
     /**
      * Returns a reference to the clientCommands queue for the current client.

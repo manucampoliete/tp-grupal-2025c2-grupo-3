@@ -31,17 +31,18 @@
 #define MAX_PLAYERS 8
 #define RACE_DURATION 5
 
-Game::Game():
+Game::Game(const Config& config):
+        config(config),
         world(std::make_unique<b2World>(b2Vec2(0, 0))),
         velocityIt(8),
         positionIt(3),
         clientCommandsQueue(),
         responseQueuesMonitor(),
         players(),
-        countdownDuration(10),
-        raceDuration(1),
-        statsDuration(10),
-        upgradesDuration(10),
+        countdownDuration(10),  // use config.gamePhasesTimers.countdown
+        raceDuration(1),       // use config.gamePhasesTimers.racing
+        statsDuration(10),      // use config.gamePhasesTimers.showingStats
+        upgradesDuration(10),   // use config.gamePhasesTimers.modifyingCar
         started(false) {}
 
 b2Body* Game::createNewCarBody() {
@@ -454,7 +455,7 @@ bool Game::addPlayer(ClientID clientId, const std::string& username, CarID carId
         // construir player in-place para evitar el problema anterior
         players.emplace(std::piecewise_construct,
                         std::forward_as_tuple(clientId),
-                        std::forward_as_tuple(clientId, username, createNewCarBody(), carId));
+                        std::forward_as_tuple(clientId, username, config.carsInfo, carId, createNewCarBody()));
         responseQueuesMonitor.addQueue(clientId);
         return true;
     }

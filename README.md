@@ -55,8 +55,7 @@ Buenas. Estas correcciones las hice en base a la rama `main`, recibió unos comm
 5. ~~Cantidad de carreras.~~
 6. ~~Rate loop.~~
 
-(*) Si se refiere al tiempo de una carrera, ya esta considerado en los tiempos de fases del juego. Pero si se refiere al tiempo total de una partida, este se puede deducir como la cantidad de carreras multiplicada por la suma de los tiempos de las fases.  
-(**) Si bien todos estos valores ya se encuentran en el archivo config.yaml, faltaria parsear algunos de ellos en el codigo, en vez de usar macros/constantes/literales.
+(*) El tiempo de partida en si no esta en el archivo de config, pero se puede deducir a partir de los demas valores
 
 ## Cheats
 PARCIAL (los primeros tres están, pero hacerlos no tiene impacto real en el juego, sigue normalmente, y no hay daño por colisiones)
@@ -108,26 +107,18 @@ También, estaría bueno ver la vida, aunque por ahora no parece que pierda vida
 ~~El servidor no cierra correctamente, ni con ni sin jugadores conectados. Probé bajar el server con ‘q’ cuando tengo un jugador conectado y uno se conectó y se desconectó, pero causó un core dump en el server, muchos leaks de valgrind, y el cliente conectado siguió reproduciendo música y sólo terminó cuando manualmente cerré la ventana del juego, causando otro core dump.
 El servidor también cerro con core dump cuando no había jugadores conectados.~~
 
-- Faltaria algunas mejoras de asignacion de responsabilidades en el Server. Por ej. levantar el yaml en el protocolo, malisimo :(
-- Creo que el cliente ya esta un poco mas organizado, se segmentaron las responsabilidades en nuevas clases, y ya no se usa mutex (toda sincronizacion esta dada por las queues)
-- El servidor ahora cierra correctamente en caso de desconexiones de clientes. Ya no hay mas core dumps
-- En el cliente tampoco hay core dump, pero si lo que pasa es que al cerrar el server, el cliente no cierre (sigue mostrando SDL, reproduciendo musica, captando eventos de sfx, etc)
+- Mejoras de asignacion de responsabilidades en el Server? Ver cuales mas hay (ya esta resuelto lo de no levantar el yaml dentro del protocolo)
 
 ## Robustez / Valgrind
-El servidor tiene leaks y cerrarlo con jugadores conectados me causó un core dump tanto en servidor como cliente. El servidor cierra con un core dump independientemente de si los jugadores están conectados o no.
+~~El servidor tiene leaks y cerrarlo con jugadores conectados me causó un core dump tanto en servidor como cliente. El servidor cierra con un core dump independientemente de si los jugadores están conectados o no.~~
 
-LEAKS:
-
-Por ahora descubrimos 2 leaks en el server
-
-1. En el constructor de Player se hace un new BodyData, y nunca se hace el delete. Tendremos uno de estos por cada cliente conectado a una partida. Hacer el delete del mismo en el destructor de Car, causa invalid reads que tienen que ver con el ContactListener. Queda pendiente la solucion de este leak, pero sin causar invalid reads.
-2. Otro leak se da en CollisionLoader::LoadCollisions(). Cuando el parametro isSensor = true, tambien se hace un new BodyData, y nunca se hace el delete. Queda pendiente la solucion de este leak
+El servidor ya no tiene leaks ni core dumps. Ver lugares en donde se pueda dejar de usar new, y usar smart pointers en su lugar.
 
 ## Compilación / Instalación
 Compilé con ‘make’, aunque no se indica qué dependencias hacen falta ni cómo se instalan o cómo se compila el juego. Tuve que instalar box2d, la librería de yaml y qt6 a mano, sería conveniente un instalador por makefile hasta que el instalador formal esté terminado.
 
 ## Performance
-Performance óptimo, menos de 5% de consumo de en cliente y servidor CPU.
+~~Performance óptimo, menos de 5% de consumo de en cliente y servidor CPU.~~
 
 ## Código
 Acá les dejo algunas observaciones. Como les mencioné, el servidor está bien, solo añado sugerencias con el tema de RAII, yaml, etc, pero para el cliente les dejé algunas que creo que son más importantes.
@@ -141,10 +132,10 @@ https://github.com/manucampoliete/tp-grupal-2025c2-grupo-3/blob/c5b4256a4a2b357b
 Podría directamente devolver un bool o tirar una excepción si no está la queue.~~  
 4- Acá el Player le pide todos sus datos al Car, podría ser, en su lugar, que el Car tenga la responsabilidad de construir su propio snapshot.
 https://github.com/manucampoliete/tp-grupal-2025c2-grupo-3/blob/c5b4256a4a2b357b41fa751c7a1406f4cda3476d/server/gameLogic/player.cpp#L17-L32
-5- En vez de cargar el .yaml cada vez que quiero crear un auto podría cargarse una vez y luego acceder a él desde este método.
-https://github.com/manucampoliete/tp-grupal-2025c2-grupo-3/blob/c5b4256a4a2b357b41fa751c7a1406f4cda3476d/server/gameLogic/car_builder.h#L15-L29
-6- Esto podría venir del .yaml
-https://github.com/manucampoliete/tp-grupal-2025c2-grupo-3/blob/c5b4256a4a2b357b41fa751c7a1406f4cda3476d/server/gameLogic/game.cpp#L27-L30
+5- ~~En vez de cargar el .yaml cada vez que quiero crear un auto podría cargarse una vez y luego acceder a él desde este método.
+https://github.com/manucampoliete/tp-grupal-2025c2-grupo-3/blob/c5b4256a4a2b357b41fa751c7a1406f4cda3476d/server/gameLogic/car_builder.h#L15-L29~~
+~~6- Esto podría venir del .yaml
+https://github.com/manucampoliete/tp-grupal-2025c2-grupo-3/blob/c5b4256a4a2b357b41fa751c7a1406f4cda3476d/server/gameLogic/game.cpp#L27-L30~~
 7- ~~Para evitar tener que hacer el CRL a mano es que deberían usar la clase que implementaron en common.
 https://github.com/manucampoliete/tp-grupal-2025c2-grupo-3/blob/c5b4256a4a2b357b41fa751c7a1406f4cda3476d/server/gameLogic/game.cpp#L266-L285~~
 8- ~~Entiendo por qué le pusieron este nombre

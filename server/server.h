@@ -3,11 +3,13 @@
 
 #include <string>
 
-#include "clientHandling/acceptor.h"
+#include "configLoader.h"
 #include "synchronized/matchesMapMonitor.h"
+#include "clientHandling/acceptor.h"
 
 class Server {
 private:
+    const Config config;
     MatchesMapMonitor matchesMapMonitor;
     Acceptor acceptor;
 
