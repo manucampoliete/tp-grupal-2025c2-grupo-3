@@ -124,6 +124,8 @@ public:
     void setPosition(const PathElement& carSpawn);
     void setCurrentHealth(float health);
 
+    void resetSpeeds();
+
     void improveProperties(bool improveVelocity, bool improveHealth, bool improveAcceleration, bool improveMass);
   
 

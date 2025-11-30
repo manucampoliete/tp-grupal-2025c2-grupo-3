@@ -51,10 +51,17 @@ private:
 
     std::atomic<bool> started;
 
+    std::vector<b2Body*> pathBodies;
+    std::vector<b2Body*> lowCollisionLayerBodies;
+    std::vector<b2Body*> highCollisionLayerBodies;
+    std::vector<b2Body*> layerSwitchBodies;
+
     /**
      * Creates and returns a new b2Body for a car.
      */
     b2Body* createNewCarBody();
+
+    void clearMapBodies();
 
     /**
      * Updates the physics of all player cars.

@@ -24,6 +24,13 @@ void ServerGameSendProtocol::sendRaceSnapshot(std::shared_ptr<Snapshot> snapshot
         sendU8(car.carId);
         sendU8(car.health);
         sendU8(car.onBridge ? 1 : 0);
+
+        sendU8(car.path.size());
+        for (auto& element : car.path) {
+            sendU8(element.id);
+            sendU32(element.x);
+            sendU32(element.y);
+        }
     }
 }
 

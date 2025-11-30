@@ -1,6 +1,8 @@
 #include "checkpointRenderer.h"
 #include <iostream>
 
+#include "../../common/utils/pathElements.h"
+
 
 CheckpointRenderer::CheckpointRenderer(Renderer& renderer) :
     renderer(renderer),
@@ -129,8 +131,8 @@ void CheckpointRenderer::render(
         }
 
         if (textureToUse) {
-            int w = textureToUse->GetWidth();
-            int h = textureToUse->GetHeight();
+            int w = 50;
+            int h = 50;
 
             Rect dest(screenX - w / 2, screenY - h / 2, w, h);
 

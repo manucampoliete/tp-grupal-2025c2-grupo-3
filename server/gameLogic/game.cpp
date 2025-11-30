@@ -97,7 +97,6 @@ void Game::broadcastCountdown() {
 
 void Game::broadcastRacing() {
     auto remaining = getRemainingGameStateTime();
-
     std::vector<Snapshot::CarSnapshot> snapshots;
     for (auto& [clientId, player]: players) {
         Snapshot::CarSnapshot snp = player.buildCarSnapshot();
@@ -167,12 +166,34 @@ std::chrono::seconds Game::getRemainingGameStateTime() {
     return std::chrono::seconds(0);  // para evitar warning
 }
 
+void Game::clearMapBodies() {
+    for (b2Body* body : pathBodies) {
+        world->DestroyBody(body);
+    }
+    for (b2Body* body : lowCollisionLayerBodies) {
+        world->DestroyBody(body);
+    }
+    for (b2Body* body : highCollisionLayerBodies) {
+        world->DestroyBody(body);
+    }
+    for (b2Body* body : layerSwitchBodies) {
+        world->DestroyBody(body);
+    }
+
+    pathBodies.clear();
+    lowCollisionLayerBodies.clear();
+    highCollisionLayerBodies.clear();
+    layerSwitchBodies.clear();
+}
+
 void Game::setCountdownState() {
     setGameState(GameState::COUNTDOWN);
 
+    clearMapBodies();
+
     // aca esta el map_id, de aca se decide qué colisiones se van a renderizar
     Path currentPath = PathLoader::LoadPath("server/gameLogic/race.yaml");
-    PathGenerator::GeneratePath(currentPath, world, PIXELS_TO_METERS, WORLD_HEIGHT);
+    pathBodies = PathGenerator::GeneratePath(currentPath, world, PIXELS_TO_METERS, WORLD_HEIGHT);
 
     for (auto& [id, player] : players) {
         player.initCurrentPath(currentPath);
@@ -182,9 +203,9 @@ void Game::setCountdownState() {
     CollisionMap highLayerCollisionMap = CollisionLoader::LoadCollisions("server/gameLogic/collisions/maps/viceCity/high_collision_layer.yaml");
     CollisionMap layerSwitchCollisionMap = CollisionLoader::LoadCollisions("server/gameLogic/collisions/maps/viceCity/layer_switch.yaml");
 
-    CollisionGenerator::GenerateCollisions(lowLayerCollisionMap, world, PIXELS_TO_METERS, WORLD_HEIGHT, WALL_LOW_LAYER);
-    CollisionGenerator::GenerateCollisions(highLayerCollisionMap, world, PIXELS_TO_METERS, WORLD_HEIGHT, WALL_HIGH_LAYER);
-    CollisionGenerator::GenerateCollisions(layerSwitchCollisionMap, world, PIXELS_TO_METERS, WORLD_HEIGHT, SENSOR_LAYER, LAYER_SWITCH_SENSOR);
+    lowCollisionLayerBodies = CollisionGenerator::GenerateCollisions(lowLayerCollisionMap, world, PIXELS_TO_METERS, WORLD_HEIGHT, WALL_LOW_LAYER);
+    highCollisionLayerBodies = CollisionGenerator::GenerateCollisions(highLayerCollisionMap, world, PIXELS_TO_METERS, WORLD_HEIGHT, WALL_HIGH_LAYER);
+    layerSwitchBodies = CollisionGenerator::GenerateCollisions(layerSwitchCollisionMap, world, PIXELS_TO_METERS, WORLD_HEIGHT, SENSOR_LAYER, LAYER_SWITCH_SENSOR);
 
     // incializar players (aplicar penalizaciones, poner vida = max_vida)
     // BUG: si un jugador finaliza la carrera por tiempo limite no se le aplica la penalizacion!
@@ -192,6 +213,8 @@ void Game::setCountdownState() {
     for (auto& [id, player]: players) {
         player.resetForNewRace();
     }
+
+    world->ClearForces();
 
     // no se hace el primer broadcast para countdown, se manda solo el broadcast por frame
     // responseQueuesMonitor.broadcast(std::make_shared<Snapshot>(MSG_COUNTDOWN_START));
@@ -259,7 +282,7 @@ void Game::setModifyingCarState() {
 void Game::setGameState(GameState newState) {
     currentState = newState;
     gameStateStartTime = std::chrono::high_resolution_clock::now();
-    std::cout << "Game state changed to " << static_cast<int>(newState) << std::endl;
+    // std::cout << "Game state changed to " << static_cast<int>(newState) << std::endl;
 }
 
 bool Game::allPlayersFinished() {

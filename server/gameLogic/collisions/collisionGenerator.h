@@ -12,12 +12,13 @@ class CollisionGenerator {
 public:
     // Receives pixelsToMeters, but for now the meters <-> pixels relation is 1 to 1 (box2d may not work well with this scale)
     // worldHeight is received to be able to invert the Y axis and have the collisions where they should be (because they are generated from the image, which technically for box2d is upside down)
-    static void GenerateCollisions(const CollisionMap& collisionMap, std::unique_ptr<b2World>& world, float pixelsToMeters, float worldHeight, uint8_t layer, int sensorId = NOT_A_SENSOR) {
+    static std::vector<b2Body*> GenerateCollisions(const CollisionMap& collisionMap, std::unique_ptr<b2World>& world, float pixelsToMeters, float worldHeight, uint8_t layer, int sensorId = NOT_A_SENSOR) {
         // If worldHeight is not passed, I take the one from the collision map
         if (worldHeight == 0.0f) {
             worldHeight = collisionMap.mapHeight;
         }
         
+        std::vector<b2Body*> bodies;
         for (const auto& collision : collisionMap.collisionBoxes) {
             float x = collision.x * pixelsToMeters;
             float y_pixels = collision.y;
@@ -62,7 +63,10 @@ public:
                 auto *data = new BodyData(sensorId);  // For now there is only one type of sensor
                 body->GetUserData().pointer = reinterpret_cast<uintptr_t>(data);
             }
+
+            bodies.push_back(body);
         }
+        return bodies;
     }
 };
 

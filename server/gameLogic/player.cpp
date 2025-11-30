@@ -54,7 +54,7 @@ void Player::updateNextCheckpoint() {
         
         if(isCheckpoint) {
             nextCheckpoint = element;
-            std::cout << "[NEXT_CHK]: " << element << std::endl;
+            // std::cout << "[NEXT_CHK]: " << element << std::endl;
             break;
         }
     }
@@ -72,7 +72,7 @@ void Player::initCurrentPath(Path& currentPath) {
 // recibe el checkpoint que el jugador tocó
 void Player::updateCurrentPath(PathElement& element, std::chrono::seconds raceTimeSecs) {
     if (nextCheckpoint != element) {
-        std::cout << "[UPDATE_PATH] " << nextCheckpoint << " is not the same as incoming " << element << std::endl; 
+        // std::cout << "[UPDATE_PATH] " << nextCheckpoint << " is not the same as incoming " << element << std::endl; 
         return;
     } 
 
@@ -81,26 +81,26 @@ void Player::updateCurrentPath(PathElement& element, std::chrono::seconds raceTi
     auto it = std::find(elements.begin(), elements.end(), nextCheckpoint);
     if (it == elements.end()) {
         // raro que llegue aca
-        std::cerr << "[UPDATE_PATH] Error! el nextCheckpoint no se encontró en el path actual";
+        // std::cerr << "[UPDATE_PATH] Error! el nextCheckpoint no se encontró en el path actual";
         return;
     }
 
     elements.erase(elements.begin(), it + 1);
 
     if(!elements.empty()) {
-        std::cout << "[UPDATE_PATH] La carrera todavia tiene elementos:" << std::endl;
-        for (auto& element : elements) {
+        // std::cout << "[UPDATE_PATH] La carrera todavia tiene elementos:" << std::endl;
+        /* for (auto& element : elements) {
             std::cout << element << std::endl;
-        }
+        } */
         updateNextCheckpoint();
     }
     else {
         // el jugador terminó el recorrido!
-        std::cout << "[UPDATE_PATH] Player " << clientId << " terminó la carrera!" << std::endl;
+        // std::cout << "[UPDATE_PATH] Player " << clientId << " terminó la carrera!" << std::endl;
         setArrivalTime(raceTimeSecs.count());
         nextCheckpoint = PathElement();
     }
-    std::cout <<"[UPDATE_PATH] New path size: " << currentPath.elements.size() << std::endl;
+    // std::cout <<"[UPDATE_PATH] New path size: " << currentPath.elements.size() << std::endl;
 }
 
 void Player::handleDeath(std::chrono::seconds raceDurationSecs) {
@@ -120,16 +120,17 @@ void Player::handleDeath(std::chrono::seconds raceDurationSecs) {
 
 void Player::debugPrintCarInfo() {
     // system("clear");
-    std::cout << "[DEBUG] Car - PlayerID: " << clientId << std::endl
+    BodyData* data = reinterpret_cast<BodyData*>(car.getBody()->GetUserData().pointer);
+    std::cout << "[DEBUG] Car - Player: " << data->player->getUsername() << std::endl
             //   << " | CarID  : " << car.getId() << std::endl
-              << " | Position: (" << car.getPosition().x << ", " << car.getPosition().y << ")" << std::endl
+            //   << " | Position: (" << car.getPosition().x << ", " << car.getPosition().y << ")" << std::endl
             //   << " | Angle  : " << car.getAngle() << std::endl
             //   << " | MaxSpeed : " << car.getMaxSpeed() << std::endl
             //   << " | Speed  : " << car.getCurrentSpeed() << std::endl
             //   << " | Health : " << car.getCurrentHealth() << std::endl
             //   << " | Acc    : " << car.getAcceleration() << std::endl
             //   << " | Mass   : " << car.getMass() << std::endl
-            //   << " | OnBridge: " << car.isOnBridge() << std::endl
+              << " | OnBridge: " << car.isOnBridge() << std::endl
             ;
 }
 
@@ -151,8 +152,18 @@ Snapshot::CarSnapshot Player::buildCarSnapshot() {
     uint8_t healthPercentage = static_cast<uint8_t>(std::round((car.getCurrentHealth() / car.getMaxHealth()) * 100));
 
     // debugPrintCarInfo(clientId, x, y, angle, speed, car.getId(), healthPercentage, car.isOnBridge());
+    
+    // multiplicar por 1000 todas las coordenadas de los elementos del path y mandar (ya estan en pixeles y en coordenadas de sdl2)
+    std::vector<PathElement> path;
+    for (auto& element : currentPath.elements) {
+        PathElement e;
+        e.id = element.id;
+        e.x = element.x * 1000;
+        e.y = element.y * 1000;
+        path.push_back(e);
+    }
 
-    return Snapshot::CarSnapshot(clientId, x, y, angle, speed, car.getId(), healthPercentage, car.isOnBridge());
+    return Snapshot::CarSnapshot(clientId, x, y, angle, speed, car.getId(), healthPercentage, car.isOnBridge(), path);
 }
 
 Snapshot::CarProperties Player::buildModifyingCarSnapshot() {
@@ -179,6 +190,8 @@ void Player::resetForNewRace() {
     finished = false;
     currentRaceTime = 0;
     car.setCurrentHealth(car.getMaxHealth());
+    if(car.isOnBridge()) car.toggleCollisionLayer();
+    car.resetSpeeds();
 }
 
 // Expects a normalized impact
@@ -188,8 +201,8 @@ Snapshot::CollisionData Player::buildCollisionSnapshot(float normalizedImpact) {
 
     collision.intensity = normalizedImpact;
 
-    uint32 x = static_cast<uint32_t>(std::round(car.getPosition().x * 1000));
-    uint32 y = static_cast<uint32_t>(std::round(car.getPosition().y * 1000));
+    uint32 x = static_cast<uint32_t>(std::round(car.getPosition().x / PIXELS_TO_METERS * 1000));
+    uint32 y = static_cast<uint32_t>(std::round(car.getPosition().y / PIXELS_TO_METERS* 1000));
 
     collision.x = x;
     collision.y = y;

@@ -7,12 +7,14 @@
 
 #include <ostream>
 
+#include "../../../common/utils/pathElements.h"
+
 #define SPAWN_UP 20
 #define SPAWN_LEFT 21
 #define SPAWN_RIGHT 22
 #define SPAWN_DOWN 23
 
-struct PathElement {
+/* struct PathElement {
     int id;
     float x;
     float y;
@@ -31,7 +33,7 @@ struct PathElement {
     }
 
     friend std::ostream& operator<<(std::ostream& os, const PathElement& p);
-};
+}; */
 
 struct Path {
     int mapId;

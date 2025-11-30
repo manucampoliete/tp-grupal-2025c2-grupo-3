@@ -24,4 +24,25 @@
 #define FINISH_HORIZONTAL 18
 #define FINISH_VERTICAL 19
 
+struct PathElement {
+    int id;
+    float x;
+    float y;
+    
+    PathElement(int id, float x, float y)
+        : id(id), x(x), y(y) {}
+
+    PathElement() : id(-1), x(0), y(0) {}
+
+    bool operator==(const PathElement& other) const {
+        return id == other.id && x == other.x && y == other.y;
+    }
+
+    bool operator!=(const PathElement& other) const {
+        return !(*this == other);
+    }
+
+    friend std::ostream& operator<<(std::ostream& os, const PathElement& p);
+};
+
 #endif

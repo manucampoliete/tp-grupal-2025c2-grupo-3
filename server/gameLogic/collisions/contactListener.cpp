@@ -6,6 +6,7 @@
 #include <bits/stdc++.h>
 
 void ContactListener::BeginContact(b2Contact* contact) {
+    std::cout << "Begin contact with ";
     b2Body* bodyA = contact->GetFixtureA()->GetBody();
     b2Body* bodyB = contact->GetFixtureB()->GetBody();
 
@@ -22,14 +23,15 @@ void ContactListener::BeginContact(b2Contact* contact) {
         // handleLayerSwitch(dataA->player);
         switch (dataB->sensorId) {
             case LAYER_SWITCH_SENSOR:
+                std::cout << "layer switch sensor" << std::endl;
                 dataA->player->getCar().toggleCollisionLayer();
                 break;
             case CHECKPOINT_SENSOR:
-                std::cout << "[Listener] Checkpoint tocado!" << std::endl;
+                std::cout << "checkpoint sensor" << std::endl;
                 game->handleCheckpointContact(dataA->player, dataB->element);
                 break;
             default:
-                std::cerr << "[Listener] Sensor desconocido" << std::endl;
+                std::cerr << "unknown sensor" << std::endl;
                 break;
         }
         return;
@@ -42,11 +44,11 @@ void ContactListener::BeginContact(b2Contact* contact) {
                 dataB->player->getCar().toggleCollisionLayer();
                 break;
             case CHECKPOINT_SENSOR:
-                std::cout << "[Listener] Checkpoint tocado!" << std::endl;
+                // std::cout << "[Listener] Checkpoint tocado!" << std::endl;
                 game->handleCheckpointContact(dataB->player, dataA->element);
                 break;
             default:
-                std::cerr << "[Listener] Sensor desconocido" << std::endl;
+                // std::cerr << "[Listener] Sensor desconocido" << std::endl;
                 break;
         }
         return;

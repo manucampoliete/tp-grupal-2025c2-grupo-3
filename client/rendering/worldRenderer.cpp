@@ -106,9 +106,9 @@ void WorldRenderer::render() {
     renderSmoke(); 
 
     renderBridges();
+    renderCheckpoints();
     renderCarsOnBridge();
 
-    renderCheckpoints();
     
     renderCollisionEffects();
     renderExplosions();

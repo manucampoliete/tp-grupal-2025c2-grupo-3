@@ -1,8 +1,8 @@
 #include "snapshot.h"
 
 Snapshot::CarSnapshot::CarSnapshot(ClientID id, uint32_t x, uint32_t y, uint16_t angle,
-                                   uint16_t speed, CarID carId, uint8_t health, bool onBridge):
-        id(id), x(x), y(y), angle(angle), speed(speed), carId(carId), health(health), onBridge(onBridge) {}
+                                   uint16_t speed, CarID carId, uint8_t health, bool onBridge, std::vector<PathElement> path):
+        id(id), x(x), y(y), angle(angle), speed(speed), carId(carId), health(health), onBridge(onBridge), path(path) {}
 
 Snapshot::CarSnapshot::CarSnapshot(const CarSnapshot& other):
         id(other.id),
@@ -12,7 +12,8 @@ Snapshot::CarSnapshot::CarSnapshot(const CarSnapshot& other):
         speed(other.speed),
         carId(other.carId),
         health(other.health),
-        onBridge(other.onBridge) {}
+        onBridge(other.onBridge),
+        path(other.path) {}
 
 Snapshot::Snapshot(): countdown(0), cars(), type(SEND_STARTED) {}
 
@@ -49,6 +50,7 @@ Snapshot::CarSnapshot& Snapshot::CarSnapshot::operator=(const CarSnapshot& other
     carId = other.carId;
     health = other.health;
     onBridge = other.onBridge;
+    path = other.path;
     return *this;
 }
 

@@ -265,6 +265,11 @@ float Car::getMass() const {
     return md.mass;
 }
 
+void Car::resetSpeeds() {
+    body->SetLinearVelocity(b2Vec2_zero);
+    body->SetAngularVelocity(0.0f);
+}
+
 
 Car::~Car() {
     // This line causes invalid reads (see ContactListener)

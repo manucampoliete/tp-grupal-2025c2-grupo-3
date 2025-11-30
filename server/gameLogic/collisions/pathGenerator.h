@@ -20,7 +20,8 @@ class PathGenerator {
 public:
     // Receives pixelsToMeters, but for now the meters <-> pixels relation is 1 to 1 (box2d may not work well with this scale)
     // worldHeight is received to be able to invert the Y axis and have the collisions where they should be (because they are generated from the image, which technically for box2d is upside down)
-    static void GeneratePath(const Path& path, std::unique_ptr<b2World>& world, float pixelsToMeters, float worldHeight = WORLD_HEIGHT) {
+    static std::vector<b2Body*> GeneratePath(const Path& path, std::unique_ptr<b2World>& world, float pixelsToMeters, float worldHeight = WORLD_HEIGHT) {
+        std::vector<b2Body*> bodies;
         for (const auto& element : path.elements) {
             // si es un hint (si no es un checkpoint) ignorar!
             // no contamos el start como checkpoint porque es donde spawnean los autos
@@ -35,16 +36,24 @@ public:
             // Y axis is inverted
             float y = (worldHeight - element.y) * pixelsToMeters;
             
-            // Hay que darle width/height según el id!
-            // (por ahora los hago a todos cuadrados de 50x50 px)
+            // Hay que darle width/height según su dirección
+            // Los checkpoints son de 50x22 pixeles
+            float w = 0.0f;
+            float h = 0.0f;
+            bool isHorizontal = element.id == CHECKPOINT_HORIZONTAL ||
+                                element.id == FINISH_HORIZONTAL;
+            if (element.id == isHorizontal) {
+                w = 22.0f;
+                h = 50.0f;
+            } else {
+                w = 50.0f;
+                h = 22.0f;
+            }
+            w *= pixelsToMeters;
+            h *= pixelsToMeters;
 
-            // float w = collision.w * pixelsToMeters;
-            // float h = collision.h * pixelsToMeters;
-            float w = 50.0f * pixelsToMeters;
-            float h = 50.0f * pixelsToMeters;
-
-            std::cout << "[PATH_GEN] Generated chk with id: " << element.id
-                << " position (" << x << ", " << y << ")" << std::endl;
+            // std::cout << "[PATH_GEN] Generated chk with id: " << element.id
+                // << " position (" << x << ", " << y << ")" << std::endl;
 
 
             // --- BOX2D --- //
@@ -77,7 +86,10 @@ public:
                 auto *data = new BodyData(CHECKPOINT_SENSOR, element);
                 body->GetUserData().pointer = reinterpret_cast<uintptr_t>(data); 
             }
+
+            bodies.push_back(body);
         }
+        return bodies;
     }
 };
 
