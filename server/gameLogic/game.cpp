@@ -39,10 +39,10 @@ Game::Game(const Config& config):
         clientCommandsQueue(),
         responseQueuesMonitor(),
         players(),
-        countdownDuration(10),  // use config.gamePhasesTimers.countdown
-        raceDuration(1),       // use config.gamePhasesTimers.racing
-        statsDuration(10),      // use config.gamePhasesTimers.showingStats
-        upgradesDuration(10),   // use config.gamePhasesTimers.modifyingCar
+        countdownDuration(config.gamePhasesTimers.countdown),  
+        raceDuration(config.gamePhasesTimers.racing),       
+        statsDuration(config.gamePhasesTimers.showingStats),      
+        upgradesDuration(config.gamePhasesTimers.modifyingCar),   
         started(false) {}
 
 b2Body* Game::createNewCarBody() {
@@ -71,10 +71,10 @@ b2Body* Game::createNewCarBody() {
 
     // capa de colision
     b2Filter filter;
-    /* filter.categoryBits = CAR_LOW_LAYER;
-    filter.maskBits = MASK_CAR_LOW; */
-    filter.categoryBits = CAR_HIGH_LAYER;
-    filter.maskBits = MASK_CAR_HIGH;
+    filter.categoryBits = CAR_LOW_LAYER;
+    filter.maskBits = MASK_CAR_LOW;
+    /* filter.categoryBits = CAR_HIGH_LAYER;
+    filter.maskBits = MASK_CAR_HIGH; */
     boxFixtureDef.filter = filter;
 
     car->CreateFixture(&boxFixtureDef);
@@ -169,6 +169,22 @@ std::chrono::seconds Game::getRemainingGameStateTime() {
 
 void Game::setCountdownState() {
     setGameState(GameState::COUNTDOWN);
+
+    // aca esta el map_id, de aca se decide qué colisiones se van a renderizar
+    Path currentPath = PathLoader::LoadPath("server/gameLogic/race.yaml");
+    PathGenerator::GeneratePath(currentPath, world, PIXELS_TO_METERS, WORLD_HEIGHT);
+
+    for (auto& [id, player] : players) {
+        player.initCurrentPath(currentPath);
+    }
+
+    CollisionMap lowLayerCollisionMap = CollisionLoader::LoadCollisions("server/gameLogic/collisions/maps/viceCity/low_collision_layer.yaml");
+    CollisionMap highLayerCollisionMap = CollisionLoader::LoadCollisions("server/gameLogic/collisions/maps/viceCity/high_collision_layer.yaml");
+    CollisionMap layerSwitchCollisionMap = CollisionLoader::LoadCollisions("server/gameLogic/collisions/maps/viceCity/layer_switch.yaml");
+
+    CollisionGenerator::GenerateCollisions(lowLayerCollisionMap, world, PIXELS_TO_METERS, WORLD_HEIGHT, WALL_LOW_LAYER);
+    CollisionGenerator::GenerateCollisions(highLayerCollisionMap, world, PIXELS_TO_METERS, WORLD_HEIGHT, WALL_HIGH_LAYER);
+    CollisionGenerator::GenerateCollisions(layerSwitchCollisionMap, world, PIXELS_TO_METERS, WORLD_HEIGHT, SENSOR_LAYER, LAYER_SWITCH_SENSOR);
 
     // incializar players (aplicar penalizaciones, poner vida = max_vida)
     // BUG: si un jugador finaliza la carrera por tiempo limite no se le aplica la penalizacion!
@@ -376,31 +392,9 @@ void Game::handleCheckpointContact(Player* player, PathElement& element) {
 }
 
 void Game::run() {
-    
-    // refactor (init game) //
-
     started = true;
-    
     broadcastStartSignal();
-    setGameState(GameState::COUNTDOWN);
-
-    // aca esta el map_id, de aca se decide qué colisiones se van a renderizar
-    Path currentPath = PathLoader::LoadPath("server/gameLogic/race.yaml");
-    PathGenerator::GeneratePath(currentPath, world, PIXELS_TO_METERS, WORLD_HEIGHT);
-
-    for (auto& [id, player] : players) {
-        player.initCurrentPath(currentPath);
-    }
-
-    CollisionMap lowLayerCollisionMap = CollisionLoader::LoadCollisions("server/gameLogic/collisions/low_collision_layer.yaml");
-    CollisionMap highLayerCollisionMap = CollisionLoader::LoadCollisions("server/gameLogic/collisions/high_collision_layer.yaml");
-    CollisionMap layerSwitchCollisionMap = CollisionLoader::LoadCollisions("server/gameLogic/collisions/layer_switch.yaml");
-
-    CollisionGenerator::GenerateCollisions(lowLayerCollisionMap, world, PIXELS_TO_METERS, WORLD_HEIGHT, WALL_LOW_LAYER);
-    CollisionGenerator::GenerateCollisions(highLayerCollisionMap, world, PIXELS_TO_METERS, WORLD_HEIGHT, WALL_HIGH_LAYER);
-    CollisionGenerator::GenerateCollisions(layerSwitchCollisionMap, world, PIXELS_TO_METERS, WORLD_HEIGHT, SENSOR_LAYER, LAYER_SWITCH_SENSOR);
-    
-    //////////////////////////
+    setCountdownState();
 
     // contact listener para manejar choques
     // se le pasa un puntero a Game para que pueda llamar a handleCollision

@@ -63,6 +63,10 @@ void Player::updateNextCheckpoint() {
 void Player::initCurrentPath(Path& currentPath) {
     this->currentPath = currentPath;
     updateNextCheckpoint();
+    // ponerlos en el spawn
+    // path tiene el vector std::vector<PathElement> carSpawns;
+    // spawnear el player con clientId en carSpawns[cliendId];
+    car.setPosition(currentPath.carSpawns[clientId]);
 }
 
 // recibe el checkpoint que el jugador tocó

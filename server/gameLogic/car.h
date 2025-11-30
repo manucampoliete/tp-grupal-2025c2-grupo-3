@@ -9,6 +9,8 @@
 #include "../../../common/types/types.h"
 #include "../../../common/utils/activeDirections.h"
 
+#include "collisions/pathLoader.h"
+
 /* #define MAX_SPEED 100.0f
 #define ACC 20.0f
 #define ANGULAR_SPEED 2.0f
@@ -114,13 +116,12 @@ public:
     float getAngle();
     float getMaxSpeed() const;
     float getCurrentSpeed() const;
-    
     float getMaxHealth() const;
     float getCurrentHealth();
-
     float getAcceleration() const;
     float getMass() const;
 
+    void setPosition(const PathElement& carSpawn);
     void setCurrentHealth(float health);
 
     void improveProperties(bool improveVelocity, bool improveHealth, bool improveAcceleration, bool improveMass);
