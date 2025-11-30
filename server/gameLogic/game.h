@@ -25,6 +25,10 @@
 
 #include "collisions/pathLoader.h"
 
+#define MAP_LIBERTY_CITY 0
+#define MAP_SAN_ANDREAS 1
+#define MAP_VICE_CITY 2
+
 class Command;
 
 class Game: public Thread {
@@ -38,6 +42,11 @@ private:
     ResponseQueuesMonitor responseQueuesMonitor;
 
     std::map<ClientID, Player> players;
+
+    //carreras
+    uint8_t races;
+    uint8_t currentRaceCount;
+    std::vector<std::string> raceFiles;
 
     //tiempos
     std::chrono::seconds countdownDuration;
@@ -91,7 +100,7 @@ private:
     void setShowingStatsState();
     void setModifyingCarState();
     // void setEliminatedState();
-    // void setGameEndState();
+    void setGameEndState();
 
     void updateGameState();
 

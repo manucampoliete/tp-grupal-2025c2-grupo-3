@@ -22,7 +22,10 @@ public:
 
     void sendRaceResultsSnapshot(std::shared_ptr<Snapshot> snapshot);
 
+    void sendFinalResultsSnapshot(std::shared_ptr<Snapshot> snapshot);
+
     void sendModificationSnapshot(std::shared_ptr<Snapshot> snapshot);
+    
     void sendCollisionSnapshot(const Snapshot::CollisionData& collision);
 };
 

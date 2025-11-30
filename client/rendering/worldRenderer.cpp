@@ -102,11 +102,11 @@ void WorldRenderer::render() {
     renderMapCamera();
 
     renderBrakeTrails();
+    renderCheckpoints();
     renderCarsUnderBridge();
     renderSmoke(); 
 
     renderBridges();
-    renderCheckpoints();
     renderCarsOnBridge();
 
     

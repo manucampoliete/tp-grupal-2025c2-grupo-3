@@ -7,8 +7,9 @@
 #include <utility>
 #include <vector>
 #include <tuple>
-
 #include <iostream>
+#include <random>
+#include <filesystem>
 
 #include "collisions/collisionLoader.h"
 #include "collisions/collisionGenerator.h"
@@ -39,11 +40,44 @@ Game::Game(const Config& config):
         clientCommandsQueue(),
         responseQueuesMonitor(),
         players(),
+        races(config.numberOfRaces),
+        currentRaceCount(0),
         countdownDuration(config.gamePhasesTimers.countdown),  
         raceDuration(config.gamePhasesTimers.racing),       
         statsDuration(config.gamePhasesTimers.showingStats),      
         upgradesDuration(config.gamePhasesTimers.modifyingCar),   
-        started(false) {}
+        started(false)
+{
+    /* std::vector<std::string> allRaceFiles = {
+        "map1.yaml",
+        "map2.yaml",
+        "map3.yaml"
+    }; */
+
+    std::vector<std::string> allRaceFiles;
+    std::string directory = "server/gameLogic/races/";
+
+    for (const auto& entry : std::filesystem::directory_iterator(directory)) {
+        if (!entry.is_regular_file()) continue;
+
+        if (entry.path().extension() == ".yaml") {
+            allRaceFiles.push_back(entry.path().string());
+        }
+    }
+
+    std::shuffle(
+        allRaceFiles.begin(),
+        allRaceFiles.end(),
+        std::mt19937{std::random_device{}()}
+    );
+
+    if (races > allRaceFiles.size()) {
+        throw std::runtime_error("No hay suficientes archivos carreras para elegir " +
+                                 std::to_string(races) + " carreras.");
+    }
+
+    raceFiles.assign(allRaceFiles.begin(), allRaceFiles.begin() + races);
+}
 
 b2Body* Game::createNewCarBody() {
     b2BodyDef body_def;
@@ -111,6 +145,10 @@ void Game::broadcastShowingStats() {
     responseQueuesMonitor.broadcast(std::make_shared<Snapshot>(static_cast<uint32_t>(remaining.count()), MSG_STATS_COUNTDOWN));
 }
 
+void Game::broadcastGameEnd() {
+    // se manda un countdown?
+}
+
 void Game::broadcastModifyingCar() {
     auto remaining = getRemainingGameStateTime();
     responseQueuesMonitor.broadcast(std::make_shared<Snapshot>(static_cast<uint32_t>(remaining.count()), MSG_MOD_COUNTDOWN));
@@ -131,9 +169,10 @@ void Game::broadcast() {
         case GameState::MODIFYING_CAR:
             broadcastModifyingCar();
             break;
-        case GameState::ELIMINATED:
         case GameState::GAME_END:
-            // implementar cuando haga falta
+            broadcastGameEnd();
+            break;
+        case GameState::ELIMINATED:
             break;
     }
 }
@@ -191,17 +230,30 @@ void Game::setCountdownState() {
 
     clearMapBodies();
 
-    // aca esta el map_id, de aca se decide qué colisiones se van a renderizar
-    Path currentPath = PathLoader::LoadPath("server/gameLogic/race.yaml");
+    // Path currentPath = PathLoader::LoadPath("server/gameLogic/race.yaml");
+    Path currentPath = PathLoader::LoadPath(raceFiles[currentRaceCount++]);
     pathBodies = PathGenerator::GeneratePath(currentPath, world, PIXELS_TO_METERS, WORLD_HEIGHT);
 
     for (auto& [id, player] : players) {
         player.initCurrentPath(currentPath);
     }
 
-    CollisionMap lowLayerCollisionMap = CollisionLoader::LoadCollisions("server/gameLogic/collisions/maps/viceCity/low_collision_layer.yaml");
-    CollisionMap highLayerCollisionMap = CollisionLoader::LoadCollisions("server/gameLogic/collisions/maps/viceCity/high_collision_layer.yaml");
-    CollisionMap layerSwitchCollisionMap = CollisionLoader::LoadCollisions("server/gameLogic/collisions/maps/viceCity/layer_switch.yaml");
+    std::string mapName;
+    switch (currentPath.mapId){
+        case MAP_LIBERTY_CITY:
+            mapName = "libertyCity";
+            break;
+        case MAP_SAN_ANDREAS:
+            mapName = "sanAndreas";
+            break;
+        case MAP_VICE_CITY:
+            mapName = "viceCity";
+            break;
+    }
+
+    CollisionMap lowLayerCollisionMap = CollisionLoader::LoadCollisions("server/gameLogic/collisions/maps/" + mapName + "/low_collision_layer.yaml");
+    CollisionMap highLayerCollisionMap = CollisionLoader::LoadCollisions("server/gameLogic/collisions/maps/" + mapName + "/high_collision_layer.yaml");
+    CollisionMap layerSwitchCollisionMap = CollisionLoader::LoadCollisions("server/gameLogic/collisions/maps/" + mapName + "/layer_switch.yaml");
 
     lowCollisionLayerBodies = CollisionGenerator::GenerateCollisions(lowLayerCollisionMap, world, PIXELS_TO_METERS, WORLD_HEIGHT, WALL_LOW_LAYER);
     highCollisionLayerBodies = CollisionGenerator::GenerateCollisions(highLayerCollisionMap, world, PIXELS_TO_METERS, WORLD_HEIGHT, WALL_HIGH_LAYER);
@@ -259,6 +311,45 @@ void Game::setShowingStatsState() {
     
 }
 
+void Game::setGameEndState() {
+    setGameState(GameState::GAME_END);
+
+    // a los jugadores que no terminaron la carrera se les asigna un tiempo de llegada maximo
+    for (auto& [id, player]: players) {
+        if (!player.hasFinished()) {
+            player.setArrivalTime(raceDuration.count());
+        }
+    }
+    // broadcast de estadisticas de la partida
+    Snapshot::FinalResults results;
+    for (auto& [id, player]: players) {
+        Snapshot::FinalResults::FinalStanding fs;
+        fs.playerId = player.getClientId();
+        fs.playerName = player.getUsername();
+        fs.totalTimeMs = player.getTotalRaceTime();
+        fs.position = 0; // se la doy en el sort
+
+        results.standings.push_back(fs);
+    }
+
+    std::sort(results.standings.begin(), results.standings.end(),
+              [](const Snapshot::FinalResults::FinalStanding& a,
+                 const Snapshot::FinalResults::FinalStanding& b) {
+                  return a.totalTimeMs < b.totalTimeMs;
+              });
+
+    for (size_t i = 0; i < results.standings.size(); ++i) {
+        results.standings[i].position = static_cast<uint8_t>(i + 1);
+    }
+
+    if (!results.standings.empty()) {    // por las dudas
+        results.winnerId   = results.standings[0].playerId;
+        results.winnerName = results.standings[0].playerName;
+    }
+    
+    responseQueuesMonitor.broadcast(std::make_shared<Snapshot>(results));
+}
+
 void Game::setModifyingCarState() {
     setGameState(GameState::MODIFYING_CAR);
 
@@ -304,7 +395,11 @@ void Game::updateGameState() {
             break;
         case GameState::RACING:
             if (gameStateElapsed >= raceDuration || allPlayersFinished()) {
-                setShowingStatsState();
+                if (currentRaceCount >= races) {
+                    setGameEndState();
+                } else {
+                    setShowingStatsState();
+                }
             }
             break;
         case GameState::SHOWING_STATS:
@@ -347,7 +442,7 @@ void Game::handleGameState() {
             handleModifyingCarState();
             break;
         case GameState::GAME_END:
-            // handleGameEndState();
+            handleGameEndState();
             break;
         case GameState::ELIMINATED:
             // handleEliminatedState();
@@ -374,6 +469,10 @@ void Game::handleRacingState() {
 
 void Game::handleShowingStatsState() {
     // por el momento nada
+}
+
+void Game::handleGameEndState() {
+    // lo mismo
 }
 
 void Game::handleModifyingCarState() {

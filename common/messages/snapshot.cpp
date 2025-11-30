@@ -30,6 +30,8 @@ Snapshot::Snapshot(const Snapshot& other):
 
 Snapshot::Snapshot(RaceResults results): results(results), type(MSG_RACE_END) {}
 
+Snapshot::Snapshot(FinalResults finalResults): finalResults(finalResults), type(MSG_GAME_END) {} 
+
 Snapshot::Snapshot(const std::vector<CarProperties>& carProperties): carProperties(carProperties), type(MSG_MOD_PHASE) {}
 
 Snapshot::Snapshot(const CollisionData& collision):

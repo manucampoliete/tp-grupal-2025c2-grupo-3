@@ -48,6 +48,19 @@ struct Snapshot {
         std::vector<PlayerResult> players;
     };
 
+    struct FinalResults {
+        struct FinalStanding {
+            uint16_t playerId;
+            std::string playerName;
+            uint32_t totalTimeMs;
+            uint8_t position; 
+        };
+
+        std::vector<FinalStanding> standings;
+        uint16_t winnerId;
+        std::string winnerName;
+    };
+
     struct CarProperties {
         ClientID playerId;
         uint16_t speed;
@@ -68,6 +81,7 @@ struct Snapshot {
     std::vector<CarSnapshot> cars;
 
     RaceResults results;
+    FinalResults finalResults;
 
     std::vector<CarProperties> carProperties;
     CollisionData collisionData;
@@ -93,6 +107,9 @@ struct Snapshot {
 
     // stats snapshot
     Snapshot(RaceResults results);
+
+    // game end snapshot
+    Snapshot(FinalResults finalResults);
 
     // mod snapshot
     Snapshot(const std::vector<Snapshot::CarProperties>& carProperties);

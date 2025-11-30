@@ -43,11 +43,11 @@ public:
             bool isHorizontal = element.id == CHECKPOINT_HORIZONTAL ||
                                 element.id == FINISH_HORIZONTAL;
             if (element.id == isHorizontal) {
-                w = 22.0f;
+                w = 1.0f;
                 h = 50.0f;
             } else {
                 w = 50.0f;
-                h = 22.0f;
+                h = 1.0f;
             }
             w *= pixelsToMeters;
             h *= pixelsToMeters;
