@@ -29,6 +29,8 @@ private:
     std::unique_ptr<Texture> bridgeTexture;
     std::unique_ptr<BridgeRenderer> bridgeRenderer;
 
+    Font& fontBig;
+
     CheckpointRenderer checkpointRenderer;
 
     World& world;
@@ -62,7 +64,7 @@ private:
 
 public:
     WorldRenderer(Renderer& renderer, Texture& mapTexture, Texture& carSprites, World& world,
-                  uint8_t playerId);
+                  uint8_t playerId, Font& fontBig);
     
     // Load bridge texture for current map
     void loadBridgeTexture(const std::string& path);

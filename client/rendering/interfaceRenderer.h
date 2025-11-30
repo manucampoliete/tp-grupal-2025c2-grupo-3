@@ -32,7 +32,6 @@ private:
     Texture& cheatWinImg;
     Texture& cheatLoseImg;
     Texture& cheatSpeedImg;
-    Texture& finishImg;
 
     Rect statsPopupRect;
     Rect modPopupRect;
@@ -49,7 +48,7 @@ private:
 public:
     UIRenderer(Renderer& renderer, Font& font, Font& fontSmall, Font& fontBig,
                Texture& mapTexture, World& world, uint8_t playerId,
-               Texture& cheatImmortalityImg, Texture& cheatWinImg, Texture& cheatLoseImg, Texture& cheatSpeedImg, Texture& finishImg);
+               Texture& cheatImmortalityImg, Texture& cheatWinImg, Texture& cheatLoseImg, Texture& cheatSpeedImg);
 
     void renderCountdown(uint8_t countdownNumber);
 
@@ -65,7 +64,6 @@ public:
     void renderCheatNotification(CheatType activeCheatNotification);
 
     void renderEliminatedPopup();
-    void renderFinishedPopup();
 
     void renderPodium(const FinalResults& results);
 
