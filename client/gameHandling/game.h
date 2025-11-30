@@ -50,6 +50,7 @@ private:
     SDL2pp::Texture cheatWinImg;
     SDL2pp::Texture cheatLoseImg;
     SDL2pp::Texture cheatSpeedImg;
+    SDL2pp::Texture finishImg;
 
     World& world;
     GameLoop& gameLoop;

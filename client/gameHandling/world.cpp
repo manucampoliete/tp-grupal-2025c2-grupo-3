@@ -18,3 +18,11 @@ uint8_t World::getPlayerHealth(uint8_t playerId) const {
         return it->second.health;
     return 0;
 }
+
+bool World::hasPlayerFinished(uint8_t playerId) const {
+    auto it = cars.find(playerId);
+    if (it != cars.end()) {
+        return it->second.checkpoints.empty();
+    }
+    return false;
+}

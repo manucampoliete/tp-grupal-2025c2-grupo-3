@@ -4,14 +4,13 @@
 
 
 WorldRenderer::WorldRenderer(Renderer& renderer, Texture& mapTexture, Texture& carSprites,
-                             World& world, uint8_t playerId, Font& fontBig):
+                             World& world, uint8_t playerId):
         renderer(renderer),
         mapTexture(mapTexture),
         carSprites(carSprites),
         bridgeTexture(nullptr),
         bridgeRenderer(nullptr),
-        fontBig(fontBig),
-        checkpointRenderer(renderer, fontBig),
+        checkpointRenderer(renderer),
         world(world),
         playerId(playerId),
         camera(0, 0, 800, 600),
@@ -158,12 +157,8 @@ void WorldRenderer::renderCar(const BroadcastData::CarState& carState) {
 void WorldRenderer::renderCheckpoints() {
     const auto& cars = world.getCars();
     auto it = cars.find(playerId);
-    if (it != cars.end()) {
-        if (!it->second.checkpoints.empty())
-            checkpointRenderer.render(it->second.checkpoints, camera);
-        else // if empty - the race is finished
-            checkpointRenderer.renderFinishedPopup();
-    }
+    if (it != cars.end())
+        checkpointRenderer.render(it->second.checkpoints, camera);
 }
 
 void WorldRenderer::renderExplosions() {
