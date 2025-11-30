@@ -77,6 +77,14 @@ struct Snapshot {
         uint32_t y;          // coordenada y del choque * 1000
     };
 
+    struct RaceStart {
+        uint8_t mapId;
+        uint8_t race;
+        uint8_t totalRaces;
+    };
+
+    RaceStart startInfo;
+
     uint32_t countdown;  // remaining race time in milliseconds
     std::vector<CarSnapshot> cars;
 
@@ -95,6 +103,9 @@ struct Snapshot {
      * Constructor for Snapshot
      */
     Snapshot();
+
+    // start race snapshot
+    Snapshot(RaceStart startInfo);
 
     // change state snapshot
     Snapshot(int type);

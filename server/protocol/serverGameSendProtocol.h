@@ -18,6 +18,8 @@ public:
      */
     void sendSnapshot(std::shared_ptr<Snapshot> snapshot);
 
+    void sendRaceStartSnapshot(std::shared_ptr<Snapshot> snapshot);
+
     void sendRaceSnapshot(std::shared_ptr<Snapshot> snapshot);
 
     void sendRaceResultsSnapshot(std::shared_ptr<Snapshot> snapshot);

@@ -25,9 +25,7 @@
 
 #include "collisions/pathLoader.h"
 
-#define MAP_LIBERTY_CITY 0
-#define MAP_SAN_ANDREAS 1
-#define MAP_VICE_CITY 2
+#include "../../common/utils/mapConstants.h"
 
 class Command;
 

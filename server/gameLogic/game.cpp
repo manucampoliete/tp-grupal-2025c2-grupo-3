@@ -259,17 +259,19 @@ void Game::setCountdownState() {
     highCollisionLayerBodies = CollisionGenerator::GenerateCollisions(highLayerCollisionMap, world, PIXELS_TO_METERS, WORLD_HEIGHT, WALL_HIGH_LAYER);
     layerSwitchBodies = CollisionGenerator::GenerateCollisions(layerSwitchCollisionMap, world, PIXELS_TO_METERS, WORLD_HEIGHT, SENSOR_LAYER, LAYER_SWITCH_SENSOR);
 
-    // incializar players (aplicar penalizaciones, poner vida = max_vida)
-    // BUG: si un jugador finaliza la carrera por tiempo limite no se le aplica la penalizacion!
-    // se arregla en showing stats? (sumarle el tiempo maximo al tiempo de carrera actual, que es donde se refleja la penalizacion)
+    // pepara los players para la carrera (aplicar penalizaciones, poner vida = max_vida, etc)
     for (auto& [id, player]: players) {
         player.resetForNewRace();
     }
 
     world->ClearForces();
 
-    // no se hace el primer broadcast para countdown, se manda solo el broadcast por frame
-    // responseQueuesMonitor.broadcast(std::make_shared<Snapshot>(MSG_COUNTDOWN_START));
+    Snapshot::RaceStart info;
+    info.mapId = currentPath.mapId;
+    info.race = currentRaceCount;
+    info.totalRaces = races; 
+
+    responseQueuesMonitor.broadcast(std::make_shared<Snapshot>(info));
 }
 
 // cambia el estado y manda el broadcast de que se empezó la carrera

@@ -16,6 +16,8 @@
 #include "../rendering/interfaceRenderer.h"
 #include "../rendering/effectsManager.h"
 
+#include "../../common/utils/mapConstants.h"
+
 using namespace SDL2pp;
 
 class GameLoop;

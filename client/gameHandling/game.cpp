@@ -191,24 +191,22 @@ void Game::startRace(const RaceStart info) {
     stateManager.setTotalRaces(totalRaces);
 
     switch (mapId) {
-        case 0: // Vice City
-            mapPath = "client/assets/cities/Game Boy _ GBC - Grand Theft Auto - Backgrounds - Vice City.png";
-            bridgePath = "client/assets/cities/Vice-City-Bridges.png";
-            musicPath = "client/assets/sounds/viceCity.mp3";
-            break;
-        case 1: // Liberty City
-        //    mapPath = "client/assets/cities/Game Boy _ GBC - Grand Theft Auto - Backgrounds - Liberty City.png";
-        //    bridgePath = "client/assets/cities/Liberty-City-Bridges.png"; 
+        case MAP_LIBERTY_CITY: // Liberty City
+            mapPath = "client/assets/cities/Game Boy _ GBC - Grand Theft Auto - Backgrounds - Liberty City.png";
+            bridgePath = "client/assets/cities/Liberty-City-Bridges.png"; 
             musicPath = "client/assets/sounds/libertyCity.mp3";
             break;
-        case 2: // San Andreas
+        case MAP_SAN_ANDREAS: // San Andreas
         //    mapPath = "client/assets/cities/Game Boy _ GBC - Grand Theft Auto - Backgrounds - San Andreas.png";
         //    bridgePath = "client/assets/cities/San-Andreas-Bridges.png";
             break;
-        default: // mientras no tengamos todos implementados
+        case MAP_VICE_CITY: // Vice City
             mapPath = "client/assets/cities/Game Boy _ GBC - Grand Theft Auto - Backgrounds - Vice City.png";
             bridgePath = "client/assets/cities/Vice-City-Bridges.png";
             musicPath = "client/assets/sounds/viceCity.mp3";
+            break;
+        default:
+            std::cerr << "[GAME] Warning: Could not load map " << (int)mapId << std::endl;
             break;
     }
 

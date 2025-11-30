@@ -6,6 +6,13 @@
 
 ServerGameSendProtocol::ServerGameSendProtocol(Socket& socket): SendProtocol(socket) {}
 
+void ServerGameSendProtocol::sendRaceStartSnapshot(std::shared_ptr<Snapshot> snapshot) {
+    Snapshot::RaceStart info = snapshot->startInfo;
+    sendU8(info.mapId);
+    sendU8(info.race);
+    sendU8(info.totalRaces);
+}
+
 void ServerGameSendProtocol::sendRaceSnapshot(std::shared_ptr<Snapshot> snapshot) {
     // Send countdown
     sendU32(snapshot->countdown);
@@ -92,7 +99,7 @@ void ServerGameSendProtocol::sendSnapshot(std::shared_ptr<Snapshot> snapshot) {
             // nada
             break;
         case MSG_RACE_START:
-            // nada
+            sendRaceStartSnapshot(snapshot);
             break;
         case MSG_COUNTDOWN:
             sendU8(static_cast<uint8_t>(snapshot->countdown));
