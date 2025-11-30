@@ -539,26 +539,14 @@ collisions:
   y: 167.0
   width: 1254.0
   height: 32.0
-- x: 766.5
-  y: 219.0
-  width: 1.0
-  height: 122.0
 - x: 1670.5
   y: 187.0
   width: 1.0
   height: 58.0
-- x: 767.5
-  y: 219.5
-  width: 1.0
-  height: 121.0
 - x: 1671.5
   y: 187.5
   width: 1.0
   height: 57.0
-- x: 776.5
-  y: 216.0
-  width: 17.0
-  height: 80.0
 - x: 3045.5
   y: 183.5
   width: 747.0
@@ -575,14 +563,6 @@ collisions:
   y: 184.5
   width: 296.0
   height: 1.0
-- x: 897.5
-  y: 188.0
-  width: 3.0
-  height: 6.0
-- x: 1701.5
-  y: 188.0
-  width: 3.0
-  height: 6.0
 - x: 3044.0
   y: 185.5
   width: 744.0
@@ -687,10 +667,6 @@ collisions:
   y: 254.5
   width: 152.0
   height: 1.0
-- x: 1461.5
-  y: 276.0
-  width: 3.0
-  height: 6.0
 - x: 3601.5
   y: 284.0
   width: 3.0
@@ -719,10 +695,6 @@ collisions:
   y: 289.5
   width: 147.0
   height: 1.0
-- x: 708.0
-  y: 290.5
-  width: 6.0
-  height: 3.0
 - x: 510.0
   y: 291.0
   width: 146.0
@@ -771,10 +743,6 @@ collisions:
   y: 403.5
   width: 1.0
   height: 215.0
-- x: 1276.0
-  y: 298.5
-  width: 6.0
-  height: 3.0
 - x: 2412.0
   y: 298.5
   width: 6.0
@@ -999,10 +967,6 @@ collisions:
   y: 479.5
   width: 1.0
   height: 271.0
-- x: 1636.0
-  y: 346.5
-  width: 6.0
-  height: 3.0
 - x: 1837.0
   y: 345.5
   width: 124.0
@@ -1188,9 +1152,9 @@ collisions:
   width: 1.0
   height: 50.0
 - x: 1731.5
-  y: 589.0
+  y: 477.0
   width: 1.0
-  height: 420.0
+  height: 196.0
 - x: 3996.5
   y: 525.0
   width: 1.0
@@ -1216,9 +1180,9 @@ collisions:
   width: 1.0
   height: 48.0
 - x: 1732.5
-  y: 589.5
+  y: 477.5
   width: 1.0
-  height: 419.0
+  height: 195.0
 - x: 1970.0
   y: 394.0
   width: 2.0
@@ -1248,9 +1212,9 @@ collisions:
   width: 1.0
   height: 46.0
 - x: 1733.5
-  y: 590.0
+  y: 478.0
   width: 1.0
-  height: 418.0
+  height: 194.0
 - x: 3994.5
   y: 526.0
   width: 1.0
@@ -1279,10 +1243,6 @@ collisions:
   y: 444.0
   width: 1.0
   height: 120.0
-- x: 1073.5
-  y: 396.0
-  width: 3.0
-  height: 6.0
 - x: 2646.5
   y: 596.5
   width: 35.0
@@ -1336,21 +1296,21 @@ collisions:
   width: 1.0
   height: 395.0
 - x: 1734.5
-  y: 602.0
+  y: 490.0
   width: 1.0
-  height: 394.0
+  height: 170.0
 - x: 3538.5
   y: 602.0
   width: 1.0
   height: 394.0
 - x: 1735.5
-  y: 603.0
+  y: 491.0
   width: 1.0
-  height: 392.0
+  height: 168.0
 - x: 1736.5
-  y: 603.5
+  y: 491.5
   width: 1.0
-  height: 391.0
+  height: 167.0
 - x: 1970.5
   y: 409.5
   width: 1.0
@@ -1364,9 +1324,9 @@ collisions:
   width: 3.0
   height: 6.0
 - x: 1738.0
-  y: 604.0
+  y: 492.0
   width: 2.0
-  height: 390.0
+  height: 166.0
 - x: 1763.0
   y: 492.0
   width: 48.0
@@ -1927,14 +1887,6 @@ collisions:
   y: 615.5
   width: 1.0
   height: 81.0
-- x: 1689.5
-  y: 687.0
-  width: 83.0
-  height: 224.0
-- x: 1757.5
-  y: 687.0
-  width: 37.0
-  height: 224.0
 - x: 2265.5
   y: 684.0
   width: 1.0
@@ -1991,14 +1943,10 @@ collisions:
   y: 696.0
   width: 176.0
   height: 204.0
-- x: 1630.5
+- x: 1700.0
   y: 620.0
-  width: 35.0
+  width: 174.0
   height: 52.0
-- x: 1781.5
-  y: 696.0
-  width: 11.0
-  height: 204.0
 - x: 891.5
   y: 696.0
   width: 1.0
@@ -2231,41 +2179,41 @@ collisions:
   y: 719.0
   width: 1.0
   height: 146.0
-- x: 1632.0
+- x: 1701.5
   y: 646.5
-  width: 32.0
+  width: 171.0
   height: 1.0
 - x: 575.5
   y: 719.5
   width: 1.0
   height: 145.0
-- x: 1633.5
+- x: 1703.0
   y: 647.5
-  width: 29.0
+  width: 168.0
   height: 1.0
 - x: 3535.5
   y: 723.0
   width: 1.0
   height: 152.0
-- x: 1635.0
+- x: 1704.5
   y: 648.5
-  width: 26.0
+  width: 165.0
   height: 1.0
 - x: 3534.5
   y: 723.5
   width: 1.0
   height: 151.0
-- x: 1635.5
+- x: 1705.0
   y: 649.5
-  width: 25.0
+  width: 164.0
   height: 1.0
 - x: 3533.0
   y: 724.0
   width: 2.0
   height: 150.0
-- x: 1636.0
+- x: 1705.5
   y: 651.0
-  width: 24.0
+  width: 163.0
   height: 2.0
 - x: 3480.5
   y: 724.5
@@ -2275,10 +2223,10 @@ collisions:
   y: 725.0
   width: 1.0
   height: 148.0
-- x: 1636.5
-  y: 725.5
-  width: 23.0
-  height: 147.0
+- x: 1706.0
+  y: 725.0
+  width: 162.0
+  height: 146.0
 - x: 3427.5
   y: 725.5
   width: 1.0
@@ -2719,9 +2667,9 @@ collisions:
   y: 798.5
   width: 4.0
   height: 1.0
-- x: 1780.0
+- x: 1704.5
   y: 798.5
-  width: 8.0
+  width: 159.0
   height: 1.0
 - x: 1857.5
   y: 798.5
@@ -9460,9 +9408,9 @@ collisions:
   width: 92.0
   height: 1.0
 - x: 2338.5
-  y: 3075.5
+  y: 3041.5
   width: 919.0
-  height: 303.0
+  height: 235.0
 - x: 3621.5
   y: 2925.0
   width: 91.0
@@ -9767,10 +9715,6 @@ collisions:
   y: 3009.5
   width: 527.0
   height: 1.0
-- x: 1244.0
-  y: 3010.5
-  width: 6.0
-  height: 3.0
 - x: 608.0
   y: 3011.0
   width: 526.0
@@ -9927,10 +9871,6 @@ collisions:
   y: 3088.5
   width: 262.0
   height: 1.0
-- x: 1129.5
-  y: 3092.0
-  width: 3.0
-  height: 6.0
 - x: 3154.5
   y: 3092.5
   width: 59.0
@@ -10107,10 +10047,6 @@ collisions:
   y: 3680.0
   width: 1.0
   height: 1120.0
-- x: 1385.5
-  y: 3140.0
-  width: 3.0
-  height: 6.0
 - x: 212.0
   y: 3150.5
   width: 184.0
@@ -10119,6 +10055,54 @@ collisions:
   y: 3154.5
   width: 6.0
   height: 3.0
+- x: 2234.0
+  y: 3159.5
+  width: 710.0
+  height: 1.0
+- x: 2704.0
+  y: 3159.5
+  width: 188.0
+  height: 1.0
+- x: 2233.0
+  y: 3160.5
+  width: 708.0
+  height: 1.0
+- x: 2705.0
+  y: 3160.5
+  width: 186.0
+  height: 1.0
+- x: 2232.5
+  y: 3161.5
+  width: 707.0
+  height: 1.0
+- x: 2705.5
+  y: 3161.5
+  width: 185.0
+  height: 1.0
+- x: 2232.0
+  y: 3162.5
+  width: 706.0
+  height: 1.0
+- x: 2706.0
+  y: 3162.5
+  width: 184.0
+  height: 1.0
+- x: 2231.5
+  y: 3163.5
+  width: 705.0
+  height: 1.0
+- x: 2706.5
+  y: 3163.5
+  width: 183.0
+  height: 1.0
+- x: 2230.5
+  y: 3289.5
+  width: 703.0
+  height: 251.0
+- x: 2707.5
+  y: 3195.0
+  width: 181.0
+  height: 62.0
 - x: 3748.0
   y: 3166.5
   width: 6.0
@@ -10479,10 +10463,6 @@ collisions:
   y: 3302.5
   width: 1.0
   height: 209.0
-- x: 2912.0
-  y: 3267.0
-  width: 80.0
-  height: 136.0
 - x: 3487.5
   y: 3303.0
   width: 1.0
@@ -10491,10 +10471,6 @@ collisions:
   y: 3303.5
   width: 1.0
   height: 207.0
-- x: 2860.0
-  y: 3202.5
-  width: 6.0
-  height: 3.0
 - x: 3489.5
   y: 3304.0
   width: 1.0
@@ -10535,33 +10511,29 @@ collisions:
   y: 3214.5
   width: 168.0
   height: 1.0
-- x: 2338.0
+- x: 2708.0
+  y: 3226.5
+  width: 180.0
+  height: 1.0
+- x: 2707.5
   y: 3227.5
-  width: 918.0
+  width: 179.0
   height: 1.0
-- x: 2337.5
+- x: 2707.5
   y: 3228.5
-  width: 917.0
+  width: 177.0
   height: 1.0
-- x: 2337.0
+- x: 2708.0
   y: 3229.5
-  width: 916.0
+  width: 174.0
   height: 1.0
-- x: 2335.5
+- x: 2707.0
   y: 3230.5
-  width: 913.0
+  width: 170.0
   height: 1.0
-- x: 2331.5
-  y: 3323.0
-  width: 905.0
-  height: 184.0
-- x: 2854.5
+- x: 2916.0
   y: 3284.0
-  width: 35.0
-  height: 100.0
-- x: 2973.5
-  y: 3284.0
-  width: 43.0
+  width: 158.0
   height: 100.0
 - x: 2836.5
   y: 3284.0
@@ -10687,26 +10659,50 @@ collisions:
   y: 3316.0
   width: 1.0
   height: 120.0
+- x: 2582.5
+  y: 3385.0
+  width: 1.0
+  height: 252.0
+- x: 2583.5
+  y: 3386.0
+  width: 1.0
+  height: 250.0
 - x: 3520.5
   y: 3334.0
   width: 1.0
   height: 146.0
+- x: 2584.5
+  y: 3386.5
+  width: 1.0
+  height: 249.0
+- x: 2585.5
+  y: 3387.0
+  width: 1.0
+  height: 248.0
 - x: 3519.5
   y: 3335.0
   width: 1.0
   height: 144.0
+- x: 2586.5
+  y: 3387.5
+  width: 1.0
+  height: 247.0
 - x: 3518.5
   y: 3335.5
   width: 1.0
   height: 143.0
+- x: 2588.0
+  y: 3388.0
+  width: 2.0
+  height: 246.0
 - x: 3517.0
   y: 3336.0
   width: 2.0
   height: 142.0
-- x: 2789.5
-  y: 3424.5
-  width: 11.0
-  height: 317.0
+- x: 2692.0
+  y: 3388.5
+  width: 206.0
+  height: 245.0
 - x: 3506.0
   y: 3336.5
   width: 20.0
@@ -10799,18 +10795,10 @@ collisions:
   y: 3384.0
   width: 1.0
   height: 144.0
-- x: 2856.0
+- x: 2916.0
   y: 3334.5
-  width: 32.0
+  width: 152.0
   height: 1.0
-- x: 2972.0
-  y: 3334.5
-  width: 40.0
-  height: 1.0
-- x: 2932.0
-  y: 3459.0
-  width: 40.0
-  height: 248.0
 - x: 3262.5
   y: 3342.5
   width: 115.0
@@ -10883,13 +10871,9 @@ collisions:
   y: 3476.0
   width: 2.0
   height: 214.0
-- x: 2857.5
-  y: 3476.5
-  width: 109.0
-  height: 213.0
-- x: 2973.5
+- x: 2899.0
   y: 3476.0
-  width: 43.0
+  width: 192.0
   height: 212.0
 - x: 2995.5
   y: 3476.0
@@ -11039,17 +11023,17 @@ collisions:
   y: 3415.5
   width: 460.0
   height: 1.0
-- x: 2661.5
+- x: 2560.5
   y: 3415.5
-  width: 245.0
+  width: 43.0
   height: 1.0
 - x: 2108.0
   y: 3416.5
   width: 458.0
   height: 1.0
-- x: 2663.0
+- x: 2562.0
   y: 3416.5
-  width: 242.0
+  width: 40.0
   height: 1.0
 - x: 3913.5
   y: 3496.0
@@ -11059,9 +11043,9 @@ collisions:
   y: 3417.5
   width: 457.0
   height: 1.0
-- x: 2663.5
+- x: 2562.5
   y: 3417.5
-  width: 241.0
+  width: 39.0
   height: 1.0
 - x: 156.0
   y: 3496.0
@@ -11079,9 +11063,9 @@ collisions:
   y: 3419.0
   width: 456.0
   height: 2.0
-- x: 2664.0
+- x: 2563.0
   y: 3419.0
-  width: 240.0
+  width: 38.0
   height: 2.0
 - x: 116.5
   y: 3496.0
@@ -11135,9 +11119,9 @@ collisions:
   y: 3499.5
   width: 455.0
   height: 159.0
-- x: 2664.5
+- x: 2563.5
   y: 3462.0
-  width: 239.0
+  width: 37.0
   height: 84.0
 - x: 114.5
   y: 3496.0
@@ -11363,9 +11347,9 @@ collisions:
   y: 3523.5
   width: 1.0
   height: 39.0
-- x: 2665.0
+- x: 2564.0
   y: 3505.5
-  width: 238.0
+  width: 36.0
   height: 3.0
 - x: 4281.5
   y: 3540.0
@@ -11383,53 +11367,53 @@ collisions:
   y: 3524.0
   width: 1.0
   height: 34.0
-- x: 2665.5
+- x: 2564.5
   y: 3507.5
-  width: 237.0
+  width: 35.0
   height: 1.0
 - x: 755.5
   y: 3524.0
   width: 1.0
   height: 32.0
-- x: 2666.0
+- x: 2565.0
   y: 3508.5
-  width: 236.0
+  width: 34.0
   height: 1.0
 - x: 754.5
   y: 3524.0
   width: 1.0
   height: 30.0
-- x: 2666.5
+- x: 2565.5
   y: 3509.5
-  width: 235.0
+  width: 33.0
   height: 1.0
-- x: 2668.0
+- x: 2567.0
   y: 3510.5
-  width: 232.0
+  width: 30.0
   height: 1.0
-- x: 2733.5
+- x: 2739.0
   y: 3511.5
-  width: 101.0
+  width: 112.0
   height: 1.0
 - x: 753.5
   y: 3524.0
   width: 1.0
   height: 24.0
-- x: 2735.0
+- x: 2740.5
   y: 3512.5
-  width: 98.0
+  width: 109.0
   height: 1.0
-- x: 2735.5
+- x: 2741.0
   y: 3513.5
-  width: 97.0
+  width: 108.0
   height: 1.0
-- x: 2736.0
+- x: 2741.5
   y: 3515.0
-  width: 96.0
+  width: 107.0
   height: 2.0
-- x: 2736.5
+- x: 2742.0
   y: 3546.0
-  width: 95.0
+  width: 106.0
   height: 60.0
 - x: 2510.5
   y: 3562.0
@@ -11491,9 +11475,9 @@ collisions:
   y: 3574.5
   width: 72.0
   height: 1.0
-- x: 2737.0
+- x: 2742.5
   y: 3577.5
-  width: 94.0
+  width: 105.0
   height: 3.0
 - x: 940.0
   y: 3644.0
@@ -11511,9 +11495,9 @@ collisions:
   y: 3579.5
   width: 454.0
   height: 1.0
-- x: 2737.5
+- x: 2743.0
   y: 3579.5
-  width: 93.0
+  width: 104.0
   height: 1.0
 - x: 3148.0
   y: 3579.5
@@ -11531,9 +11515,9 @@ collisions:
   y: 3580.5
   width: 453.0
   height: 1.0
-- x: 2738.0
+- x: 2743.5
   y: 3580.5
-  width: 92.0
+  width: 103.0
   height: 1.0
 - x: 3147.5
   y: 3580.5
@@ -11551,9 +11535,9 @@ collisions:
   y: 3581.5
   width: 452.0
   height: 1.0
-- x: 2738.5
+- x: 2744.0
   y: 3581.5
-  width: 91.0
+  width: 102.0
   height: 1.0
 - x: 3147.0
   y: 3581.5
@@ -11571,13 +11555,13 @@ collisions:
   y: 3582.5
   width: 133.0
   height: 1.0
-- x: 2740.0
+- x: 2745.5
   y: 3582.5
-  width: 88.0
+  width: 99.0
   height: 1.0
-- x: 2972.0
+- x: 2897.5
   y: 3582.5
-  width: 40.0
+  width: 189.0
   height: 1.0
 - x: 3093.5
   y: 3582.5
@@ -11619,10 +11603,6 @@ collisions:
   y: 3583.5
   width: 276.0
   height: 1.0
-- x: 2940.0
-  y: 3823.0
-  width: 40.0
-  height: 480.0
 - x: 753.5
   y: 3644.0
   width: 1.0
@@ -11811,13 +11791,9 @@ collisions:
   y: 3724.0
   width: 126.0
   height: 148.0
-- x: 2894.5
-  y: 3856.5
-  width: 51.0
-  height: 413.0
-- x: 2977.5
+- x: 2932.0
   y: 3856.0
-  width: 35.0
+  width: 126.0
   height: 412.0
 - x: 3184.0
   y: 3704.0
@@ -13299,9 +13275,9 @@ collisions:
   y: 4062.5
   width: 20.0
   height: 1.0
-- x: 2976.0
+- x: 2930.5
   y: 4062.5
-  width: 32.0
+  width: 123.0
   height: 1.0
 - x: 3225.5
   y: 4062.5
