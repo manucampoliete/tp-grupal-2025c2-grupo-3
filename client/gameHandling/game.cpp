@@ -139,6 +139,8 @@ void Game::render() {
             uiRenderer.renderHealthBar(playerHealth, window.GetWidth());
             if (worldRenderer.hasMapLoaded())
                 uiRenderer.renderMinimap(worldRenderer.getMapTexture(), window.GetWidth(), window.GetHeight());
+            if (world.hasPlayerFinished(playerId))
+                uiRenderer.renderFinishedPopup();
             break;
         }
         case GameState::ELIMINATED:

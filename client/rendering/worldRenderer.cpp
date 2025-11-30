@@ -132,7 +132,7 @@ void WorldRenderer::render() {
     renderBridges();
     renderCarsOnBridge();
 
-    
+
     renderCollisionEffects();
     renderExplosions();
 }
@@ -182,10 +182,9 @@ void WorldRenderer::renderCar(const BroadcastData::CarState& carState) {
 void WorldRenderer::renderCheckpoints() {
     const auto& cars = world.getCars();
     auto it = cars.find(playerId);
-    if (it != cars.end()) 
+    if (it != cars.end())
         checkpointRenderer.render(it->second.checkpoints, camera);
 }
-
 
 void WorldRenderer::renderExplosions() {
     renderer.SetDrawBlendMode(SDL_BLENDMODE_BLEND);
