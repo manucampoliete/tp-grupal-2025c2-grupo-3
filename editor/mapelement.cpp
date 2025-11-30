@@ -4,8 +4,7 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QGraphicsScene>
 
-MapElement::MapElement(ElementType type, ElementDirection direction, const QPixmap& pixmap, const QImage& mask)
-        : QObject(nullptr), QGraphicsPixmapItem(pixmap), collisionMask(mask), elementType(type), elementDirection(direction) {
+MapElement::MapElement(ElementType type, ElementDirection direction, const QPixmap& pixmap, const QImage& mask): QObject(nullptr), QGraphicsPixmapItem(pixmap), collisionMask(mask), elementType(type), elementDirection(direction) {
     setFlag(ItemIsMovable);
     setFlag(ItemIsSelectable);
     setFlag(ItemSendsGeometryChanges, true);
@@ -85,15 +84,13 @@ ElementProperties mapUnifiedIdToTypeAndDirection(int unifiedId) {
         case 15:
             props.type = TYPE_START;
             props.direction = DIR_VERTICAL;
-            break;
-            
+            break;       
         case 16:
             props.direction = DIR_HORIZONTAL;
             break;
         case 17:
             props.direction = DIR_VERTICAL;
-            break;
-            
+            break;     
         case 18:
             props.type = TYPE_FINISH;
             props.direction = DIR_HORIZONTAL;
@@ -102,7 +99,6 @@ ElementProperties mapUnifiedIdToTypeAndDirection(int unifiedId) {
             props.type = TYPE_FINISH;
             props.direction = DIR_VERTICAL;
             break;
-            
         default:
             props.type = TYPE_HINT; 
             props.direction = DIR_UP; 
@@ -113,10 +109,10 @@ ElementProperties mapUnifiedIdToTypeAndDirection(int unifiedId) {
 
 void MapElement::mousePressEvent(QGraphicsSceneMouseEvent *event) {
     if (event->button() == Qt::RightButton) {
-        std::cout << "DEBUG: Clic derecho detectado en elemento." << std::endl;
         deleteElement();
         return;
     }
+
     QGraphicsPixmapItem::mousePressEvent(event);
 }
 
@@ -141,10 +137,7 @@ QVariant MapElement::itemChange(GraphicsItemChange change, const QVariant &value
             const int blackThreshold = 200;
 
             if (redValue < blackThreshold)
-            {
-                std::cout << "❌ COLISIÓN DETECTADA en CENTRO." << std::endl;
                 return pos();
-            }
         }
         return QGraphicsPixmapItem::itemChange(change, value);
     }
@@ -176,7 +169,7 @@ QString getAssetPath(ElementType type, ElementDirection direction) {
         case TYPE_CHECKPOINT:
             switch (direction) {
                 case DIR_HORIZONTAL: return base + "cp_horizontal.png";
-                case DIR_VERTICAL:   return base + "cp_vertical.png";
+                case DIR_VERTICAL: return base + "cp_vertical.png";
                 default: break;
             }
             break;
@@ -189,29 +182,28 @@ QString getAssetPath(ElementType type, ElementDirection direction) {
 
         case TYPE_SPAWN:
             switch (direction) {
-                case DIR_UP:    return base + "spawn_up.png";
-                case DIR_LEFT:  return base + "spawn_left.png";
+                case DIR_UP: return base + "spawn_up.png";
+                case DIR_LEFT: return base + "spawn_left.png";
                 case DIR_RIGHT: return base + "spawn_right.png";
-                case DIR_DOWN:  return base + "spawn_down.png";
+                case DIR_DOWN: return base + "spawn_down.png";
                 default: break;
             }
             break;
     }
 
-    qWarning() << "Error: Asset no encontrado para Tipo:" << type << "Dirección:" << direction;
+    qWarning() << "Error: Asset not found for type:" << type << "Direction:" << direction;
     return QString();
 }
 
 QPixmap loadPixmapForElement(ElementType type, ElementDirection direction) {
     QString path = getAssetPath(type, direction);
 
-    if (path.isEmpty()) {
+    if (path.isEmpty())
         return QPixmap();
-    }
 
     QPixmap originalPixmap(path);
-    if (originalPixmap.isNull()) {
-        qWarning() << "Error CRÍTICO: No se pudo cargar el archivo:" << path;
+    if (originalPixmap.isNull()){
+        qWarning() << "ERROR: Can not load map" << path;
         return QPixmap();
     }
 

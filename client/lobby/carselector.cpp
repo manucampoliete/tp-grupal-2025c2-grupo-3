@@ -3,8 +3,7 @@
 #include <QHBoxLayout>
 #include <iostream>
 
-CarSelector::CarSelector(QWidget* parent, const std::vector<CarInfo>& cars):
-        QWidget(parent), carList(cars) {
+CarSelector::CarSelector(QWidget* parent, const std::vector<CarInfo>& cars): QWidget(parent), carList(cars) {
     this->setObjectName("CarSelector");
 
     carStack = new QStackedWidget(this);

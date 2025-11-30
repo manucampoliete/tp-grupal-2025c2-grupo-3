@@ -44,9 +44,7 @@ Editor::Editor(QWidget* parent): QMainWindow(parent), ui(new Ui::Editor) {
     ui->stackedWidget->addWidget(menu);
 
     connect(menu, &Menu::exitClicked, this, &Editor::exitEditor);
-
     connect(menu, &Menu::mapOpenRequested, this, &Editor::openMapFileDialog);
-
     connect(menu, &Menu::mapSelected, this, &Editor::launchMapEditor);
 
     ui->stackedWidget->setCurrentWidget(menu);
@@ -97,6 +95,7 @@ int Editor::loadMapIdFromYaml(const QString& filePath) {
         return root["map_name"].as<int>();
     } catch (const YAML::Exception& e) {
         qWarning() << "YAML Read Error (ID):" << e.what();
+        QMessageBox::warning(this, "Error", "Failed to read map ID from YAML file.");
         return -1;
     }
 }
@@ -110,8 +109,6 @@ void Editor::openMapFileDialog() {
     if (!fileName.isEmpty()) {
         filePathToLoad = fileName;
         launchMapEditor(0);
-    } else {
-        std::cout << "Carga de mapa cancelada." << std::endl;
     }
 }
 

@@ -2,9 +2,9 @@
 #include <iostream>
 #include "mapeditor.h"
 #include "ui_menu.h"
+#include <QMessageBox>
 
 Menu::Menu(QWidget* parent): QWidget(parent), ui(new Ui::Menu) {
-    std::cout << "hola" << std::endl;
     ui->setupUi(this);
 
     ui->menuContainer->setFixedSize(850, 450);
@@ -25,7 +25,9 @@ Menu::Menu(QWidget* parent): QWidget(parent), ui(new Ui::Menu) {
     connect(ui->selectButton, &QPushButton::clicked, this, &Menu::onSelectButtonPressed);
 }
 
-void Menu::on_buttonExit_clicked() { emit exitClicked(); }
+void Menu::on_buttonExit_clicked() { 
+    emit exitClicked(); 
+}
 
 void Menu::onOptionClicked(MapOption* opt) {
     if (current)
@@ -37,17 +39,15 @@ void Menu::onOptionClicked(MapOption* opt) {
 
 void Menu::onSelectButtonPressed() {
     if (!current) {
-        std::cout << "Error, Please select a map." << std::endl;
+        QMessageBox::warning(this, "Warning", "Please select a map.");
         return;
     }
 
     int selectedCityId = current->getCityId();
 
     if (selectedCityId == 3) {
-        std::cout << "Modo Custom: Solicitando archivo YAML." << std::endl;
         emit mapOpenRequested();
     } else {
-        std::cout << "Modo Edición: Cargando mapa ID " << selectedCityId << std::endl;
         emit mapSelected(selectedCityId);
     }
 }

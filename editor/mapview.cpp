@@ -38,7 +38,6 @@ void MapView::setResources(const QImage& mask) {
 void MapView::dragEnterEvent(QDragEnterEvent *event) {
     if (event->mimeData()->hasText() && event->mimeData()->text().startsWith("asset/element/")) {
         event->acceptProposedAction();
-        std::cout << "DEBUG: Evento DragEnter recibido. MIME: " << event->mimeData()->text().toStdString() << std::endl;
     } else {
         QGraphicsView::dragEnterEvent(event);
     }
@@ -49,7 +48,6 @@ void MapView::dropEvent(QDropEvent *event) {
 
     if (mimeText.startsWith("asset/element/")) {
         event->acceptProposedAction();
-        std::cout << "DEBUG: Evento Drop recibido." << std::endl;
 
         QPointF scenePoint = mapToScene(event->position().toPoint());
         QPoint p = scenePoint.toPoint();
@@ -68,7 +66,6 @@ void MapView::dropEvent(QDropEvent *event) {
         }
 
         if (outOfBounds || isCollision) {
-            std::cout << (isCollision ? "❌ Drop RECHAZADO: No es una zona de calle." : "⚠️ Drop RECHAZADO: Fuera de los límites del mapa.") << std::endl;
             event->ignore();
             return;
         }
@@ -83,11 +80,9 @@ void MapView::dropEvent(QDropEvent *event) {
         element->setPos(scenePoint);
         scene()->addItem(element);
 
-        if (mapEditorParent) {
+        if (mapEditorParent) 
             mapEditorParent->processNewElement(element);
-        }
-
-        std::cout << "✅ Drop ACEPTADO: Tipo " << type << std::endl;
+            
     } else {
         QGraphicsView::dropEvent(event);
     }
