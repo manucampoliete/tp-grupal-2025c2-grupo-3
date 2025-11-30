@@ -10,6 +10,7 @@ WorldRenderer::WorldRenderer(Renderer& renderer, Texture& mapTexture, Texture& c
         carSprites(carSprites),
         bridgeTexture(nullptr),
         bridgeRenderer(nullptr),
+        checkpointRenderer(renderer),
         world(world),
         playerId(playerId),
         camera(0, 0, 800, 600),
@@ -106,6 +107,8 @@ void WorldRenderer::render() {
 
     renderBridges();
     renderCarsOnBridge();
+
+    renderCheckpoints();
     
     renderCollisionEffects();
     renderExplosions();
@@ -148,6 +151,14 @@ void WorldRenderer::renderCar(const BroadcastData::CarState& carState) {
     SDL_Point center = {src.GetW() / 2, src.GetH() / 2};
     
     renderer.Copy(carSprites, src, dest, carState.angle, center, SDL_FLIP_NONE);
+}
+
+
+void WorldRenderer::renderCheckpoints() {
+    const auto& cars = world.getCars();
+    auto it = cars.find(playerId);
+    if (it != cars.end()) 
+        checkpointRenderer.render(it->second.checkpoints, camera);
 }
 
 
