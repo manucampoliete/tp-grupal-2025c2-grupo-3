@@ -55,11 +55,8 @@ void GameLoop::processServerMessages() {
                 onCountdown(message.number);
 
             } else if constexpr (std::is_same_v<T, RaceStartMessage>) {
-                onRaceStart();
-                
-            } else if constexpr (std::is_same_v<T, CheckpointMessage>) {
-                onCheckpointCrossed(message.checkpointId);
-                
+                onRaceStart(message.info);
+
             } else if constexpr (std::is_same_v<T, CollisionMessage>) {
                 onCollision(message.data);
                 
@@ -128,8 +125,8 @@ void GameLoop::onCountdown(uint8_t number) {
     }
 }
 
-void GameLoop::onRaceStart() {
-    if (game) game->startRace();
+void GameLoop::onRaceStart(const RaceStart info) {
+    if (game) game->startRace(info);
 }
 
 
@@ -148,7 +145,6 @@ void GameLoop::onCheckpointCrossed(uint8_t checkpointId) {
 
 
 void GameLoop::onCollision(const CollisionData& collision) {
-    std::cout << "[GAME_LOOP] Collision detected, intensity: " << collision.intensity << std::endl;
     if (!game) return;
 
     // Coordinates from server in mm to meters

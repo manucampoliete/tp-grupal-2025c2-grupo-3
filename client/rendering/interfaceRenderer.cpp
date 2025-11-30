@@ -7,14 +7,13 @@
 #include <iomanip>
 
 UIRenderer::UIRenderer(Renderer& renderer, Font& font, Font& fontSmall, Font& fontBig,
-                       Texture& mapTexture, World& world, uint8_t playerId,
+                       World& world, uint8_t playerId,
                        Texture& cheatImmortalityImg, Texture& cheatWinImg,
                        Texture& cheatLoseImg, Texture& cheatSpeedImg, Texture& finishImg):
         renderer(renderer),
         font(font),
         fontSmall(fontSmall),
         fontBig(fontBig),
-        mapTexture(mapTexture),
         world(world),
         playerId(playerId),
         cheatImmortalityImg(cheatImmortalityImg),
@@ -47,16 +46,6 @@ void UIRenderer::updateLayout(int windowWidth, int windowHeight) {
     massButtonRect = Rect(popupX + marginX, popupY + marginY * 4, btnW, btnH);
     saveButtonRect = Rect(popupX + (popupW - btnW) / 2, popupY + marginY * 7, btnW, btnH);
 
-    // Minimap
-    // 20% of the window width
-    float mapAspectRatio = (float)mapTexture.GetWidth() / (float)mapTexture.GetHeight();
-    int minimapW = static_cast<int>(windowWidth * 0.2f);  // 20% of the width
-    int minimapH = static_cast<int>(minimapW / mapAspectRatio);
-    int margin = static_cast<int>(windowWidth * 0.01f);  // 1% margin
-
-    // Bottom right corner
-    minimapRect = Rect(windowWidth - minimapW - margin, windowHeight - minimapH - margin,
-                        minimapW, minimapH);
 }
 
 
@@ -561,7 +550,21 @@ void UIRenderer::renderModificationPopup(bool speedModified, bool healthModified
 }
 
 
-void UIRenderer::renderMinimap() {
+void UIRenderer::renderMinimap(Texture& currentMapTexture, int windowWidth, int windowHeight) {
+    // dimensions of the sctual texture
+    float mapW = (float)currentMapTexture.GetWidth();
+    float mapH = (float)currentMapTexture.GetHeight();
+    if (mapH == 0) return; 
+    float mapAspectRatio = mapW / mapH;
+
+    int minimapW = static_cast<int>(windowWidth * 0.2f);  // 20% of the width
+    int minimapH = static_cast<int>(minimapW / mapAspectRatio);
+    int margin = static_cast<int>(windowWidth * 0.01f);  // 1% margin
+
+    // Bottom right corner
+    minimapRect = Rect(windowWidth - minimapW - margin, windowHeight - minimapH - margin,
+                        minimapW, minimapH);
+
     // Reset scaling just in case
     renderer.SetScale(1.0f, 1.0f);
     
@@ -571,12 +574,10 @@ void UIRenderer::renderMinimap() {
     renderer.FillRect(minimapRect);
     
     // Complete map, scaled down (NullOpt means "copy the entire texture")
-    renderer.Copy(mapTexture, NullOpt, minimapRect);
+    renderer.Copy(currentMapTexture, NullOpt, minimapRect); 
 
     // Cars as points for the minimap
     const auto& cars = world.getCars();
-    float mapW = (float)mapTexture.GetWidth();
-    float mapH = (float)mapTexture.GetHeight();
 
     for (const auto& [id, carState]: cars) {
         float ratioX = carState.x / mapW;

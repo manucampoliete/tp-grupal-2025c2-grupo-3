@@ -24,7 +24,6 @@ private:
     Font& font;
     Font& fontSmall;
     Font& fontBig;
-    Texture& mapTexture;
     World& world;
     uint8_t playerId;
 
@@ -48,7 +47,7 @@ private:
 
 public:
     UIRenderer(Renderer& renderer, Font& font, Font& fontSmall, Font& fontBig,
-               Texture& mapTexture, World& world, uint8_t playerId,
+               World& world, uint8_t playerId,
                Texture& cheatImmortalityImg, Texture& cheatWinImg, Texture& cheatLoseImg, Texture& cheatSpeedImg, Texture& finishImg);
 
     void renderCountdown(uint8_t countdownNumber);
@@ -69,7 +68,7 @@ public:
 
     void renderPodium(const FinalResults& results);
 
-    void renderMinimap();
+    void renderMinimap(Texture& currentMapTexture, int windowWidth, int windowHeight);
 
     void renderHealthBar(uint8_t health, int windowWidth);
     
