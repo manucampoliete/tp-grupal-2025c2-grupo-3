@@ -1,0 +1,34 @@
+<RCC>
+    <qresource prefix="/">
+        <file>media/menu_background_blurred.jpg</file>
+        <file>media/orbitron.ttf</file>
+        <file>media/liberty.jpg</file>
+        <file>media/sanandreas.jpg</file>
+        <file>media/vicecity.jpg</file>
+        <file>media/custom.png</file>
+        <file>media/mask_vicecity.jpeg</file>
+        <file>media/assets/arrow_down.png</file>
+        <file>media/assets/arrow_left.png</file>
+        <file>media/assets/arrow_right.png</file>
+        <file>media/assets/arrow_up.png</file>
+        <file>media/assets/curve_down_left.png</file>
+        <file>media/assets/curve_down_right.png</file>
+        <file>media/assets/curve_left_down.png</file>
+        <file>media/assets/curve_left_up.png</file>
+        <file>media/assets/curve_right_down.png</file>
+        <file>media/assets/curve_right_up.png</file>
+        <file>media/assets/curve_up_left.png</file>
+        <file>media/assets/curve_up_right.png</file>
+        <file>media/assets/finish_horizontal.png</file>
+        <file>media/assets/finish_vertical.png</file>
+        <file>media/assets/start_horizontal.png</file>
+        <file>media/assets/start_vertical.png</file>
+        <file>media/assets/cp_horizontal.png</file>
+        <file>media/assets/cp_vertical.png</file>
+        <file>media/vice_city_map.png</file>
+        <file>media/assets/spawn_up.png</file>
+        <file>media/assets/spawn_down.png</file>
+        <file>media/assets/spawn_left.png</file>
+        <file>media/assets/spawn_right.png</file>
+    </qresource>
+</RCC>

@@ -1,6 +1,6 @@
 .PHONY: all test clean editor client common server build
 
-TARGET = taller_client
+TARGET = all
 BUILD_DIR = build
 
 debug:

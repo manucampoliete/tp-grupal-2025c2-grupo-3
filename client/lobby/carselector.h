@@ -5,7 +5,6 @@
 #include <QStackedWidget>
 #include <QWidget>
 #include <vector>
-
 #include "../../common/utils/carinfo.h"
 
 class CarCard;

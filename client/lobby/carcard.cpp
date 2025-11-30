@@ -1,10 +1,9 @@
 #include "carcard.h"
-
 #include <QProgressBar>
 #include <QVBoxLayout>
 #include <iostream>
 
-CarCard::CarCard(const CarInfo& car, QWidget* parent): QWidget(parent) {
+CarCard::CarCard(const CarInfo& car, uint16_t topSpeed, uint16_t maxHealth, QWidget* parent): QWidget(parent) {
     this->setMaximumSize(600, 200);
 
     imageLabel = new QLabel(this);
@@ -22,11 +21,11 @@ CarCard::CarCard(const CarInfo& car, QWidget* parent): QWidget(parent) {
     QGridLayout* gridLayout = new QGridLayout();
     gridLayout->setHorizontalSpacing(20);
 
-    healthBar->setRange(0, 100);
+    healthBar->setRange(0, maxHealth);
     healthBar->setValue(car.health);
     healthBar->setTextVisible(false);
 
-    speedBar->setRange(0, 250);
+    speedBar->setRange(0, topSpeed);
     speedBar->setValue(car.speed);
     speedBar->setTextVisible(false);
 
@@ -94,12 +93,9 @@ CarCard::CarCard(const CarInfo& car, QWidget* parent): QWidget(parent) {
 
     if (!carImage.isNull()) {
         QSize desiredSize(400, 200);
-
-        imageLabel->setPixmap(
-                carImage.scaled(desiredSize, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+        imageLabel->setPixmap(carImage.scaled(desiredSize, Qt::KeepAspectRatio, Qt::SmoothTransformation));
     } else {
         imageLabel->setText("Image Not Found: " + imagePath);
-        std::cout << "Image not found at path: " << imagePath.toStdString() << std::endl;
     }
 }
 

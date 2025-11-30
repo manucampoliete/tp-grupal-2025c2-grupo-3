@@ -4,7 +4,6 @@
 #include <QWidget>
 #include <vector>
 #include <QLabel>
-
 #include "carselector.h"
 
 namespace Ui {

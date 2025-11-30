@@ -1,13 +1,9 @@
 #include "carselector.h"
-
 #include "carcard.h"
-//#include "ui_carselector.h"
-
 #include <QHBoxLayout>
 #include <iostream>
 
-CarSelector::CarSelector(QWidget* parent, const std::vector<CarInfo>& cars):
-        QWidget(parent), carList(cars) {
+CarSelector::CarSelector(QWidget* parent, const std::vector<CarInfo>& cars): QWidget(parent), carList(cars) {
     this->setObjectName("CarSelector");
 
     carStack = new QStackedWidget(this);
@@ -27,14 +23,19 @@ CarSelector::CarSelector(QWidget* parent, const std::vector<CarInfo>& cars):
     int topMargin = 30;
     int generalMargin = 5;
 
-    this->layout()->setContentsMargins(generalMargin,   // Left
-                                       topMargin,       // Top
-                                       generalMargin,   // Bottom
-                                       generalMargin);  // Right
+    this->layout()->setContentsMargins(generalMargin, topMargin, generalMargin, generalMargin);
 }
 
 void CarSelector::setupCars(const std::vector<CarInfo>& cars) {
-    for (const auto& car: cars) carStack->addWidget(new CarCard(car, this));
+    uint16_t topSpeed = 0;
+    uint16_t maxHealth = 0;
+
+    for (const auto& car: cars) {
+        if (car.speed > topSpeed) topSpeed = car.speed;
+        if (car.health > maxHealth) maxHealth = car.health;
+    }
+
+    for (const auto& car: cars) carStack->addWidget(new CarCard(car, topSpeed, maxHealth, this));
 }
 
 void CarSelector::on_prevButton_clicked() {

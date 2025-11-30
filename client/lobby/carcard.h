@@ -11,7 +11,7 @@ class CarCard: public QWidget {
     Q_OBJECT
 
 public:
-    explicit CarCard(const CarInfo& car, QWidget* parent = nullptr);
+    explicit CarCard(const CarInfo& car, uint16_t topSpeed, uint16_t maxHealth, QWidget* parent = nullptr);
     ~CarCard();
 
 

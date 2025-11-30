@@ -3,7 +3,6 @@
 
 #include <QWidget>
 #include <vector>
-
 #include "carselector.h"
 
 namespace Ui {
