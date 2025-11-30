@@ -7,6 +7,8 @@
 extern QPixmap loadPixmapForElement(ElementType type, ElementDirection direction);
 
 ElementIcon::ElementIcon(ElementType type, ElementDirection direction, QWidget* parent): QWidget(parent), elementType(type), elementDirection(direction){
+    setFixedSize(40, 40);
+    setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     iconPixmap = loadPixmapForElement(type, direction);
     setCursor(Qt::OpenHandCursor);
 }

@@ -25,6 +25,7 @@ Toolbox::Toolbox(QWidget* parent) : QWidget(parent) {
 
     hintGrid->addWidget(new ElementIcon(TYPE_HINT, DIR_LEFT, this), 1, 0);
     hintGrid->addWidget(new ElementIcon(TYPE_HINT, DIR_RIGHT, this), 1, 2);
+    hintGrid->addWidget(new ElementIcon(TYPE_HINT, DIR_CURVE_RIGHT_DOWN, this), 1, 1);
 
     hintGrid->addWidget(new ElementIcon(TYPE_HINT, DIR_DOWN, this), 2, 1);
     hintGrid->addWidget(new ElementIcon(TYPE_HINT, DIR_CURVE_DOWN_LEFT, this), 2, 0);
@@ -33,7 +34,7 @@ Toolbox::Toolbox(QWidget* parent) : QWidget(parent) {
     hintGrid->addWidget(new ElementIcon(TYPE_HINT, DIR_CURVE_LEFT_UP, this), 3, 0);
     hintGrid->addWidget(new ElementIcon(TYPE_HINT, DIR_CURVE_LEFT_DOWN, this), 3, 1);
     hintGrid->addWidget(new ElementIcon(TYPE_HINT, DIR_CURVE_RIGHT_UP, this), 3, 2);
-    hintGrid->addWidget(new ElementIcon(TYPE_HINT, DIR_CURVE_RIGHT_DOWN, this), 4, 1);
+    
 
     hintGrid->setHorizontalSpacing(5);
     hintGrid->setVerticalSpacing(5);
@@ -73,26 +74,19 @@ Toolbox::Toolbox(QWidget* parent) : QWidget(parent) {
     mainLayout->addWidget(cpLabel);
 
     QGridLayout* cpGrid = new QGridLayout;
-
-    cpGrid->addWidget(new QLabel("H:"), 0, 0);
     cpGrid->addWidget(new ElementIcon(TYPE_CHECKPOINT, DIR_HORIZONTAL, this), 0, 1);
-
-    cpGrid->addWidget(new QLabel("V:"), 1, 0);
-    cpGrid->addWidget(new ElementIcon(TYPE_CHECKPOINT, DIR_VERTICAL,   this), 1, 1);
+    cpGrid->addWidget(new ElementIcon(TYPE_CHECKPOINT, DIR_VERTICAL,   this), 0, 0);
 
     mainLayout->addLayout(cpGrid);
-
+    
     QPushButton* saveButton = new QPushButton("Save Map");
-
+    
     saveButton->setStyleSheet("background-color: #050505; color: white; padding: 10px; border-radius: 5px;");
+    mainLayout->addSpacing(25);
 
     mainLayout->addWidget(saveButton);
 
     connect(saveButton, &QPushButton::clicked, this, &Toolbox::saveClicked);
-
-    setLayout(mainLayout);
-
-    mainLayout->addStretch();
 
     setLayout(mainLayout);
 }
