@@ -54,8 +54,11 @@ void GameLoop::processServerMessages() {
             } else if constexpr (std::is_same_v<T, CountdownMessage>) {
                 onCountdown(message.number);
 
+            } else if constexpr (std::is_same_v<T, RaceInfoMessage>) {
+                onRaceInfo(message.info);
+
             } else if constexpr (std::is_same_v<T, RaceStartMessage>) {
-                onRaceStart(message.info);
+                onRaceStart();
 
             } else if constexpr (std::is_same_v<T, CollisionMessage>) {
                 onCollision(message.data);
@@ -125,10 +128,13 @@ void GameLoop::onCountdown(uint8_t number) {
     }
 }
 
-void GameLoop::onRaceStart(const RaceStart info) {
-    if (game) game->startRace(info);
+void GameLoop::onRaceInfo(const RaceInfo info) {
+    if (game) game->setRaceInfo(info);
 }
 
+void GameLoop::onRaceStart() {
+    if (game) game->startRace();
+}
 
 // CORREGIR!
 void GameLoop::onCheckpointCrossed(uint8_t checkpointId) {

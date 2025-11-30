@@ -37,6 +37,7 @@
 
 // Servidor → Cliente
 #define MSG_ASSIGN_ID 0x10    // servidor asigna id al cliente
+#define MSG_RACE_INFO 0x11
 #define MSG_COUNTDOWN 0x12    // countdown antes de empezar
 #define MSG_RACE_START 0x13   // señal de inicio de carreras
 #define MSG_COLLISION 0x15    // notificación de colisión

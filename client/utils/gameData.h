@@ -45,7 +45,7 @@ struct BroadcastData {
     uint32_t countdown; 
 };
 
-struct RaceStart {
+struct RaceInfo {
     uint8_t mapId; // map code, create enum
     uint8_t race;
     uint8_t totalRaces;

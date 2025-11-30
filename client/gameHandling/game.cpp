@@ -178,7 +178,7 @@ void Game::showCountdown(uint8_t number) {
         soundManager.playSound("raceStart");
 }
 
-void Game::startRace(const RaceStart info) {
+void Game::setRaceInfo(const RaceInfo info) {
     mapId = info.mapId;
     race = info.race;
     totalRaces = info.totalRaces;
@@ -217,12 +217,14 @@ void Game::startRace(const RaceStart info) {
 
     try {
         soundManager.loadMusic(musicPath); 
-        soundManager.playMusic();
     } catch (const std::exception& e) {
         std::cerr << "[GAME] Warning: Could not load music for map " << (int)mapId << ": " << e.what() << std::endl;
     }
+}
 
+void Game::startRace() {
     stateManager.startRace();
+    soundManager.playMusic();
 }
 
 void Game::setStatsCountdown(uint8_t number) {

@@ -34,11 +34,17 @@ void Receiver::run() {
                     break;
                 }
 
+                case MSG_RACE_INFO: {
+                    std::cout << "[RECEIVER] → Processing RACE_INFO" << std::endl;
+                    RaceInfoMessage msg;
+                    msg.info = protocol.recvRaceInfo();
+                    serverMessagesQueue.push(msg);
+                    break;
+                }
+
                 case MSG_RACE_START: {
                     std::cout << "[RECEIVER] → Processing RACE_START" << std::endl;
-                    RaceStartMessage msg;
-                    msg.info = protocol.recvRaceStart();
-                    serverMessagesQueue.push(msg);
+                    serverMessagesQueue.push(RaceStartMessage{});
                     break;
                 }
 

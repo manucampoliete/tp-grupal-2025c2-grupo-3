@@ -239,6 +239,7 @@ void Game::setCountdownState() {
     }
 
     std::string mapName;
+    std::cout << "[GAME] Setting map to " << mapName << std::endl;
     switch (currentPath.mapId){
         case MAP_LIBERTY_CITY:
             mapName = "libertyCity";
@@ -266,7 +267,7 @@ void Game::setCountdownState() {
 
     world->ClearForces();
 
-    Snapshot::RaceStart info;
+    Snapshot::RaceInfo info;
     info.mapId = currentPath.mapId;
     info.race = currentRaceCount;
     info.totalRaces = races; 

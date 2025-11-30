@@ -72,8 +72,8 @@ Snapshot ClientGameProtocol::recvSnapshot() {
     return Snapshot(countdown, cars);
 }
 
-RaceStart ClientGameProtocol::recvRaceStart() {
-    RaceStart info;
+RaceInfo ClientGameProtocol::recvRaceInfo() {
+    RaceInfo info;
     info.mapId = recvU8();
     info.race = recvU8();
     info.totalRaces = recvU8();

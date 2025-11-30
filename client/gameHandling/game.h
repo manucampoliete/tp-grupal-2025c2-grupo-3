@@ -87,7 +87,8 @@ public:
     bool processFrame(float dt);
 
     void showCountdown(uint8_t number);
-    void startRace(const RaceStart info);
+    void setRaceInfo(const RaceInfo info);
+    void startRace();
     void setStatsCountdown(uint8_t number);
     void showStats(const RaceResults& results);
     void showModifications(const std::vector<CarProperties>& props);
