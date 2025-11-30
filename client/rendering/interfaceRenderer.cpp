@@ -364,7 +364,7 @@ void UIRenderer::renderModificationPopup(bool speedModified, bool healthModified
     std::ostringstream firstSpeed;
     firstSpeed << std::fixed << std::setprecision(2) << props.speed;
     std::ostringstream improvedSpeed;
-    improvedSpeed << std::fixed << std::setprecision(2) << props.speed + 5;
+    improvedSpeed << std::fixed << std::setprecision(2) << props.speed * VELOCITY_IMPROVEMENT_PERCENTAGE;
     std::string speedText = firstSpeed.str() + " -> " + improvedSpeed.str();
     Surface speedSurface = activeFont.RenderText_Solid(speedText, {255, 255, 255, 255});
     Texture speedTexture(renderer, speedSurface);
@@ -382,7 +382,7 @@ void UIRenderer::renderModificationPopup(bool speedModified, bool healthModified
                   Rect(speedPenX, speedPenY, speedPenT.GetWidth(), speedPenT.GetHeight()));
 
 
-    // HEALTH'S BUTTON
+    // HEALTH BUTTON
     renderer.SetDrawBlendMode(SDL_BLENDMODE_BLEND);
     renderer.SetDrawColor(healthModified ? 50 : 80, healthModified ? 200 : 80,
                           healthModified ? 50 : 100, 255);
@@ -404,7 +404,7 @@ void UIRenderer::renderModificationPopup(bool speedModified, bool healthModified
     std::ostringstream firstHealth;
     firstHealth << std::fixed << std::setprecision(2) << props.health;
     std::ostringstream improvedHealth;
-    improvedHealth << std::fixed << std::setprecision(2) << props.health + 5;
+    improvedHealth << std::fixed << std::setprecision(2) << props.health * HEALTH_IMPROVEMENT_PERCENTAGE;
     std::string healthText = firstHealth.str() + " -> " + improvedHealth.str();
     Surface healthSurface = activeFont.RenderText_Solid(healthText, {255, 255, 255, 255});
     Texture healthTexture(renderer, healthSurface);
@@ -444,7 +444,7 @@ void UIRenderer::renderModificationPopup(bool speedModified, bool healthModified
     std::ostringstream firstAccel;
     firstAccel << std::fixed << std::setprecision(2) << props.accel;
     std::ostringstream improvedAccel;
-    improvedAccel << std::fixed << std::setprecision(2) << props.accel + 5;
+    improvedAccel << std::fixed << std::setprecision(2) << props.accel * ACCELERATION_IMPROVEMENT_PERCENTAGE;
     std::string accelText = firstAccel.str() + " -> " + improvedAccel.str();
     Surface accelSurface = activeFont.RenderText_Solid(accelText, {255, 255, 255, 255});
     Texture accelTexture(renderer, accelSurface);
@@ -485,7 +485,7 @@ void UIRenderer::renderModificationPopup(bool speedModified, bool healthModified
     std::ostringstream firstMass;
     firstMass << std::fixed << std::setprecision(2) << props.mass;
     std::ostringstream improvedMass;
-    improvedMass << std::fixed << std::setprecision(2) << props.mass + 5;
+    improvedMass << std::fixed << std::setprecision(2) << props.mass *MASS_IMPROVEMENT_PERCENTAGE;
     std::string massText = firstMass.str() + " -> " + improvedMass.str();
     Surface massSurface = activeFont.RenderText_Solid(massText, {255, 255, 255, 255});
     Texture massTexture(renderer, massSurface);
@@ -778,6 +778,8 @@ void UIRenderer::renderFinishedPopup() {
                   Rect(titleX, titleY, titleTexture.GetWidth(), titleTexture.GetHeight()));
 }
 
+
+
 void UIRenderer::renderPodium(const FinalResults& results) {
     renderer.SetScale(1.0f, 1.0f);
 
@@ -825,26 +827,27 @@ void UIRenderer::renderPodium(const FinalResults& results) {
     int height2 = 120;
     int height3 = 90;
 
-    if (results.standings.size() >= 1) {  // 1º
+    // 1º PLACE
+    int boxY1 = podiumBaseY - height1;
+    renderer.SetDrawColor(255, 215, 0, 255);  // Gold
+    renderer.FillRect(Rect(pos1X, boxY1, boxWidth, height1));
+    renderer.SetDrawColor(200, 170, 0, 255);
+    renderer.DrawRect(Rect(pos1X, boxY1, boxWidth, height1));
+
+    Surface numS1 = fontBig.RenderText_Solid("1", {255, 255, 255, 255});
+    Texture numT1(renderer, numS1);
+    renderer.Copy(numT1, NullOpt,
+                  Rect(pos1X + (boxWidth - numT1.GetWidth()) / 2, boxY1 + 10,
+                       numT1.GetWidth(), numT1.GetHeight()));
+
+    if (results.standings.size() >= 1) {
         const auto& first = results.standings[0];
-        int boxY = podiumBaseY - height1;
-
-        renderer.SetDrawColor(255, 215, 0, 255);  // Gold
-        renderer.FillRect(Rect(pos1X, boxY, boxWidth, height1));
-        renderer.SetDrawColor(200, 170, 0, 255);
-        renderer.DrawRect(Rect(pos1X, boxY, boxWidth, height1));
-
-        Surface numS = fontBig.RenderText_Solid("1", {255, 255, 255, 255});
-        Texture numT(renderer, numS);
-        renderer.Copy(numT, NullOpt,
-                      Rect(pos1X + (boxWidth - numT.GetWidth()) / 2, boxY + 10,
-                           numT.GetWidth(), numT.GetHeight()));
 
         // Name
         Surface nameS = fontSmall.RenderText_Solid(first.playerName, {255, 255, 255, 255});
         Texture nameT(renderer, nameS);
         renderer.Copy(nameT, NullOpt,
-                      Rect(pos1X + (boxWidth - nameT.GetWidth()) / 2, boxY + 70,
+                      Rect(pos1X + (boxWidth - nameT.GetWidth()) / 2, boxY1 + 70,
                            nameT.GetWidth(), nameT.GetHeight()));
 
         // Final time
@@ -857,30 +860,31 @@ void UIRenderer::renderPodium(const FinalResults& results) {
         Surface timeS = fontSmall.RenderText_Solid(timeBuf, {255, 255, 255, 255});
         Texture timeT(renderer, timeS);
         renderer.Copy(timeT, NullOpt,
-                      Rect(pos1X + (boxWidth - timeT.GetWidth()) / 2, boxY + 100,
+                      Rect(pos1X + (boxWidth - timeT.GetWidth()) / 2, boxY1 + 100,
                            timeT.GetWidth(), timeT.GetHeight()));
     }
 
-    if (results.standings.size() >= 2) {  // 2º
+    // 2º PLACE
+    int boxY2 = podiumBaseY - height2;
+    renderer.SetDrawColor(192, 192, 192, 255);  // Silver
+    renderer.FillRect(Rect(pos2X, boxY2, boxWidth, height2));
+    renderer.SetDrawColor(140, 140, 140, 255);
+    renderer.DrawRect(Rect(pos2X, boxY2, boxWidth, height2));
+
+    Surface numS2 = font.RenderText_Solid("2", {255, 255, 255, 255});
+    Texture numT2(renderer, numS2);
+    renderer.Copy(numT2, NullOpt,
+                  Rect(pos2X + (boxWidth - numT2.GetWidth()) / 2, boxY2 + 10,
+                       numT2.GetWidth(), numT2.GetHeight()));
+
+    if (results.standings.size() >= 2) {
         const auto& second = results.standings[1];
-        int boxY = podiumBaseY - height2;
-
-        renderer.SetDrawColor(192, 192, 192, 255);  // Silver
-        renderer.FillRect(Rect(pos2X, boxY, boxWidth, height2));
-        renderer.SetDrawColor(140, 140, 140, 255);
-        renderer.DrawRect(Rect(pos2X, boxY, boxWidth, height2));
-
-        Surface numS = font.RenderText_Solid("2", {255, 255, 255, 255});
-        Texture numT(renderer, numS);
-        renderer.Copy(numT, NullOpt,
-                      Rect(pos2X + (boxWidth - numT.GetWidth()) / 2, boxY + 10,
-                           numT.GetWidth(), numT.GetHeight()));
 
         // Name
         Surface nameS = fontSmall.RenderText_Solid(second.playerName, {255, 255, 255, 255});
         Texture nameT(renderer, nameS);
         renderer.Copy(nameT, NullOpt,
-                      Rect(pos2X + (boxWidth - nameT.GetWidth()) / 2, boxY + 50,
+                      Rect(pos2X + (boxWidth - nameT.GetWidth()) / 2, boxY2 + 50,
                            nameT.GetWidth(), nameT.GetHeight()));
 
         // Final time
@@ -893,30 +897,31 @@ void UIRenderer::renderPodium(const FinalResults& results) {
         Surface timeS = fontSmall.RenderText_Solid(timeBuf, {255, 255, 255, 255});
         Texture timeT(renderer, timeS);
         renderer.Copy(timeT, NullOpt,
-                      Rect(pos2X + (boxWidth - timeT.GetWidth()) / 2, boxY + 75,
+                      Rect(pos2X + (boxWidth - timeT.GetWidth()) / 2, boxY2 + 75,
                            timeT.GetWidth(), timeT.GetHeight()));
     }
 
-    if (results.standings.size() >= 3) {  // 3º
+    // 3º PLACE
+    int boxY3 = podiumBaseY - height3;
+    renderer.SetDrawColor(205, 127, 50, 255);  // Bronze
+    renderer.FillRect(Rect(pos3X, boxY3, boxWidth, height3));
+    renderer.SetDrawColor(160, 100, 40, 255);
+    renderer.DrawRect(Rect(pos3X, boxY3, boxWidth, height3));
+
+    Surface numS3 = font.RenderText_Solid("3", {255, 255, 255, 255});
+    Texture numT3(renderer, numS3);
+    renderer.Copy(numT3, NullOpt,
+                  Rect(pos3X + (boxWidth - numT3.GetWidth()) / 2, boxY3 + 10,
+                       numT3.GetWidth(), numT3.GetHeight()));
+
+    if (results.standings.size() >= 3) {
         const auto& third = results.standings[2];
-        int boxY = podiumBaseY - height3;
-
-        renderer.SetDrawColor(205, 127, 50, 255);  // Bronze
-        renderer.FillRect(Rect(pos3X, boxY, boxWidth, height3));
-        renderer.SetDrawColor(160, 100, 40, 255);
-        renderer.DrawRect(Rect(pos3X, boxY, boxWidth, height3));
-
-        Surface numS = font.RenderText_Solid("3", {255, 255, 255, 255});
-        Texture numT(renderer, numS);
-        renderer.Copy(numT, NullOpt,
-                      Rect(pos3X + (boxWidth - numT.GetWidth()) / 2, boxY + 10,
-                           numT.GetWidth(), numT.GetHeight()));
 
         // Name
         Surface nameS = fontSmall.RenderText_Solid(third.playerName, {255, 255, 255, 255});
         Texture nameT(renderer, nameS);
         renderer.Copy(nameT, NullOpt,
-                      Rect(pos3X + (boxWidth - nameT.GetWidth()) / 2, boxY + 40,
+                      Rect(pos3X + (boxWidth - nameT.GetWidth()) / 2, boxY3 + 40,
                            nameT.GetWidth(), nameT.GetHeight()));
 
         // Final time
@@ -929,11 +934,11 @@ void UIRenderer::renderPodium(const FinalResults& results) {
         Surface timeS = fontSmall.RenderText_Solid(timeBuf, {255, 255, 255, 255});
         Texture timeT(renderer, timeS);
         renderer.Copy(timeT, NullOpt,
-                      Rect(pos3X + (boxWidth - timeT.GetWidth()) / 2, boxY + 60,
+                      Rect(pos3X + (boxWidth - timeT.GetWidth()) / 2, boxY3 + 60,
                            timeT.GetWidth(), timeT.GetHeight()));
     }
 
-    // TABLA DEL RESTO (4° en adelante)
+    // TABLE FOR OTHER POSITIONS (4° on)
     if (results.standings.size() > 3) {
         int tableY = podiumBaseY + 50;
         int rowHeight = 35;

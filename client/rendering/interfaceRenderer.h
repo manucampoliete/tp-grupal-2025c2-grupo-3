@@ -10,12 +10,10 @@
 #include <SDL2pp/Texture.hh>
 
 #include "../utils/gameData.h"
-
+#include "../../common/utils/modifConstants.h"
 #include "../gameHandling/world.h"
 
 using namespace SDL2pp;  // NOLINT
-
-#define PENALTY_PER_IMPROVEMENT 5
 
 
 class UIRenderer {

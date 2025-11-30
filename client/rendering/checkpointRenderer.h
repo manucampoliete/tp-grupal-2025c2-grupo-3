@@ -28,6 +28,7 @@ public:
 
     void render(const std::vector<BroadcastData::CarState::Checkpoint>& checkpoints, 
                 const Rect& camera);
+    
 };
 
 #endif // CHECKPOINT_RENDERER_H
