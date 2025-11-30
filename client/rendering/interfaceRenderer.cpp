@@ -375,7 +375,7 @@ void UIRenderer::renderModificationPopup(bool speedModified, bool healthModified
     std::ostringstream firstSpeed;
     firstSpeed << std::fixed << std::setprecision(2) << props.speed;
     std::ostringstream improvedSpeed;
-    improvedSpeed << std::fixed << std::setprecision(2) << props.speed + 5;
+    improvedSpeed << std::fixed << std::setprecision(2) << props.speed * VELOCITY_IMPROVEMENT_PERCENTAGE;
     std::string speedText = firstSpeed.str() + " -> " + improvedSpeed.str();
     Surface speedSurface = activeFont.RenderText_Solid(speedText, {255, 255, 255, 255});
     Texture speedTexture(renderer, speedSurface);
@@ -393,7 +393,7 @@ void UIRenderer::renderModificationPopup(bool speedModified, bool healthModified
                   Rect(speedPenX, speedPenY, speedPenT.GetWidth(), speedPenT.GetHeight()));
 
 
-    // HEALTH'S BUTTON
+    // HEALTH BUTTON
     renderer.SetDrawBlendMode(SDL_BLENDMODE_BLEND);
     renderer.SetDrawColor(healthModified ? 50 : 80, healthModified ? 200 : 80,
                           healthModified ? 50 : 100, 255);
@@ -415,7 +415,7 @@ void UIRenderer::renderModificationPopup(bool speedModified, bool healthModified
     std::ostringstream firstHealth;
     firstHealth << std::fixed << std::setprecision(2) << props.health;
     std::ostringstream improvedHealth;
-    improvedHealth << std::fixed << std::setprecision(2) << props.health + 5;
+    improvedHealth << std::fixed << std::setprecision(2) << props.health * HEALTH_IMPROVEMENT_PERCENTAGE;
     std::string healthText = firstHealth.str() + " -> " + improvedHealth.str();
     Surface healthSurface = activeFont.RenderText_Solid(healthText, {255, 255, 255, 255});
     Texture healthTexture(renderer, healthSurface);
@@ -455,7 +455,7 @@ void UIRenderer::renderModificationPopup(bool speedModified, bool healthModified
     std::ostringstream firstAccel;
     firstAccel << std::fixed << std::setprecision(2) << props.accel;
     std::ostringstream improvedAccel;
-    improvedAccel << std::fixed << std::setprecision(2) << props.accel + 5;
+    improvedAccel << std::fixed << std::setprecision(2) << props.accel * ACCELERATION_IMPROVEMENT_PERCENTAGE;
     std::string accelText = firstAccel.str() + " -> " + improvedAccel.str();
     Surface accelSurface = activeFont.RenderText_Solid(accelText, {255, 255, 255, 255});
     Texture accelTexture(renderer, accelSurface);
@@ -496,7 +496,7 @@ void UIRenderer::renderModificationPopup(bool speedModified, bool healthModified
     std::ostringstream firstMass;
     firstMass << std::fixed << std::setprecision(2) << props.mass;
     std::ostringstream improvedMass;
-    improvedMass << std::fixed << std::setprecision(2) << props.mass + 5;
+    improvedMass << std::fixed << std::setprecision(2) << props.mass *MASS_IMPROVEMENT_PERCENTAGE;
     std::string massText = firstMass.str() + " -> " + improvedMass.str();
     Surface massSurface = activeFont.RenderText_Solid(massText, {255, 255, 255, 255});
     Texture massTexture(renderer, massSurface);

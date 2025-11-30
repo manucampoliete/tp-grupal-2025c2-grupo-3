@@ -5,4 +5,8 @@ target_sources(taller_common
     PUBLIC
     # .h files
     activeDirections.h
+    modifConstants.h
+    pathElements.h
+    carinfo.h
+    gameState.h
     )
