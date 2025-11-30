@@ -28,7 +28,15 @@ CarSelector::CarSelector(QWidget* parent, const std::vector<CarInfo>& cars):
 }
 
 void CarSelector::setupCars(const std::vector<CarInfo>& cars) {
-    for (const auto& car: cars) carStack->addWidget(new CarCard(car, this));
+    uint16_t topSpeed = 0;
+    uint16_t maxHealth = 0;
+
+    for (const auto& car: cars) {
+        if (car.speed > topSpeed) topSpeed = car.speed;
+        if (car.health > maxHealth) maxHealth = car.health;
+    }
+
+    for (const auto& car: cars) carStack->addWidget(new CarCard(car, topSpeed, maxHealth, this));
 }
 
 void CarSelector::on_prevButton_clicked() {
