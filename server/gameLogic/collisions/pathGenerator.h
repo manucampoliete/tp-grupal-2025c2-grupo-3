@@ -16,6 +16,9 @@
 
 #define WORLD_HEIGHT 4672.0f
 
+#define CHECKPOINT_WIDTH 50.0f
+#define CHECKPOINT_HEIGHT 1.0f
+
 class PathGenerator {
 public:
     // Receives pixelsToMeters, but for now the meters <-> pixels relation is 1 to 1 (box2d may not work well with this scale)
@@ -38,19 +41,11 @@ public:
             
             // Hay que darle width/height según su dirección
             // Los checkpoints son de 50x22 pixeles
-            float w = 0.0f;
-            float h = 0.0f;
+            float w = CHECKPOINT_WIDTH * pixelsToMeters;
+            float h = CHECKPOINT_HEIGHT * pixelsToMeters;
+            
             bool isHorizontal = element.id == CHECKPOINT_HORIZONTAL ||
                                 element.id == FINISH_HORIZONTAL;
-            if (element.id == isHorizontal) {
-                w = 1.0f;
-                h = 50.0f;
-            } else {
-                w = 50.0f;
-                h = 1.0f;
-            }
-            w *= pixelsToMeters;
-            h *= pixelsToMeters;
 
             // std::cout << "[PATH_GEN] Generated chk with id: " << element.id
                 // << " position (" << x << ", " << y << ")" << std::endl;
@@ -60,6 +55,7 @@ public:
             b2BodyDef bodyDef;
             bodyDef.type = b2_staticBody;
             bodyDef.position.Set(x, y);
+            if(!isHorizontal) bodyDef.angle = 1.571f; // ~90 grados en radianes
             
             b2Body* body = world->CreateBody(&bodyDef);
             
