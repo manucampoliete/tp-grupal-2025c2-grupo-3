@@ -30,6 +30,9 @@ private:
     Path currentPath;
     PathElement nextCheckpoint;
 
+    bool immortal;
+    bool superSpeed;
+
     void debugPrintCarInfo();
 
     void updateNextCheckpoint();
@@ -65,7 +68,7 @@ public:
     void improveCarProperties(bool improveVelocity, bool improveHealth, bool improveAcceleration, bool improveMass);
 
     void resetForNewRace();
-    void applyCollisionDamage(float impact) { car.applyDamage(impact); }
+    void applyCollisionDamage(float impact) { if(!immortal) car.applyDamage(impact); }
 
     void initCurrentPath(Path& currentPath);
     void updateCurrentPath(PathElement& element, std::chrono::seconds raceTimeSecs);
@@ -83,6 +86,10 @@ public:
 
     ClientID getClientId() const { return clientId; }
     bool isAlive() { return car.getCurrentHealth() > 0.0f; }
+
+    void toggleImmortality() { immortal = !immortal; }
+    void instaWin(std::chrono::seconds raceTimeSecs);
+    void toggleSuperSpeed();
 
     Car getCar() const { return car; }
 

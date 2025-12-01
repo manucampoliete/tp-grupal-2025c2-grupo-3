@@ -134,6 +134,8 @@ public:
 
     bool isOnBridge();
 
+    void toggleSuperSpeed(bool superSpeed);
+
     b2Body* getBody() { return body; }  /** NOTE: TEMPORAL!!! */
 
     ~Car();

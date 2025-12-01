@@ -70,6 +70,6 @@ game_phases_timers:
   modifying_car: 10 # Seconds. Time to modify car between races
   game_end: 15      # Seconds. Time to show final results
 
-number_of_races: 3
+number_of_races: 4
 
 rate_loop: 60

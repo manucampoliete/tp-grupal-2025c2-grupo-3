@@ -13,6 +13,8 @@
 
 #define DEGTORAD 0.0174533
 
+#define SUPERSPEED_SCALE 3
+
 // Para facilitar la lectura del codigo recordar que "velocity" es un vector y "speed" es una
 // magnitud
 
@@ -268,6 +270,16 @@ float Car::getMass() const {
 void Car::resetSpeeds() {
     body->SetLinearVelocity(b2Vec2_zero);
     body->SetAngularVelocity(0.0f);
+}
+
+void Car::toggleSuperSpeed(bool superSpeed) {
+    if (superSpeed) {
+        maxSpeed /= SUPERSPEED_SCALE;
+        acceleration /= SUPERSPEED_SCALE;
+    } else {
+        maxSpeed *= SUPERSPEED_SCALE;
+        acceleration *= SUPERSPEED_SCALE;
+    }
 }
 
 

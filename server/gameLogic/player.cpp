@@ -17,7 +17,7 @@
 #define PIXELS_TO_METERS 0.01f // 1 pixel = 0.01 meters (1 meter = 100 pixels)
 
 Player::Player(ClientID clientId, const std::string& username, const std::vector<CarInfo>& carsInfo, CarID carId, b2Body* body):
-        clientId(clientId), username(username), car(CarBuilder::createCar(carsInfo, carId, body)), totalRaceTime(0), penalty(0)
+        clientId(clientId), username(username), car(CarBuilder::createCar(carsInfo, carId, body)), totalRaceTime(0), penalty(0), immortal(false), superSpeed(false)
 {
     auto* data = new BodyData(this);
     
@@ -208,6 +208,17 @@ Snapshot::CollisionData Player::buildCollisionSnapshot(float normalizedImpact) {
     collision.y = y;
 
     return collision;
+}
+
+void Player::instaWin(std::chrono::seconds raceTimeSecs) {
+    currentPath.elements.clear();
+    setArrivalTime(raceTimeSecs.count());
+    nextCheckpoint = PathElement();
+}
+
+void Player::toggleSuperSpeed() {
+    car.toggleSuperSpeed(superSpeed);
+    superSpeed = !superSpeed;
 }
 
 Player::~Player() {

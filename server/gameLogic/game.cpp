@@ -500,9 +500,13 @@ void Game::handleCollision(Player* player, float impact) {
         return; // no aplicar daño ni notificar si el impacto es muy bajo
     }
 
-    player->applyCollisionDamage(impact);
     Snapshot::CollisionData collisionData = player->buildCollisionSnapshot(impact);
     responseQueuesMonitor.broadcast(std::make_shared<Snapshot>(collisionData));
+    
+    // se deberia escuchar el choque contra autos destruidos, pero no se tendria que aplicar logica
+    if(!player->isAlive()) return;
+    
+    player->applyCollisionDamage(impact);
 
     if(!player->isAlive()) {
         std::chrono::seconds raceDurationSecs = std::chrono::duration_cast<std::chrono::seconds>(raceDuration);
@@ -589,35 +593,25 @@ void Game::movePlayer(ClientID clientId, ActiveDirections activeDirections) {
 
 void Game::makeInmortal(ClientID clientId) {
     std::cout << "Making player " << clientId << " inmortal!" << std::endl;
-    /**
-     * TODO: implement this method
-     * NOTE: we can set the player's car health to a very high value
-     */
+    players.at(clientId).toggleImmortality();
 }
 
 void Game::makeInstaWin(ClientID clientId) {
     std::cout << "Making player " << clientId << " insta win!" << std::endl;
-    /**
-     * TODO: implement this method
-     * NOTE: we can set the player's car position to the finish line
-     */
+    auto now = std::chrono::high_resolution_clock::now();
+    auto gameStateElapsed = now - gameStateStartTime;
+    std::chrono::seconds raceTimeSecs = std::chrono::duration_cast<std::chrono::seconds>(gameStateElapsed);
+    players.at(clientId).instaWin(raceTimeSecs);
 }
 
 void Game::makeInstaLose(ClientID clientId) {
     std::cout << "Making player " << clientId << " insta lose!" << std::endl;
-    /**
-     * TODO: implement this method
-     * NOTE: we can set the player's car health to 0
-     */
     handleCollision(&players.at(clientId), 999);
 }
 
 void Game::makePlayerGoSuperFast(ClientID clientId) {
     std::cout << "Making player " << clientId << " go super fast!" << std::endl;
-    /**
-     * TODO: implement this method
-     * NOTE: we can increase the player's car velocity temporarily (or permanently?)
-     */
+    players.at(clientId).toggleSuperSpeed();
 }
 
 void Game::improveCarProperties(ClientID clientId, bool improveVelocity, bool improveHealth, bool improveAcceleration, bool improveMass) {
