@@ -8,6 +8,7 @@
 
 #include "../../../common/types/types.h"
 #include "../../../common/utils/activeDirections.h"
+#include "../../../common/utils/modifConstants.h"
 
 #include "collisions/pathLoader.h"
 
@@ -36,10 +37,10 @@
 #define LINEAR_VEL_THRESHOLD 0.01f
 #define ANGULAR_VEL_THRESHOLD 0.01f
 
-#define VELOCITY_IMPROVEMENT_PERCENTAGE 1.5f
-#define HEALTH_IMPROVEMENT_PERCENTAGE 1.05f
-#define ACCELERATION_IMPROVEMENT_PERCENTAGE 1.1f
-#define MASS_IMPROVEMENT_PERCENTAGE 1.1f
+// #define VELOCITY_IMPROVEMENT_PERCENTAGE 1.5f
+// #define HEALTH_IMPROVEMENT_PERCENTAGE 1.05f
+// #define ACCELERATION_IMPROVEMENT_PERCENTAGE 1.1f
+// #define MASS_IMPROVEMENT_PERCENTAGE 1.1f
 
 //
 #define DAMAGE_SCALE 25.0f
