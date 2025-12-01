@@ -14,6 +14,7 @@ Editor::Editor(QWidget* parent): QMainWindow(parent), ui(new Ui::Editor) {
 
     this->setWindowTitle("Map Editor");
     this->resize(960, 540);
+    this->setStyleSheet("QWidget { color: white; }");
 
     ui->stackedWidget->setGeometry(0, 0, 1280, 720);
 
