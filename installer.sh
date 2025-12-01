@@ -13,7 +13,7 @@ set -euo pipefail
 #   ./installer.sh --no-build --name mypkg --install-dir /opt/mypkg/bin
 
 ######################### Default configuration #########################
-NAME="taller_tp"
+NAME="needForSpeed2D"
 BUILD_TYPE="Release"
 INSTALL_BIN_DIR="/usr/bin"
 INSTALL_VAR_DIR="/var/${NAME}"
@@ -90,37 +90,26 @@ fi
 if [ "${DO_BUILD}" = true ]; then
     echo "[installer] Preparing build in: ${BUILD_DIR}"
     mkdir -p "${BUILD_DIR}"
-    cmake -S "${ROOT_DIR}" -B "${BUILD_DIR}" -DCMAKE_BUILD_TYPE="${BUILD_TYPE}"
+    cmake -S "${ROOT_DIR}" -B "${BUILD_DIR}" -DCMAKE_BUILD_TYPE="${BUILD_TYPE}" -DINSTALL_MODE=ON
     cmake --build "${BUILD_DIR}" -- -j$(nproc)
 else
     echo "[installer] Skipping build (--no-build)"
 fi
 
 ######################### Tests (if any) ###############################
-# Prefer project's Makefile if present: it has a `run-tests` target that
-# compiles (debug) and runs the tests. Otherwise fall back to CMake targets.
-if [ -f "${ROOT_DIR}/Makefile" ]; then
-    echo "[installer] Found Makefile - running 'make run-tests' (if available)"
-    if make -C "${ROOT_DIR}" -n run-tests >/dev/null 2>&1; then
-        make -C "${ROOT_DIR}" run-tests || echo "[installer] make run-tests finished (non-zero)"
+if [ -d "${BUILD_DIR}" ]; then
+    if cmake --build "${BUILD_DIR}" --target help | grep -q "needForSpeed2DTests"; then
+        echo "[installer] Running tests (needForSpeed2DTests)"
+        cmake --build "${BUILD_DIR}" --target needForSpeed2DTests -- -j$(nproc) || echo "[installer] Tests finished (exit non-zero)"
     else
-        echo "[installer] Makefile does not expose 'run-tests' target - skipping tests"
-    fi
-else
-    if [ -d "${BUILD_DIR}" ]; then
-        if cmake --build "${BUILD_DIR}" --target help | grep -q "taller_tests"; then
-            echo "[installer] Running tests (taller_tests)"
-            cmake --build "${BUILD_DIR}" --target taller_tests -- -j$(nproc) || echo "[installer] Tests finished (exit non-zero)"
-        else
-            echo "[installer] Target 'taller_tests' not found in build - skipping tests"
-        fi
+        echo "[installer] Target 'needForSpeed2DTests' not found in build - skipping tests"
     fi
 fi
 
 ######################### Installing binaries ##########################
 echo "[installer] Installing binaries in ${INSTALL_BIN_DIR}"
 sudo mkdir -p "${INSTALL_BIN_DIR}"
-BINARIES=(taller_server taller_client taller_editor)
+BINARIES=(needForSpeed2DServer needForSpeed2DClient needForSpeed2DEditor)
 for b in "${BINARIES[@]}"; do
     SRC="${BUILD_DIR}/${b}"
     if [ -f "${SRC}" ]; then
@@ -133,30 +122,54 @@ for b in "${BINARIES[@]}"; do
 done
 
 ######################### Assets and configs ################################
+# Clean previous assets
+sudo rm -rf "${INSTALL_VAR_DIR}" || true
+
+# Create asset directory
+sudo mkdir -p "${INSTALL_VAR_DIR}"
+
+# Client assets
 echo "[installer] Installing assets in ${INSTALL_VAR_DIR}"
 if [ -d "${ROOT_DIR}/client/assets" ]; then
-    sudo rm -rf "${INSTALL_VAR_DIR}/assets" || true
-    sudo mkdir -p "${INSTALL_VAR_DIR}"
-    sudo cp -r "${ROOT_DIR}/client/assets" "${INSTALL_VAR_DIR}/assets"
-    echo "[installer] Copied client/assets -> ${INSTALL_VAR_DIR}/assets"
+    sudo mkdir -p "${INSTALL_VAR_DIR}/client"
+    sudo cp -r "${ROOT_DIR}/client/assets" "${INSTALL_VAR_DIR}/client"
+    echo "[installer] Copied client/assets -> ${INSTALL_VAR_DIR}/client"
 else
     echo "[installer] client/assets not found - skipping"
 fi
 
+# Lobby assets
+
+# Editor assets
+
+# Clean previous configs
+sudo rm -rf "${INSTALL_ETC_DIR}" || true
+
+# Create config directory
+sudo mkdir -p "${INSTALL_ETC_DIR}"
+
+# Main config file (config.yaml)
 echo "[installer] Installing configs in ${INSTALL_ETC_DIR}"
 sudo mkdir -p "${INSTALL_ETC_DIR}"
 if [ -f "${ROOT_DIR}/config.yaml" ]; then
-    sudo cp "${ROOT_DIR}/config.yaml" "${INSTALL_ETC_DIR}/config.yaml"
-    echo "[installer] Copied config.yaml -> ${INSTALL_ETC_DIR}/config.yaml"
+    sudo cp "${ROOT_DIR}/config.yaml" "${INSTALL_ETC_DIR}"
+    echo "[installer] Copied config.yaml -> ${INSTALL_ETC_DIR}"
 else
     echo "[installer] config.yaml not found in root - skipping"
 fi
 
-# maps folder
+# Maps folder (server/gameLogic/collisions/maps)
 if [ -d "${ROOT_DIR}/server/gameLogic/collisions/maps" ]; then
-    sudo mkdir -p "${INSTALL_ETC_DIR}/maps"
-    sudo cp -r "${ROOT_DIR}/server/gameLogic/collisions/maps" "${INSTALL_ETC_DIR}/maps"
-    echo "[installer] Copied maps -> ${INSTALL_ETC_DIR}/maps"
+    sudo mkdir -p "${INSTALL_ETC_DIR}/server/gameLogic/collisions"
+    sudo cp -r "${ROOT_DIR}/server/gameLogic/collisions/maps" "${INSTALL_ETC_DIR}/server/gameLogic/collisions"
+    echo "[installer] Copied maps -> ${INSTALL_ETC_DIR}/server/gameLogic/collisions"
+fi
+
+# Races folder (server/gameLogic/races)
+if [ -d "${ROOT_DIR}/server/gameLogic/races" ]; then
+    sudo mkdir -p "${INSTALL_ETC_DIR}/server/gameLogic"
+    sudo cp -r "${ROOT_DIR}/server/gameLogic/races" "${INSTALL_ETC_DIR}/server/gameLogic"
+    echo "[installer] Copied races -> ${INSTALL_ETC_DIR}/server/gameLogic"
 fi
 
 ######################### Final ###########################################

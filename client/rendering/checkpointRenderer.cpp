@@ -6,12 +6,20 @@
 
 CheckpointRenderer::CheckpointRenderer(Renderer& renderer) :
     renderer(renderer),
-    arrowTexture(renderer, "client/assets/checkpoints/arrow_up.png"),
-    curveTexture(renderer, "client/assets/checkpoints/curve_down_right.png"),
-    checkpointTexture(renderer, "client/assets/checkpoints/cp_horizontal.png"),
-    finishTexture(renderer, "client/assets/checkpoints/finish_horizontal.png"),
-    startTexture(renderer, "client/assets/checkpoints/start_horizontal.png") {
-
+    #ifdef INSTALL_MODE
+        arrowTexture(renderer, "/var/needForSpeed2D/client/assets/checkpoints/arrow_up.png"),
+        curveTexture(renderer, "/var/needForSpeed2D/client/assets/checkpoints/curve_down_right.png"),
+        checkpointTexture(renderer, "/var/needForSpeed2D/client/assets/checkpoints/cp_horizontal.png"),
+        finishTexture(renderer, "/var/needForSpeed2D/client/assets/checkpoints/finish_horizontal.png"),
+        startTexture(renderer, "/var/needForSpeed2D/client/assets/checkpoints/start_horizontal.png")
+    #else
+        arrowTexture(renderer, "client/assets/checkpoints/arrow_up.png"),
+        curveTexture(renderer, "client/assets/checkpoints/curve_down_right.png"),
+        checkpointTexture(renderer, "client/assets/checkpoints/cp_horizontal.png"),
+        finishTexture(renderer, "client/assets/checkpoints/finish_horizontal.png"),
+        startTexture(renderer, "client/assets/checkpoints/start_horizontal.png")
+    #endif
+{
     arrowTexture.SetBlendMode(SDL_BLENDMODE_BLEND);
     checkpointTexture.SetBlendMode(SDL_BLENDMODE_BLEND);
 }

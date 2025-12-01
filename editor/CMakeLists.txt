@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.24)
 
-target_sources(taller_editor
+target_sources(needForSpeed2DEditor
     PRIVATE
         editor.h editor.cpp editor.ui
         menu.h menu.cpp menu.ui
@@ -15,4 +15,4 @@ target_sources(taller_editor
         circuitsegment.h
     )
 
-target_include_directories(taller_editor PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(needForSpeed2DEditor PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})

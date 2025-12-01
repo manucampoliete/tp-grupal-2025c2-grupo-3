@@ -1,4 +1,4 @@
-target_sources(taller_client
+target_sources(needForSpeed2DClient
     PRIVATE
     # .cpp files
     clientLobbyProtocol.cpp

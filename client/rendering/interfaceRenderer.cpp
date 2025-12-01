@@ -80,7 +80,11 @@ void UIRenderer::renderCountdown(uint8_t countdownNumber) {
     }
 
     // Create big font for the countdown
-    Font bigFont("client/assets/fonts/VCR_OSD_MONO.ttf", 140);
+    #ifdef INSTALL_MODE
+        Font bigFont("/var/needForSpeed2D/client/assets/fonts/VCR_OSD_MONO.ttf", 140);
+    #else
+        Font bigFont("client/assets/fonts/VCR_OSD_MONO.ttf", 140);
+    #endif
     Surface s = bigFont.RenderText_Solid(text, color);
     Texture t(renderer, s);
 

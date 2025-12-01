@@ -1,4 +1,4 @@
-target_sources(taller_common
+target_sources(needForSpeed2DCommon
     PRIVATE
     # .cpp files
     resolver.cpp

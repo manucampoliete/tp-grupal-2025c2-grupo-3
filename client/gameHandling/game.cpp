@@ -4,44 +4,63 @@
 
 #include "../threads/gameLoop.h"
 
-Game::Game(World& world, GameLoop& gameLoop, uint8_t playerId)
-    : sdl(SDL_INIT_VIDEO | SDL_INIT_AUDIO),
-      ttf(),
-      window("Need For Speed", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-             800, 600, SDL_WINDOW_RESIZABLE),
-      renderer(window, -1, SDL_RENDERER_ACCELERATED),
-      
-      // Fonts
-      font("client/assets/fonts/VCR_OSD_MONO.ttf", 24),
-      fontSmall("client/assets/fonts/VCR_OSD_MONO.ttf", 18),
-      fontBig("client/assets/fonts/VCR_OSD_MONO.ttf", 30),
-      
-      // Textures
-      // mapTexture(renderer, "client/assets/cities/Game Boy _ GBC - Grand Theft Auto - "
-       //                    "Backgrounds - Vice City.png"),
-      carSprites(renderer,
-                 SDL2pp::Surface("client/assets/cars/Mobile - Grand Theft Auto 4 - "
-                                 "Miscellaneous - Cars.png")
-                     .SetColorKey(true, 0xa3a30d)),
-      cheatInmortalityImg(renderer, "client/assets/cheats/inmortality.png"),
-      cheatWinImg(renderer, "client/assets/cheats/win.png"),
-      cheatLoseImg(renderer, "client/assets/cheats/lose.png"),
-      cheatSpeedImg(renderer, "client/assets/cheats/speed.png"),
-      finishImg(renderer, "client/assets/cheats/finish.png"),
-      
-      // References
-      world(world),
-      gameLoop(gameLoop),
-      playerId(playerId),
-      
-      // Components
-      stateManager(),
-      soundManager(),
-      worldRenderer(renderer, carSprites, world, playerId),
-      uiRenderer(renderer, font, fontSmall, fontBig, world, playerId,
-                 cheatInmortalityImg, cheatWinImg, cheatLoseImg, cheatSpeedImg, finishImg),
-      effectsManager(),
-      inputHandler(gameLoop, stateManager, soundManager, worldRenderer, uiRenderer) {
+Game::Game(World& world, GameLoop& gameLoop, uint8_t playerId) : 
+    sdl(SDL_INIT_VIDEO | SDL_INIT_AUDIO),
+    ttf(),
+    window("Need For Speed", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+            800, 600, SDL_WINDOW_RESIZABLE),
+    renderer(window, -1, SDL_RENDERER_ACCELERATED),
+    
+    // Fonts
+    #ifdef INSTALL_MODE
+        font("/var/needForSpeed2D/client/assets/fonts/VCR_OSD_MONO.ttf", 24),
+        fontSmall("/var/needForSpeed2D/client/assets/fonts/VCR_OSD_MONO.ttf", 18),
+        fontBig("/var/needForSpeed2D/client/assets/fonts/VCR_OSD_MONO.ttf", 30),
+
+        // Textures
+        // mapTexture(renderer, "/var/needForSpeed2D/client/assets/cities/Game Boy _ GBC - Grand Theft Auto - "
+        //                    "Backgrounds - Vice City.png"),
+        carSprites(renderer,
+                    SDL2pp::Surface("/var/needForSpeed2D/client/assets/cars/Mobile - Grand Theft Auto 4 - "
+                                    "Miscellaneous - Cars.png")
+                        .SetColorKey(true, 0xa3a30d)),
+        cheatInmortalityImg(renderer, "/var/needForSpeed2D/client/assets/cheats/inmortality.png"),
+        cheatWinImg(renderer, "/var/needForSpeed2D/client/assets/cheats/win.png"),
+        cheatLoseImg(renderer, "/var/needForSpeed2D/client/assets/cheats/lose.png"),
+        cheatSpeedImg(renderer, "/var/needForSpeed2D/client/assets/cheats/speed.png"),
+        finishImg(renderer, "/var/needForSpeed2D/client/assets/cheats/finish.png"),
+    #else
+        font("client/assets/fonts/VCR_OSD_MONO.ttf", 24),
+        fontSmall("client/assets/fonts/VCR_OSD_MONO.ttf", 18),
+        fontBig("client/assets/fonts/VCR_OSD_MONO.ttf", 30),
+
+        // Textures
+        // mapTexture(renderer, "client/assets/cities/Game Boy _ GBC - Grand Theft Auto - "
+        //                    "Backgrounds - Vice City.png"),
+        carSprites(renderer,
+                    SDL2pp::Surface("client/assets/cars/Mobile - Grand Theft Auto 4 - "
+                                    "Miscellaneous - Cars.png")
+                        .SetColorKey(true, 0xa3a30d)),
+        cheatInmortalityImg(renderer, "client/assets/cheats/inmortality.png"),
+        cheatWinImg(renderer, "client/assets/cheats/win.png"),
+        cheatLoseImg(renderer, "client/assets/cheats/lose.png"),
+        cheatSpeedImg(renderer, "client/assets/cheats/speed.png"),
+        finishImg(renderer, "client/assets/cheats/finish.png"),
+    #endif
+    
+    // References
+    world(world),
+    gameLoop(gameLoop),
+    playerId(playerId),
+    
+    // Components
+    stateManager(),
+    soundManager(),
+    worldRenderer(renderer, carSprites, world, playerId),
+    uiRenderer(renderer, font, fontSmall, fontBig, world, playerId,
+                cheatInmortalityImg, cheatWinImg, cheatLoseImg, cheatSpeedImg, finishImg),
+    effectsManager(),
+    inputHandler(gameLoop, stateManager, soundManager, worldRenderer, uiRenderer) {
 
     SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "0");
     SDL_SetHint(SDL_HINT_AUDIO_RESAMPLING_MODE, "1");
@@ -54,17 +73,31 @@ Game::Game(World& world, GameLoop& gameLoop, uint8_t playerId)
 
 void Game::loadSounds() {
     try {
-        soundManager.loadSound("collision", "client/assets/sounds/collision.wav");
-        soundManager.loadSound("explosion", "client/assets/sounds/explosion.wav");
-        soundManager.loadSound("checkpoint", "client/assets/sounds/checkpoint.wav");
-        soundManager.loadSound("countdown", "client/assets/sounds/beep.wav");
-        soundManager.loadSound("raceEnd", "client/assets/sounds/raceEnd.wav");
-        soundManager.loadSound("brake", "client/assets/sounds/brake.wav");
-        soundManager.loadSound("engine", "client/assets/sounds/engine.wav");
-        soundManager.loadSound("confirm", "client/assets/sounds/confirm.wav");
-        soundManager.loadSound("victory", "client/assets/sounds/victory.wav");
-        soundManager.loadSound("raceStart", "client/assets/sounds/raceStart.wav");
-        soundManager.loadSound("buttonClick", "client/assets/sounds/buttonClick.wav");
+        #ifdef INSTALL_MODE
+            soundManager.loadSound("collision", "/var/needForSpeed2D/client/assets/sounds/collision.wav");
+            soundManager.loadSound("explosion", "/var/needForSpeed2D/client/assets/sounds/explosion.wav");
+            soundManager.loadSound("checkpoint", "/var/needForSpeed2D/client/assets/sounds/checkpoint.wav");
+            soundManager.loadSound("countdown", "/var/needForSpeed2D/client/assets/sounds/beep.wav");
+            soundManager.loadSound("raceEnd", "/var/needForSpeed2D/client/assets/sounds/raceEnd.wav");
+            soundManager.loadSound("brake", "/var/needForSpeed2D/client/assets/sounds/brake.wav");
+            soundManager.loadSound("engine", "/var/needForSpeed2D/client/assets/sounds/engine.wav");
+            soundManager.loadSound("confirm", "/var/needForSpeed2D/client/assets/sounds/confirm.wav");
+            soundManager.loadSound("victory", "/var/needForSpeed2D/client/assets/sounds/victory.wav");
+            soundManager.loadSound("raceStart", "/var/needForSpeed2D/client/assets/sounds/raceStart.wav");
+            soundManager.loadSound("buttonClick", "/var/needForSpeed2D/client/assets/sounds/buttonClick.wav");
+        #else
+            soundManager.loadSound("collision", "client/assets/sounds/collision.wav");
+            soundManager.loadSound("explosion", "client/assets/sounds/explosion.wav");
+            soundManager.loadSound("checkpoint", "client/assets/sounds/checkpoint.wav");
+            soundManager.loadSound("countdown", "client/assets/sounds/beep.wav");
+            soundManager.loadSound("raceEnd", "client/assets/sounds/raceEnd.wav");
+            soundManager.loadSound("brake", "client/assets/sounds/brake.wav");
+            soundManager.loadSound("engine", "client/assets/sounds/engine.wav");
+            soundManager.loadSound("confirm", "client/assets/sounds/confirm.wav");
+            soundManager.loadSound("victory", "client/assets/sounds/victory.wav");
+            soundManager.loadSound("raceStart", "client/assets/sounds/raceStart.wav");
+            soundManager.loadSound("buttonClick", "client/assets/sounds/buttonClick.wav");
+        #endif
     } catch (const std::exception& e) {
         std::cerr << "[GAME] Error loading sounds: " << e.what() << std::endl;
     }
@@ -192,25 +225,48 @@ void Game::setRaceInfo(const RaceInfo info) {
     stateManager.setCurrentRace(race);
     stateManager.setTotalRaces(totalRaces);
 
-    switch (mapId) {
-        case MAP_LIBERTY_CITY: // Liberty City
-            mapPath = "client/assets/cities/Game Boy _ GBC - Grand Theft Auto - Backgrounds - Liberty City.png";
-            bridgePath = "client/assets/cities/Liberty-City-Bridges.png"; 
-            musicPath = "client/assets/sounds/libertyCity.mp3";
-            break;
-        case MAP_SAN_ANDREAS: // San Andreas
-        //    mapPath = "client/assets/cities/Game Boy _ GBC - Grand Theft Auto - Backgrounds - San Andreas.png";
-        //    bridgePath = "client/assets/cities/San-Andreas-Bridges.png";
-            break;
-        case MAP_VICE_CITY: // Vice City
-            mapPath = "client/assets/cities/Game Boy _ GBC - Grand Theft Auto - Backgrounds - Vice City.png";
-            bridgePath = "client/assets/cities/Vice-City-Bridges.png";
-            musicPath = "client/assets/sounds/viceCity.mp3";
-            break;
-        default:
-            std::cerr << "[GAME] Warning: Could not load map " << (int)mapId << std::endl;
-            break;
-    }
+    #ifdef INSTALL_MODE
+        switch (mapId) {
+            case MAP_LIBERTY_CITY: // Liberty City
+                mapPath = "/var/needForSpeed2D/client/assets/cities/Game Boy _ GBC - Grand Theft Auto - Backgrounds - Liberty City.png";
+                bridgePath = "/var/needForSpeed2D/client/assets/cities/Liberty-City-Bridges.png";
+                musicPath = "/var/needForSpeed2D/client/assets/sounds/libertyCity.mp3";
+                break;
+            case MAP_SAN_ANDREAS: // San Andreas
+            //    mapPath = "/var/needForSpeed2D/client/assets/cities/Game Boy _ GBC - Grand Theft Auto - Backgrounds - San Andreas.png";
+            //    bridgePath = "/var/needForSpeed2D/client/assets/cities/San-Andreas-Bridges.png";
+                break;
+            case MAP_VICE_CITY: // Vice City
+                mapPath = "/var/needForSpeed2D/client/assets/cities/Game Boy _ GBC - Grand Theft Auto - Backgrounds - Vice City.png";
+                bridgePath = "/var/needForSpeed2D/client/assets/cities/Vice-City-Bridges.png";
+                musicPath = "/var/needForSpeed2D/client/assets/sounds/viceCity.mp3";
+                break;
+            default:
+                std::cerr << "[GAME] Warning: Could not load map " << (int)mapId << std::endl;
+                break;
+        }
+    #else
+        switch (mapId) {
+            case MAP_LIBERTY_CITY: // Liberty City
+                mapPath = "client/assets/cities/Game Boy _ GBC - Grand Theft Auto - Backgrounds - Liberty City.png";
+                bridgePath = "client/assets/cities/Liberty-City-Bridges.png";
+                musicPath = "client/assets/sounds/libertyCity.mp3";
+                break;
+            case MAP_SAN_ANDREAS: // San Andreas
+            //    mapPath = "client/assets/cities/Game Boy _ GBC - Grand Theft Auto - Backgrounds - San Andreas.png";
+            //    bridgePath = "client/assets/cities/San-Andreas-Bridges.png";
+                break;
+            case MAP_VICE_CITY: // Vice City
+                mapPath = "client/assets/cities/Game Boy _ GBC - Grand Theft Auto - Backgrounds - Vice City.png";
+                bridgePath = "client/assets/cities/Vice-City-Bridges.png";
+                musicPath = "client/assets/sounds/viceCity.mp3";
+                break;
+            default:
+                std::cerr << "[GAME] Warning: Could not load map " << (int)mapId << std::endl;
+                break;
+        }
+    #endif
+    
 
     //load new textures
     // Thanks to unique_ptr the old ones are deleted automatizally

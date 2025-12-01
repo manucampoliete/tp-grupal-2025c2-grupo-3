@@ -88,7 +88,7 @@ Buenas. Estas correcciones las hice en base a la rama `main`, recibió unos comm
 
 
 ## Editor
-No pude compilar el editor porque no está en el makefile y cuando quise intentar añadir el target ‘taller_editor’ no funcionó, pero les dejo más o menos las features que tenemos en cuenta.
+No pude compilar el editor porque no está en el makefile y cuando quise intentar añadir el target ‘needForSpeed2DEditor’ no funcionó, pero les dejo más o menos las features que tenemos en cuenta.
 1. ~~Cargar carreras.~~
 2. ~~Guardar carreras y usarlos en el juego~~
 3. ~~Añadir checkpoints.~~

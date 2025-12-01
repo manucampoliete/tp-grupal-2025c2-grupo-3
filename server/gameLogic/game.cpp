@@ -49,7 +49,11 @@ Game::Game(const Config& config):
         started(false)
 {
     std::vector<std::string> allRaceFiles;
-    std::string directory = "server/gameLogic/races/";
+    #ifdef INSTALL_MODE
+        std::string directory = "/etc/needForSpeed2D/server/gameLogic/races/";
+    #else
+        std::string directory = "server/gameLogic/races/";
+    #endif
 
     for (const auto& entry : std::filesystem::directory_iterator(directory)) {
         if (!entry.is_regular_file()) continue;
@@ -218,9 +222,16 @@ void Game::setCountdownState() {
             break;
     }
 
-    CollisionMap lowLayerCollisionMap = CollisionLoader::LoadCollisions("server/gameLogic/collisions/maps/" + mapName + "/low_collision_layer.yaml");
-    CollisionMap highLayerCollisionMap = CollisionLoader::LoadCollisions("server/gameLogic/collisions/maps/" + mapName + "/high_collision_layer.yaml");
-    CollisionMap layerSwitchCollisionMap = CollisionLoader::LoadCollisions("server/gameLogic/collisions/maps/" + mapName + "/layer_switch.yaml");
+    #ifdef INSTALL_MODE
+        CollisionMap lowLayerCollisionMap = CollisionLoader::LoadCollisions("/etc/needForSpeed2D/server/gameLogic/collisions/maps/" + mapName + "/low_collision_layer.yaml");
+        CollisionMap highLayerCollisionMap = CollisionLoader::LoadCollisions("/etc/needForSpeed2D/server/gameLogic/collisions/maps/" + mapName + "/high_collision_layer.yaml");
+        CollisionMap layerSwitchCollisionMap = CollisionLoader::LoadCollisions("/etc/needForSpeed2D/server/gameLogic/collisions/maps/" + mapName + "/layer_switch.yaml");
+    #else
+        CollisionMap lowLayerCollisionMap = CollisionLoader::LoadCollisions("server/gameLogic/collisions/maps/" + mapName + "/low_collision_layer.yaml");
+        CollisionMap highLayerCollisionMap = CollisionLoader::LoadCollisions("server/gameLogic/collisions/maps/" + mapName + "/high_collision_layer.yaml");
+        CollisionMap layerSwitchCollisionMap = CollisionLoader::LoadCollisions("server/gameLogic/collisions/maps/" + mapName + "/layer_switch.yaml");
+    #endif
+    
 
     lowCollisionLayerBodies = CollisionGenerator::GenerateCollisions(lowLayerCollisionMap, world, PIXELS_TO_METERS, WORLD_HEIGHT, WALL_LOW_LAYER);
     highCollisionLayerBodies = CollisionGenerator::GenerateCollisions(highLayerCollisionMap, world, PIXELS_TO_METERS, WORLD_HEIGHT, WALL_HIGH_LAYER);

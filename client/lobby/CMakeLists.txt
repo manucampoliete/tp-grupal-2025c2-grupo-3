@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.24)
 
-target_sources(taller_client
+target_sources(needForSpeed2DClient
     PRIVATE
         lobby.cpp
         lobby.h
@@ -35,6 +35,6 @@ target_sources(taller_client
         resources.qrc
 )
 
-target_include_directories(taller_client PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(needForSpeed2DClient PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
 add_subdirectory(protocol)

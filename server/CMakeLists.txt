@@ -1,4 +1,4 @@
-target_sources(taller_server
+target_sources(needForSpeed2DServer
     PRIVATE
     # .cpp files
     main.cpp
