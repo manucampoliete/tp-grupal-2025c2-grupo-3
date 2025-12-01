@@ -3,18 +3,39 @@
 #include <cmath>
 
 
-WorldRenderer::WorldRenderer(Renderer& renderer, Texture& mapTexture, Texture& carSprites,
+WorldRenderer::WorldRenderer(Renderer& renderer, Texture& carSprites,
                              World& world, uint8_t playerId):
         renderer(renderer),
-        mapTexture(mapTexture),
         carSprites(carSprites),
+        mapTexture(nullptr),
+        mapRenderer(nullptr),
         bridgeTexture(nullptr),
         bridgeRenderer(nullptr),
+        checkpointRenderer(renderer),
         world(world),
         playerId(playerId),
         camera(0, 0, 800, 600),
         scaleFactor(1.0f) {}
 
+
+void WorldRenderer::loadMapTexture(const std::string& path) {
+    try {
+        mapRenderer.reset();
+
+        // load image to RAM
+        SDL2pp::Surface surface(path);
+
+        // load to GPU
+        mapTexture = std::make_unique<Texture>(renderer, surface);
+        mapTexture->SetBlendMode(SDL_BLENDMODE_BLEND);
+        
+        mapRenderer = std::make_unique<MapRenderer>(renderer, *mapTexture);
+    } catch (const std::exception& e) {
+        std::cerr << "[WORLD_RENDERER] Error loading map texture: " << e.what() << std::endl;
+        mapRenderer.reset();
+        mapTexture.reset();
+    }
+}
 
 void WorldRenderer::loadBridgeTexture(const std::string& path) {
     try {
@@ -42,16 +63,19 @@ void WorldRenderer::updateLayout(int windowWidth, int windowHeight) {
 
 
 void WorldRenderer::updateCamera(float playerX, float playerY) {
+    if (!mapTexture) return;
+
     camera.x = static_cast<int>(playerX - (camera.w / 2));
     camera.y = static_cast<int>(playerY - (camera.h / 2));
 
     // Avoid camera going out of map bounds
     if (camera.x < 0) camera.x = 0;
     if (camera.y < 0) camera.y = 0;
-    if (camera.x > mapTexture.GetWidth() - camera.w)
-        camera.x = mapTexture.GetWidth() - camera.w;
-    if (camera.y > mapTexture.GetHeight() - camera.h)
-        camera.y = mapTexture.GetHeight() - camera.h;
+    
+    if (camera.x > mapTexture->GetWidth() - camera.w)
+        camera.x = mapTexture->GetWidth() - camera.w;
+    if (camera.y > mapTexture->GetHeight() - camera.h)
+        camera.y = mapTexture->GetHeight() - camera.h;
 }
 
 
@@ -101,21 +125,25 @@ void WorldRenderer::render() {
     renderMapCamera();
 
     renderBrakeTrails();
+    renderCheckpoints();
     renderCarsUnderBridge();
     renderSmoke(); 
 
     renderBridges();
     renderCarsOnBridge();
-    
+
+
     renderCollisionEffects();
     renderExplosions();
 }
 
 
 void WorldRenderer::renderMapCamera() {
+    if (!mapRenderer) return;
     renderer.SetScale(scaleFactor, scaleFactor);
-    renderer.Copy(mapTexture, camera, NullOpt);
+    mapRenderer->render(camera);
 }
+
 
 void WorldRenderer::renderCarsUnderBridge() {
     const auto& cars = world.getCars();
@@ -150,6 +178,13 @@ void WorldRenderer::renderCar(const BroadcastData::CarState& carState) {
     renderer.Copy(carSprites, src, dest, carState.angle, center, SDL_FLIP_NONE);
 }
 
+
+void WorldRenderer::renderCheckpoints() {
+    const auto& cars = world.getCars();
+    auto it = cars.find(playerId);
+    if (it != cars.end())
+        checkpointRenderer.render(it->second.checkpoints, camera);
+}
 
 void WorldRenderer::renderExplosions() {
     renderer.SetDrawBlendMode(SDL_BLENDMODE_BLEND);
@@ -189,14 +224,14 @@ void WorldRenderer::renderCollisionEffects() {
     for (const auto& collision: collisionEffects) {
         float screenX = collision.x - camera.x;
         float screenY = collision.y - camera.y;
-
+    
         // White flash that fades out
         float alpha = (1.0f - collision.timeAlive / 0.3f) * collision.intensity;
         Uint8 alphaByte = static_cast<Uint8>(alpha * 255);
-
+    
         renderer.SetDrawColor(255, 255, 255, alphaByte);
-        int radius = static_cast<int>(collision.timeAlive * 100 * collision.intensity);
-
+        int radius = static_cast<int>(collision.timeAlive * 100);
+    
         // Draw simple circle (lines)
         for (int angle = 0; angle < 360; angle += 10) {
             float rad = angle * 3.14159f / 180.0f;
@@ -216,7 +251,7 @@ void WorldRenderer::addExplosion(float x, float y, int particleCount) {
     explosions.emplace_back(x, y, particleCount);
 }
 
-void WorldRenderer::addCollisionEffect(float x, float y, float intensity) {
+void WorldRenderer::addCollisionEffect(float x, float y, bool intensity) {
     collisionEffects.emplace_back(x, y, intensity);
 }
 

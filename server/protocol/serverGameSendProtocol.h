@@ -18,12 +18,19 @@ public:
      */
     void sendSnapshot(std::shared_ptr<Snapshot> snapshot);
 
+    void sendRaceInfoSnapshot(std::shared_ptr<Snapshot> snapshot);
+
     void sendRaceSnapshot(std::shared_ptr<Snapshot> snapshot);
 
     void sendRaceResultsSnapshot(std::shared_ptr<Snapshot> snapshot);
 
+    void sendFinalResultsSnapshot(std::shared_ptr<Snapshot> snapshot);
+
     void sendModificationSnapshot(std::shared_ptr<Snapshot> snapshot);
+    
     void sendCollisionSnapshot(const Snapshot::CollisionData& collision);
+
+    void sendPlayerDiedSnapshot(ClientID id);
 };
 
 #endif  // SERVER_GAME_SEND_PROTOCOL_H

@@ -11,6 +11,8 @@
 #include "../configLoader.h"
 #include "car.h"
 
+#include "collisions/pathLoader.h"
+
 #define PENALTY_PER_IMPROVEMENT 5
 
 class Player {
@@ -25,7 +27,15 @@ private:
 
     uint32_t penalty;
 
+    Path currentPath;
+    PathElement nextCheckpoint;
+
+    bool immortal;
+    bool superSpeed;
+
     void debugPrintCarInfo();
+
+    void updateNextCheckpoint();
 
 public:
     /**
@@ -58,7 +68,13 @@ public:
     void improveCarProperties(bool improveVelocity, bool improveHealth, bool improveAcceleration, bool improveMass);
 
     void resetForNewRace();
-    void applyCollisionDamage(float impact) { car.applyDamage(impact); }
+    void applyCollisionDamage(float impact) { if(!immortal) car.applyDamage(impact); }
+
+    void initCurrentPath(Path& currentPath);
+    void updateCurrentPath(PathElement& element, std::chrono::seconds raceTimeSecs);
+
+    // aplica finished = true y le asigna la maxima duracion posible de la carrera como tiempo de carrera
+    void handleDeath(std::chrono::seconds raceDurationSecs);
 
     /**
      * Builds and returns a CarSnapshot representing the player's car.
@@ -70,6 +86,10 @@ public:
 
     ClientID getClientId() const { return clientId; }
     bool isAlive() { return car.getCurrentHealth() > 0.0f; }
+
+    void toggleImmortality() { immortal = !immortal; }
+    void instaWin(std::chrono::seconds raceTimeSecs);
+    void toggleSuperSpeed();
 
     Car getCar() const { return car; }
 

@@ -16,6 +16,8 @@
 #include "../rendering/interfaceRenderer.h"
 #include "../rendering/effectsManager.h"
 
+#include "../../common/utils/mapConstants.h"
+
 using namespace SDL2pp;
 
 class GameLoop;
@@ -43,7 +45,6 @@ private:
     SDL2pp::Font fontSmall;
     SDL2pp::Font fontBig;
 
-    SDL2pp::Texture mapTexture;
     SDL2pp::Texture carSprites;
 
     SDL2pp::Texture cheatInmortalityImg;
@@ -55,6 +56,10 @@ private:
     World& world;
     GameLoop& gameLoop;
     uint8_t playerId;
+
+    uint8_t mapId;
+    uint8_t race;
+    uint8_t totalRaces;
 
     // owner
     GameStateManager stateManager;
@@ -68,7 +73,6 @@ private:
     int lastWindowHeight = 0;
 
     void loadSounds();
-    void loadBridges();
     void updateUILayout();
     void update(float dt);
     void render();
@@ -83,6 +87,7 @@ public:
     bool processFrame(float dt);
 
     void showCountdown(uint8_t number);
+    void setRaceInfo(const RaceInfo info);
     void startRace();
     void setStatsCountdown(uint8_t number);
     void showStats(const RaceResults& results);
@@ -91,7 +96,7 @@ public:
     void showFinalResults(const FinalResults& results);
     void showCheatNotification(CheatType type);
     
-    void onCollision(float x, float y, float intensity);
+    void onCollision(float x, float y, bool intensity);
     void onPlayerDied(uint16_t deadPlayerId);
 
     SoundManager& getSoundManager() { return soundManager; }

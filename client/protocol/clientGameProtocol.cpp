@@ -7,6 +7,7 @@
 
 #include "../../common/protocol/protocolConstants.h"
 
+
 uint8_t ClientGameProtocol::encodeMoveState(const ActiveDirections& activeDirections) {
     uint8_t moveState = 0;
     if (activeDirections.up)
@@ -22,7 +23,9 @@ uint8_t ClientGameProtocol::encodeMoveState(const ActiveDirections& activeDirect
 
 ClientGameProtocol::ClientGameProtocol(Socket& socket): SendProtocol(socket), RecvProtocol(socket) {}
 
+
 uint8_t ClientGameProtocol::recvMessageType() { return recvU8(); }
+
 
 void ClientGameProtocol::sendMove(const ActiveDirections& activeDirections) {
     sendU8(SEND_MOVE_STATE);
@@ -36,6 +39,7 @@ void ClientGameProtocol::sendModifications(bool speedMod, bool healthMod, bool a
     sendU8(accelMod ? 0x01 : 0x00);
     sendU8(massMod ? 0x01 : 0x00);
 }
+
 
 Snapshot ClientGameProtocol::recvSnapshot() {
     uint32_t countdown = recvU32();
@@ -52,24 +56,37 @@ Snapshot ClientGameProtocol::recvSnapshot() {
         uint8_t health = recvU8();
         bool onBridge = recvU8();
 
-        cars.emplace_back(clientId, x, y, angle, speed, carId, health, onBridge);
+        uint8_t numElements = recvU8();
+        std::vector<PathElement> pathElements;
+
+        for (uint8_t j = 0; j < numElements; ++j) {
+            uint8_t cpId = recvU8();
+            uint32_t cpX = recvU32();
+            uint32_t cpY = recvU32();
+            pathElements.emplace_back(cpId, cpX, cpY);
+        }
+
+        cars.emplace_back(clientId, x, y, angle, speed, carId, health, onBridge, pathElements);
     }
 
     return Snapshot(countdown, cars);
 }
 
-uint8_t ClientGameProtocol::recvCountdown() { return recvU8(); }
+RaceInfo ClientGameProtocol::recvRaceInfo() {
+    RaceInfo info;
+    info.mapId = recvU8();
+    info.race = recvU8();
+    info.totalRaces = recvU8();
 
-uint8_t ClientGameProtocol::recvCheckpoint() { return recvU8(); }
+    return info;
+}
+
+uint8_t ClientGameProtocol::recvCountdown() { return recvU8(); }
 
 CollisionData ClientGameProtocol::recvCollision() {
     CollisionData collision;
     collision.playerId = recvU16();
-    
-    // Receive intensity as uint8_t (0-255) and convert to float (0.0-1.0)
-    uint8_t intensityByte = recvU8();
-    collision.intensity = intensityByte / 255.0f;
-
+    collision.intensity = recvU8(); // 0: low, 1: high
     collision.x = recvU32();
     collision.y = recvU32();
 

@@ -6,13 +6,11 @@
 #include "collisions/collisionBits.h"
 #include "bodyData.h"
 
-#define DAMAGE_SCALE 25.0f
-
 // Para facilitar la lectura del codigo recordar que "velocity" es un vector y "speed" es una
 // magnitud
 
-void Car::handleDestroyedState() {
-    body->SetLinearDamping(3.0f);
+void Car::handleFinishedState() {
+    body->SetLinearDamping(1.0f);
     body->SetAngularDamping(6.0f);
 }
 
@@ -28,10 +26,6 @@ void Car::applyFriction() {
 
     float mass = body->GetMass();
     
-    /* float lateralFactor = 3.0f; // asignar una variable constante
-    float impulseScalar = -lateralSpeed * mass * lateralFactor;
-    b2Vec2 lateralImpulse(right.x * impulseScalar, right.y * impulseScalar);
-    body->ApplyLinearImpulse(lateralImpulse, body->GetWorldCenter(), true); */
     float impulseScalar = -lateralSpeed * mass * 0.5f; // reducir el lateral factor para que derrape un poco
     if (impulseScalar > 50.0f) impulseScalar = 50.0f;
     if (impulseScalar < -50.0f) impulseScalar = -50.0f;
@@ -39,11 +33,8 @@ void Car::applyFriction() {
     body->ApplyLinearImpulse(lateralImpulse, body->GetWorldCenter(), true);
 
     float forwardSpeed = b2Dot(vel, forward);
-    float dragFactor = 0.2f; // asignar una variable constante
-    b2Vec2 dragForce(
-        -forward.x * forwardSpeed * dragFactor,
-        -forward.y * forwardSpeed * dragFactor
-    );
+    float drag = -forwardSpeed * std::abs(forwardSpeed) * 0.05f;
+    b2Vec2 dragForce = drag * forward;
     body->ApplyForceToCenter(dragForce, true);
 }
 
@@ -51,22 +42,22 @@ void Car::applyThrottle() {
     float angle = body->GetAngle();
     b2Vec2 forward(std::cos(angle), std::sin(angle));
     b2Vec2 currentVel = body->GetLinearVelocity();
+    float mass = body->GetMass();
+    float targetSpeed = 0.0f;
 
     if (currentActiveDirections.up) {
-        b2Vec2 desiredVel(forward.x * maxSpeed, forward.y * maxSpeed);
-        b2Vec2 delta = desiredVel - currentVel;
-
-        float mass = body->GetMass();
-        b2Vec2 force(delta.x * mass * acceleration, delta.y * mass * acceleration);
-        body->ApplyForceToCenter(force, true);
+        targetSpeed = maxSpeed;
     } else if (currentActiveDirections.down) {
-        b2Vec2 desiredVel(-forward.x * maxSpeed / 2, -forward.y * maxSpeed / 2); // ahora ir para atras es mas lento que ir para adelante
-        b2Vec2 delta = desiredVel - currentVel;
-
-        float mass = body->GetMass();
-        b2Vec2 force(delta.x * mass * acceleration, delta.y * mass * acceleration);
-        body->ApplyForceToCenter(force, true);
+        targetSpeed = -maxSpeed * 0.75f;
     }
+
+    float currentForward = b2Dot(currentVel, forward);
+    float deltaSpeed = targetSpeed - currentForward;
+
+    float forceMag = acceleration * mass * deltaSpeed;
+
+    b2Vec2 force(forward.x * forceMag, forward.y * forceMag);
+    body->ApplyForceToCenter(force, true);
 }
 
 // TODO: tendria que usar un desiredAngularVel y un delta para aplicar el torque?
@@ -77,76 +68,61 @@ void Car::applySteering() {
 
     // si casi esta detenido no girar
     if (speed < STEERING_SPEED_THRESHOLD) {
-        float currentW = body->GetAngularVelocity();
-        float inertia = body->GetInertia();
-        float angImpulse = -currentW * inertia * 0.5f; // angular damping
-        body->ApplyAngularImpulse(angImpulse, true);
         return;
     }
 
-    // escalado del torque segun velocidad
-    // que valores debe tomar el turn factor threshold?
-    float factor = speed / maxSpeed;
-    if (factor < turnFactorThreshold) factor = turnFactorThreshold;
-    if (factor > 1.0f) factor = 1.0f;
+    float angle = body->GetAngle();
+    b2Vec2 forward(std::cos(angle), std::sin(angle));
 
+    float forwardSpeed = b2Dot(vel, forward);
+    float steeringSign = (forwardSpeed >= 0) ? 1.0f : -1.0f;
 
-    float torqueToApply = ANGULAR_SPEED * factor;
+    float turn = 0.0f;
+    if (currentActiveDirections.left)
+        turn = 1.0f;
+    else if (currentActiveDirections.right)
+        turn = -1.0f;
+    if (turn == 0.0f) return;
 
-    // si un auto gira el volante a la izquierda va a ir a la izquierda por mas que acelere para adelante o para atras
-    // con esto se logra ese efecto, se saca el signo de la velocidad hacia adelante y se decide el steeringSign
-    // se puede quitar si le resulta poco intuitivo a los jugadores
-    float forwardSpeed = b2Dot(vel, b2Vec2(std::cos(body->GetAngle()), std::sin(body->GetAngle())));
-    float steeringSign = (forwardSpeed >= 0.0f) ? 1.0f : -1.0f;
+    float speedFactor = std::clamp(speed/maxSpeed, 0.2f, 1.0f);
 
-    if (currentActiveDirections.left) {
-        body->ApplyTorque(steeringSign * torqueToApply, true);
-    } else if (currentActiveDirections.right) {
-        body->ApplyTorque(steeringSign * -torqueToApply, true);
-    } else {
-        // angular damping de nuevo, pero mas suave
-        float currentW = body->GetAngularVelocity();
-        float inertia = body->GetInertia();
-        float angDampImpulse = -currentW * inertia * 0.05f;
-        body->ApplyAngularImpulse(angDampImpulse, true);
-    }
+    float torque = angularSpeed * steeringSign * turn * speedFactor * body->GetMass();
+
+    body->ApplyTorque(torque, true);
 }
 
+// aplica limites tanto inferiores como superiores a las velocidades
 void Car::applySpeedLimits() {
     // velocidad lineal
     b2Vec2 vel = body->GetLinearVelocity();
     float speed = vel.Length();
+
     if (speed > maxSpeed) {
         float scale = maxSpeed / speed;
         b2Vec2 newVel(vel.x * scale, vel.y * scale);
         body->SetLinearVelocity(newVel);
     }
+    if (speed < LINEAR_VEL_THRESHOLD) {
+        body->SetLinearVelocity(b2Vec2_zero);
+    }
+
 
     // velocidad angular
     float w = body->GetAngularVelocity();
-    if (std::abs(w) < ANGULAR_VEL_THRESHOLD) {
-        body->SetAngularVelocity(0.0f);
-        return;
-    }
 
     if (std::abs(w) > MAX_ANGULAR_SPEED) {
         float sign = (w > 0.0f) ? 1.0f : -1.0f;
         body->SetAngularVelocity(sign * MAX_ANGULAR_SPEED);
     }
-}
-
-void Car::applyStallPrevention() {
-    if(body->GetLinearVelocity().Length() < linearVelThreshold) {
-        body->SetLinearVelocity(b2Vec2(0.0f, 0.0f));
-    }
-    if(std::abs(body->GetAngularVelocity()) < angularVelThreshold) {
+    if (std::abs(w) < ANGULAR_VEL_THRESHOLD) {
         body->SetAngularVelocity(0.0f);
+        return;
     }
 }
 
-void Car::updatePhysics() {
-    if (currentHealth <= 0.0f) {
-        handleDestroyedState();
+void Car::updatePhysics(bool finished) {
+    if (finished) {
+        handleFinishedState();
         return;
     }
 
@@ -154,7 +130,6 @@ void Car::updatePhysics() {
     applyThrottle();
     applySteering();
     applySpeedLimits();
-    // applyStallPrevention();
 }
 
 void Car::updateActiveDirections(ActiveDirections activeDirections) {
@@ -181,6 +156,25 @@ float Car::getMaxHealth() const { return maxHealth; }
 float Car::getMaxSpeed() const { return maxSpeed; } 
 
 void Car::setCurrentHealth(float health) { currentHealth = health; }
+
+void Car::setPosition(const PathElement& carSpawn) {
+    float x = carSpawn.x * PIXELS_TO_METERS;
+    float y = (WORLD_HEIGHT - carSpawn.y) * PIXELS_TO_METERS;
+    switch (carSpawn.id) {
+        case SPAWN_UP:
+            body->SetTransform(b2Vec2(x, y), 90*DEGTORAD);
+            break;
+        case SPAWN_DOWN:
+            body->SetTransform(b2Vec2(x, y), 270*DEGTORAD);
+            break;
+        case SPAWN_LEFT:
+            body->SetTransform(b2Vec2(x, y), 180*DEGTORAD);
+            break;
+        case SPAWN_RIGHT:
+            body->SetTransform(b2Vec2(x, y), 0*DEGTORAD);
+            break;
+    }
+}
 
 void Car::improveProperties(bool improveVelocity, bool improveHealth, bool improveAcceleration, bool improveMass) {
     if (improveVelocity) {
@@ -235,6 +229,21 @@ float Car::getMass() const {
     b2MassData md;
     body->GetMassData(&md);
     return md.mass;
+}
+
+void Car::resetSpeeds() {
+    body->SetLinearVelocity(b2Vec2_zero);
+    body->SetAngularVelocity(0.0f);
+}
+
+void Car::toggleSuperSpeed(bool superSpeed) {
+    if (superSpeed) {
+        maxSpeed /= SUPERSPEED_SCALE;
+        acceleration /= SUPERSPEED_SCALE;
+    } else {
+        maxSpeed *= SUPERSPEED_SCALE;
+        acceleration *= SUPERSPEED_SCALE;
+    }
 }
 
 

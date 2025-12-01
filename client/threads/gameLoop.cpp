@@ -54,12 +54,12 @@ void GameLoop::processServerMessages() {
             } else if constexpr (std::is_same_v<T, CountdownMessage>) {
                 onCountdown(message.number);
 
+            } else if constexpr (std::is_same_v<T, RaceInfoMessage>) {
+                onRaceInfo(message.info);
+
             } else if constexpr (std::is_same_v<T, RaceStartMessage>) {
                 onRaceStart();
-                
-            } else if constexpr (std::is_same_v<T, CheckpointMessage>) {
-                onCheckpointCrossed(message.checkpointId);
-                
+
             } else if constexpr (std::is_same_v<T, CollisionMessage>) {
                 onCollision(message.data);
                 
@@ -94,6 +94,7 @@ void GameLoop::applySnapshot(const Snapshot& snapshot) {
 
     for (const auto& carSnap: snapshot.cars) {
         BroadcastData::CarState carState;
+
         carState.id = carSnap.id;
         carState.x = carSnap.x / 1000.0f;
         carState.y = WORLD_HEIGHT - carSnap.y / 1000.0f;
@@ -101,6 +102,16 @@ void GameLoop::applySnapshot(const Snapshot& snapshot) {
         carState.type = carSnap.carId;
         carState.health = carSnap.health;
         carState.onBridge = carSnap.onBridge;
+
+        for (const auto& cpSnap : carSnap.path) {
+            BroadcastData::CarState::Checkpoint cpState;
+            
+            cpState.id = cpSnap.id;
+            cpState.x = cpSnap.x / 1000.0f;
+            cpState.y = (cpSnap.y / 1000.0f); 
+
+            carState.checkpoints.push_back(cpState);
+        }
 
         data.cars.push_back(carState);
     }
@@ -117,10 +128,13 @@ void GameLoop::onCountdown(uint8_t number) {
     }
 }
 
+void GameLoop::onRaceInfo(const RaceInfo info) {
+    if (game) game->setRaceInfo(info);
+}
+
 void GameLoop::onRaceStart() {
     if (game) game->startRace();
 }
-
 
 // CORREGIR!
 void GameLoop::onCheckpointCrossed(uint8_t checkpointId) {
@@ -137,7 +151,6 @@ void GameLoop::onCheckpointCrossed(uint8_t checkpointId) {
 
 
 void GameLoop::onCollision(const CollisionData& collision) {
-    std::cout << "[GAME_LOOP] Collision detected, intensity: " << collision.intensity << std::endl;
     if (!game) return;
 
     // Coordinates from server in mm to meters

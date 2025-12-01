@@ -25,17 +25,30 @@ const SDL2pp::Rect CARS[7] = {
 // agregar health del auto para imprimirlo en la pantalla
 struct BroadcastData {
     struct CarState {
-        uint8_t id; 
+        uint16_t id; 
         float x;
         float y; 
         float angle;
         uint8_t type;
         uint8_t health;
         bool onBridge;
+
+        struct Checkpoint {
+            uint8_t id;
+            float x;
+            float y;
+        };
+        std::vector<Checkpoint> checkpoints;
     };
 
     std::vector<CarState> cars;
     uint32_t countdown; 
+};
+
+struct RaceInfo {
+    uint8_t mapId; // map code, create enum
+    uint8_t race;
+    uint8_t totalRaces;
 };
 
 struct ModifyingState {
@@ -86,7 +99,7 @@ struct CarProperties {
 // a chequear desp
 struct CollisionData {
     uint16_t playerId;  // quién chocó
-    float intensity;     // 0.0 (leve) a 1.0 (fuerte)
+    bool intensity;     // 0 (leve), 1(fuerte)
     uint32_t x;          // coordenada x del choque * 1000
     uint32_t y;          // coordenada y del choque * 1000
 };
@@ -96,7 +109,7 @@ struct CollisionData {
 struct CollisionEffect {
     float x, y;
     float timeAlive;
-    float intensity;  // 0-1
+    float intensity;  // 0/1
     
     CollisionEffect(float x, float y, float intensity)
         : x(x), y(y), timeAlive(0), intensity(intensity) {}

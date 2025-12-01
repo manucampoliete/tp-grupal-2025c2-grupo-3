@@ -9,6 +9,8 @@
 #include "../../../common/types/types.h"
 #include "../../../common/utils/activeDirections.h"
 
+#include "collisions/pathLoader.h"
+
 /* #define MAX_SPEED 100.0f
 #define ACC 20.0f
 #define ANGULAR_SPEED 2.0f
@@ -16,7 +18,8 @@
 #define LINEAR_VEL_THRESHOLD 1.0f
 #define ANGULAR_VEL_THRESHOLD 1.0f */
 
-#define SCALE 0.05f  // modificar segun convenga, afecta a todas las constantes de velocidad
+// #define SCALE 0.05f  // modificar segun convenga, afecta a todas las constantes de velocidad
+#define SCALE 1.0f
 
 // throttle
 #define MAX_SPEED 10.0f
@@ -30,13 +33,23 @@
 //#define TURN_FACTOR_THRESHOLD MAX_SPEED / 3
 
 // thresholds
-#define LINEAR_VEL_THRESHOLD 0.05f
-#define ANGULAR_VEL_THRESHOLD 0.05f
+#define LINEAR_VEL_THRESHOLD 0.01f
+#define ANGULAR_VEL_THRESHOLD 0.01f
 
 #define VELOCITY_IMPROVEMENT_PERCENTAGE 1.5f
 #define HEALTH_IMPROVEMENT_PERCENTAGE 1.05f
 #define ACCELERATION_IMPROVEMENT_PERCENTAGE 1.1f
 #define MASS_IMPROVEMENT_PERCENTAGE 1.1f
+
+//
+#define DAMAGE_SCALE 25.0f
+
+#define PIXELS_TO_METERS 0.01f
+#define WORLD_HEIGHT 4672.0f 
+
+#define DEGTORAD 0.0174533
+
+#define SUPERSPEED_SCALE 3
 
 class Car {
 private:
@@ -67,7 +80,7 @@ private:
     void applySteering();
     void applySpeedLimits();
     void applyStallPrevention();
-    void handleDestroyedState();
+    void handleFinishedState();
 
 public:
     /**
@@ -90,8 +103,9 @@ public:
 
     /**
      * Updates the physics of the car based on the current active directions.
+     * Receives whether the player finished the race or not (to apply damping and prevent it from moving)
      */
-    void updatePhysics();
+    void updatePhysics(bool finished);
 
     /**
      * Updates the active directions of the car.
@@ -113,14 +127,15 @@ public:
     float getAngle();
     float getMaxSpeed() const;
     float getCurrentSpeed() const;
-    
     float getMaxHealth() const;
     float getCurrentHealth();
-
     float getAcceleration() const;
     float getMass() const;
 
+    void setPosition(const PathElement& carSpawn);
     void setCurrentHealth(float health);
+
+    void resetSpeeds();
 
     void improveProperties(bool improveVelocity, bool improveHealth, bool improveAcceleration, bool improveMass);
   
@@ -129,6 +144,8 @@ public:
     void toggleCollisionLayer();
 
     bool isOnBridge();
+
+    void toggleSuperSpeed(bool superSpeed);
 
     b2Body* getBody() { return body; }  /** NOTE: TEMPORAL!!! */
 
