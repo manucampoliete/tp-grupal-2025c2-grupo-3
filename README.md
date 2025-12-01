@@ -48,7 +48,7 @@ Buenas. Estas correcciones las hice en base a la rama `main`, recibió unos comm
 
 
 ## Ciudades
-1. 3 ciudades disponibles para jugar. NO (tenemos 2, falta juntar server y client)
+1. 3 ciudades disponibles para jugar. NO (tenemos 2)
 2. ~~Autos pasan por arriba y por abajo de los puentes. NO~~
 
 ## Configuración
@@ -62,11 +62,12 @@ Buenas. Estas correcciones las hice en base a la rama `main`, recibió unos comm
 (*) El tiempo de partida en si no esta en el archivo de config, pero se puede deducir a partir de los demas valores
 
 ## Cheats
-PARCIAL (los primeros tres están, pero hacerlos no tiene impacto real en el juego, sigue normalmente, y no hay daño por colisiones)
-1. Vida infinita.
-2. Ganar automáticamente.
+1. ~~Vida infinita.~~ 
+2. ~~Ganar automáticamente.~~ 
 3. ~~Perder automáticamente.~~  
-4. Alguno adicional.
+4. ~~Alguno adicional.~~ (*)
+
+(*) Nitro
 
 ## Vista y sonidos
 1. ~~Clara visualización de un auto cuando está por encima o por debajo de un puente. NO~~
