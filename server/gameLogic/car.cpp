@@ -102,10 +102,6 @@ void Car::applySpeedLimits() {
         b2Vec2 newVel(vel.x * scale, vel.y * scale);
         body->SetLinearVelocity(newVel);
     }
-    if (speed < LINEAR_VEL_THRESHOLD) {
-        body->SetLinearVelocity(b2Vec2_zero);
-    }
-
 
     // velocidad angular
     float w = body->GetAngularVelocity();

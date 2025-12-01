@@ -18,8 +18,6 @@
 #include "../../common/constantRateLoop/constantRateLoop.h"
 #include "../../common/messages/snapshot.h"
 
-#include "collisions/pathGenerator.h"
-
 #define TARGET_FPS 60
 #define FRAME_DURATION_MS (1000 / TARGET_FPS)
 #define TIME_STEP (1.0f / TARGET_FPS) // duracion del step que simula box2d cada frame
@@ -184,11 +182,15 @@ void Game::clearMapBodies() {
     for (b2Body* body : layerSwitchBodies) {
         world->DestroyBody(body);
     }
+    for(b2Body* body : NPCGraphBodies) {
+        world->DestroyBody(body);
+    }
 
     pathBodies.clear();
     lowCollisionLayerBodies.clear();
     highCollisionLayerBodies.clear();
     layerSwitchBodies.clear();
+    NPCGraphBodies.clear();
 }
 
 void Game::setCountdownState() {
@@ -196,16 +198,16 @@ void Game::setCountdownState() {
 
     clearMapBodies();
 
-    // Path currentPath = PathLoader::LoadPath("server/gameLogic/race.yaml");
     Path currentPath = PathLoader::LoadPath(raceFiles[currentRaceCount++]);
     pathBodies = PathGenerator::GeneratePath(currentPath, world, PIXELS_TO_METERS, WORLD_HEIGHT);
 
     for (auto& [id, player] : players) {
-        player.initCurrentPath(currentPath);
+        if(id < MAX_PLAYERS)
+            player.initCurrentPath(currentPath);
     }
 
     std::string mapName;
-    std::cout << "[GAME] Setting map to " << mapName << std::endl;
+    Graph currentNpcPaths;
     switch (currentPath.mapId){
         case MAP_LIBERTY_CITY:
             mapName = "libertyCity";
@@ -215,8 +217,12 @@ void Game::setCountdownState() {
             break;
         case MAP_VICE_CITY:
             mapName = "viceCity";
+            currentNpcPaths = GraphLoader::LoadGraph("server/gameLogic/npcs.yaml");
+            NPCGraphBodies = GraphGenerator::GenerateGraph(currentNpcPaths, world, PIXELS_TO_METERS, WORLD_HEIGHT);
             break;
     }
+
+    // si el grafo no esta vacio, daselo a los npcs
 
     CollisionMap lowLayerCollisionMap = CollisionLoader::LoadCollisions("server/gameLogic/collisions/maps/" + mapName + "/low_collision_layer.yaml");
     CollisionMap highLayerCollisionMap = CollisionLoader::LoadCollisions("server/gameLogic/collisions/maps/" + mapName + "/high_collision_layer.yaml");
