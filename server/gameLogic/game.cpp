@@ -48,12 +48,6 @@ Game::Game(const Config& config):
         upgradesDuration(config.gamePhasesTimers.modifyingCar),   
         started(false)
 {
-    /* std::vector<std::string> allRaceFiles = {
-        "map1.yaml",
-        "map2.yaml",
-        "map3.yaml"
-    }; */
-
     std::vector<std::string> allRaceFiles;
     std::string directory = "server/gameLogic/races/";
 
@@ -82,38 +76,10 @@ Game::Game(const Config& config):
 b2Body* Game::createNewCarBody() {
     b2BodyDef body_def;
     body_def.type = b2_dynamicBody;
-    // body_def.position.Set(0, 0);
     body_def.position.Set(WORLD_HEIGHT_METERS / 2, WORLD_HEIGHT_METERS / 2); // casi el centro
     body_def.angle = 1.571f; // 90 grados en radianes
 
-    // box2d permite darle el caracter de "bala" a objetos para que estos atraviesen colisiones lo menos posible
-    // sin esto un auto muy rapido podria atravesar edificios
-    // body_def.bullet = true;
-
     b2Body* car = world->CreateBody(&body_def);
-
-    b2PolygonShape boxShape;
-    float pixelWidth = 28.0f;
-    float pixelHeight = 22.0f;
-    boxShape.SetAsBox(pixelWidth/2 * PIXELS_TO_METERS, pixelHeight/2 * PIXELS_TO_METERS);  // SetAsBox recibe "half-width" y "half-height"
-
-    b2FixtureDef boxFixtureDef;
-    boxFixtureDef.shape = &boxShape;
-    boxFixtureDef.density = 1;
-    // boxFixtureDef.friction = 0.3f;
-    boxFixtureDef.restitution = 0.0f;  // poco rebote
-
-    // capa de colision
-    b2Filter filter;
-    filter.categoryBits = CAR_LOW_LAYER;
-    filter.maskBits = MASK_CAR_LOW;
-    /* filter.categoryBits = CAR_HIGH_LAYER;
-    filter.maskBits = MASK_CAR_HIGH; */
-    boxFixtureDef.filter = filter;
-
-    car->CreateFixture(&boxFixtureDef);
-
-    // car->SetLinearDamping(0.5f);  // para que se frene con el tiempo
 
     return car;
 }

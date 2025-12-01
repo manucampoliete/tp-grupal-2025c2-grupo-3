@@ -18,7 +18,8 @@
 #define LINEAR_VEL_THRESHOLD 1.0f
 #define ANGULAR_VEL_THRESHOLD 1.0f */
 
-#define SCALE 0.05f  // modificar segun convenga, afecta a todas las constantes de velocidad
+// #define SCALE 0.05f  // modificar segun convenga, afecta a todas las constantes de velocidad
+#define SCALE 1.0f
 
 // throttle
 #define MAX_SPEED 10.0f
@@ -32,13 +33,23 @@
 //#define TURN_FACTOR_THRESHOLD MAX_SPEED / 3
 
 // thresholds
-#define LINEAR_VEL_THRESHOLD 0.05f
-#define ANGULAR_VEL_THRESHOLD 0.05f
+#define LINEAR_VEL_THRESHOLD 0.01f
+#define ANGULAR_VEL_THRESHOLD 0.01f
 
 #define VELOCITY_IMPROVEMENT_PERCENTAGE 1.5f
 #define HEALTH_IMPROVEMENT_PERCENTAGE 1.05f
 #define ACCELERATION_IMPROVEMENT_PERCENTAGE 1.1f
 #define MASS_IMPROVEMENT_PERCENTAGE 1.1f
+
+//
+#define DAMAGE_SCALE 25.0f
+
+#define PIXELS_TO_METERS 0.01f
+#define WORLD_HEIGHT 4672.0f 
+
+#define DEGTORAD 0.0174533
+
+#define SUPERSPEED_SCALE 3
 
 class Car {
 private:

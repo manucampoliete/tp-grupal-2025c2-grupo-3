@@ -1,67 +1,53 @@
 cars:
   0:
-    # Physics
-    max_speed: 100.0
-    acceleration: 20.0
-    angular_speed: 1.0
-    mass: 1.0  # Modify as needed
-    #
     name: "Jeep Wrangler"
     health: 100.0
+    max_speed: 2.5
+    acceleration: 0.5
+    angular_speed: 1.5
+    mass: 50.0  
   1:
-    # Physics
-    max_speed: 300.0
-    acceleration: 50.0
-    angular_speed: 3.0
-    mass: 1.0  # Modify as needed
-    #
     name: "Ferrari F40"
     health: 50.0
+    max_speed: 3.5
+    acceleration: 1.2
+    angular_speed: 2.0
+    mass: 25.0  
   2:
-    # Physics
-    max_speed: 20.0
-    acceleration: 50.0
-    angular_speed: 3.0
-    mass: 1.0  # Modify as needed
-    #
     name: "BMW Z4"
-    health: 50.0
-  3:
-    # Physics
-    max_speed: 50.0
+    health: 90.0
+    max_speed: 3.0
     acceleration: 1.0
-    angular_speed: 3.0
-    mass: 1.0  # Modify as needed
-    #
+    angular_speed: 1.7
+    mass: 45.0  
+  3:
     name: "VW Beetle"
-    health: 2.0
+    health: 75.0
+    max_speed: 2.5
+    acceleration: 1.0
+    angular_speed: 2.0
+    mass: 37.5  
   4:
-    # Physics
-    max_speed: 200.0
-    acceleration: 50.0
-    angular_speed: 3.0
-    mass: 1.0  # Modify as needed
-    #
     name: "Ford Bronco"
-    health: 100.0
-  5:
-    # Physics
+    health: 200.0
     max_speed: 2.0
-    acceleration: 50.0
-    angular_speed: 3.0
-    mass: 1.0  # Modify as needed
-    #
+    acceleration: 0.3
+    angular_speed: 1.5
+    mass: 100.0  
+  5:
     name: "Ford F100"
-    health: 50.0
+    health: 150.0
+    max_speed: 2.25
+    acceleration: 0.4
+    angular_speed: 1.5
+    mass: 75.0  
   6:
-    # Physics
-    max_speed: 100.0
-    acceleration: 50.0
-    angular_speed: 3.0
-    mass: 1.0  # Modify as needed
-    #
     name: "MB S-Class"
-    health: 80.0
+    health: 125.0
+    max_speed: 2.3
+    acceleration: 0.5
+    angular_speed: 1.5
+    mass: 62.5  
 
 game_phases_timers:
   countdown: 10     # Seconds. First 7 -> "Ready", last 3 -> "3", "2", "1", "Go!"
