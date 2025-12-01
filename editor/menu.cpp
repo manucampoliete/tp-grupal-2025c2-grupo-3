@@ -45,7 +45,10 @@ void Menu::onSelectButtonPressed() {
 
     int selectedCityId = current->getCityId();
 
-    if (selectedCityId == 3) {
+    if (selectedCityId == 1){
+        QMessageBox::warning(nullptr, "Warning", "San Andreas map is not available yet. Please select another map.");
+    }
+    else if (selectedCityId == 3) {
         emit mapOpenRequested();
     } else {
         emit mapSelected(selectedCityId);

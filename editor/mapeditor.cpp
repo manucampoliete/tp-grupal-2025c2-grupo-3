@@ -18,23 +18,23 @@ MapPaths getMapPaths(int cityId) {
 
     switch (cityId) {
         case 0:
-            paths.mapPath = ":/media/vice_city_map.png"; // ":/media/assets/liberty_city_map.png"
-            paths.maskPath = ":/media/mask_vicecity.jpeg"; // ":/media/assets/mask_liberty_city.jpeg"
+            paths.mapPath = ":/media/liberty_city_map.png";
+            paths.maskPath = ":/media/mask_libertycity.png";
             break;
 
         case 1:
-            paths.mapPath = ":/media/vice_city_map.png"; // ":/media/assets/san_andreas_map.png"
-            paths.maskPath = ":/media/mask_vicecity.jpeg"; // ":/media/assets/mask_san_andreas.jpeg"
+            paths.mapPath = ":/media/vice_city_map.png"; // ":/media/san_andreas_map.png"
+            paths.maskPath = ":/media/mask_vicecity.png"; // ":/media/mask_san_andreas.png"
             break;
 
         case 2:
             paths.mapPath = ":/media/vice_city_map.png";
-            paths.maskPath = ":/media/mask_vicecity.jpeg";
+            paths.maskPath = ":/media/mask_vicecity.png";
             break;
 
         default:
             paths.mapPath = ":/media/vice_city_map.png";
-            paths.maskPath = ":/media/mask_vicecity.jpeg";
+            paths.maskPath = ":/media/mask_vicecity.png";
             break;
     }
     return paths;
