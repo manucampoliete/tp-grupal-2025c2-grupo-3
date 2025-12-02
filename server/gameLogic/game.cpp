@@ -601,6 +601,7 @@ void Game::improveCarProperties(ClientID clientId, bool improveVelocity, bool im
 }
 
 void Game::disconnectPlayer(ClientID clientId) {
+    (void)clientId;
     // // Remove player from the game
     // auto it = players.find(clientId);
     // if (it != players.end()) {

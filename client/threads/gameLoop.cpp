@@ -137,6 +137,7 @@ void GameLoop::onRaceStart() {
 }
 
 void GameLoop::onCheckpointCrossed(uint8_t checkpointId) {
+    (void)checkpointId;
     /**
      * TODO: add visual effect
      */
