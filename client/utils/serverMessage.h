@@ -18,7 +18,7 @@ struct RaceInfoMessage {
 };
 
 struct RaceStartMessage {
-    //nada
+    //empty
 };
 
 struct CollisionMessage {

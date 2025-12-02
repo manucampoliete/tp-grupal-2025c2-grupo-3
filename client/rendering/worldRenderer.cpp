@@ -21,12 +21,7 @@ WorldRenderer::WorldRenderer(Renderer& renderer, Texture& carSprites,
 void WorldRenderer::loadMapTexture(const std::string& path) {
     try {
         mapRenderer.reset();
-
-        // load image to RAM
-        SDL2pp::Surface surface(path);
-
-        // load to GPU
-        mapTexture = std::make_unique<Texture>(renderer, surface);
+        mapTexture = std::make_unique<Texture>(renderer, path);
         mapTexture->SetBlendMode(SDL_BLENDMODE_BLEND);
         
         mapRenderer = std::make_unique<MapRenderer>(renderer, *mapTexture);
@@ -39,15 +34,15 @@ void WorldRenderer::loadMapTexture(const std::string& path) {
 
 void WorldRenderer::loadBridgeTexture(const std::string& path) {
     try {
-        SDL2pp::Surface surface(path);
-        bridgeTexture = std::make_unique<Texture>(renderer, surface);
+        bridgeRenderer.reset();
+        bridgeTexture = std::make_unique<Texture>(renderer, path);
         bridgeTexture->SetBlendMode(SDL_BLENDMODE_BLEND);
         
         bridgeRenderer = std::make_unique<BridgeRenderer>(renderer, *bridgeTexture);
     } catch (const std::exception& e) {
         std::cerr << "[WORLD_RENDERER] Error loading bridge texture: " << e.what() << std::endl;
-        bridgeTexture = nullptr;
-        bridgeRenderer = nullptr;
+        bridgeRenderer.reset();
+        bridgeTexture.reset();
     }
 }
 

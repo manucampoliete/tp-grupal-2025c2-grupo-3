@@ -21,8 +21,6 @@ const SDL2pp::Rect CARS[7] = {
         {205, 515, 20, 45},  // Car 6
 };
 
-// agregar checkppoint y hints
-// agregar health del auto para imprimirlo en la pantalla
 struct BroadcastData {
     struct CarState {
         uint16_t id; 
@@ -95,13 +93,12 @@ struct CarProperties {
     uint16_t mass;
 };
 
-// datos de colisión
-// a chequear desp
+
 struct CollisionData {
-    uint16_t playerId;  // quién chocó
-    bool intensity;     // 0 (leve), 1(fuerte)
-    uint32_t x;          // coordenada x del choque * 1000
-    uint32_t y;          // coordenada y del choque * 1000
+    uint16_t playerId;
+    bool intensity;     // 0 (low), 1(intense)
+    uint32_t x;
+    uint32_t y; 
 };
 
 

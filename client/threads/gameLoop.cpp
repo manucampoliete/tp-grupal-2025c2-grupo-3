@@ -136,15 +136,6 @@ void GameLoop::onRaceStart() {
     if (game) game->startRace();
 }
 
-void GameLoop::onCheckpointCrossed(uint8_t checkpointId) {
-    (void)checkpointId;
-    /**
-     * TODO: add visual effect
-     */
-    // if (game) game->getSoundManager().playSound("checkpoint");
-}
-
-
 void GameLoop::onCollision(const CollisionData& collision) {
     if (!game) return;
 

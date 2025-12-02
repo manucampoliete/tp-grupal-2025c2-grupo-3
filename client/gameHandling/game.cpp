@@ -34,9 +34,6 @@ Game::Game(World& world, GameLoop& gameLoop, uint8_t playerId) :
         fontSmall("client/assets/fonts/VCR_OSD_MONO.ttf", 18),
         fontBig("client/assets/fonts/VCR_OSD_MONO.ttf", 30),
 
-        // Textures
-        // mapTexture(renderer, "client/assets/cities/Game Boy _ GBC - Grand Theft Auto - "
-        //                    "Backgrounds - Vice City.png"),
         carSprites(renderer,
                     SDL2pp::Surface("client/assets/cars/Mobile - Grand Theft Auto 4 - "
                                     "Miscellaneous - Cars.png")

@@ -43,7 +43,6 @@ private:
     void onCountdown(uint8_t number);
     void onRaceInfo(const RaceInfo info);
     void onRaceStart();
-    void onCheckpointCrossed(uint8_t checkpointId);
     void onCollision(const CollisionData& collision);
     void onPlayerDied(ClientID deadPlayerId);
     void onRaceEnd(const RaceResults& results);
