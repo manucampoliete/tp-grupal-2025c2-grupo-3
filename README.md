@@ -47,7 +47,7 @@ cd ..
 rm -r tp-grupal-2025c2-grupo-3
 ```
 
-## Ejecucion
+## Ejecución
 
 ### Servidor
 
