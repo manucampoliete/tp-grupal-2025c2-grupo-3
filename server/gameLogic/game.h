@@ -61,7 +61,6 @@ private:
     std::vector<b2Body*> lowCollisionLayerBodies;
     std::vector<b2Body*> highCollisionLayerBodies;
     std::vector<b2Body*> layerSwitchBodies;
-    std::vector<b2Body*> NPCGraphBodies;
 
     /**
      * Creates and returns a new b2Body for a car.
