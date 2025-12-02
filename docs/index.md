@@ -7,7 +7,7 @@ nav_order: '001'
 
 # Introducción
 
-Este proyecto fue desarrollado como trabajo final para la cátedra **Veiga** de la materia **Taller de Programación**.  Su objetivo es implementar un videojuego 2D inspirado en **Need for Speed**, con motor propio, físicas simples, colisiones, inteligencia de oponentes, y un sistema multijugador basado en sockets y un servidor dedicado.
+Este proyecto fue desarrollado como trabajo final para la cátedra **Veiga** de la materia **Taller de Programación**.  Su objetivo es implementar un videojuego 2D inspirado en **Need for Speed**, con motor propio, físicas simples, colisiones, inteligencia de oponentes, y un sistema multijugador basado en sockets y un servidor dedicado. Fue desarrollado en el lenguaje C++, con la utilización de librerías auxiliares como SDL, QT y Box2D.
 
 <br>
 

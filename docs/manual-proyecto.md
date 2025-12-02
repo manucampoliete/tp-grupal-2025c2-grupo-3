@@ -26,7 +26,7 @@ Como entornos de desarrollo los integrantes utilizamos Visual Studio Code, CLion
 
 - [CPlusPlus](https://cplusplus.com/)
 - Tutorial de SDL de [Lazy Foo](https://lazyfoo.net/tutorials/SDL/index.php)
-- Stack Overflow
+- [Stack Overflow](https://stackoverflow.com/questions)
 - [Documentación de QT](https://doc.qt.io/qt-6/widget-classes.html) + [Foro de QT](https://forum.qt.io/)
 - [Tutorial Box2D](https://www.iforce2d.net/b2dtut/)
 - [GeeksforGeeks](https://www.geeksforgeeks.org/)
