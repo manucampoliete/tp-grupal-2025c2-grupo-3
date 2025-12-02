@@ -39,10 +39,8 @@
 
 // Cliente → Servidor
 #define MSG_MODIFY_CAR 0x0D  // enviar modificaciones de auto
-#define MSG_DISCONNECT 0x0F  // desconexión del cliente
 
 // Servidor → Cliente
-#define MSG_ASSIGN_ID 0x10    // servidor asigna id al cliente
 #define MSG_RACE_INFO 0x11
 #define MSG_COUNTDOWN 0x12    // countdown antes de empezar
 #define MSG_RACE_START 0x13   // señal de inicio de carreras
