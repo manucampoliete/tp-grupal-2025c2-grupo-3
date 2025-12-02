@@ -1,0 +1,75 @@
+---
+---
+@import "{{ site.theme }}";
+
+#header {
+  background: #333 !important;
+}
+
+#header nav {
+  width: 100%;
+  background: #333 !important;
+}
+
+#header nav ul {
+  background: #333 !important;
+  display: flex !important;
+  flex-direction: row !important;
+  direction: ltr !important;
+  justify-content: center !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  list-style: none !important;
+}
+
+#header nav ul li {
+  background: #333 !important;
+}
+
+#header nav ul li a {
+  background: transparent !important;
+}
+
+#header nav ul li a,
+#header nav ul li a.button,
+#header nav ul li a:visited,
+#header nav ul li a:active {
+  background-image: none !important;
+  background: #333 !important;
+  border: 1px solid #111 !important;
+  color: #fff !important;
+  text-shadow: none !important;
+  padding: 8px 15px !important;
+  border-radius: 5px !important;
+  text-decoration: none !important;
+  display: inline-block !important;
+  margin: 0 5px !important;
+}
+
+#header nav ul li a:hover,
+#header nav ul li a:focus {
+  background-color: #555 !important;
+  color: #ffd700 !important;
+}
+
+.wrapper{
+  max-width: 900px !important;
+  font-size: 18px !important;
+}
+
+section{
+  max-width: 100% !important;
+}
+
+.wrapper #title {
+  margin-bottom: 1.4rem !important;
+  margin-top: 1.0rem !important;
+}
+
+.wrapper section h1 { font-size: 2.2rem; }
+.wrapper section h2 { font-size: 1.8rem; }
+.wrapper section h3 { font-size: 1.4rem; }
+
+body {
+  text-align: justify;
+}
