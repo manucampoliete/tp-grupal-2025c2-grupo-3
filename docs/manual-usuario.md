@@ -89,6 +89,8 @@ Al clickear *Join Game*, se esperará hasta que el creador inicie la partida.
   <img src="{{ site.baseurl }}/assets/invitadoespera.png" width="900">
 </p>
 
+Para cerrar correctamente el servidor cuando no se quiera utilizar mas, ingresar la tecla *q* en la consola donde corre el mismo.
+
 <hr>
 
 # Juego
