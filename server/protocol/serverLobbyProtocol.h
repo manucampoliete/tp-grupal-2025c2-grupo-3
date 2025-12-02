@@ -61,7 +61,7 @@ public:
     /**
      * Sends a SEND_STARTED message with the given success status.
      */
-    void sendStarted(bool success);
+    /** void sendStarted(bool success); */
 };
 
 #endif  // SERVER_LOBBY_PROTOCOL_H

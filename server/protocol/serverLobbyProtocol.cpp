@@ -37,7 +37,7 @@ void ServerLobbyProtocol::recvJoinMatch() {
 }
 
 void ServerLobbyProtocol::recvStartMatch() {
-    lobbyResolver.handleStartMatch(*this);
+    lobbyResolver.handleStartMatch(/***this*/);
 }
 
 ServerLobbyProtocol::ServerLobbyProtocol(Socket& socket, LobbyResolver& lobbyResolver, ClientID clientId):
@@ -83,8 +83,9 @@ void ServerLobbyProtocol::sendJoined(bool success) {
     sendU8(SEND_JOINED);
     sendU8(success ? 0x00 : 0x01);
 }
-
+/*
 void ServerLobbyProtocol::sendStarted(bool success) {
     sendU8(SEND_STARTED);
     sendU8(success ? 0x00 : 0x01);
 }
+*/

@@ -25,9 +25,9 @@ void LobbyResolver::handleJoinMatch(MatchID matchId, const std::string& username
     inLobbyPhase = !joined;
 }
 
-void LobbyResolver::handleStartMatch(ServerLobbyProtocol& protocol) {
+void LobbyResolver::handleStartMatch(/**ServerLobbyProtocol& protocol*/) {
     bool started = matchesMapMonitor.startMatch(matchIdCopy);
-    protocol.sendStarted(started);
+    /** protocol.sendStarted(started); */
     inLobbyPhase = !started;
 }
 
