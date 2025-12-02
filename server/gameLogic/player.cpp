@@ -229,6 +229,8 @@ Snapshot::CarSnapshot Player::buildCarSnapshot() {
         e.x = element.x * 1000;
         e.y = element.y * 1000;
         path.push_back(e);
+        if(element == nextCheckpoint)
+            break;
     }
 
     return Snapshot::CarSnapshot(clientId, x, y, angle, speed, car.getId(), healthPercentage, car.isOnBridge(), path);
