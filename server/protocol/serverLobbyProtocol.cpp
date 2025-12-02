@@ -1,11 +1,8 @@
 #include "serverLobbyProtocol.h"
+#include "../../common/protocol/protocolConstants.h"
 
 #include <string>
 #include <vector>
-
-#include <yaml-cpp/yaml.h>
-
-#include "../../common/protocol/protocolConstants.h"
 
 void ServerLobbyProtocol::sendClientID(ClientID clientId) {
     sendU8(SEND_CLIENT_ID);

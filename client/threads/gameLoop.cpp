@@ -136,16 +136,10 @@ void GameLoop::onRaceStart() {
     if (game) game->startRace();
 }
 
-// CORREGIR!
 void GameLoop::onCheckpointCrossed(uint8_t checkpointId) {
-    std::cout << "[GAME_LOOP] Checkpoint " << (int)checkpointId << " crossed!" << std::endl;
-
-    // A chequear
-    
     /**
      * TODO: add visual effect
      */
-
     // if (game) game->getSoundManager().playSound("checkpoint");
 }
 
@@ -196,8 +190,6 @@ void GameLoop::sendMovement(bool up, bool down, bool left, bool right) {
 }
 
 void GameLoop::sendModifications(bool speed, bool health, bool accel, bool mass) {
-    std::cout << "[GAME_HANDLER] Modifications: speed=" << speed << ", health=" << health << ", accel=" << accel << ", mass=" << mass
-              << std::endl;
     ModifyCarCommand cmd(speed, health, accel, mass);
     clientCommandQueue.tryPush(cmd);
 }

@@ -4,14 +4,9 @@
 #include <memory>
 #include <string>
 
-#include <yaml-cpp/yaml.h>
-
 #include "../../../common/types/types.h"
 #include "collisions/collisionBits.h"
-
 #include "car.h"
-
-#include <iostream>
 
 #define JEEP_ID 0
 #define JEEP_W 28.0f * PIXELS_TO_METERS
@@ -89,8 +84,8 @@ public:
         float area = w*h;
         fixDef.density = carInfo.mass/area;
         fixDef.friction = 0.3f;
-
-        // capa de colision
+        
+        // Collision layer
         b2Filter filter;
         filter.categoryBits = CAR_LOW_LAYER;
         filter.maskBits = MASK_CAR_LOW;

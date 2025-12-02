@@ -49,6 +49,9 @@ public:
      */
     bool isInLobbyPhase() const;
     
+    /**
+     * Returns a reference to the cars information vector.
+     */
     const std::vector<CarInfo>& getCarsInfo();
 
     /**

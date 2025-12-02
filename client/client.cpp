@@ -23,22 +23,16 @@ void Client::run(int argc, char* argv[]) {
     app.exec();  // Blocks until lobby is closed
 
     if (!lobby.shouldStartGame()) {
-        std::cout << "[CLIENT] Lobby closed, exiting client..." << std::endl;
         return;
     }
-
-    std::cout << "[CLIENT] Lobby finished, starting game..." << std::endl;
 
     // Phase 2: Game (SDL)
     GameHandler gameHandler(skt, clientId);
     gameHandler.run();  // Blocks until game is closed
-
-    std::cout << "[CLIENT] Game finished" << std::endl;
 }
 
 void Client::onLobbyFinished() {
     lobbyFinished = true;
-    std::cout << "[CLIENT] Signal received: lobby finished." << std::endl;
 }
 
 Client::~Client() {

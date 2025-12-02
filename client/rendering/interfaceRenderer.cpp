@@ -265,7 +265,6 @@ void UIRenderer::renderStatsPopup(const RaceResults& currentResults, uint32_t st
 
     // COUNTDOWN (bottom centered)
     int seconds = statsTimerMs;
-    std::cout << "Stats popup timer seconds: " << seconds << std::endl;
     std::string timerText = "Next stage in: " + std::to_string(seconds) + "s";
     Surface timerSurface =
             activeFont.RenderText_Solid(timerText, {150, 255, 150, 255});  // Light green

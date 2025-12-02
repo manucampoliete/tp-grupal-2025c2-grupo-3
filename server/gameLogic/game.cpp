@@ -20,10 +20,10 @@
 
 #define TARGET_FPS 60
 #define FRAME_DURATION_MS (1000 / TARGET_FPS)
-#define TIME_STEP (1.0f / TARGET_FPS) // duracion del step que simula box2d cada frame
+#define TIME_STEP (1.0f / TARGET_FPS)  // Duration of each step that box2d simulates each frame
 
-#define PIXELS_TO_METERS 0.01f // 1 pixel = 0.01 metros (1 metro = 100 pixeles)
-#define WORLD_HEIGHT 4672.0f // en pixeles
+#define PIXELS_TO_METERS 0.01f  // 1 pixel = 0.01 meters (1 meter = 100 pixels)
+#define WORLD_HEIGHT 4672.0f  // In pixels
 #define WORLD_HEIGHT_METERS (WORLD_HEIGHT * PIXELS_TO_METERS)
 
 
@@ -68,8 +68,8 @@ Game::Game(const Config& config):
     );
 
     if (races > allRaceFiles.size()) {
-        throw std::runtime_error("No hay suficientes archivos carreras para elegir " +
-                                 std::to_string(races) + " carreras.");
+        throw std::runtime_error("Not enough race files to choose " +
+                                 std::to_string(races) + " races.");
     }
 
     raceFiles.assign(allRaceFiles.begin(), allRaceFiles.begin() + races);
@@ -78,8 +78,8 @@ Game::Game(const Config& config):
 b2Body* Game::createNewCarBody() {
     b2BodyDef body_def;
     body_def.type = b2_dynamicBody;
-    body_def.position.Set(WORLD_HEIGHT_METERS / 2, WORLD_HEIGHT_METERS / 2); // casi el centro
-    body_def.angle = 1.571f; // 90 grados en radianes
+    body_def.position.Set(WORLD_HEIGHT_METERS / 2, WORLD_HEIGHT_METERS / 2);  // Almost the center
+    body_def.angle = 1.571f;  // 90 degrees in radians
 
     b2Body* car = world->CreateBody(&body_def);
 
@@ -115,7 +115,7 @@ void Game::broadcastShowingStats() {
 }
 
 void Game::broadcastGameEnd() {
-    // se manda un countdown?
+    // Countdown is sent?
 }
 
 void Game::broadcastModifyingCar() {
@@ -128,10 +128,9 @@ void Game::broadcast() {
         case GameState::COUNTDOWN:
             broadcastCountdown();
             break;
-        case GameState::RACING: {
+        case GameState::RACING:
             broadcastRacing();
             break;
-        }
         case GameState::SHOWING_STATS:
             broadcastShowingStats();
             break;
@@ -147,7 +146,7 @@ void Game::broadcast() {
 }
 
 void Game::broadcastStartSignal() {
-    responseQueuesMonitor.broadcast(std::make_shared<Snapshot>());  // dummy timestamp for now
+    responseQueuesMonitor.broadcast(std::make_shared<Snapshot>());
 }
 
 std::chrono::seconds Game::getRemainingGameStateTime() {
@@ -171,7 +170,7 @@ std::chrono::seconds Game::getRemainingGameStateTime() {
         case GameState::GAME_END:
             return std::chrono::seconds(0);
     }
-    return std::chrono::seconds(0);  // para evitar warning
+    return std::chrono::seconds(0);  // To avoid compiler warnings
 }
 
 void Game::clearMapBodies() {
@@ -228,8 +227,8 @@ void Game::setCountdownState() {
                         std::forward_as_tuple(MAX_PLAYERS, "NPC", config.carsInfo, 0, createNewCarBody()));
             break;
     }
-
-    // si el grafo no esta vacio, darselo a los npcs
+    
+    // If graph is not empty, give it to the NPCs
     for (auto& [id, player] : players) {
         if(id < MAX_PLAYERS)
             player.initCurrentPath(currentPath);
@@ -237,7 +236,7 @@ void Game::setCountdownState() {
             player.initCurrentGraph(currentNpcPaths);
     }
 
-    // descomentar para jugar como el npc (y seguirlo con la camara)
+    // Uncomment to play as the NPC (and follow it with the camera)
     // for (auto& [id, player] : players) {
     //     if (currentNpcPaths.mapId != -1)
     //         player.initCurrentGraph(currentNpcPaths);
@@ -258,7 +257,7 @@ void Game::setCountdownState() {
     highCollisionLayerBodies = CollisionGenerator::GenerateCollisions(highLayerCollisionMap, world, PIXELS_TO_METERS, WORLD_HEIGHT, WALL_HIGH_LAYER);
     layerSwitchBodies = CollisionGenerator::GenerateCollisions(layerSwitchCollisionMap, world, PIXELS_TO_METERS, WORLD_HEIGHT, SENSOR_LAYER, LAYER_SWITCH_SENSOR);
 
-    // pepara los players para la carrera (aplicar penalizaciones, poner vida = max_vida, etc)
+    // Prepares the players for the race (apply penalties, set health = max_health, etc)
     for (auto& [id, player]: players) {
         player.resetForNewRace();
     }
@@ -273,7 +272,7 @@ void Game::setCountdownState() {
     responseQueuesMonitor.broadcast(std::make_shared<Snapshot>(info));
 }
 
-// cambia el estado y manda el broadcast de que se empezó la carrera
+// Changes the state and sends a race start broadcast
 void Game::setRacingState() {
     setGameState(GameState::RACING);
 
@@ -281,7 +280,7 @@ void Game::setRacingState() {
 }
 
 void Game::setShowingStatsState() {
-    // a los jugadores que no terminaron la carrera se les asigna un tiempo de llegada maximo
+    // To the players who did not finish the race, assign a maximum arrival time
     for (auto& [id, player]: players) {
         if (!player.hasFinished()) {
             player.setArrivalTime(raceDuration.count());
@@ -289,7 +288,7 @@ void Game::setShowingStatsState() {
     }
 
     setGameState(GameState::SHOWING_STATS);
-    // broadcast de estadisticas de carrera
+    // Race stats broadcast
     Snapshot::RaceResults results;
     for (auto& [id, player]: players) {
         if (id >= MAX_PLAYERS) continue;
@@ -306,19 +305,19 @@ void Game::setShowingStatsState() {
               });
     
     responseQueuesMonitor.broadcast(std::make_shared<Snapshot>(results));
-    
 }
 
 void Game::setGameEndState() {
     setGameState(GameState::GAME_END);
 
-    // a los jugadores que no terminaron la carrera se les asigna un tiempo de llegada maximo
+    // To the players who did not finish the race, assign a maximum arrival time
     for (auto& [id, player]: players) {
         if (!player.hasFinished()) {
             player.setArrivalTime(raceDuration.count());
         }
     }
-    // broadcast de estadisticas de la partida
+    
+    // Match stats broadcast
     Snapshot::FinalResults results;
     for (auto& [id, player]: players) {
         if (id >= MAX_PLAYERS) continue;
@@ -326,7 +325,7 @@ void Game::setGameEndState() {
         fs.playerId = player.getClientId();
         fs.playerName = player.getUsername();
         fs.totalTimeMs = player.getTotalRaceTime();
-        fs.position = 0; // se la doy en el sort
+        fs.position = 0;  // Assigned in the sort
 
         results.standings.push_back(fs);
     }
@@ -341,7 +340,7 @@ void Game::setGameEndState() {
         results.standings[i].position = static_cast<uint8_t>(i + 1);
     }
 
-    if (!results.standings.empty()) {    // por las dudas
+    if (!results.standings.empty()) {  // Just in case
         results.winnerId   = results.standings[0].playerId;
         results.winnerName = results.standings[0].playerName;
     }
@@ -362,7 +361,7 @@ void Game::setModifyingCarState() {
     responseQueuesMonitor.broadcast(std::make_shared<Snapshot>(carProps));
 }
 
-// solo cambia al estado de juego dado y actualiza el time point en el que empezó
+// Just changes the current game state and updates the starting time point
 void Game::setGameState(GameState newState) {
     currentState = newState;
     gameStateStartTime = std::chrono::high_resolution_clock::now();
@@ -382,41 +381,36 @@ void Game::updateGameState() {
     switch (currentState) {
         case GameState::COUNTDOWN:
             if (gameStateElapsed >= countdownDuration) {
-                std::cout << "[GAME] Switched to racing state" << std::endl;
                 setRacingState();
             }
             break;
         case GameState::RACING:
             if (gameStateElapsed >= raceDuration || allPlayersFinished()) {
                 if (currentRaceCount >= races) {
-                    std::cout << "[GAME] Switched to game end state" << std::endl;
                     setGameEndState();
                 } else {
-                    std::cout << "[GAME] Switched to showing stats state" << std::endl;
                     setShowingStatsState();
                 }
             }
             break;
         case GameState::SHOWING_STATS:
             if (gameStateElapsed >= statsDuration) {
-                std::cout << "[GAME] Switched to modifying car state" << std::endl;
                 setModifyingCarState();
             }
             break;
         case GameState::MODIFYING_CAR:
             if (gameStateElapsed >= upgradesDuration) {
-                std::cout << "[GAME] Switched to countdown state" << std::endl;
                 setCountdownState();
             }
             break;
         case GameState::GAME_END:
             // ?
             break;
-        case GameState::ELIMINATED: 
-            // eliminated le sirve solo al cliente?
-            // si un usuario muere el server le va a estar mandando snapshots de carrera
-            // pero tambien manda la vida del auto
-            // si el cliente checkea que su vida es 0, pasa a eliminated en vez de racing
+        case GameState::ELIMINATED:
+            // GameState::ELIMINATED is only useful for the client?
+            // If a user dies, the server will keep sending racing snapshots
+            // But it also sends the car's health
+            // If the client checks that its health is 0, it switches to eliminated instead of racing
             break;
     }
 }
@@ -445,12 +439,12 @@ void Game::handleGameState() {
 }
 
 void Game::handleCountdownState() {
-    // se manda un snapshot por gameloop
-    // se encarga broadcast, esta funcion no hace nada por ahora
+    // A snapshot is sent each gameloop
+    // It is handled by broadcast, this function does nothing for now
 }
 
 void Game::handleRacingState() {
-    // Command Pattern
+    // Command Pattern!
     std::unique_ptr<Command> cmd;
     while (clientCommandsQueue.tryPop(cmd)) {
         cmd->execute(*this);
@@ -462,14 +456,15 @@ void Game::handleRacingState() {
 }
 
 void Game::handleShowingStatsState() {
-    // por el momento nada
+    // For now, nothing
 }
 
 void Game::handleGameEndState() {
-    // lo mismo
+    // Same
 }
 
 void Game::handleModifyingCarState() {
+    // Command Pattern again!
     std::unique_ptr<Command> cmd;
     while (clientCommandsQueue.tryPop(cmd)) {
         cmd->execute(*this);
@@ -516,8 +511,8 @@ void Game::run() {
     broadcastStartSignal();
     setCountdownState();
 
-    // contact listener para manejar choques
-    // se le pasa un puntero a Game para que pueda llamar a handleCollision
+    // ContactListener to handle collisions
+    // A pointer to Game is passed so it can call Game::handleCollision
     ContactListener contactListener(this);
     world->SetContactListener(&contactListener);
 
@@ -565,8 +560,9 @@ bool Game::addPlayer(ClientID clientId, const std::string& username, CarID carId
         return false;
 
     if (players.find(clientId) == players.end()) {
-        // players.emplace(clientId, Player(clientId, username, newCarBody, carId)); //dentro de Player se hace data->player = this (que apunta al temporal), cuando se llama data->player->applyDamage health toma valores basura
-        // construir player in-place para evitar el problema anterior
+        // players.emplace(clientId, Player(clientId, username, newCarBody, carId));
+        // Inside Player data->player = this is made (which points to the temporary), when data->player->applyDamage is called health takes garbage values
+        // Construct player in-place to avoid the previous problem
         players.emplace(std::piecewise_construct,
                         std::forward_as_tuple(clientId),
                         std::forward_as_tuple(clientId, username, config.carsInfo, carId, createNewCarBody()));
@@ -581,12 +577,10 @@ void Game::movePlayer(ClientID clientId, ActiveDirections activeDirections) {
 }
 
 void Game::makeInmortal(ClientID clientId) {
-    std::cout << "Making player " << clientId << " inmortal!" << std::endl;
     players.at(clientId).toggleImmortality();
 }
 
 void Game::makeInstaWin(ClientID clientId) {
-    std::cout << "Making player " << clientId << " insta win!" << std::endl;
     auto now = std::chrono::high_resolution_clock::now();
     auto gameStateElapsed = now - gameStateStartTime;
     std::chrono::seconds raceTimeSecs = std::chrono::duration_cast<std::chrono::seconds>(gameStateElapsed);
@@ -594,27 +588,19 @@ void Game::makeInstaWin(ClientID clientId) {
 }
 
 void Game::makeInstaLose(ClientID clientId) {
-    std::cout << "Making player " << clientId << " insta lose!" << std::endl;
     handleCollision(&players.at(clientId), 999);
 }
 
 void Game::makePlayerGoSuperFast(ClientID clientId) {
-    std::cout << "Making player " << clientId << " go super fast!" << std::endl;
     players.at(clientId).toggleSuperSpeed();
 }
 
 void Game::improveCarProperties(ClientID clientId, bool improveVelocity, bool improveHealth, bool improveAcceleration, bool improveMass) {
-    // std::cout << "Improving car properties for player " << clientId << ": "
-    //           << (improveVelocity ? "velocity " : "") << (improveHealth ? "health" : "")
-    //           << (improveMass ? "mass" : "") << (improveAcceleration ? "acceleration" : "") << std::endl;
-
     auto& player = players.at(clientId);
     player.improveCarProperties(improveVelocity, improveHealth, improveAcceleration, improveMass);
 }
 
 void Game::disconnectPlayer(ClientID clientId) {
-    std::cout << "Disconnecting player " << clientId << " from the game." << std::endl;
-
     // // Remove player from the game
     // auto it = players.find(clientId);
     // if (it != players.end()) {

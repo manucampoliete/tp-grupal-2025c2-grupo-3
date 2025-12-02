@@ -27,7 +27,7 @@ void ContactListener::BeginContact(b2Contact* contact) {
                 game->handleCheckpointContact(dataA->player, dataB->element);
                 break;
             case GRAPH_NODE_SENSOR:
-                std::cout << "[CONTACT_LISTENER] Nodo de grafo!!" << std::endl;
+                // Graph node contact!
                 break;
             default:
                 break;
@@ -45,7 +45,7 @@ void ContactListener::BeginContact(b2Contact* contact) {
                 game->handleCheckpointContact(dataB->player, dataA->element);
                 break;
             case GRAPH_NODE_SENSOR:
-                std::cout << "[CONTACT_LISTENER] Nodo de grafo!!" << std::endl;
+                // Graph node contact!
                 break;
             default:
                 break;

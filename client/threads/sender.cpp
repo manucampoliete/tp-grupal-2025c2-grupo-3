@@ -30,18 +30,13 @@ void Sender::run() {
             }, cmd);
         
         } catch (const PeerDisconnectedError& e) {
-            std::cout << "[SENDER] Peer disconnected, ending..." << std::endl;
             commandQueue.close();
             break;
         } catch (const ClosedQueue& e) {
-            std::cout << "[SENDER] Queue closed, ending..." << std::endl;
             break;
         } catch (const std::exception& err) {
-            std::cerr << "[SENDER] Error: " << err.what() << std::endl;
             syslog(LOG_INFO, "[Info] Sender: %s", err.what());
             break;
         }
     }
-
-    std::cout << "[SENDER] Thread ended." << std::endl;
 }

@@ -160,7 +160,6 @@ void InputHandler::handleMouseClick(const SDL_Event& event) {
         soundManager.playSound("confirm");
         gameLoop.sendModifications(stateManager.isSpeedModified(), stateManager.isHealthModified(),
                                     stateManager.isAccelModified(), stateManager.isMassModified());
-        std::cout << "[INPUT] Modifications saved and sent" << std::endl;
     }
 }
 
