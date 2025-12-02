@@ -6,7 +6,6 @@
 
 #include "../../common/queue/queue.h"
 #include "../utils/gameData.h"
-#include "../protocol/clientGameProtocol.h"
 
 #include "../threads/gameLoop.h"
 #include "../threads/receiver.h"
@@ -23,7 +22,6 @@
  */
 class GameHandler {
 private:
-    ClientGameProtocol protocol;
     ClientID clientId;
 
     Queue<ClientMessage> clientCommandQueue;

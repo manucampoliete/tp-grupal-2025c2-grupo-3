@@ -4,17 +4,17 @@
 #include "../../common/queue/queue.h"
 #include "../../common/thread/thread.h"
 #include "../utils/clientMessage.h"
-#include "../protocol/clientGameProtocol.h"
+#include "../protocol/clientGameSendProtocol.h"
 
 
 /**
  * Sender: thread that sends client commands to the server
  * - Pops commands from the commandQueue queue
- * - Serializes and sends them using ClientGameProtocol
+ * - Serializes and sends them using ClientGameSendProtocol
  */
 class Sender: public Thread {
 private:
-    ClientGameProtocol& protocol;
+    ClientGameSendProtocol protocol;
     Queue<ClientMessage>& commandQueue;
 
 public:
@@ -22,7 +22,7 @@ public:
      * Constructor: initializes the Sender with the given parameters.
      * commandQueue: queue of commands to be sent to the server
      */
-    Sender(ClientGameProtocol& protocol, Queue<ClientMessage>& commandQueue);
+    Sender(Socket& skt, Queue<ClientMessage>& commandQueue);
 
     /**
      * TODO: add proper documentation

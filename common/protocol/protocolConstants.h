@@ -24,6 +24,12 @@
 #define RIGHT_MASK 0b0001
 
 /**
+ * Modification status constants
+ */
+#define MOD_ACTIVATED 0x01
+#define MOD_DEACTIVATED 0x00
+
+/**
  * Cheats!
  */
 #define SEND_INMORTALITY 0xFF

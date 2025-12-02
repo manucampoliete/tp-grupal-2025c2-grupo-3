@@ -4,8 +4,8 @@
 #include <iostream>
 #include <syslog.h>
 
-Sender::Sender(ClientGameProtocol& protocol, Queue<ClientMessage>& commandQueue):
-        protocol(protocol), commandQueue(commandQueue) {}
+Sender::Sender(Socket& skt, Queue<ClientMessage>& commandQueue):
+        protocol(skt), commandQueue(commandQueue) {}
 
 void Sender::run() {
     while (shouldKeepRunning()) {

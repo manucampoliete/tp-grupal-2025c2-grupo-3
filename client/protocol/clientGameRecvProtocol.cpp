@@ -1,47 +1,14 @@
-#include "clientGameProtocol.h"
-
-#include <iostream>
-#include <stdexcept>
-
-#include <arpa/inet.h>
-
+#include "clientGameRecvProtocol.h"
 #include "../../common/protocol/protocolConstants.h"
 
+ClientGameRecvProtocol::ClientGameRecvProtocol(Socket& skt) :
+    RecvProtocol(skt) {}
 
-uint8_t ClientGameProtocol::encodeMoveState(const ActiveDirections& activeDirections) {
-    uint8_t moveState = 0;
-    if (activeDirections.up)
-        moveState |= UP_MASK;
-    if (activeDirections.down)
-        moveState |= DOWN_MASK;
-    if (activeDirections.left)
-        moveState |= LEFT_MASK;
-    if (activeDirections.right)
-        moveState |= RIGHT_MASK;
-    return moveState;
+uint8_t ClientGameRecvProtocol::recvMessageType() { 
+    return recvU8();
 }
 
-ClientGameProtocol::ClientGameProtocol(Socket& socket): SendProtocol(socket), RecvProtocol(socket) {}
-
-
-uint8_t ClientGameProtocol::recvMessageType() { return recvU8(); }
-
-
-void ClientGameProtocol::sendMove(const ActiveDirections& activeDirections) {
-    sendU8(SEND_MOVE_STATE);
-    sendU8(encodeMoveState(activeDirections));
-}
-
-void ClientGameProtocol::sendModifications(bool speedMod, bool healthMod, bool accelMod, bool massMod) {
-    sendU8(MSG_MODIFY_CAR);
-    sendU8(speedMod ? 0x01 : 0x00);
-    sendU8(healthMod ? 0x01 : 0x00);
-    sendU8(accelMod ? 0x01 : 0x00);
-    sendU8(massMod ? 0x01 : 0x00);
-}
-
-
-Snapshot ClientGameProtocol::recvSnapshot() {
+Snapshot ClientGameRecvProtocol::recvSnapshot() {
     uint32_t countdown = recvU32();
     uint8_t numCars = recvU8();
 
@@ -72,7 +39,7 @@ Snapshot ClientGameProtocol::recvSnapshot() {
     return Snapshot(countdown, cars);
 }
 
-RaceInfo ClientGameProtocol::recvRaceInfo() {
+RaceInfo ClientGameRecvProtocol::recvRaceInfo() {
     RaceInfo info;
     info.mapId = recvU8();
     info.race = recvU8();
@@ -81,21 +48,25 @@ RaceInfo ClientGameProtocol::recvRaceInfo() {
     return info;
 }
 
-uint8_t ClientGameProtocol::recvCountdown() { return recvU8(); }
+uint8_t ClientGameRecvProtocol::recvCountdown() { 
+    return recvU8(); 
+}
 
-CollisionData ClientGameProtocol::recvCollision() {
+CollisionData ClientGameRecvProtocol::recvCollision() {
     CollisionData collision;
     collision.playerId = recvU16();
-    collision.intensity = recvU8(); // 0: low, 1: high
+    collision.intensity = recvU8();  // 0: low, 1: high
     collision.x = recvU32();
     collision.y = recvU32();
 
     return collision;
 }
 
-uint16_t ClientGameProtocol::recvPlayerDied() { return recvU16(); }
+uint16_t ClientGameRecvProtocol::recvPlayerDied() { 
+    return recvU16();  // Player ID
+}
 
-RaceResults ClientGameProtocol::recvRaceResults() {
+RaceResults ClientGameRecvProtocol::recvRaceResults() {
     RaceResults results;
     uint8_t numPlayers = recvU8();
 
@@ -111,11 +82,11 @@ RaceResults ClientGameProtocol::recvRaceResults() {
     return results;
 }
 
-uint8_t ClientGameProtocol::recvStatsCountdown() {
+uint8_t ClientGameRecvProtocol::recvStatsCountdown() {
     return recvU8();
 }
 
-std::vector<CarProperties> ClientGameProtocol::recvCarProperties() {
+std::vector<CarProperties> ClientGameRecvProtocol::recvCarProperties() {
     uint8_t numCars = recvU8();
 
     std::vector<CarProperties> props;
@@ -133,11 +104,11 @@ std::vector<CarProperties> ClientGameProtocol::recvCarProperties() {
     return props;
 }
 
-uint8_t ClientGameProtocol::recvModCountdown() {
+uint8_t ClientGameRecvProtocol::recvModCountdown() {
     return recvU8();
 }
 
-FinalResults ClientGameProtocol::recvFinalResults() {
+FinalResults ClientGameRecvProtocol::recvFinalResults() {
     FinalResults results;
     uint16_t numStandings = recvU16();
 
@@ -156,15 +127,3 @@ FinalResults ClientGameProtocol::recvFinalResults() {
 
     return results;
 }
-
-
-/**
- * CHEATS
- */
-void ClientGameProtocol::sendInmortalityRequest() { sendU8(SEND_INMORTALITY); }
-
-void ClientGameProtocol::sendInstaWinRequest() { sendU8(SEND_INSTA_WIN); }
-
-void ClientGameProtocol::sendInstaLoseRequest() { sendU8(SEND_INSTA_LOSE); }
-
-void ClientGameProtocol::sendSuperSpeedRequest() { sendU8(SEND_SUPER_SPEED); }
