@@ -186,15 +186,11 @@ void Game::clearMapBodies() {
     for (b2Body* body : layerSwitchBodies) {
         world->DestroyBody(body);
     }
-    for(b2Body* body : NPCGraphBodies) {
-        world->DestroyBody(body);
-    }
 
     pathBodies.clear();
     lowCollisionLayerBodies.clear();
     highCollisionLayerBodies.clear();
     layerSwitchBodies.clear();
-    NPCGraphBodies.clear();
 }
 
 void Game::setCountdownState() {

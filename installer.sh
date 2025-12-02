@@ -47,7 +47,7 @@ Usage: $0 [OPTIONS]
 
 Options:
   --name NAME           Name of the package (default: ${NAME})
-  --install-deps        Install dependencies via apt (requires sudo)
+  --no-install-deps     Do not install dependencies via apt (requires sudo)
   --no-build            Skip build
   --build-type TYPE     CMake build type (Debug|Release)
   --install-dir DIR     Directory to install binaries (default: ${INSTALL_BIN_DIR})
@@ -59,13 +59,13 @@ Examples:
 EOF
 }
 
-INSTALL_DEPS=false
+INSTALL_DEPS=true
 DO_BUILD=true
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
         --name) NAME="$2"; shift 2;;
-        --install-deps) INSTALL_DEPS=true; shift;;
+        --no-install-deps) INSTALL_DEPS=false; shift;;
         --no-build) DO_BUILD=false; shift;;
         --build-type) BUILD_TYPE="$2"; shift 2;;
         --install-dir) INSTALL_BIN_DIR="$2"; shift 2;;
