@@ -12,6 +12,7 @@
 #include "car.h"
 
 #include "collisions/pathLoader.h"
+#include "collisions/graphLoader.h"
 
 #define PENALTY_PER_IMPROVEMENT 5
 
@@ -32,6 +33,14 @@ private:
 
     bool immortal;
     bool superSpeed;
+
+    bool isNPC;
+    std::vector<GraphNode> npcNodes;
+    std::vector<std::pair<int,int>> npcEdges;
+    // uso index para no tener que darles operadores == y != a los GraphNode
+    int currentNodeIndex;
+    int targetNodeIndex;
+    ActiveDirections npcControls;
 
     void debugPrintCarInfo();
 
@@ -72,6 +81,13 @@ public:
 
     void initCurrentPath(Path& currentPath);
     void updateCurrentPath(PathElement& element, std::chrono::seconds raceTimeSecs);
+
+    void initCurrentGraph(const Graph& g);
+    // devuelve el index del proximo nodo
+    // evita devolver el nodo por el que venía el auto
+    int chooseNextNode(int currentNodeIdx, int prevNodeIndex);
+    // usa ActiveDirections como si le estuvieran llegando comandos (pero no)
+    void updateNPCDirections();
 
     // aplica finished = true y le asigna la maxima duracion posible de la carrera como tiempo de carrera
     void handleDeath(std::chrono::seconds raceDurationSecs);

@@ -6,9 +6,6 @@
 #include "collisions/collisionBits.h"
 #include "bodyData.h"
 
-// Para facilitar la lectura del codigo recordar que "velocity" es un vector y "speed" es una
-// magnitud
-
 void Car::handleFinishedState() {
     body->SetLinearDamping(1.0f);
     body->SetAngularDamping(6.0f);
@@ -60,8 +57,6 @@ void Car::applyThrottle() {
     body->ApplyForceToCenter(force, true);
 }
 
-// TODO: tendria que usar un desiredAngularVel y un delta para aplicar el torque?
-// igual applySpeedLimits ya se encarga de limitar eso
 void Car::applySteering() {
     b2Vec2 vel = body->GetLinearVelocity();
     float speed = vel.Length();
@@ -153,6 +148,8 @@ float Car::getMaxSpeed() const { return maxSpeed; }
 
 void Car::setCurrentHealth(float health) { currentHealth = health; }
 
+void Car::setMaxSpeed(float newMaxSpeed) { maxSpeed = newMaxSpeed; }
+
 void Car::setPosition(const PathElement& carSpawn) {
     float x = carSpawn.x * PIXELS_TO_METERS;
     float y = (WORLD_HEIGHT - carSpawn.y) * PIXELS_TO_METERS;
@@ -240,6 +237,12 @@ void Car::toggleSuperSpeed(bool superSpeed) {
         maxSpeed *= SUPERSPEED_SCALE;
         acceleration *= SUPERSPEED_SCALE;
     }
+}
+
+// mientras que los jugadores spawnean usando un PathElement (el spawn dado por el editor)
+// los NPCs spawnean sobre un nodo y mirando al nodo siguiente
+void Car::spawnAsNPC(float x, float y, float angle) {
+    body->SetTransform(b2Vec2(x, y), angle);
 }
 
 

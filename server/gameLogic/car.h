@@ -135,18 +135,20 @@ public:
 
     void setPosition(const PathElement& carSpawn);
     void setCurrentHealth(float health);
+    void setMaxSpeed(float newMaxSpeed);
 
     void resetSpeeds();
 
     void improveProperties(bool improveVelocity, bool improveHealth, bool improveAcceleration, bool improveMass);
   
-
     void setCollisionLayer(uint8_t layer);
     void toggleCollisionLayer();
 
     bool isOnBridge();
 
     void toggleSuperSpeed(bool superSpeed);
+
+    void spawnAsNPC(float x, float y, float angle);
 
     b2Body* getBody() { return body; }  /** NOTE: TEMPORAL!!! */
 

@@ -17,11 +17,13 @@ struct Graph {
     int mapId;
     std::vector<GraphNode> nodes;
     std::vector<std::pair<int,int>> edges;
+
+    Graph() : mapId(-1) {}
 };
 
 class GraphLoader {
 public:
-    static Graph LoadGraph(const std::string& graphYamlPath) {
+    static Graph LoadGraph(const std::string& graphYamlPath, float pixelsToMeters, float worldHeight) {
         Graph graph;
 
         YAML::Node config;
@@ -53,8 +55,8 @@ public:
             for (const auto& n : nodes) {
                 GraphNode node;
                 node.id = n["id"].as<int>();
-                node.x  = n["x"].as<float>();
-                node.y  = n["y"].as<float>();
+                node.x  = n["x"].as<float>() * pixelsToMeters;
+                node.y  = (worldHeight - n["y"].as<float>()) * pixelsToMeters;
                 graph.nodes.push_back(node);
             }
         } else {
