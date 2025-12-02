@@ -4,8 +4,8 @@
 #include <iostream>
 #include <syslog.h>
 
-Receiver::Receiver(ClientGameProtocol& protocol, Queue<ServerMessage>& serverMessagesQueue):
-    protocol(protocol),
+Receiver::Receiver(Socket& skt, Queue<ServerMessage>& serverMessagesQueue):
+    protocol(skt),
     serverMessagesQueue(serverMessagesQueue) {}
 
 void Receiver::run() {

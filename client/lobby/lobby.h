@@ -13,7 +13,6 @@
 #include "mainmenu.h"
 #include "newgame.h"
 
-class ClientGameProtocol;
 class Lobby;
 
 // NOTE:

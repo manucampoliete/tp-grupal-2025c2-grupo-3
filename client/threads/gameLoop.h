@@ -6,7 +6,6 @@
 #include "../utils/gameData.h"
 #include "../../common/queue/queue.h"
 #include "../../common/thread/thread.h"
-#include "../protocol/clientGameProtocol.h"
 
 #include "../utils/serverMessage.h"
 #include "../utils/clientMessage.h"

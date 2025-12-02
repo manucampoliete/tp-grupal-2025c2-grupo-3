@@ -42,6 +42,7 @@ void Client::onLobbyFinished() {
 }
 
 Client::~Client() {
+    // Manu: this shouldn't be necessary, Socket's destructor should handle it.
     skt.shutdown(SHUT_RDWR);
     skt.close();
 }

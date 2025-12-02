@@ -4,12 +4,11 @@
 #include <iostream>
 
 GameHandler::GameHandler(Socket& skt, ClientID clientId):
-    protocol(skt),
     clientId(clientId),
     clientCommandQueue(),
     serverMessagesQueue(),
-    sender(protocol, clientCommandQueue),
-    receiver(protocol, serverMessagesQueue),
+    sender(skt, clientCommandQueue),
+    receiver(skt, serverMessagesQueue),
     gameLoop(serverMessagesQueue, clientCommandQueue, clientId),
     running(false) {}
 
