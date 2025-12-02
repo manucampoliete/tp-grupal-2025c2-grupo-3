@@ -110,9 +110,9 @@ uint8_t ClientGameRecvProtocol::recvModCountdown() {
 
 FinalResults ClientGameRecvProtocol::recvFinalResults() {
     FinalResults results;
-    uint16_t numStandings = recvU16();
+    uint8_t numStandings = recvU8();
 
-    for (uint16_t i = 0; i < numStandings; ++i) {
+    for (uint8_t i = 0; i < numStandings; ++i) {
         FinalResults::FinalStanding standing;
         standing.playerId = recvU16();
         standing.playerName = recvString();

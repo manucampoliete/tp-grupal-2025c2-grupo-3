@@ -67,7 +67,7 @@ void ServerGameSendProtocol::sendRaceResultsSnapshot(std::shared_ptr<Snapshot> s
 
 void ServerGameSendProtocol::sendFinalResultsSnapshot(std::shared_ptr<Snapshot> snapshot) {
     Snapshot::FinalResults& fr = snapshot->finalResults; 
-    sendU16(fr.standings.size());
+    sendU8(fr.standings.size());
 
     for (auto& fs : fr.standings) {
         sendU16(fs.playerId);
