@@ -217,7 +217,11 @@ void Game::setCountdownState() {
             break;
         case MAP_VICE_CITY:
             mapName = "viceCity";
-            currentNpcPaths = GraphLoader::LoadGraph("server/gameLogic/npcPath.yaml", PIXELS_TO_METERS, WORLD_HEIGHT);
+            #ifdef INSTALL_MODE
+                currentNpcPaths = GraphLoader::LoadGraph("/etc/needForSpeed2D/server/gameLogic/npcPath.yaml", PIXELS_TO_METERS, WORLD_HEIGHT);
+            #else
+                currentNpcPaths = GraphLoader::LoadGraph("server/gameLogic/npcPath.yaml", PIXELS_TO_METERS, WORLD_HEIGHT);
+            #endif
 
             players.emplace(std::piecewise_construct,
                         std::forward_as_tuple(MAX_PLAYERS),
