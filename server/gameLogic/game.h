@@ -13,6 +13,7 @@
 #include "../../common/thread/thread.h"
 #include "../../common/types/types.h"
 #include "../../common/utils/gameState.h"
+#include "../../common/utils/mapConstants.h"
 
 #include "../commands/command.h"
 #include "../synchronized/responseQueuesMonitor.h"
@@ -21,11 +22,9 @@
 #include "car.h"
 #include "player.h"
 
-#include "../../common/utils/gameState.h"
-
 #include "collisions/pathLoader.h"
-
-#include "../../common/utils/mapConstants.h"
+#include "collisions/pathGenerator.h"
+#include "collisions/graphLoader.h"
 
 class Command;
 
@@ -62,6 +61,7 @@ private:
     std::vector<b2Body*> lowCollisionLayerBodies;
     std::vector<b2Body*> highCollisionLayerBodies;
     std::vector<b2Body*> layerSwitchBodies;
+    std::vector<b2Body*> NPCGraphBodies;
 
     /**
      * Creates and returns a new b2Body for a car.

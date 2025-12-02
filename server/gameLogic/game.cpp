@@ -18,8 +18,6 @@
 #include "../../common/constantRateLoop/constantRateLoop.h"
 #include "../../common/messages/snapshot.h"
 
-#include "collisions/pathGenerator.h"
-
 #define TARGET_FPS 60
 #define FRAME_DURATION_MS (1000 / TARGET_FPS)
 #define TIME_STEP (1.0f / TARGET_FPS) // duracion del step que simula box2d cada frame
@@ -90,6 +88,7 @@ b2Body* Game::createNewCarBody() {
 
 void Game::updatePlayerCars() {
     for (auto& [id, player]: players) {
+        player.updateNPCDirections();
         player.updateCarPhysics();
     }
 }
@@ -188,11 +187,15 @@ void Game::clearMapBodies() {
     for (b2Body* body : layerSwitchBodies) {
         world->DestroyBody(body);
     }
+    for(b2Body* body : NPCGraphBodies) {
+        world->DestroyBody(body);
+    }
 
     pathBodies.clear();
     lowCollisionLayerBodies.clear();
     highCollisionLayerBodies.clear();
     layerSwitchBodies.clear();
+    NPCGraphBodies.clear();
 }
 
 void Game::setCountdownState() {
@@ -200,16 +203,11 @@ void Game::setCountdownState() {
 
     clearMapBodies();
 
-    // Path currentPath = PathLoader::LoadPath("server/gameLogic/race.yaml");
     Path currentPath = PathLoader::LoadPath(raceFiles[currentRaceCount++]);
     pathBodies = PathGenerator::GeneratePath(currentPath, world, PIXELS_TO_METERS, WORLD_HEIGHT);
 
-    for (auto& [id, player] : players) {
-        player.initCurrentPath(currentPath);
-    }
-
     std::string mapName;
-    std::cout << "[GAME] Setting map to " << mapName << std::endl;
+    Graph currentNpcPaths;
     switch (currentPath.mapId){
         case MAP_LIBERTY_CITY:
             mapName = "libertyCity";
@@ -219,8 +217,27 @@ void Game::setCountdownState() {
             break;
         case MAP_VICE_CITY:
             mapName = "viceCity";
+            currentNpcPaths = GraphLoader::LoadGraph("server/gameLogic/npcPath.yaml", PIXELS_TO_METERS, WORLD_HEIGHT);
+
+            players.emplace(std::piecewise_construct,
+                        std::forward_as_tuple(MAX_PLAYERS),
+                        std::forward_as_tuple(MAX_PLAYERS, "NPC", config.carsInfo, 0, createNewCarBody()));
             break;
     }
+
+    // si el grafo no esta vacio, darselo a los npcs
+    for (auto& [id, player] : players) {
+        if(id < MAX_PLAYERS)
+            player.initCurrentPath(currentPath);
+        else if (currentNpcPaths.mapId != -1)
+            player.initCurrentGraph(currentNpcPaths);
+    }
+
+    // descomentar para jugar como el npc (y seguirlo con la camara)
+    // for (auto& [id, player] : players) {
+    //     if (currentNpcPaths.mapId != -1)
+    //         player.initCurrentGraph(currentNpcPaths);
+    // }
 
     #ifdef INSTALL_MODE
         CollisionMap lowLayerCollisionMap = CollisionLoader::LoadCollisions("/etc/needForSpeed2D/server/gameLogic/collisions/maps/" + mapName + "/low_collision_layer.yaml");
@@ -260,10 +277,6 @@ void Game::setRacingState() {
 }
 
 void Game::setShowingStatsState() {
-    // auto now = std::chrono::high_resolution_clock::now();
-    // auto gameStateElapsed = now - gameStateStartTime;
-    // std::chrono::seconds raceTimeSecs = std::chrono::duration_cast<std::chrono::seconds>(gameStateElapsed);
-
     // a los jugadores que no terminaron la carrera se les asigna un tiempo de llegada maximo
     for (auto& [id, player]: players) {
         if (!player.hasFinished()) {
@@ -275,6 +288,7 @@ void Game::setShowingStatsState() {
     // broadcast de estadisticas de carrera
     Snapshot::RaceResults results;
     for (auto& [id, player]: players) {
+        if (id >= MAX_PLAYERS) continue;
         Snapshot::RaceResults::PlayerResult pr;
         pr.playerName = player.getUsername();
         pr.raceTimeMs = player.getCurrentRaceTime();
@@ -303,6 +317,7 @@ void Game::setGameEndState() {
     // broadcast de estadisticas de la partida
     Snapshot::FinalResults results;
     for (auto& [id, player]: players) {
+        if (id >= MAX_PLAYERS) continue;
         Snapshot::FinalResults::FinalStanding fs;
         fs.playerId = player.getClientId();
         fs.playerName = player.getUsername();
@@ -335,13 +350,7 @@ void Game::setModifyingCarState() {
 
     std::vector<Snapshot::CarProperties> carProps;
     for (auto& [id, player]: players) {
-        /* Snapshot::CarProperties prop;
-        prop.playerId = id;
-        prop.speed = player.getCarSpeed();
-        prop.health = player.getCarHealth();
-        prop.acceleration = player.getCarAcceleration();
-        prop.mass = player.getCarMass();
-        carProps.push_back(prop); */
+        if (id >= MAX_PLAYERS) continue;
         Snapshot::CarProperties prop = player.buildModifyingCarSnapshot();
         carProps.push_back(prop);
     }
@@ -349,16 +358,15 @@ void Game::setModifyingCarState() {
     responseQueuesMonitor.broadcast(std::make_shared<Snapshot>(carProps));
 }
 
-// solo cambia al estado de juego dado
+// solo cambia al estado de juego dado y actualiza el time point en el que empezó
 void Game::setGameState(GameState newState) {
     currentState = newState;
     gameStateStartTime = std::chrono::high_resolution_clock::now();
-    // std::cout << "Game state changed to " << static_cast<int>(newState) << std::endl;
 }
 
 bool Game::allPlayersFinished() {
     for (auto& [id, player] : players) {
-        if (!player.hasFinished()) return false;
+        if (!player.hasFinished() && id < MAX_PLAYERS) return false;
     }
     return true;
 }
