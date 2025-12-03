@@ -23,7 +23,7 @@ Este proyecto fue desarrollado como trabajo final para la cátedra **Veiga** de 
 ## Demo del juego
 
 <div style="display: flex; justify-content: center; margin: 2rem 0;">
-  <iframe width="560" height="315" src="https://www.youtube.com/embed/ID_DEL_VIDEO"
+  <iframe width="560" height="315" src="https://drive.google.com/file/d/1hDPcZQ49GUiaUghRukxasKEmv5GPaJtO/preview"
           title="Demo del juego" frameborder="0" allowfullscreen></iframe>
 </div>
 
